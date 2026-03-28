@@ -9,187 +9,115 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { initializeApp }                           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword,
+           onAuthStateChanged, GoogleAuthProvider,
+           signInWithPopup }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, get, set, update }      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
-    authDomain: "jersify-f9b5e.firebaseapp.com",
-    databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com",
-    projectId: "jersify-f9b5e",
-    storageBucket: "jersify-f9b5e.firebasestorage.app",
+    apiKey:            "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
+    authDomain:        "jersify-f9b5e.firebaseapp.com",
+    databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com",
+    projectId:         "jersify-f9b5e",
+    storageBucket:     "jersify-f9b5e.firebasestorage.app",
     messagingSenderId: "461181023878",
-    appId: "1:461181023878:web:6ebfbae603baf4a873c307",
-    measurementId: "G-V5E7D09PJ0"
+    appId:             "1:461181023878:web:6ebfbae603baf4a873c307",
+    measurementId:     "G-V5E7D09PJ0"
   };
 
-  const app = initializeApp(firebaseConfig);
+  const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const googleProvider = new GoogleAuthProvider();
+  const db   = getDatabase(app);
+  const gp   = new GoogleAuthProvider();
 
-  window.FB = { auth, googleProvider, signInWithEmailAndPassword, signInWithPopup };
+  window.FB = { auth, db, gp, ref, get, set, update,
+                signInWithEmailAndPassword, signInWithPopup };
 
-  // If already logged in, redirect to store
-  onAuthStateChanged(auth, (user) => {
+  /* Auto-redirect if already logged in */
+  onAuthStateChanged(auth, user => {
     if (user) {
-      const redirect = new URLSearchParams(window.location.search).get('redirect') || 'index.html';
-      window.location.href = redirect;
+      const redirect = new URLSearchParams(location.search).get('redirect') || 'index.html';
+      location.href = redirect;
     }
   });
 </script>
 
 <style>
-:root {
-  --accent: #1a1a2e; --accent-red: #e63946;
-  --border: #e8eaed; --surface2: #f7f8fa;
-  --text: #1a1a2e; --text2: #4a5568; --muted: #9ca3af;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,.06);
-  --shadow-md: 0 8px 24px rgba(0,0,0,.10);
-  --shadow-lg: 0 20px 60px rgba(0,0,0,.18);
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-body: 'Nunito', sans-serif;
-  --font-mono: 'Space Mono', monospace;
-}
+:root{--acc:#1a1a2e;--red:#e63946;--muted:#9ca3af;--ff:'Nunito',sans-serif;--fd:'Bebas Neue',sans-serif;--fm:'Space Mono',monospace}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body {
-  font-family: var(--font-body);
-  min-height: 100vh;
-  display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(145deg, #0a0a1a 0%, #1a1a2e 50%, #0f1a3e 100%);
-  position: relative; overflow: hidden; padding: 20px;
-}
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background:
-    radial-gradient(ellipse at 20% 80%, rgba(230,57,70,.18) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 20%, rgba(26,26,46,.25) 0%, transparent 55%);
-  pointer-events: none;
-}
-body::after {
-  content: 'JERSIFY';
-  position: fixed; bottom: -30px; right: -20px;
-  font-family: var(--font-display); font-size: 200px;
-  letter-spacing: 10px; color: rgba(255,255,255,.025);
-  pointer-events: none; user-select: none; z-index: 0;
-}
+body{font-family:var(--ff);min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,#0a0a1a,#1a1a2e,#0f1a3e);position:relative;overflow:hidden;padding:20px}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse at 20% 80%,rgba(230,57,70,.18) 0%,transparent 55%),
+  radial-gradient(ellipse at 80% 20%,rgba(26,26,46,.25) 0%,transparent 55%);pointer-events:none}
+body::after{content:'JERSIFY';position:fixed;bottom:-30px;right:-20px;font-family:var(--fd);font-size:200px;
+  letter-spacing:10px;color:rgba(255,255,255,.025);pointer-events:none;user-select:none;z-index:0}
 
-/* Back bar */
-.back-bar {
-  position: fixed; top: 0; left: 0; right: 0;
-  padding: 16px 28px;
-  display: flex; align-items: center; justify-content: space-between; z-index: 10;
-}
-.back-logo {
-  font-family: var(--font-display); font-size: 22px; letter-spacing: 3px;
-  color: rgba(255,255,255,.7); text-decoration: none;
-  display: flex; align-items: center; gap: 7px; transition: color .2s;
-}
-.back-logo:hover { color: #fff; }
-.back-logo-dot { width: 7px; height: 7px; background: var(--accent-red); border-radius: 50%; }
-.back-link {
-  font-size: 13px; font-weight: 700; color: rgba(255,255,255,.4);
-  text-decoration: none; transition: color .2s;
-}
-.back-link:hover { color: rgba(255,255,255,.8); }
+.back-bar{position:fixed;top:0;left:0;right:0;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;z-index:10}
+.back-logo{font-family:var(--fd);font-size:22px;letter-spacing:3px;color:rgba(255,255,255,.7);text-decoration:none;
+  display:flex;align-items:center;gap:7px;transition:color .2s}
+.back-logo:hover{color:#fff}
+.back-logo-dot{width:7px;height:7px;background:var(--red);border-radius:50%}
+.back-link{font-size:13px;font-weight:700;color:rgba(255,255,255,.4);text-decoration:none;transition:color .2s}
+.back-link:hover{color:rgba(255,255,255,.8)}
 
-/* Card */
-.card {
-  background: rgba(255,255,255,.04);
-  backdrop-filter: blur(24px);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 32px;
-  width: 100%; max-width: 460px;
-  box-shadow: 0 40px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.05);
-  overflow: hidden; position: relative; z-index: 1;
-  margin-top: 60px;
-  animation: slideUp .5s ease both;
-}
-@keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+.card{background:rgba(255,255,255,.04);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.1);
+  border-radius:32px;width:100%;max-width:460px;box-shadow:0 40px 80px rgba(0,0,0,.5);overflow:hidden;
+  position:relative;z-index:1;margin-top:60px;animation:slideUp .5s ease both}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 
-.card-top {
-  padding: 40px 40px 32px; color: #fff; text-align: center;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-}
-.card-icon {
-  width: 68px; height: 68px; border-radius: 18px;
-  background: linear-gradient(135deg, rgba(230,57,70,.3), rgba(230,57,70,.08));
-  border: 1px solid rgba(230,57,70,.3);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 30px; margin: 0 auto 18px;
-  box-shadow: 0 8px 24px rgba(230,57,70,.2);
-}
-.card-title { font-family: var(--font-display); font-size: 42px; letter-spacing: 5px; margin-bottom: 4px; }
-.card-sub { font-size: 12px; color: rgba(255,255,255,.4); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+.card-top{padding:40px 40px 32px;color:#fff;text-align:center;border-bottom:1px solid rgba(255,255,255,.08)}
+.card-icon{width:68px;height:68px;border-radius:18px;background:linear-gradient(135deg,rgba(230,57,70,.3),rgba(230,57,70,.08));
+  border:1px solid rgba(230,57,70,.3);display:flex;align-items:center;justify-content:center;
+  font-size:30px;margin:0 auto 18px;box-shadow:0 8px 24px rgba(230,57,70,.2)}
+.card-title{font-family:var(--fd);font-size:42px;letter-spacing:5px;margin-bottom:4px}
+.card-sub{font-size:12px;color:rgba(255,255,255,.4);font-weight:700;letter-spacing:2px;text-transform:uppercase}
 
-.card-body { padding: 32px 40px 40px; }
+.card-body{padding:32px 40px 40px}
+.fg{margin-bottom:18px}
+.fl{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);display:block;margin-bottom:7px;text-transform:uppercase;letter-spacing:1.5px}
+.fi{width:100%;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);color:#fff;
+  padding:13px 16px;font-family:var(--ff);font-size:14px;font-weight:600;border-radius:12px;transition:all .2s;outline:none}
+.fi:focus{border-color:rgba(230,57,70,.6);background:rgba(255,255,255,.09);box-shadow:0 0 0 3px rgba(230,57,70,.1)}
+.fi::placeholder{color:rgba(255,255,255,.25)}
 
-/* Form */
-.form-group { margin-bottom: 18px; }
-.form-label {
-  font-size: 11px; font-weight: 700; color: rgba(255,255,255,.5);
-  display: block; margin-bottom: 7px; text-transform: uppercase; letter-spacing: 1.5px;
-}
-.form-input {
-  width: 100%; background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.1);
-  color: #fff; padding: 13px 16px;
-  font-family: var(--font-body); font-size: 14px; font-weight: 600;
-  border-radius: 12px; transition: all .2s; outline: none;
-}
-.form-input:focus { border-color: rgba(230,57,70,.6); background: rgba(255,255,255,.09); box-shadow: 0 0 0 3px rgba(230,57,70,.1); }
-.form-input::placeholder { color: rgba(255,255,255,.25); }
+.forgot-row{text-align:right;margin:-10px 0 18px}
+.forgot-link{font-size:12px;font-weight:700;color:rgba(255,255,255,.4);text-decoration:none;transition:color .2s}
+.forgot-link:hover{color:rgba(255,255,255,.8)}
 
-.forgot-row { text-align: right; margin-top: -10px; margin-bottom: 18px; }
-.forgot-link { font-size: 12px; font-weight: 700; color: rgba(255,255,255,.4); text-decoration: none; transition: color .2s; }
-.forgot-link:hover { color: rgba(255,255,255,.8); }
+.sbtn{width:100%;padding:15px;background:linear-gradient(135deg,var(--red),#c0242f);color:#fff;border:none;
+  font-family:var(--ff);font-size:15px;font-weight:800;border-radius:14px;cursor:pointer;transition:all .25s;
+  box-shadow:0 8px 24px rgba(230,57,70,.3);letter-spacing:.5px;margin-bottom:16px}
+.sbtn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(230,57,70,.45)}
+.sbtn:disabled{opacity:.6;cursor:not-allowed;transform:none}
 
-.submit-btn {
-  width: 100%; padding: 15px;
-  background: linear-gradient(135deg, var(--accent-red), #c0242f);
-  color: #fff; border: none;
-  font-family: var(--font-body); font-size: 15px; font-weight: 800;
-  border-radius: 14px; cursor: pointer; transition: all .25s;
-  box-shadow: 0 8px 24px rgba(230,57,70,.3); letter-spacing: .5px; margin-bottom: 16px;
-}
-.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(230,57,70,.45); }
-.submit-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+.divider{text-align:center;position:relative;margin:14px 0}
+.divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(255,255,255,.08)}
+.divider span{position:relative;background:transparent;padding:0 12px;font-size:11px;color:rgba(255,255,255,.3);font-weight:700;text-transform:uppercase}
 
-.divider { text-align: center; position: relative; margin: 14px 0; }
-.divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: rgba(255,255,255,.08); }
-.divider span { position: relative; background: transparent; padding: 0 12px; font-size: 11px; color: rgba(255,255,255,.3); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.gbtn{width:100%;padding:13px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.8);font-family:var(--ff);font-size:14px;font-weight:700;border-radius:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
+.gbtn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
 
-.google-btn {
-  width: 100%; padding: 13px; background: rgba(255,255,255,.06);
-  border: 1.5px solid rgba(255,255,255,.12); color: rgba(255,255,255,.8);
-  font-family: var(--font-body); font-size: 14px; font-weight: 700;
-  border-radius: 14px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .2s;
-}
-.google-btn:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.2); }
+.err-msg{background:rgba(230,57,70,.12);border:1.5px solid rgba(230,57,70,.3);color:#ff6b75;padding:11px 15px;
+  font-size:13px;font-weight:600;border-radius:10px;margin-bottom:16px;display:none}
+.foot-row{text-align:center;margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,.07)}
+.foot-row span{font-size:14px;color:rgba(255,255,255,.4);font-weight:600}
+.foot-row a{font-size:14px;color:var(--red);font-weight:800;text-decoration:none}
+.foot-row a:hover{opacity:.8}
 
-.err-msg {
-  background: rgba(230,57,70,.12); border: 1.5px solid rgba(230,57,70,.3);
-  color: #ff6b75; padding: 11px 15px; font-size: 13px; font-weight: 600;
-  border-radius: 10px; margin-bottom: 16px; display: none;
-}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;
+  animation:spin .6s linear infinite;display:inline-block;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-.foot-row { text-align: center; margin-top: 22px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.07); }
-.foot-row span { font-size: 14px; color: rgba(255,255,255,.4); font-weight: 600; }
-.foot-row a { font-size: 14px; color: var(--accent-red); font-weight: 800; text-decoration: none; transition: opacity .2s; }
-.foot-row a:hover { opacity: .8; }
-
-/* Spinner */
-.spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; margin-right: 8px; }
-@keyframes spin { to{transform:rotate(360deg)} }
-
-/* Toast */
-.toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 9px; }
-.toast { background: var(--accent); color: #fff; border-radius: 13px; padding: 13px 18px; font-family: var(--font-body); font-size: 13px; font-weight: 700; box-shadow: var(--shadow-lg); min-width: 260px; display: flex; align-items: center; gap: 10px; animation: toastIn .3s ease both; }
-.toast.success { background: #10b981; }
-.toast.error { background: var(--accent-red); }
-@keyframes toastIn { from{opacity:0;transform:translateX(50px)} to{opacity:1;transform:translateX(0)} }
-@keyframes toastOut { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(50px)} }
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:9px}
+.toast{background:var(--acc);color:#fff;border-radius:13px;padding:13px 18px;font-family:var(--ff);font-size:13px;
+  font-weight:700;box-shadow:0 20px 60px rgba(0,0,0,.18);min-width:260px;display:flex;align-items:center;gap:10px;animation:tIn .3s ease both}
+.toast.success{background:#10b981}.toast.error{background:var(--red)}
+@keyframes tIn{from{opacity:0;transform:translateX(50px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(50px)}}
 </style>
 </head>
 <body>
@@ -206,45 +134,29 @@ body::after {
     <div class="card-sub">Sign in to your account</div>
   </div>
   <div class="card-body">
-
     <div id="errMsg" class="err-msg"></div>
 
-    <div class="form-group">
-      <label class="form-label">Email Address</label>
-      <input class="form-input" id="loginEmail" type="email" placeholder="you@email.com" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <div class="fg">
+      <label class="fl">Email Address</label>
+      <input class="fi" id="loginEmail" type="email" placeholder="you@email.com" onkeydown="if(event.key==='Enter')doLogin()"/>
     </div>
-    <div class="form-group">
-      <label class="form-label">Password</label>
-      <input class="form-input" id="loginPwd" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <div class="fg">
+      <label class="fl">Password</label>
+      <input class="fi" id="loginPwd" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
     </div>
+    <div class="forgot-row"><a class="forgot-link" href="#">Forgot password?</a></div>
 
-    <div class="forgot-row">
-      <a class="forgot-link" href="#">Forgot password?</a>
-    </div>
-
-    <button class="submit-btn" id="loginBtn" onclick="doLogin()">Login →</button>
-
+    <button class="sbtn" id="loginBtn" onclick="doLogin()">Login →</button>
     <div class="divider"><span>OR</span></div>
-
-    <button class="google-btn" onclick="doGoogleLogin()">
-      <svg width="18" height="18" viewBox="0 0 24 24">
-        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-      </svg>
+    <button class="gbtn" onclick="doGoogleLogin()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
       Continue with Google
     </button>
 
-    <div class="foot-row">
-      <span>Don't have an account? </span>
-      <a href="signup.html">Sign up →</a>
-    </div>
+    <div class="foot-row"><span>Don't have an account? </span><a href="signup.html">Sign up →</a></div>
     <div class="foot-row" style="margin-top:10px;border-top:none;padding-top:0">
-      <span>Admin? </span>
-      <a href="admin-login.html">Admin Panel →</a>
+      <span>Admin? </span><a href="admin-login.html">Admin Panel →</a>
     </div>
-
   </div>
 </div>
 
@@ -257,27 +169,25 @@ async function doLogin() {
   const errEl = document.getElementById('errMsg');
   const btn   = document.getElementById('loginBtn');
   errEl.style.display = 'none';
+  if (!email || !pass) { errEl.textContent='Please enter your email and password.'; errEl.style.display='block'; return; }
 
-  if (!email || !pass) { errEl.textContent = 'Please enter your email and password.'; errEl.style.display = 'block'; return; }
-
-  btn.innerHTML = '<span class="spinner"></span>Signing in...'; btn.disabled = true;
-
+  btn.innerHTML = '<span class="spinner"></span>Signing in…'; btn.disabled = true;
   try {
-    await FB.signInWithEmailAndPassword(FB.auth, email, pass);
-    showToast('Welcome back! Redirecting... 🔥', 'success');
-    // onAuthStateChanged will handle the redirect
+    const cred = await FB.signInWithEmailAndPassword(FB.auth, email, pass);
+    /* Update lastLogin in Realtime DB */
+    await FB.update(FB.ref(FB.db, `users/${cred.user.uid}`), { lastLogin: Date.now() });
+    showToast('Welcome back! 🔥', 'success');
+    /* onAuthStateChanged will redirect */
   } catch(e) {
     btn.innerHTML = 'Login →'; btn.disabled = false;
-    const code = e.code || '';
-    if (code.includes('user-not-found') || code.includes('wrong-password') || code.includes('invalid-credential')) {
+    const c = e.code || '';
+    if (c.includes('user-not-found') || c.includes('wrong-password') || c.includes('invalid-credential'))
       errEl.textContent = '⛔ Invalid email or password.';
-    } else if (code.includes('too-many-requests')) {
-      errEl.textContent = '⛔ Too many attempts. Please wait a moment and try again.';
-    } else if (code.includes('network-request-failed')) {
+    else if (c.includes('too-many-requests'))
+      errEl.textContent = '⛔ Too many attempts. Please wait a moment.';
+    else if (c.includes('network-request-failed'))
       errEl.textContent = '⛔ Network error. Check your connection.';
-    } else {
-      errEl.textContent = '⛔ ' + (e.message || 'Login failed. Try again.');
-    }
+    else errEl.textContent = '⛔ ' + (e.message || 'Login failed.');
     errEl.style.display = 'block';
   }
 }
@@ -286,22 +196,32 @@ async function doGoogleLogin() {
   const errEl = document.getElementById('errMsg');
   errEl.style.display = 'none';
   try {
-    await FB.signInWithPopup(FB.auth, FB.googleProvider);
+    const cred = await FB.signInWithPopup(FB.auth, FB.gp);
+    /* Write user to Realtime DB if new */
+    const snap = await FB.get(FB.ref(FB.db, `users/${cred.user.uid}`));
+    if (!snap.exists()) {
+      const np = (cred.user.displayName || '').split(' ');
+      await FB.set(FB.ref(FB.db, `users/${cred.user.uid}`), {
+        uid: cred.user.uid, firstName: np[0]||'', lastName: np.slice(1).join(' ')||'',
+        displayName: cred.user.displayName||'', email: cred.user.email,
+        photoURL: cred.user.photoURL||'', createdAt: Date.now(), lastLogin: Date.now()
+      });
+    } else {
+      await FB.update(FB.ref(FB.db, `users/${cred.user.uid}`), { lastLogin: Date.now() });
+    }
     showToast('Logged in with Google! 🚀', 'success');
-    // onAuthStateChanged will handle the redirect
   } catch(e) {
-    errEl.textContent = '⛔ Google sign-in failed. ' + (e.message || '');
+    errEl.textContent = '⛔ Google sign-in failed. ' + (e.message||'');
     errEl.style.display = 'block';
   }
 }
 
-function showToast(msg, type = '') {
-  const wrap = document.getElementById('toastWrap');
+function showToast(msg, type='') {
   const t = document.createElement('div');
-  t.className = `toast${type ? ' ' + type : ''}`;
-  t.innerHTML = `<span>${{success:'✅', error:'⚠️', '':'ℹ️'}[type] || 'ℹ️'}</span>${msg}`;
-  wrap.appendChild(t);
-  setTimeout(() => { t.style.animation = 'toastOut .3s ease both'; setTimeout(() => t.remove(), 300); }, 3000);
+  t.className = `toast${type?' '+type:''}`;
+  t.innerHTML = `<span>${{success:'✅',error:'⚠️','':'ℹ️'}[type]||'ℹ️'}</span>${msg}`;
+  document.getElementById('toastWrap').appendChild(t);
+  setTimeout(()=>{ t.style.animation='tOut .3s ease both'; setTimeout(()=>t.remove(),300); }, 3000);
 }
 </script>
 </body>
