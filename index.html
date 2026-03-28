@@ -712,7 +712,7 @@ footer{background:var(--accent);color:#fff;padding:56px 24px 28px;margin-top:56p
     <button class="nav-link" id="adminNavBtn" style="display:none" onclick="window.location.href='admin-login.html'">Admin</button>
   </div>
   <div class="nav-actions">
-    <div id="navAuthArea"><button class="nav-auth-btn" onclick="openModal('auth')">Login</button></div>
+    <div id="navAuthArea"><button class="nav-auth-btn" onclick="window.location.href='login.html'">Login</button></div>
     <button class="nav-icon-btn" onclick="toggleCart()">🛒<span class="cart-badge" id="cartBadge">0</span></button>
     <button class="mobile-toggle" onclick="toggleMobileNav()"><span></span><span></span><span></span></button>
   </div>
@@ -1105,36 +1105,6 @@ footer{background:var(--accent);color:#fff;padding:56px 24px 28px;margin-top:56p
   <div class="cart-foot" id="cartFoot"></div>
 </div>
 
-<!-- AUTH MODAL -->
-<div class="modal-overlay" id="authModal">
-  <div class="modal">
-    <div class="modal-top"><div class="modal-top-title">WELCOME</div><div class="modal-top-sub">Sign in or create your account</div></div>
-    <div class="modal-body">
-      <div class="modal-tabs">
-        <button class="modal-tab active" id="loginTab" onclick="switchAuthTab('login')">Login</button>
-        <button class="modal-tab" id="signupTab" onclick="switchAuthTab('signup')">Sign Up</button>
-      </div>
-      <div id="authErr" class="auth-err"></div>
-      <div id="loginForm">
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="loginEmail" type="email" placeholder="you@email.com"/></div>
-        <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPwd" type="password" placeholder="••••••••"/></div>
-        <button class="submit-btn" onclick="doLogin()">Login →</button>
-        <div class="divider"><span>OR</span></div>
-        <button class="google-btn" onclick="doGoogleLogin()"><svg width="17" height="17" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Continue with Google</button>
-        <div style="text-align:center;margin-top:13px"><span style="font-size:12px;color:var(--muted);font-weight:600">Admin? </span><a style="font-size:12px;color:var(--accent);font-weight:700;cursor:pointer" onclick="closeModal('auth');window.location.href='admin-login.html'">Admin Panel →</a></div>
-      </div>
-      <div id="signupForm" style="display:none">
-        <div class="form-group"><label class="form-label">Display Name</label><input class="form-input" id="signupName" placeholder="Your name"/></div>
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="signupEmail" type="email" placeholder="you@email.com"/></div>
-        <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="signupPwd" type="password" placeholder="Min 6 characters"/></div>
-        <button class="submit-btn" onclick="doSignup()">Create Account →</button>
-        <div class="divider"><span>OR</span></div>
-        <button class="google-btn" onclick="doGoogleLogin()"><svg width="17" height="17" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Continue with Google</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- ADD PRODUCT MODAL -->
 <div class="modal-overlay" id="addProductModal">
   <div class="add-prod-modal">
@@ -1199,7 +1169,7 @@ footer{background:var(--accent);color:#fff;padding:56px 24px 28px;margin-top:56p
       </div>
       <div>
         <p class="footer-col-title">Account</p>
-        <a class="footer-link" onclick="openModal('auth')">Login / Sign Up</a>
+        <a class="footer-link" onclick="window.location.href='login.html'">Login / Sign Up</a>
         <a class="footer-link" onclick="navigate('orders')">Track Order</a>
         <a class="footer-link" onclick="navigate('profile')">My Profile</a>
         <a class="footer-link" href="admin-login.html">Admin Panel</a>
@@ -1529,38 +1499,8 @@ function trackOrder(){
 }
 
 // ═════════════════════════════════
-//  AUTH
+//  AUTH — sign out only (login/signup are separate pages)
 // ═════════════════════════════════
-function switchAuthTab(tab){
-  document.getElementById('loginForm').style.display=tab==='login'?'block':'none';
-  document.getElementById('signupForm').style.display=tab==='signup'?'block':'none';
-  document.getElementById('loginTab').classList.toggle('active',tab==='login');
-  document.getElementById('signupTab').classList.toggle('active',tab==='signup');
-  document.getElementById('authErr').style.display='none';
-}
-function showAuthErr(msg){ const e=document.getElementById('authErr'); e.textContent=msg; e.style.display='block'; }
-async function doLogin(){
-  const email=document.getElementById('loginEmail').value;
-  const pass=document.getElementById('loginPwd').value;
-  if(!email||!pass){showAuthErr('Enter email and password');return;}
-  try{ await APP.signInWithEmailAndPassword(APP.auth,email,pass); closeModal('auth'); showToast('Welcome back! 🔥','success'); }
-  catch(e){ showAuthErr('Invalid email or password.'); }
-}
-async function doSignup(){
-  const name=document.getElementById('signupName').value;
-  const email=document.getElementById('signupEmail').value;
-  const pass=document.getElementById('signupPwd').value;
-  if(!email||!pass){showAuthErr('Enter all fields');return;}
-  try{
-    await APP.createUserWithEmailAndPassword(APP.auth,email,pass);
-    try{ const u=APP.auth.currentUser; await APP.setDoc(APP.doc(APP.db,'users',u.uid),{name,email,uid:u.uid,createdAt:new Date().toISOString()}); }catch(e2){}
-    closeModal('auth'); showToast('Account created! Welcome 🎉','success');
-  }catch(e){ showAuthErr(e.message.replace('Firebase: ','')); }
-}
-async function doGoogleLogin(){
-  try{ await APP.signInWithPopup(APP.auth,APP.googleProvider); closeModal('auth'); showToast('Logged in with Google! 🚀','success'); }
-  catch(e){ showAuthErr('Google sign-in failed. Try again.'); }
-}
 async function doSignOut(){
   try{await APP.signOut(APP.auth);}catch(e){}
   navigate('home'); showToast('Signed out. See you soon! 👋');
@@ -1574,17 +1514,16 @@ window.renderAuthState=function(){
     area.innerHTML=`<button class="nav-auth-btn" onclick="navigate('profile')">${i} · Profile</button>`;
     if(adminBtn) adminBtn.style.display=APP.isAdmin?'block':'none';
   } else {
-    area.innerHTML=`<button class="nav-auth-btn" onclick="openModal('auth')">Login</button>`;
+    area.innerHTML=`<button class="nav-auth-btn" onclick="window.location.href='login.html'">Login</button>`;
     if(adminBtn) adminBtn.style.display='none';
   }
 };
 
 // ═════════════════════════════════
-//  MODALS
+//  MODALS (add product only)
 // ═════════════════════════════════
-function openModal(name){ document.getElementById(name==='auth'?'authModal':'addProductModal').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeModal(name){ document.getElementById(name==='auth'?'authModal':'addProductModal').classList.remove('open'); document.body.style.overflow=''; }
-document.getElementById('authModal').addEventListener('click',e=>{if(e.target===document.getElementById('authModal'))closeModal('auth');});
+function openModal(name){ document.getElementById('addProductModal').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(name){ document.getElementById('addProductModal').classList.remove('open'); document.body.style.overflow=''; }
 document.getElementById('addProductModal').addEventListener('click',e=>{if(e.target===document.getElementById('addProductModal'))closeModal('addProduct');});
 
 // ═════════════════════════════════
@@ -1615,7 +1554,7 @@ function addProductFromModal(){
 // ═════════════════════════════════
 function renderProfile(){
   const user=APP.user;
-  if(!user){navigate('home');openModal('auth');return;}
+  if(!user){window.location.href='login.html';return;}
   const i=(user.displayName||user.email||'?')[0].toUpperCase();
   document.getElementById('profileAvatar').textContent=i;
   document.getElementById('profileName').textContent=user.displayName||'JERSIFY USER';
