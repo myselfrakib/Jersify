@@ -690,11 +690,11 @@ footer{background:var(--accent);color:#fff;padding:56px 24px 28px;margin-top:56p
 <div class="promo-strip">
   <div class="promo-inner">
     <span>🔥 NEW DROP EVERY FRIDAY</span><span class="promo-dot"></span>
-    <span>FREE SHIPPING OVER £150</span><span class="promo-dot"></span>
+    <span>FREE SHIPPING OVER ₹150</span><span class="promo-dot"></span>
     <span>100% AUTHENTIC KITS</span><span class="promo-dot"></span>
     <span>JERSIFY × STREETWEAR COLLAB OUT NOW</span><span class="promo-dot"></span>
     <span>🔥 NEW DROP EVERY FRIDAY</span><span class="promo-dot"></span>
-    <span>FREE SHIPPING OVER £150</span><span class="promo-dot"></span>
+    <span>FREE SHIPPING OVER ₹150</span><span class="promo-dot"></span>
     <span>100% AUTHENTIC KITS</span><span class="promo-dot"></span>
     <span>JERSIFY × STREETWEAR COLLAB OUT NOW</span><span class="promo-dot"></span>
   </div>
@@ -754,7 +754,7 @@ footer{background:var(--accent);color:#fff;padding:56px 24px 28px;margin-top:56p
             <div class="hero-dot"></div><div class="hero-dot"></div>
           </div>
           <div class="hero-price-row">
-            <div class="hero-price">£220</div>
+            <div class="hero-price">₹220</div>
             <div class="hero-sizes">
               <div class="size-chip">S</div><div class="size-chip">M</div>
               <div class="size-chip active">L</div><div class="size-chip">XL</div>
@@ -1003,7 +1003,7 @@ footer{background:var(--accent);color:#fff;padding:56px 24px 28px;margin-top:56p
               <div style="font-size:12px;color:var(--muted);font-weight:600">Pay when your order arrives. Additional ₹50 COD charge applies.</div>
             </div>
           </div>
-          <button class="place-order-btn" onclick="placeOrder()">Place Order — <span id="co_total">£0</span></button>
+          <button class="place-order-btn" onclick="placeOrder()">Place Order — <span id="co_total">₹0</span></button>
         </div>
       </div>
       <div>
@@ -1011,11 +1011,11 @@ footer{background:var(--accent);color:#fff;padding:56px 24px 28px;margin-top:56p
           <p class="order-sum-title">ORDER SUMMARY</p>
           <div id="orderSummaryItems"></div>
           <div style="margin-top:10px">
-            <div class="order-sum-item"><span>Subtotal</span><span id="sum_sub">£0</span></div>
+            <div class="order-sum-item"><span>Subtotal</span><span id="sum_sub">₹0</span></div>
             <div class="order-sum-item"><span>Shipping</span><span style="color:#10b981;font-weight:800">FREE</span></div>
-            <div class="order-sum-item"><span>Tax (8%)</span><span id="sum_tax">£0</span></div>
+            <div class="order-sum-item"><span>Tax (8%)</span><span id="sum_tax">₹0</span></div>
           </div>
-          <div class="order-sum-total"><span class="order-sum-total-lbl">TOTAL</span><span class="order-sum-total-val" id="sum_total">£0</span></div>
+          <div class="order-sum-total"><span class="order-sum-total-lbl">TOTAL</span><span class="order-sum-total-val" id="sum_total">₹0</span></div>
         </div>
       </div>
     </div>
@@ -1082,7 +1082,7 @@ footer{background:var(--accent);color:#fff;padding:56px 24px 28px;margin-top:56p
       <div class="detail-stars">★★★★★ <span style="font-size:12px;color:var(--muted)" id="detailRatingInfo">4.8 (234 reviews)</span></div>
       <div class="detail-price-row">
         <span class="detail-price" id="detailPrice">0</span>
-        <span style="font-size:22px;color:var(--muted)">£</span>
+        <span style="font-size:22px;color:var(--muted)">₹</span>
         <span class="detail-original hidden" id="detailOriginal"></span>
         <span class="detail-disc hidden" id="detailDisc"></span>
       </div>
@@ -1143,7 +1143,7 @@ footer{background:var(--accent);color:#fff;padding:56px 24px 28px;margin-top:56p
       <div class="form-group"><label class="form-label">Jersey Name</label><input class="form-input" id="ap_name" placeholder="e.g. FC VOID #00"/></div>
       <div class="form-group"><label class="form-label">Team / Edition</label><input class="form-input" id="ap_team" placeholder="e.g. Null FC"/></div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Price (£)</label><input class="form-input" id="ap_price" type="number" placeholder="199"/></div>
+        <div class="form-group"><label class="form-label">Price (₹)</label><input class="form-input" id="ap_price" type="number" placeholder="199"/></div>
         <div class="form-group"><label class="form-label">Original Price</label><input class="form-input" id="ap_origprice" type="number" placeholder="240 (optional)"/></div>
       </div>
       <div class="form-row">
@@ -1287,7 +1287,7 @@ function renderProductCard(p, container){
       <div class="product-name">${p.name}</div>
       <div class="product-team">${p.team}</div>
       <div class="product-bottom">
-        <div class="product-price">£${p.price}${p.originalPrice?`<span>£${p.originalPrice}</span>`:''}</div>
+        <div class="product-price">₹${p.price}${p.originalPrice?`<span>₹${p.originalPrice}</span>`:''}</div>
         <button class="add-btn" onclick="event.stopPropagation();addToCart('${p.id}')">Add</button>
       </div>
     </div>`;
@@ -1351,7 +1351,7 @@ function openDetailModal(p){
   const orig=document.getElementById('detailOriginal');
   const disc=document.getElementById('detailDisc');
   if(p.originalPrice){
-    orig.textContent='£'+p.originalPrice; orig.classList.remove('hidden');
+    orig.textContent='₹'+p.originalPrice; orig.classList.remove('hidden');
     disc.textContent=`-${Math.round((1-p.price/p.originalPrice)*100)}%`; disc.classList.remove('hidden');
   } else { orig.classList.add('hidden'); disc.classList.add('hidden'); }
   const stockEl=document.getElementById('detailStock');
@@ -1413,13 +1413,13 @@ function renderCart(){
         </div>
       </div>
       <div class="cart-item-right">
-        <span class="cart-item-price">£${(item.price*item.qty).toFixed(0)}</span>
+        <span class="cart-item-price">₹${(item.price*item.qty).toFixed(0)}</span>
         <button class="remove-btn" onclick="removeItem(${i})">🗑</button>
       </div>
     </div>`).join('');
   const sub=APP.cart.reduce((s,i)=>s+i.price*i.qty,0);
   foot.innerHTML=`
-    <div class="cart-total-row"><span class="cart-total-lbl">TOTAL</span><span class="cart-total-val">£${sub.toFixed(0)}</span></div>
+    <div class="cart-total-row"><span class="cart-total-lbl">TOTAL</span><span class="cart-total-val">₹${sub.toFixed(0)}</span></div>
     <button class="cart-checkout-btn" onclick="toggleCart();navigate('checkout')">Checkout →</button>
     <button class="cart-continue-btn" onclick="toggleCart();navigate('shop')">Continue Shopping</button>`;
 }
@@ -1448,13 +1448,13 @@ function verifyUpi(){
 // ═════════════════════════════════
 function renderCheckout(){
   const items=document.getElementById('orderSummaryItems'); if(!items) return;
-  items.innerHTML=APP.cart.map(i=>`<div class="order-sum-item"><span>${i.name} × ${i.qty} (${i.size})</span><span>£${(i.price*i.qty).toFixed(0)}</span></div>`).join('');
+  items.innerHTML=APP.cart.map(i=>`<div class="order-sum-item"><span>${i.name} × ${i.qty} (${i.size})</span><span>₹${(i.price*i.qty).toFixed(0)}</span></div>`).join('');
   const sub=APP.cart.reduce((s,i)=>s+i.price*i.qty,0);
   const tax=sub*.08;
-  document.getElementById('sum_sub').textContent='£'+sub.toFixed(0);
-  document.getElementById('sum_tax').textContent='£'+tax.toFixed(0);
-  document.getElementById('sum_total').textContent='£'+(sub+tax).toFixed(0);
-  document.getElementById('co_total').textContent='£'+(sub+tax).toFixed(0);
+  document.getElementById('sum_sub').textContent='₹'+sub.toFixed(0);
+  document.getElementById('sum_tax').textContent='₹'+tax.toFixed(0);
+  document.getElementById('sum_total').textContent='₹'+(sub+tax).toFixed(0);
+  document.getElementById('co_total').textContent='₹'+(sub+tax).toFixed(0);
   if(APP.user){ document.getElementById('co_email').value=APP.user.email||''; document.getElementById('co_name').value=APP.user.displayName||''; }
 }
 function formatCard(el){ let v=el.value.replace(/\D/g,'').substring(0,16); el.value=v.replace(/(.{4})/g,'$1 ').trim(); }
@@ -1499,7 +1499,7 @@ function renderOrders(){
       <div class="order-items-txt">${o.items.map(i=>`${i.name} × ${i.qty} (${i.size})`).join(' · ')}</div>
       <div class="order-price-row">
         <button class="track-ship-btn" onclick="showTrackSteps('${o.orderId}','${o.status}')">Track Shipment →</button>
-        <span style="font-family:var(--font-display);font-size:22px">£${o.total}</span>
+        <span style="font-family:var(--font-display);font-size:22px">₹${o.total}</span>
       </div>
     </div>`).join('');
 }
