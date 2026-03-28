@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JERSIFY — Admin Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
+    authDomain: "jersify-f9b5e.firebaseapp.com",
+    databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com",
+    projectId: "jersify-f9b5e",
+    storageBucket: "jersify-f9b5e.firebasestorage.app",
+    messagingSenderId: "461181023878",
+    appId: "1:461181023878:web:6ebfbae603baf4a873c307",
+    measurementId: "G-V5E7D09PJ0"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getDatabase(app);
+  const googleProvider = new GoogleAuthProvider();
+
+  window.FB = { auth, db, googleProvider, ref, get, set, update, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, signInWithPopup };
+
+  // Flag: true while doAddAdmin() is running — suppresses the auth redirect
+  window._creatingAdmin = false;
+
+  // If already logged in as admin, redirect straight to dashboard
+  // BUT skip this check while we are in the middle of creating a new admin account
+  onAuthStateChanged(auth, async (user) => {
+    if (window._creatingAdmin) return;
+    if (user) {
+      try {
+        const snap = await get(ref(db, `admins/${user.uid}`));
+        if (snap.exists() && snap.val().status === true) {
+          window.location.href = 'admin-dashboard.html';
+        }
+      } catch(e) {}
+    }
+  });
+</script>
+
+<style>
+:root {
+  --accent: #1a1a2e;
+  --accent-red: #e63946;
+  --accent-gold: #f59e0b;
+  --muted: #9ca3af;
+  --border: #e8eaed;
+  --surface2: #f7f8fa;
+  --text: #1a1a2e;
+  --text2: #4a5568;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.10);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.14);
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Nunito', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(145deg, #0a0a1a 0%, #1a1a2e 50%, #0f1a3e 100%);
+  position: relative; overflow: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 20% 80%, rgba(230,57,70,0.15) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 20%, rgba(37,99,235,0.12) 0%, transparent 50%);
+  pointer-events: none;
+}
+body::after {
+  content: 'JERSIFY';
+  position: fixed; bottom: -20px; right: -20px;
+  font-family: var(--font-display); font-size: 220px;
+  letter-spacing: 10px; color: rgba(255,255,255,0.025);
+  pointer-events: none; user-select: none; z-index: 0;
+}
+
+/* Back link */
+.back-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  padding: 16px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  z-index: 10;
+}
+.back-link {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-display); font-size: 22px; letter-spacing: 3px;
+  color: rgba(255,255,255,0.7); text-decoration: none; transition: color .2s;
+}
+.back-link:hover { color: white; }
+.back-link-dot { width: 7px; height: 7px; background: var(--accent-red); border-radius: 50%; }
+
+/* Card */
+.admin-card {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 32px;
+  width: 100%; max-width: 500px;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+  overflow: hidden; position: relative; z-index: 1;
+  margin: 80px 20px 40px;
+}
+
+/* Card top */
+.card-top {
+  padding: 44px 44px 36px;
+  color: white; text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.lock-icon {
+  width: 72px; height: 72px; border-radius: 20px;
+  background: linear-gradient(135deg, rgba(230,57,70,0.3), rgba(230,57,70,0.08));
+  border: 1px solid rgba(230,57,70,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; margin: 0 auto 20px;
+  box-shadow: 0 8px 24px rgba(230,57,70,0.2);
+}
+.card-title { font-family: var(--font-display); font-size: 44px; letter-spacing: 6px; color: white; margin-bottom: 4px; }
+.card-sub { font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+
+/* Card body */
+.card-body { padding: 36px 44px 44px; }
+
+/* Tabs */
+.tab-row {
+  display: flex;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 4px; margin-bottom: 32px;
+}
+.tab-btn {
+  flex: 1; padding: 11px; border: none; background: none;
+  font-family: var(--font-body); font-size: 13px; font-weight: 700;
+  color: rgba(255,255,255,0.4); cursor: pointer; border-radius: 11px; transition: all .25s;
+}
+.tab-btn.active {
+  background: rgba(255,255,255,0.1); color: white;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Form elements */
+.form-group { margin-bottom: 18px; }
+.form-label {
+  font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5);
+  display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1.5px;
+}
+.form-input {
+  width: 100%; background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.1);
+  color: white; padding: 13px 16px; font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  border-radius: 12px; transition: all .2s; outline: none;
+}
+.form-input:focus { border-color: rgba(230,57,70,0.6); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px rgba(230,57,70,0.1); }
+.form-input::placeholder { color: rgba(255,255,255,0.25); }
+select.form-input option { background: #1a1a2e; color: white; }
+
+.submit-btn {
+  width: 100%; padding: 15px;
+  background: linear-gradient(135deg, var(--accent-red), #c0242f);
+  color: white; border: none;
+  font-family: var(--font-body); font-size: 15px; font-weight: 800;
+  border-radius: 14px; cursor: pointer; transition: all .25s;
+  box-shadow: 0 8px 24px rgba(230,57,70,0.3); letter-spacing: 0.5px; margin-bottom: 16px;
+}
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(230,57,70,0.45); }
+.submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.google-btn {
+  width: 100%; padding: 13px; background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.8);
+  font-family: var(--font-body); font-size: 14px; font-weight: 700;
+  border-radius: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .2s;
+}
+.google-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+
+.divider { text-align: center; position: relative; margin: 16px 0; }
+.divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.08); }
+.divider span { position: relative; background: transparent; padding: 0 12px; font-size: 11px; color: rgba(255,255,255,0.3); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+
+.err-msg {
+  background: rgba(230,57,70,0.12); border: 1.5px solid rgba(230,57,70,0.3);
+  color: #ff6b75; padding: 11px 16px; font-size: 13px; font-weight: 600;
+  border-radius: 10px; margin-bottom: 16px; display: none;
+}
+.success-msg {
+  background: rgba(16,185,129,0.12); border: 1.5px solid rgba(16,185,129,0.3);
+  color: #34d399; padding: 11px 16px; font-size: 13px; font-weight: 600;
+  border-radius: 10px; margin-bottom: 16px; display: none;
+}
+
+/* Status toggle */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; margin-bottom: 20px;
+}
+.toggle-label { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); }
+.toggle-sub { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+.toggle-right { display: flex; align-items: center; gap: 10px; }
+.toggle-switch { position: relative; width: 50px; height: 28px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; inset: 0; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; transition: .3s; }
+.toggle-slider::before { content: ''; position: absolute; height: 20px; width: 20px; left: 4px; bottom: 4px; background: rgba(255,255,255,0.5); border-radius: 50%; transition: .3s; }
+.toggle-switch input:checked + .toggle-slider { background: rgba(230,57,70,0.5); border-color: rgba(230,57,70,0.5); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(22px); background: white; }
+.status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; }
+.badge-active { background: rgba(16,185,129,0.15); color: #34d399; border: 1.5px solid rgba(16,185,129,0.3); }
+.badge-inactive { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.35); border: 1.5px solid rgba(255,255,255,0.1); }
+
+/* Note box */
+.note-box {
+  background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+  border-left: 3px solid var(--accent-gold); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+}
+.note-title { font-size: 12px; font-weight: 700; color: var(--accent-gold); margin-bottom: 4px; }
+.note-text { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 600; line-height: 1.6; }
+
+/* Footer link */
+.foot-link { text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); }
+.foot-link span { font-size: 13px; color: rgba(255,255,255,0.3); font-weight: 600; }
+.foot-link a { font-size: 13px; color: rgba(255,255,255,0.65); font-weight: 700; cursor: pointer; transition: color .2s; text-decoration: none; }
+.foot-link a:hover { color: white; }
+
+/* Spinner */
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Toast */
+.toast-wrap { position: fixed; bottom: 28px; right: 28px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: #1a1a2e; color: white; border-radius: 14px; padding: 14px 20px; font-family: var(--font-body); font-size: 14px; font-weight: 700; box-shadow: var(--shadow-lg); min-width: 260px; display: flex; align-items: center; gap: 12px; animation: toastIn .3s ease both; }
+.toast.success { background: #10b981; }
+.toast.error { background: var(--accent-red); }
+@keyframes toastIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(50px); } }
+</style>
+</head>
+<body>
+
+<!-- Back bar -->
+<div class="back-bar">
+  <a class="back-link" href="index.html">
+    <div class="back-link-dot"></div>JERSIFY
+  </a>
+  <a href="index.html" style="font-size:13px;color:rgba(255,255,255,0.4);font-weight:700;text-decoration:none;transition:color .2s" onmouseover="this.style.color='rgba(255,255,255,0.8)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">&#8592; Back to Store</a>
+</div>
+
+<!-- Admin Card -->
+<div class="admin-card">
+
+  <div class="card-top">
+    <div class="lock-icon">🔐</div>
+    <div class="card-title">ADMIN</div>
+    <div class="card-sub">Restricted Access Panel</div>
+  </div>
+
+  <div class="card-body">
+    <!-- Tabs -->
+    <div class="tab-row">
+      <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+      <button class="tab-btn" id="tabAdd" onclick="switchTab('add')">Add Admin</button>
+    </div>
+
+    <!-- ===== LOGIN FORM ===== -->
+    <div id="formLogin">
+      <div class="err-msg" id="loginErr"></div>
+
+      <div class="form-group">
+        <label class="form-label">Admin Email</label>
+        <input class="form-input" id="loginEmail" type="email" placeholder="admin@jersify.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="loginPassword" type="password" placeholder="••••••••"
+          onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+
+      <button class="submit-btn" id="loginBtn" onclick="doLogin()">Access Dashboard →</button>
+
+      <div class="divider"><span>or continue with</span></div>
+
+      <button class="google-btn" onclick="doGoogleLogin()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="foot-link">
+        <span>Not an admin? </span>
+        <a href="index.html">Back to store →</a>
+      </div>
+    </div>
+
+    <!-- ===== ADD ADMIN FORM ===== -->
+    <div id="formAdd" style="display:none">
+      <div class="err-msg" id="addErr"></div>
+      <div class="success-msg" id="addSuccess"></div>
+
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input class="form-input" id="newName" placeholder="Admin's full name"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" id="newEmail" type="email" placeholder="admin@jersify.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="newPassword" type="password" placeholder="Min. 6 characters"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Role</label>
+        <select class="form-input" id="newRole">
+          <option value="Admin">Admin</option>
+          <option value="Super Admin">Super Admin</option>
+          <option value="Moderator">Moderator</option>
+        </select>
+      </div>
+
+      <!-- Status Toggle -->
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Activate Immediately</div>
+          <div class="toggle-sub">Grant dashboard access on creation</div>
+        </div>
+        <div class="toggle-right">
+          <span class="status-badge badge-inactive" id="statusBadge">● Inactive</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="statusToggle" onchange="updateBadge(this)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="note-box">
+        <div class="note-title">⚠️ Security Notice</div>
+        <div class="note-text">
+          New admins are created with <strong>status: false</strong> by default unless toggled on.
+          Inactive admins cannot access the dashboard and are blocked on login.
+          Only super admins can activate or remove admin accounts from the dashboard.
+        </div>
+      </div>
+
+      <button class="submit-btn" id="addBtn" onclick="doAddAdmin()">Create Admin Account →</button>
+
+      <div class="foot-link">
+        <span>Already an admin? </span>
+        <a onclick="switchTab('login')">Sign in instead →</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+function switchTab(tab) {
+  document.getElementById('formLogin').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('formAdd').style.display = tab === 'add' ? 'block' : 'none';
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabAdd').classList.toggle('active', tab === 'add');
+}
+
+function updateBadge(cb) {
+  const b = document.getElementById('statusBadge');
+  b.textContent = cb.checked ? '● Active' : '● Inactive';
+  b.className = 'status-badge ' + (cb.checked ? 'badge-active' : 'badge-inactive');
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginErr');
+  const btn   = document.getElementById('loginBtn');
+  errEl.style.display = 'none';
+
+  if (!email || !pass) { errEl.textContent = 'Please enter your email and password.'; errEl.style.display = 'block'; return; }
+
+  btn.innerHTML = '<span class="spinner"></span>Verifying...'; btn.disabled = true;
+
+  try {
+    const cred = await FB.signInWithEmailAndPassword(FB.auth, email, pass);
+    /* Check /admins/{uid} in Realtime DB */
+    const snap = await FB.get(FB.ref(FB.db, `admins/${cred.user.uid}`));
+    if (!snap.exists()) {
+      await FB.signOut(FB.auth); btn.innerHTML='Access Dashboard →'; btn.disabled=false;
+      errEl.textContent='⛔ No admin record found. Contact a super admin.'; errEl.style.display='block'; return;
+    }
+    if (snap.val().status !== true) {
+      await FB.signOut(FB.auth); btn.innerHTML='Access Dashboard →'; btn.disabled=false;
+      errEl.textContent='⛔ Admin account inactive. Contact a super admin.'; errEl.style.display='block'; return;
+    }
+    /* Update lastLogin */
+    await FB.update(FB.ref(FB.db, `admins/${cred.user.uid}`), {lastLogin: Date.now()});
+    showToast('Access granted! Redirecting... 🔐', 'success');
+    setTimeout(()=>{ window.location.href='admin-dashboard.html'; }, 800);
+
+  } catch(e) {
+    btn.innerHTML = 'Access Dashboard →'; btn.disabled = false;
+    const code = e.code || '';
+    if (code.includes('user-not-found') || code.includes('wrong-password') || code.includes('invalid-credential')) {
+      errEl.textContent = '⛔ Invalid email or password.';
+    } else {
+      errEl.textContent = '⛔ ' + (e.message || 'Login failed. Try again.');
+    }
+    errEl.style.display = 'block';
+  }
+}
+
+async function doGoogleLogin() {
+  const errEl = document.getElementById('loginErr');
+  errEl.style.display = 'none';
+  try {
+    const cred = await FB.signInWithPopup(FB.auth, FB.googleProvider);
+    const snap = await FB.get(FB.ref(FB.db, `admins/${cred.user.uid}`));
+    if (!snap.exists()) { await FB.signOut(FB.auth); errEl.textContent='⛔ No admin record for this Google account.'; errEl.style.display='block'; return; }
+    if (snap.val().status!==true) { await FB.signOut(FB.auth); errEl.textContent='⛔ Admin account inactive.'; errEl.style.display='block'; return; }
+    await FB.update(FB.ref(FB.db,`admins/${cred.user.uid}`),{lastLogin:Date.now()});
+    showToast('Access granted! Redirecting... 🔐','success');
+    setTimeout(()=>{window.location.href='admin-dashboard.html';},800);
+  } catch(e) {
+    errEl.textContent = '⛔ Google sign-in failed. ' + (e.message || '');
+    errEl.style.display = 'block';
+  }
+}
+
+async function doAddAdmin() {
+  const name   = document.getElementById('newName').value.trim();
+  const email  = document.getElementById('newEmail').value.trim();
+  const pass   = document.getElementById('newPassword').value;
+  const role   = document.getElementById('newRole').value;
+  const status = document.getElementById('statusToggle').checked;
+  const errEl  = document.getElementById('addErr');
+  const succEl = document.getElementById('addSuccess');
+  const btn    = document.getElementById('addBtn');
+  errEl.style.display = 'none'; succEl.style.display = 'none';
+
+  if (!name || !email || !pass) { errEl.textContent = 'All fields are required.'; errEl.style.display = 'block'; return; }
+  if (pass.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.style.display = 'block'; return; }
+
+  btn.innerHTML = '<span class="spinner"></span>Creating...'; btn.disabled = true;
+
+  // ── FIX 1: Set flag BEFORE createUser so onAuthStateChanged doesn't
+  //           redirect us away while we're still writing the Firestore doc
+  window._creatingAdmin = true;
+
+  let newUid = null;
+
+  try {
+    // Step 1 — Create Firebase Auth account
+    const cred = await FB.createUserWithEmailAndPassword(FB.auth, email, pass);
+    newUid = cred.user.uid;
+
+    // ── FIX 2: Write Firestore doc IMMEDIATELY after getting the UID,
+    //           BEFORE calling signOut — otherwise signOut fires onAuthStateChanged
+    //           which can interrupt the write mid-flight
+    /* Write admin record to Realtime DB → /admins/{uid} */
+    await FB.set(FB.ref(FB.db, `admins/${newUid}`), {
+      uid: newUid, name, email, role,
+      status,           /* false by default unless toggled */
+      createdAt: Date.now(), lastLogin: null
+    });
+
+    // Step 3 — Now it's safe to sign out the newly created account
+    await FB.signOut(FB.auth);
+
+    // Step 4 — Clear flag so normal auth redirect resumes
+    window._creatingAdmin = false;
+
+    // Reset form
+    document.getElementById('newName').value = '';
+    document.getElementById('newEmail').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('statusToggle').checked = false;
+    updateBadge({ checked: false });
+
+    btn.innerHTML = 'Create Admin Account →'; btn.disabled = false;
+    succEl.textContent = `✅ Admin "${name}" created! Status: ${status ? 'Active — can login now.' : 'Inactive — needs activation in dashboard.'}`;
+    succEl.style.display = 'block';
+    showToast(`Admin "${name}" created ${status ? '✅ Active' : '⛔ Inactive'}`, 'success');
+
+    setTimeout(() => { succEl.style.display = 'none'; switchTab('login'); }, 3000);
+
+  } catch(e) {
+    // ── FIX 3: Always clear the flag on error so the page doesn't get stuck
+    window._creatingAdmin = false;
+
+    // If Auth account was created but Firestore write failed,
+    // try to delete the orphaned Auth account so it can be retried cleanly
+    if (newUid) {
+      try { await FB.auth.currentUser?.delete(); } catch(_) {}
+    }
+
+    btn.innerHTML = 'Create Admin Account →'; btn.disabled = false;
+    const code = e.code || '';
+    if (code.includes('email-already-in-use')) {
+      errEl.textContent = '⛔ This email is already registered as a user.';
+    } else if (code.includes('invalid-email')) {
+      errEl.textContent = '⛔ Invalid email address format.';
+    } else if (code.includes('weak-password')) {
+      errEl.textContent = '⛔ Password is too weak. Use at least 6 characters.';
+    } else if (code.includes('network-request-failed')) {
+      errEl.textContent = '⛔ Network error. Check your connection and try again.';
+    } else if (code.includes('permission-denied')) {
+      errEl.textContent = '⛔ Firestore permission denied. Check your Firebase security rules — admins collection must be writable.';
+    } else {
+      errEl.textContent = '⛔ ' + (e.message || 'Failed to create admin. Try again.');
+    }
+    errEl.style.display = 'block';
+  }
+}
+
+function showToast(msg, type = '') {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = `toast${type ? ' ' + type : ''}`;
+  t.innerHTML = `<span>${{success:'✅',error:'⚠️','':'ℹ️'}[type]||'ℹ️'}</span>${msg}`;
+  wrap.appendChild(t);
+  setTimeout(() => { t.style.animation = 'toastOut .3s ease both'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+</script>
+</body>
+</html>
