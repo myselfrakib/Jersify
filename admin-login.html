@@ -31,8 +31,13 @@
 
   window.FB = { auth, db, googleProvider, doc, setDoc, getDoc, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, signInWithPopup };
 
+  // Flag: true while doAddAdmin() is running — suppresses the auth redirect
+  window._creatingAdmin = false;
+
   // If already logged in as admin, redirect straight to dashboard
+  // BUT skip this check while we are in the middle of creating a new admin account
   onAuthStateChanged(auth, async (user) => {
+    if (window._creatingAdmin) return;   // ← ignore auto-login from createUser
     if (user) {
       try {
         const adminDoc = await getDoc(doc(db, 'admins', user.uid));
@@ -449,14 +454,14 @@ async function doGoogleLogin() {
 }
 
 async function doAddAdmin() {
-  const name    = document.getElementById('newName').value.trim();
-  const email   = document.getElementById('newEmail').value.trim();
-  const pass    = document.getElementById('newPassword').value;
-  const role    = document.getElementById('newRole').value;
-  const status  = document.getElementById('statusToggle').checked;
-  const errEl   = document.getElementById('addErr');
-  const succEl  = document.getElementById('addSuccess');
-  const btn     = document.getElementById('addBtn');
+  const name   = document.getElementById('newName').value.trim();
+  const email  = document.getElementById('newEmail').value.trim();
+  const pass   = document.getElementById('newPassword').value;
+  const role   = document.getElementById('newRole').value;
+  const status = document.getElementById('statusToggle').checked;
+  const errEl  = document.getElementById('addErr');
+  const succEl = document.getElementById('addSuccess');
+  const btn    = document.getElementById('addBtn');
   errEl.style.display = 'none'; succEl.style.display = 'none';
 
   if (!name || !email || !pass) { errEl.textContent = 'All fields are required.'; errEl.style.display = 'block'; return; }
@@ -464,20 +469,34 @@ async function doAddAdmin() {
 
   btn.innerHTML = '<span class="spinner"></span>Creating...'; btn.disabled = true;
 
-  try {
-    const cred = await FB.createUserWithEmailAndPassword(FB.auth, email, pass);
+  // ── FIX 1: Set flag BEFORE createUser so onAuthStateChanged doesn't
+  //           redirect us away while we're still writing the Firestore doc
+  window._creatingAdmin = true;
 
-    // Write admin doc — status: false by default
-    await FB.setDoc(FB.doc(FB.db, 'admins', cred.user.uid), {
-      name, email,
-      uid: cred.user.uid,
-      status,          // false unless toggled on
+  let newUid = null;
+
+  try {
+    // Step 1 — Create Firebase Auth account
+    const cred = await FB.createUserWithEmailAndPassword(FB.auth, email, pass);
+    newUid = cred.user.uid;
+
+    // ── FIX 2: Write Firestore doc IMMEDIATELY after getting the UID,
+    //           BEFORE calling signOut — otherwise signOut fires onAuthStateChanged
+    //           which can interrupt the write mid-flight
+    await FB.setDoc(FB.doc(FB.db, 'admins', newUid), {
+      name,
+      email,
+      uid: newUid,
+      status,       // true if toggled on, false by default
       role,
       createdAt: new Date().toISOString()
     });
 
-    // Sign out the newly created account so it doesn't auto-login
+    // Step 3 — Now it's safe to sign out the newly created account
     await FB.signOut(FB.auth);
+
+    // Step 4 — Clear flag so normal auth redirect resumes
+    window._creatingAdmin = false;
 
     // Reset form
     document.getElementById('newName').value = '';
@@ -494,11 +513,29 @@ async function doAddAdmin() {
     setTimeout(() => { succEl.style.display = 'none'; switchTab('login'); }, 3000);
 
   } catch(e) {
+    // ── FIX 3: Always clear the flag on error so the page doesn't get stuck
+    window._creatingAdmin = false;
+
+    // If Auth account was created but Firestore write failed,
+    // try to delete the orphaned Auth account so it can be retried cleanly
+    if (newUid) {
+      try { await FB.auth.currentUser?.delete(); } catch(_) {}
+    }
+
     btn.innerHTML = 'Create Admin Account →'; btn.disabled = false;
-    if ((e.code || '').includes('email-already-in-use')) {
-      errEl.textContent = '⛔ This email is already registered.';
+    const code = e.code || '';
+    if (code.includes('email-already-in-use')) {
+      errEl.textContent = '⛔ This email is already registered as a user.';
+    } else if (code.includes('invalid-email')) {
+      errEl.textContent = '⛔ Invalid email address format.';
+    } else if (code.includes('weak-password')) {
+      errEl.textContent = '⛔ Password is too weak. Use at least 6 characters.';
+    } else if (code.includes('network-request-failed')) {
+      errEl.textContent = '⛔ Network error. Check your connection and try again.';
+    } else if (code.includes('permission-denied')) {
+      errEl.textContent = '⛔ Firestore permission denied. Check your Firebase security rules — admins collection must be writable.';
     } else {
-      errEl.textContent = '⛔ ' + (e.message || 'Failed to create admin.');
+      errEl.textContent = '⛔ ' + (e.message || 'Failed to create admin. Try again.');
     }
     errEl.style.display = 'block';
   }
