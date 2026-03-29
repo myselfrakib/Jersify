@@ -640,6 +640,79 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
   </div>
 </div>
 
+<!-- EDIT PRODUCT MODAL -->
+<div class="modal-overlay" id="editProductModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-top"><span class="modal-top-title">EDIT PRODUCT</span><button class="modal-x" onclick="closeModal('editProduct')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="ep_id"/>
+      <div class="form-group"><label class="form-label">Jersey Name *</label><input class="form-input" id="ep_name" placeholder="e.g. PSG Home 2025"/></div>
+      <div class="form-group"><label class="form-label">Team / Edition</label><input class="form-input" id="ep_team" placeholder="e.g. Paris Saint-Germain"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Price (₹) *</label><input class="form-input" id="ep_price" type="number" inputmode="numeric" placeholder="1999"/></div>
+        <div class="form-group"><label class="form-label">Original Price (₹)</label><input class="form-input" id="ep_origprice" type="number" inputmode="numeric" placeholder="2499"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Stock Qty</label><input class="form-input" id="ep_stock" type="number" inputmode="numeric" placeholder="10"/></div>
+        <div class="form-group"><label class="form-label">Emoji</label><input class="form-input" id="ep_emoji" placeholder="👕" style="font-size:22px"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Category</label>
+          <select class="form-input" id="ep_cat">
+            <option value="football">Football</option><option value="streetwear">Streetwear</option>
+            <option value="retro">Retro</option><option value="collab">Collab</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Club</label>
+          <select class="form-input" id="ep_club">
+            <option value="other">Other</option><option value="real">Real Madrid</option>
+            <option value="barca">Barcelona</option><option value="chelsea">Chelsea</option>
+            <option value="united">Man United</option><option value="city">Man City</option>
+            <option value="atletico">Atletico</option><option value="juve">Juventus</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Badge</label>
+        <select class="form-input" id="ep_badge">
+          <option>DROP</option><option>NEW</option><option>SALE</option><option>HOT</option><option>COLLAB</option>
+        </select>
+      </div>
+      <!-- Image -->
+      <div class="form-group">
+        <label class="form-label">Product Image</label>
+        <!-- Current image preview -->
+        <div id="ep_current_img_wrap" style="margin-bottom:10px;display:none">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Current Image</div>
+          <img id="ep_current_img" src="" style="width:100%;max-height:140px;object-fit:contain;border-radius:10px;background:var(--s2)"/>
+        </div>
+        <div class="method-tabs">
+          <button class="method-tab active" id="ep_tab_keep" onclick="setEditImgMethod('keep',this)">✅ Keep Current</button>
+          <button class="method-tab" onclick="setEditImgMethod('upload',this)">📤 Upload New</button>
+          <button class="method-tab" onclick="setEditImgMethod('url',this)">🔗 New URL</button>
+        </div>
+        <div id="ep_keepSection" style="padding:10px 0;font-size:12px;font-weight:600;color:var(--muted)">Current image will be kept unchanged.</div>
+        <div id="ep_uploadSection" style="display:none">
+          <div class="upload-zone" id="ep_imgUploadZone">
+            <input type="file" id="ep_img" accept="image/*" onchange="handleEditImgPreview(this)"/>
+            <span class="upload-icon">🖼️</span>
+            <div class="upload-title">Tap to choose image</div>
+            <div class="upload-sub">JPG, PNG, WEBP — max 10MB</div>
+          </div>
+          <div class="progress-wrap" id="ep_imgProgress">
+            <div class="progress-bar"><div class="progress-fill" id="ep_imgProgressFill"></div></div>
+            <div class="progress-label" id="ep_imgProgressLabel">Uploading…</div>
+          </div>
+        </div>
+        <div id="ep_urlSection" style="display:none">
+          <input class="form-input" id="ep_img_url" placeholder="https://example.com/jersey.jpg"/>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-lg" id="editProdBtn" style="width:100%;margin-top:6px" onclick="saveEditProduct()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <!-- MEDIA UPLOAD MODAL -->
 <div class="modal-overlay" id="mediaModal">
   <div class="modal">
@@ -879,7 +952,10 @@ function renderProductsTable(){
       <td><span class="chip">${p.category}</span></td>
       <td><span class="badge badge-${(p.badge||'').toLowerCase()}">${p.badge||'—'}</span></td>
       <td>
-        <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}','${p.name.replace(/'/g,'')}')">Delete</button>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-outline btn-sm" onclick="openEditProduct('${p.id}')">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}','${p.name.replace(/'/g,'')}')">Delete</button>
+        </div>
       </td>
     </tr>`).join('');
 
@@ -897,6 +973,7 @@ function renderProductsTable(){
           </div>
         </div>
         <div class="product-card-actions">
+          <button class="btn btn-outline btn-sm" onclick="openEditProduct('${p.id}')">✏️ Edit</button>
           <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}','${p.name.replace(/'/g,'')}')">Delete</button>
         </div>
       </div>`).join('');
@@ -916,8 +993,134 @@ async function deleteProduct(pid,name){
 }
 
 /* ════════════════════════════════════════════
-   ADD PRODUCT
+   EDIT PRODUCT
 ════════════════════════════════════════════ */
+let editImgMethod='keep';
+
+function openEditProduct(pid){
+  const p=PRODUCTS.find(x=>x.id===pid);
+  if(!p){ showToast('Product not found','error'); return; }
+  document.getElementById('ep_id').value=p.id;
+  document.getElementById('ep_name').value=p.name||'';
+  document.getElementById('ep_team').value=p.team||'';
+  document.getElementById('ep_price').value=p.price||'';
+  document.getElementById('ep_origprice').value=p.originalPrice||'';
+  document.getElementById('ep_stock').value=p.stock||'';
+  document.getElementById('ep_emoji').value=p.emoji||'👕';
+  document.getElementById('ep_img_url').value='';
+  document.getElementById('ep_img').value='';
+
+  /* Category */
+  const cat=document.getElementById('ep_cat');
+  [...cat.options].forEach(o=>o.selected=o.value===p.category);
+  /* Club */
+  const club=document.getElementById('ep_club');
+  [...club.options].forEach(o=>o.selected=o.value===(p.club||'other'));
+  /* Badge */
+  const badge=document.getElementById('ep_badge');
+  [...badge.options].forEach(o=>o.selected=o.value.toUpperCase()===(p.badge||'').toUpperCase());
+
+  /* Current image preview */
+  const wrap=document.getElementById('ep_current_img_wrap');
+  const img=document.getElementById('ep_current_img');
+  if(p.imageUrl){ img.src=p.imageUrl; wrap.style.display='block'; } else { wrap.style.display='none'; }
+
+  /* Reset image method tabs */
+  editImgMethod='keep';
+  document.querySelectorAll('#editProductModal .method-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ep_tab_keep').classList.add('active');
+  document.getElementById('ep_keepSection').style.display='block';
+  document.getElementById('ep_uploadSection').style.display='none';
+  document.getElementById('ep_urlSection').style.display='none';
+  /* Remove any old upload preview */
+  const zone=document.getElementById('ep_imgUploadZone');
+  const prev=zone.querySelector('img.upload-preview');
+  if(prev) prev.remove();
+
+  openModal('editProduct');
+}
+
+function setEditImgMethod(method,btn){
+  editImgMethod=method;
+  document.querySelectorAll('#editProductModal .method-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ep_keepSection').style.display=method==='keep'?'block':'none';
+  document.getElementById('ep_uploadSection').style.display=method==='upload'?'block':'none';
+  document.getElementById('ep_urlSection').style.display=method==='url'?'block':'none';
+}
+
+function handleEditImgPreview(input){
+  const file=input.files[0]; if(!file) return;
+  const zone=document.getElementById('ep_imgUploadZone');
+  const existing=zone.querySelector('img.upload-preview');
+  if(existing) existing.remove();
+  const img=document.createElement('img');
+  img.className='upload-preview';
+  img.src=URL.createObjectURL(file);
+  zone.appendChild(img);
+}
+
+async function saveEditProduct(){
+  const pid=document.getElementById('ep_id').value;
+  const name=document.getElementById('ep_name').value.trim();
+  const price=parseInt(document.getElementById('ep_price').value)||0;
+  if(!name||!price){ showToast('Name and price are required','error'); return; }
+
+  const btn=document.getElementById('editProdBtn');
+  btn.textContent='Saving…'; btn.disabled=true;
+
+  const idx=PRODUCTS.findIndex(x=>x.id===pid);
+  if(idx===-1){ showToast('Product not found','error'); btn.textContent='💾 Save Changes'; btn.disabled=false; return; }
+
+  const updates={
+    name, price,
+    team:document.getElementById('ep_team').value.trim()||'',
+    originalPrice:parseInt(document.getElementById('ep_origprice').value)||null,
+    stock:parseInt(document.getElementById('ep_stock').value)||0,
+    category:document.getElementById('ep_cat').value,
+    badge:document.getElementById('ep_badge').value,
+    club:document.getElementById('ep_club').value||'other',
+    emoji:document.getElementById('ep_emoji').value||'👕',
+    imageUrl:PRODUCTS[idx].imageUrl||''
+  };
+
+  try{
+    if(editImgMethod==='upload'){
+      const file=document.getElementById('ep_img').files[0];
+      if(file){
+        const prog=document.getElementById('ep_imgProgress');
+        const fill=document.getElementById('ep_imgProgressFill');
+        const lbl=document.getElementById('ep_imgProgressLabel');
+        prog.style.display='block';
+        const storageRef=FB.sRef(FB.storage,`products/${Date.now()}_${file.name}`);
+        await new Promise((res,rej)=>{
+          const task=FB.uploadBytesResumable(storageRef,file);
+          task.on('state_changed',snap=>{
+            const pct=Math.round(snap.bytesTransferred/snap.totalBytes*100);
+            fill.style.width=pct+'%'; lbl.textContent=`Uploading… ${pct}%`;
+          },rej,async()=>{ updates.imageUrl=await FB.getDownloadURL(task.snapshot.ref); res(); });
+        });
+        prog.style.display='none';
+      }
+    } else if(editImgMethod==='url'){
+      const url=document.getElementById('ep_img_url').value.trim();
+      if(url) updates.imageUrl=url;
+    }
+    /* keep: imageUrl stays as-is */
+
+    await FB.update(FB.ref(FB.db,`products/${pid}`),updates);
+    PRODUCTS[idx]={...PRODUCTS[idx],...updates};
+    renderProductsTable();
+    closeModal('editProduct');
+    showToast(`${name} updated ✅`,'success');
+  }catch(e){
+    showToast('Update failed: '+e.message,'error');
+  }finally{
+    btn.textContent='💾 Save Changes'; btn.disabled=false;
+  }
+}
+
+
 function setImgMethod(method,btn){
   imgMethod=method;
   document.querySelectorAll('#addProductModal .method-tab').forEach(b=>b.classList.remove('active'));
