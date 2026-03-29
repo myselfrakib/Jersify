@@ -133,7 +133,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);height:100%;ov
 .signout-btn:hover{background:rgba(230,57,70,.2);border-color:rgba(230,57,70,.3);color:#fff}
 
 /* Sidebar overlay on mobile */
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:350;}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:350}
+.sidebar-overlay.open{display:block}
 
 /* ── MAIN ── */
 .main-area{margin-left:var(--sidebar);min-height:100vh;display:flex;flex-direction:column}
@@ -377,7 +378,6 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   .topbar{display:flex}
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
-  .sidebar-overlay{display:block}
   .main-area{margin-left:0;padding-top:var(--topbar)}
   .main{padding:16px}
   .bottom-nav{display:block}
