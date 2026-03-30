@@ -136,25 +136,12 @@
     if (window.renderAuthState) window.renderAuthState();
   });
 
-  /* Normalize a product coming from Firebase RTDB.
-     RTDB stores JS arrays as {0:url, 1:url} objects — convert back to real arrays. */
-  function normalizeProductFromDB(raw) {
-    const p = { ...raw };
-    if (p.images && !Array.isArray(p.images)) {
-      p.images = Object.values(p.images);
-    } else if (!p.images) {
-      p.images = p.imageUrl ? [p.imageUrl] : [];
-    }
-    if (p.images.length && !p.imageUrl) p.imageUrl = p.images[0];
-    return p;
-  }
-
   async function loadProducts() {
     try {
       const snap = await get(ref(db, 'products'));
       APP.products = [];
-      if (snap.exists()) snap.forEach(c => APP.products.push(normalizeProductFromDB({ id: c.key, ...c.val() })));
-    } catch(e) {}
+      if (snap.exists()) snap.forEach(c => APP.products.push({ id: c.key, ...c.val() }));
+    } catch(e) { console.error('loadProducts:',e); }
     if (window.renderFeatured) renderFeatured();
     if (window.renderSwipeStack) renderSwipeStack();
   }
@@ -1545,11 +1532,9 @@ let currentProduct=null, selectedSize='';
 let detailImgIdx = 0, detailImages = [];
 
 function buildDetailImages(p){
-  // RTDB stores arrays as {0:url,1:url} objects — normalize to real array
-  let imgs = p.images;
-  if (imgs && !Array.isArray(imgs)) imgs = Object.values(imgs);
-  if (imgs && imgs.length) return imgs;
-  if (p.imageUrl) return [p.imageUrl];
+  // Support both `images[]` array and legacy single `imageUrl`
+  if(p.images && p.images.length) return p.images;
+  if(p.imageUrl) return [p.imageUrl];
   return [];
 }
 
@@ -1957,4 +1942,4 @@ renderFeatured();
 updateBadge();
 </script>
 </body>
-</html>
+  </html>
