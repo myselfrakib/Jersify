@@ -808,11 +808,29 @@ async function initDashboard(){
 /* ════════════════════════════════════════════
    LOAD DATA
 ════════════════════════════════════════════ */
+/* ── Normalize a product read from Realtime DB ──
+   Firebase RTDB stores arrays as {0:url,1:url} objects.
+   Convert images back to a real JS array every time we read. */
+function normalizeProduct(raw){
+  const p = {...raw};
+  // images: could be an object {0:url,1:url}, a real array, or missing
+  if(p.images && !Array.isArray(p.images)){
+    p.images = Object.values(p.images);
+  } else if(!p.images){
+    p.images = p.imageUrl ? [p.imageUrl] : [];
+  }
+  // Ensure imageUrl always mirrors first image
+  if(p.images.length && !p.imageUrl){
+    p.imageUrl = p.images[0];
+  }
+  return p;
+}
+
 async function loadProducts(){
   try{
     const snap=await FB.get(FB.ref(FB.db,'products'));
     PRODUCTS=[];
-    if(snap.exists()) snap.forEach(c=>PRODUCTS.push({id:c.key,...c.val()}));
+    if(snap.exists()) snap.forEach(c=>PRODUCTS.push(normalizeProduct({id:c.key,...c.val()})));
   }catch(e){}
   const c=PRODUCTS.length;
   document.getElementById('adminProductCount').textContent=c;
@@ -922,8 +940,9 @@ function renderProductsTable(){
     <tr>
       <td>
         <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,#f8f9fa,#e9ecef);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden">
+          <div style="width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,#f8f9fa,#e9ecef);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;position:relative">
             ${p.imageUrl?`<img src="${p.imageUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:9px"/>`:(p.emoji||'👕')}
+            ${p.images && p.images.length>1?`<div style="position:absolute;bottom:0;right:0;background:rgba(0,0,0,.7);color:#fff;font-size:8px;font-weight:800;padding:1px 3px;border-radius:3px 0 9px 0">+${p.images.length}</div>`:''}
           </div>
           <div><div style="font-weight:800;font-size:13px">${p.name}</div></div>
         </div>
@@ -944,7 +963,10 @@ function renderProductsTable(){
   if(cards){
     cards.innerHTML=PRODUCTS.map(p=>`
       <div class="product-card-item">
-        <div class="product-card-img">${p.imageUrl?`<img src="${p.imageUrl}" alt="${p.name}"/>`:(p.emoji||'👕')}</div>
+        <div class="product-card-img" style="position:relative">
+          ${p.imageUrl?`<img src="${p.imageUrl}" alt="${p.name}"/>`:(p.emoji||'👕')}
+          ${p.images && p.images.length>1?`<div style="position:absolute;bottom:0;right:0;background:rgba(0,0,0,.7);color:#fff;font-size:9px;font-weight:800;padding:2px 4px;border-radius:3px 0 10px 0">+${p.images.length}</div>`:''}
+        </div>
         <div class="product-card-info">
           <div class="product-card-name">${p.name}</div>
           <div class="product-card-team">${p.team||'—'}</div>
@@ -1040,7 +1062,10 @@ async function saveEditProduct(){
     club:document.getElementById('ep_club').value||'other',
     emoji:document.getElementById('ep_emoji').value||'👕',
     imageUrl:PRODUCTS[idx].imageUrl||'',
-    images:PRODUCTS[idx].images||[]
+    // Preserve existing multi-images only if they exist (never write empty array)
+    ...(PRODUCTS[idx].images && PRODUCTS[idx].images.length > 1
+        ? {images: PRODUCTS[idx].images}
+        : {images: null})
   };
 
   try{
@@ -1063,15 +1088,19 @@ async function saveEditProduct(){
         });
         urls.push(url);
       }
-      updates.imageUrl=urls[0]; updates.images=urls;
+      updates.imageUrl=urls[0];
+      // Only write images key when there are multiple; delete single-image products' images key
+      if(urls.length>1){ updates.images=urls; }
+      else { updates.images=null; } // null removes the key from RTDB
       prog.style.display='none';
     }
 
     await FB.update(FB.ref(FB.db,`products/${pid}`),updates);
-    PRODUCTS[idx]={...PRODUCTS[idx],...updates};
+    PRODUCTS[idx]=normalizeProduct({...PRODUCTS[idx],...updates});
     renderProductsTable();
     closeModal('editProduct');
-    showToast(`${name} updated ✅`,'success');
+    const imgCount=PRODUCTS[idx].images.length;
+    showToast(`${name} updated ✅${imgCount>1?` (${imgCount} images)`:''}`, 'success');
   }catch(e){
     showToast('Update failed: '+e.message,'error');
   }finally{
@@ -1107,6 +1136,7 @@ async function addProduct(){
   const btn=document.getElementById('addProdBtn');
   btn.textContent='Saving…';btn.disabled=true;
 
+  // Build product object — do NOT include images:[] (empty array breaks Firebase RTDB write)
   const p={
     name,price,
     team:document.getElementById('ap_team').value.trim()||'',
@@ -1117,8 +1147,10 @@ async function addProduct(){
     club:document.getElementById('ap_club').value||'other',
     emoji:document.getElementById('ap_emoji').value||'👕',
     sizes:['S','M','L','XL'],
-    imageUrl:'', images:[], createdAt:Date.now()
+    imageUrl:'',
+    createdAt:Date.now()
   };
+  // images key added only when we actually have URLs (never store empty array)
 
   try{
     const files=Array.from(document.getElementById('ap_imgs').files).slice(0,5);
@@ -1140,23 +1172,33 @@ async function addProduct(){
         });
         urls.push(url);
       }
-      p.imageUrl=urls[0]; p.images=urls;
+      p.imageUrl=urls[0];
+      // Only add images key when there are multiple images
+      if(urls.length>1) p.images=urls;
       prog.style.display='none';
     }
 
+    // Write to DB — push generates a new key
     const newRef=FB.push(FB.ref(FB.db,'products'));
     p.id=newRef.key;
     await FB.set(newRef,p);
-    PRODUCTS.push(p);
+
+    // Normalize before pushing into local array (so images is always a proper array)
+    PRODUCTS.push(normalizeProduct(p));
     document.getElementById('adminProductCount').textContent=PRODUCTS.length;
+    const nb=document.getElementById('navProdBadge');
+    if(nb){nb.textContent=PRODUCTS.length;nb.style.display='inline-flex';}
     closeModal('addProduct');
-    showToast(`${p.name} added! 👕`,'success');
+    const imgCount=p.images?p.images.length:p.imageUrl?1:0;
+    showToast(`${p.name} added! 👕${imgCount>1?` (${imgCount} images)`:''}`, 'success');
     renderProductsTable();
     /* Reset form */
     ['ap_name','ap_team','ap_price','ap_origprice','ap_stock','ap_emoji'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.getElementById('ap_emoji').value='👕';
     document.getElementById('ap_imgs').value='';
     document.getElementById('ap_img_previews').innerHTML='';
+    document.getElementById('imgProgress').style.display='none';
+    document.getElementById('imgProgressFill').style.width='0%';
   }catch(e){
     showToast('Failed: '+e.message,'error');
   }finally{btn.textContent='Add to Catalogue →';btn.disabled=false;}
