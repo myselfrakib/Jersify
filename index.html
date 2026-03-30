@@ -490,11 +490,27 @@ nav {
   padding-bottom:env(safe-area-inset-bottom,0);
 }
 .detail-overlay.open .detail-modal{transform:translateY(0)}
-.detail-img-side{position:relative;background:var(--surface2);height:280px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:28px 28px 0 0}
-.detail-img-side img{width:100%;height:100%;object-fit:cover}
+.detail-img-side{position:relative;background:var(--surface2);height:280px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:28px 28px 0 0;cursor:pointer}
+.detail-img-side img{width:100%;height:100%;object-fit:cover;transition:opacity .25s}
 .detail-emoji{font-size:110px;filter:drop-shadow(0 16px 32px rgba(0,0,0,.5));display:block;text-align:center}
-.detail-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;transition:all .2s}
+.detail-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:4;transition:all .2s}
 .detail-close:hover{background:rgba(230,57,70,.5)}
+/* Image nav arrows */
+.img-nav-btn{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;transition:all .2s;user-select:none}
+.img-nav-btn:hover{background:rgba(230,57,70,.65);border-color:var(--accent)}
+.img-nav-prev{left:12px}
+.img-nav-next{right:12px}
+.img-nav-btn.hidden{display:none}
+/* Image dots */
+.img-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3}
+.img-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35);transition:all .25s;cursor:pointer}
+.img-dot.active{background:#fff;width:16px;border-radius:3px}
+/* Swipe card image nav */
+.swipe-img-nav{position:absolute;inset:0;display:flex;pointer-events:none;z-index:3}
+.swipe-img-zone{flex:1;pointer-events:all;cursor:pointer}
+.swipe-img-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:4px;z-index:4}
+.swipe-img-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.35);transition:all .25s}
+.swipe-img-dot.active{background:#fff;width:14px;border-radius:3px}
 .detail-info{padding:22px 20px 28px}
 .detail-badge-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .detail-badge{font-family:var(--font-display);font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:5px;background:var(--accent);color:#fff}
@@ -1119,9 +1135,19 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
 <!-- PRODUCT DETAIL OVERLAY -->
 <div class="detail-overlay" id="detailOverlay">
   <div class="detail-modal">
-    <div class="detail-img-side">
+    <div class="detail-img-side" id="detailImgSide">
       <button class="detail-close" onclick="closeDetailModal()">✕</button>
       <span class="detail-emoji" id="detailEmoji">👕</span>
+      <!-- Image nav zones (left/right click) -->
+      <div class="swipe-img-nav" id="detailImgNav" style="display:none">
+        <div class="swipe-img-zone" onclick="detailImgStep(-1)" title="Previous image"></div>
+        <div class="swipe-img-zone" onclick="detailImgStep(1)" title="Next image"></div>
+      </div>
+      <!-- Arrow buttons -->
+      <button class="img-nav-btn img-nav-prev hidden" id="detailPrevBtn" onclick="detailImgStep(-1)">‹</button>
+      <button class="img-nav-btn img-nav-next hidden" id="detailNextBtn" onclick="detailImgStep(1)">›</button>
+      <!-- Dots -->
+      <div class="img-dots" id="detailImgDots"></div>
     </div>
     <div class="detail-info">
       <div class="detail-badge-row">
@@ -1310,6 +1336,8 @@ function renderSwipeStack(){
     updateSwipeCounter();
     return;
   }
+  // Clamp index so first card is always visible
+  if(swipeIdx >= APP.products.length) swipeIdx = 0;
   const visible = APP.products.slice(swipeIdx, swipeIdx + 3);
   visible.forEach((p, i) => {
     const card = createSwipeCard(p, i);
@@ -1325,16 +1353,36 @@ function createSwipeCard(p, depth){
   const card = document.createElement('div');
   card.className = `swipe-card ${['is-top','is-2nd','is-3rd'][depth]||''}`;
   const bc = badgeClass(p.badge);
-  const imgHTML = p.imageUrl
-    ? `<img src="${p.imageUrl}" alt="${p.name}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none"/>`
-    : `<span class="swipe-card-emoji">${p.emoji||'👕'}</span>`;
+  const imgs = (p.images && p.images.length) ? p.images : (p.imageUrl ? [p.imageUrl] : []);
+  let imgIdx = 0;
+
+  function buildImgHTML(){
+    if(imgs.length){
+      return `<img src="${imgs[imgIdx]}" alt="${p.name}" loading="lazy" data-swipe-img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;transition:opacity .2s"/>`;
+    }
+    return `<span class="swipe-card-emoji">${p.emoji||'👕'}</span>`;
+  }
+
+  const multiImgDots = imgs.length > 1
+    ? `<div class="swipe-img-dots" id="swipeDots_${p.id}_${depth}">
+        ${imgs.map((_,i)=>`<div class="swipe-img-dot ${i===0?'active':''}"></div>`).join('')}
+       </div>` : '';
+
+  const multiImgNav = imgs.length > 1
+    ? `<div class="swipe-img-nav" id="swipeImgNav_${p.id}_${depth}">
+        <div class="swipe-img-zone" data-dir="-1"></div>
+        <div class="swipe-img-zone" data-dir="1"></div>
+       </div>` : '';
+
   const isLiked = swipeWishlist.has(p.id);
   const firstSize = p.sizes?.[0]||'M';
   card.innerHTML=`
     <div class="swipe-nope">NOPE</div>
     <div class="swipe-like">ADD</div>
-    <div class="swipe-card-img" style="position:relative">
-      ${imgHTML}
+    <div class="swipe-card-img" style="position:relative" id="swipeImgWrap_${p.id}_${depth}">
+      ${buildImgHTML()}
+      ${multiImgNav}
+      ${multiImgDots}
       <div class="swipe-badge ${bc}">${p.badge||'DROP'}</div>
       <button class="swipe-wishlist ${isLiked?'liked':''}" onclick="event.stopPropagation();swipeToggleWish('${p.id}',this)">${isLiked?'❤️':'🤍'}</button>
       <div class="swipe-club-badge">${clubEmoji(p.club)}</div>
@@ -1348,11 +1396,31 @@ function createSwipeCard(p, depth){
           ${p.originalPrice?`<span class="swipe-price-orig">₹${p.originalPrice}</span>`:''}
         </div>
         <div class="swipe-card-sizes" id="swipeSizes_${p.id}">
-          ${(p.sizes||['S','M','L','XL']).map((s,i)=>`<div class="swipe-size ${i===0?'active':''}" onclick="selSwipeSize('${s}',this,'${p.id}')">${s}</div>`).join('')}
+          ${(p.sizes||['S','M','L','XL']).map((s,i)=>`<div class="swipe-size ${i===0?'active':''}" onclick="event.stopPropagation();selSwipeSize('${s}',this,'${p.id}')">${s}</div>`).join('')}
         </div>
       </div>
     </div>`;
+
   if(depth===0) swipeSelectedSize = firstSize;
+
+  // Wire up image tap zones for multi-image
+  if(imgs.length > 1){
+    card.querySelectorAll('.swipe-img-zone').forEach(zone=>{
+      zone.addEventListener('click', e=>{
+        e.stopPropagation();
+        const dir = parseInt(zone.dataset.dir);
+        imgIdx = Math.max(0, Math.min(imgs.length-1, imgIdx+dir));
+        // Update image
+        const wrap = card.querySelector('.swipe-card-img');
+        const imgEl = wrap.querySelector('[data-swipe-img]');
+        if(imgEl){ imgEl.style.opacity='0'; setTimeout(()=>{imgEl.src=imgs[imgIdx];imgEl.style.opacity='1';},150); }
+        // Update dots
+        const dots = wrap.querySelectorAll('.swipe-img-dot');
+        dots.forEach((d,i)=>d.classList.toggle('active',i===imgIdx));
+      });
+    });
+  }
+
   return card;
 }
 
@@ -1461,24 +1529,69 @@ function animateSwipeOut(dir){
 //  PRODUCT DETAIL MODAL
 // ══════════════════════════════════
 let currentProduct=null, selectedSize='';
-function openDetailModal(p){
-  currentProduct=p; selectedSize=p.sizes?.[0]||'M';
-  const imgSide = document.getElementById('detailOverlay').querySelector('.detail-img-side');
-  // Show product image or emoji
-  if(p.imageUrl){
-    document.getElementById('detailEmoji').textContent='';
-    const existing = imgSide.querySelector('img.detail-real-img');
-    if(existing) existing.remove();
+let detailImgIdx = 0, detailImages = [];
+
+function buildDetailImages(p){
+  // Support both `images[]` array and legacy single `imageUrl`
+  if(p.images && p.images.length) return p.images;
+  if(p.imageUrl) return [p.imageUrl];
+  return [];
+}
+
+function renderDetailImg(){
+  const imgSide = document.getElementById('detailImgSide');
+  // Remove old real img
+  imgSide.querySelectorAll('img.detail-real-img').forEach(el=>el.remove());
+
+  const emojiEl = document.getElementById('detailEmoji');
+  const nav = document.getElementById('detailImgNav');
+  const dotsWrap = document.getElementById('detailImgDots');
+  const prevBtn = document.getElementById('detailPrevBtn');
+  const nextBtn = document.getElementById('detailNextBtn');
+
+  if(detailImages.length){
+    emojiEl.textContent='';
     const img = document.createElement('img');
     img.className='detail-real-img';
-    img.src=p.imageUrl; img.alt=p.name;
+    img.src = detailImages[detailImgIdx];
+    img.alt = currentProduct.name;
     img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:28px 28px 0 0';
     imgSide.insertBefore(img, imgSide.firstChild);
+
+    if(detailImages.length > 1){
+      nav.style.display='flex';
+      prevBtn.classList.toggle('hidden', detailImgIdx===0);
+      nextBtn.classList.toggle('hidden', detailImgIdx===detailImages.length-1);
+      dotsWrap.innerHTML = detailImages.map((_,i)=>`<div class="img-dot ${i===detailImgIdx?'active':''}" onclick="detailImgGoto(${i})"></div>`).join('');
+    } else {
+      nav.style.display='none';
+      prevBtn.classList.add('hidden');
+      nextBtn.classList.add('hidden');
+      dotsWrap.innerHTML='';
+    }
   } else {
-    const existing = imgSide.querySelector('img.detail-real-img');
-    if(existing) existing.remove();
-    document.getElementById('detailEmoji').textContent=p.emoji||'👕';
+    emojiEl.textContent = currentProduct.emoji||'👕';
+    nav.style.display='none';
+    prevBtn.classList.add('hidden');
+    nextBtn.classList.add('hidden');
+    dotsWrap.innerHTML='';
   }
+}
+
+function detailImgStep(dir){
+  detailImgIdx = Math.max(0, Math.min(detailImages.length-1, detailImgIdx+dir));
+  renderDetailImg();
+}
+function detailImgGoto(i){
+  detailImgIdx=i; renderDetailImg();
+}
+
+function openDetailModal(p){
+  currentProduct=p; selectedSize=p.sizes?.[0]||'M';
+  detailImgIdx=0;
+  detailImages = buildDetailImages(p);
+  renderDetailImg();
+
   document.getElementById('detailTitle').textContent=p.name;
   document.getElementById('detailTeam').textContent=p.team;
   document.getElementById('detailTeamLogo').textContent=clubEmoji(p.club);
@@ -1829,4 +1942,4 @@ renderFeatured();
 updateBadge();
 </script>
 </body>
-          </html>
+</html>
