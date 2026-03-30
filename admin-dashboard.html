@@ -612,27 +612,19 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
           <option>DROP</option><option>NEW</option><option>SALE</option><option>HOT</option><option>COLLAB</option>
         </select>
       </div>
-      <!-- Product Image Upload -->
+      <!-- Product Images Upload (multi) -->
       <div class="form-group">
-        <label class="form-label">Product Image</label>
-        <div class="method-tabs">
-          <button class="method-tab active" onclick="setImgMethod('upload',this)">📤 Upload File</button>
-          <button class="method-tab" onclick="setImgMethod('url',this)">🔗 Paste URL</button>
+        <label class="form-label">Product Images <span style="font-size:10px;color:var(--muted);font-weight:600;text-transform:none">(up to 5 — first is main)</span></label>
+        <div id="ap_img_previews" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;min-height:0"></div>
+        <div class="upload-zone" id="imgUploadZone" onclick="document.getElementById('ap_imgs').click()" style="cursor:pointer">
+          <input type="file" id="ap_imgs" accept="image/*" multiple style="display:none" onchange="handleMultiImgPreview(this,'ap_img_previews')"/>
+          <span class="upload-icon">🖼️</span>
+          <div class="upload-title">Tap to choose images</div>
+          <div class="upload-sub">JPG, PNG, WEBP — max 10MB each · up to 5 images</div>
         </div>
-        <div id="imgUploadSection">
-          <div class="upload-zone" id="imgUploadZone">
-            <input type="file" id="ap_img" accept="image/*" onchange="handleImgPreview(this)"/>
-            <span class="upload-icon">🖼️</span>
-            <div class="upload-title">Tap to choose image</div>
-            <div class="upload-sub">JPG, PNG, WEBP — max 10MB</div>
-          </div>
-          <div class="progress-wrap" id="imgProgress">
-            <div class="progress-bar"><div class="progress-fill" id="imgProgressFill"></div></div>
-            <div class="progress-label" id="imgProgressLabel">Uploading…</div>
-          </div>
-        </div>
-        <div id="imgUrlSection" style="display:none">
-          <input class="form-input" id="ap_img_url" placeholder="https://example.com/jersey.jpg"/>
+        <div class="progress-wrap" id="imgProgress">
+          <div class="progress-bar"><div class="progress-fill" id="imgProgressFill"></div></div>
+          <div class="progress-label" id="imgProgressLabel">Uploading…</div>
         </div>
       </div>
       <button class="btn btn-primary btn-lg" id="addProdBtn" style="width:100%;margin-top:6px" onclick="addProduct()">Add to Catalogue →</button>
@@ -678,34 +670,24 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
           <option>DROP</option><option>NEW</option><option>SALE</option><option>HOT</option><option>COLLAB</option>
         </select>
       </div>
-      <!-- Image -->
+      <!-- Images -->
       <div class="form-group">
-        <label class="form-label">Product Image</label>
-        <!-- Current image preview -->
-        <div id="ep_current_img_wrap" style="margin-bottom:10px;display:none">
-          <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Current Image</div>
-          <img id="ep_current_img" src="" style="width:100%;max-height:140px;object-fit:contain;border-radius:10px;background:var(--s2)"/>
+        <label class="form-label">Product Images <span style="font-size:10px;color:var(--muted);font-weight:600;text-transform:none">(up to 5 — first is main)</span></label>
+        <!-- Current images preview -->
+        <div id="ep_current_imgs_wrap" style="margin-bottom:10px;display:none">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Current Images</div>
+          <div id="ep_current_imgs_row" style="display:flex;flex-wrap:wrap;gap:8px"></div>
         </div>
-        <div class="method-tabs">
-          <button class="method-tab active" id="ep_tab_keep" onclick="setEditImgMethod('keep',this)">✅ Keep Current</button>
-          <button class="method-tab" onclick="setEditImgMethod('upload',this)">📤 Upload New</button>
-          <button class="method-tab" onclick="setEditImgMethod('url',this)">🔗 New URL</button>
+        <div id="ep_new_img_previews" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;min-height:0"></div>
+        <div class="upload-zone" id="ep_imgUploadZone" onclick="document.getElementById('ep_imgs').click()" style="cursor:pointer">
+          <input type="file" id="ep_imgs" accept="image/*" multiple style="display:none" onchange="handleMultiImgPreview(this,'ep_new_img_previews')"/>
+          <span class="upload-icon">🖼️</span>
+          <div class="upload-title">Tap to add / replace images</div>
+          <div class="upload-sub">Selecting new images will replace all current ones</div>
         </div>
-        <div id="ep_keepSection" style="padding:10px 0;font-size:12px;font-weight:600;color:var(--muted)">Current image will be kept unchanged.</div>
-        <div id="ep_uploadSection" style="display:none">
-          <div class="upload-zone" id="ep_imgUploadZone">
-            <input type="file" id="ep_img" accept="image/*" onchange="handleEditImgPreview(this)"/>
-            <span class="upload-icon">🖼️</span>
-            <div class="upload-title">Tap to choose image</div>
-            <div class="upload-sub">JPG, PNG, WEBP — max 10MB</div>
-          </div>
-          <div class="progress-wrap" id="ep_imgProgress">
-            <div class="progress-bar"><div class="progress-fill" id="ep_imgProgressFill"></div></div>
-            <div class="progress-label" id="ep_imgProgressLabel">Uploading…</div>
-          </div>
-        </div>
-        <div id="ep_urlSection" style="display:none">
-          <input class="form-input" id="ep_img_url" placeholder="https://example.com/jersey.jpg"/>
+        <div class="progress-wrap" id="ep_imgProgress">
+          <div class="progress-bar"><div class="progress-fill" id="ep_imgProgressFill"></div></div>
+          <div class="progress-label" id="ep_imgProgressLabel">Uploading…</div>
         </div>
       </div>
       <button class="btn btn-primary btn-lg" id="editProdBtn" style="width:100%;margin-top:6px" onclick="saveEditProduct()">💾 Save Changes</button>
@@ -800,7 +782,7 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
 let PRODUCTS=[], ORDERS=[], CUSTOMERS=[], adminMembers=[];
 let mediaCache={};
 let currentMediaSlot=null;
-let imgMethod='upload', mediaMethod='upload';
+let mediaMethod='upload';
 
 const MEDIA_SLOTS=[
   {id:'img1',label:'Hero Banner',      desc:'Main homepage banner below hero',     rec:'1300×280px', icon:'🖼️',dark:true},
@@ -1007,8 +989,8 @@ function openEditProduct(pid){
   document.getElementById('ep_origprice').value=p.originalPrice||'';
   document.getElementById('ep_stock').value=p.stock||'';
   document.getElementById('ep_emoji').value=p.emoji||'👕';
-  document.getElementById('ep_img_url').value='';
-  document.getElementById('ep_img').value='';
+  document.getElementById('ep_imgs').value='';
+  document.getElementById('ep_new_img_previews').innerHTML='';
 
   /* Category */
   const cat=document.getElementById('ep_cat');
@@ -1020,44 +1002,20 @@ function openEditProduct(pid){
   const badge=document.getElementById('ep_badge');
   [...badge.options].forEach(o=>o.selected=o.value.toUpperCase()===(p.badge||'').toUpperCase());
 
-  /* Current image preview */
-  const wrap=document.getElementById('ep_current_img_wrap');
-  const img=document.getElementById('ep_current_img');
-  if(p.imageUrl){ img.src=p.imageUrl; wrap.style.display='block'; } else { wrap.style.display='none'; }
-
-  /* Reset image method tabs */
-  editImgMethod='keep';
-  document.querySelectorAll('#editProductModal .method-tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('ep_tab_keep').classList.add('active');
-  document.getElementById('ep_keepSection').style.display='block';
-  document.getElementById('ep_uploadSection').style.display='none';
-  document.getElementById('ep_urlSection').style.display='none';
-  /* Remove any old upload preview */
-  const zone=document.getElementById('ep_imgUploadZone');
-  const prev=zone.querySelector('img.upload-preview');
-  if(prev) prev.remove();
+  /* Current images preview */
+  const wrap=document.getElementById('ep_current_imgs_wrap');
+  const row=document.getElementById('ep_current_imgs_row');
+  const imgs = p.images && p.images.length ? p.images : (p.imageUrl ? [p.imageUrl] : []);
+  if(imgs.length){
+    row.innerHTML=imgs.map((url,i)=>`
+      <div style="position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;border:2px solid var(--border)">
+        <img src="${url}" style="width:100%;height:100%;object-fit:cover"/>
+        <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.5);font-size:9px;font-weight:700;color:#fff;text-align:center;padding:2px">${i===0?'MAIN':i+1}</div>
+      </div>`).join('');
+    wrap.style.display='block';
+  } else { wrap.style.display='none'; }
 
   openModal('editProduct');
-}
-
-function setEditImgMethod(method,btn){
-  editImgMethod=method;
-  document.querySelectorAll('#editProductModal .method-tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('ep_keepSection').style.display=method==='keep'?'block':'none';
-  document.getElementById('ep_uploadSection').style.display=method==='upload'?'block':'none';
-  document.getElementById('ep_urlSection').style.display=method==='url'?'block':'none';
-}
-
-function handleEditImgPreview(input){
-  const file=input.files[0]; if(!file) return;
-  const zone=document.getElementById('ep_imgUploadZone');
-  const existing=zone.querySelector('img.upload-preview');
-  if(existing) existing.remove();
-  const img=document.createElement('img');
-  img.className='upload-preview';
-  img.src=URL.createObjectURL(file);
-  zone.appendChild(img);
 }
 
 async function saveEditProduct(){
@@ -1081,32 +1039,33 @@ async function saveEditProduct(){
     badge:document.getElementById('ep_badge').value,
     club:document.getElementById('ep_club').value||'other',
     emoji:document.getElementById('ep_emoji').value||'👕',
-    imageUrl:PRODUCTS[idx].imageUrl||''
+    imageUrl:PRODUCTS[idx].imageUrl||'',
+    images:PRODUCTS[idx].images||[]
   };
 
   try{
-    if(editImgMethod==='upload'){
-      const file=document.getElementById('ep_img').files[0];
-      if(file){
-        const prog=document.getElementById('ep_imgProgress');
-        const fill=document.getElementById('ep_imgProgressFill');
-        const lbl=document.getElementById('ep_imgProgressLabel');
-        prog.style.display='block';
-        const storageRef=FB.sRef(FB.storage,`products/${Date.now()}_${file.name}`);
-        await new Promise((res,rej)=>{
-          const task=FB.uploadBytesResumable(storageRef,file);
+    const files=Array.from(document.getElementById('ep_imgs').files).slice(0,5);
+    if(files.length){
+      const prog=document.getElementById('ep_imgProgress');
+      const fill=document.getElementById('ep_imgProgressFill');
+      const lbl=document.getElementById('ep_imgProgressLabel');
+      prog.style.display='block';
+      const urls=[];
+      for(let i=0;i<files.length;i++){
+        lbl.textContent=`Uploading image ${i+1}/${files.length}…`;
+        const storageRef=FB.sRef(FB.storage,`products/${Date.now()}_${files[i].name}`);
+        const url=await new Promise((res,rej)=>{
+          const task=FB.uploadBytesResumable(storageRef,files[i]);
           task.on('state_changed',snap=>{
             const pct=Math.round(snap.bytesTransferred/snap.totalBytes*100);
-            fill.style.width=pct+'%'; lbl.textContent=`Uploading… ${pct}%`;
-          },rej,async()=>{ updates.imageUrl=await FB.getDownloadURL(task.snapshot.ref); res(); });
+            fill.style.width=((i/files.length)+(pct/(100*files.length)))*100+'%';
+          },rej,async()=>{res(await FB.getDownloadURL(task.snapshot.ref));});
         });
-        prog.style.display='none';
+        urls.push(url);
       }
-    } else if(editImgMethod==='url'){
-      const url=document.getElementById('ep_img_url').value.trim();
-      if(url) updates.imageUrl=url;
+      updates.imageUrl=urls[0]; updates.images=urls;
+      prog.style.display='none';
     }
-    /* keep: imageUrl stays as-is */
 
     await FB.update(FB.ref(FB.db,`products/${pid}`),updates);
     PRODUCTS[idx]={...PRODUCTS[idx],...updates};
@@ -1121,23 +1080,24 @@ async function saveEditProduct(){
 }
 
 
-function setImgMethod(method,btn){
-  imgMethod=method;
-  document.querySelectorAll('#addProductModal .method-tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('imgUploadSection').style.display=method==='upload'?'block':'none';
-  document.getElementById('imgUrlSection').style.display=method==='url'?'block':'none';
-}
-
-function handleImgPreview(input){
-  const file=input.files[0]; if(!file) return;
-  const zone=document.getElementById('imgUploadZone');
-  const existing=zone.querySelector('img.upload-preview');
-  if(existing) existing.remove();
-  const img=document.createElement('img');
-  img.className='upload-preview';
-  img.src=URL.createObjectURL(file);
-  zone.appendChild(img);
+/* ── Multi-image preview helper ── */
+function handleMultiImgPreview(input, previewContainerId){
+  const files = Array.from(input.files).slice(0,5);
+  const container = document.getElementById(previewContainerId);
+  container.innerHTML='';
+  files.forEach((file,i)=>{
+    const wrap = document.createElement('div');
+    wrap.style.cssText='position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;border:2px solid var(--border);flex-shrink:0';
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    img.style.cssText='width:100%;height:100%;object-fit:cover';
+    const lbl = document.createElement('div');
+    lbl.style.cssText='position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.5);font-size:9px;font-weight:700;color:#fff;text-align:center;padding:2px';
+    lbl.textContent = i===0?'MAIN':`${i+1}`;
+    wrap.appendChild(img); wrap.appendChild(lbl);
+    container.appendChild(wrap);
+  });
+  if(files.length) container.style.display='flex'; else container.style.display='none';
 }
 
 async function addProduct(){
@@ -1157,30 +1117,31 @@ async function addProduct(){
     club:document.getElementById('ap_club').value||'other',
     emoji:document.getElementById('ap_emoji').value||'👕',
     sizes:['S','M','L','XL'],
-    imageUrl:'',createdAt:Date.now()
+    imageUrl:'', images:[], createdAt:Date.now()
   };
 
   try{
-    /* Image: upload file or use URL */
-    if(imgMethod==='upload'){
-      const file=document.getElementById('ap_img').files[0];
-      if(file){
-        const prog=document.getElementById('imgProgress');
-        const fill=document.getElementById('imgProgressFill');
-        const lbl=document.getElementById('imgProgressLabel');
-        prog.style.display='block';
-        const storageRef=FB.sRef(FB.storage,`products/${Date.now()}_${file.name}`);
-        await new Promise((res,rej)=>{
-          const task=FB.uploadBytesResumable(storageRef,file);
+    const files=Array.from(document.getElementById('ap_imgs').files).slice(0,5);
+    if(files.length){
+      const prog=document.getElementById('imgProgress');
+      const fill=document.getElementById('imgProgressFill');
+      const lbl=document.getElementById('imgProgressLabel');
+      prog.style.display='block';
+      const urls=[];
+      for(let i=0;i<files.length;i++){
+        lbl.textContent=`Uploading image ${i+1}/${files.length}…`;
+        const storageRef=FB.sRef(FB.storage,`products/${Date.now()}_${files[i].name}`);
+        const url=await new Promise((res,rej)=>{
+          const task=FB.uploadBytesResumable(storageRef,files[i]);
           task.on('state_changed',snap=>{
             const pct=Math.round(snap.bytesTransferred/snap.totalBytes*100);
-            fill.style.width=pct+'%';lbl.textContent=`Uploading… ${pct}%`;
-          },rej,async()=>{p.imageUrl=await FB.getDownloadURL(task.snapshot.ref);res();});
+            fill.style.width=((i/files.length)+(pct/(100*files.length)))*100+'%';
+          },rej,async()=>{res(await FB.getDownloadURL(task.snapshot.ref));});
         });
-        prog.style.display='none';
+        urls.push(url);
       }
-    } else {
-      p.imageUrl=document.getElementById('ap_img_url').value.trim()||'';
+      p.imageUrl=urls[0]; p.images=urls;
+      prog.style.display='none';
     }
 
     const newRef=FB.push(FB.ref(FB.db,'products'));
@@ -1192,12 +1153,10 @@ async function addProduct(){
     showToast(`${p.name} added! 👕`,'success');
     renderProductsTable();
     /* Reset form */
-    ['ap_name','ap_team','ap_price','ap_origprice','ap_stock','ap_emoji','ap_img_url'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['ap_name','ap_team','ap_price','ap_origprice','ap_stock','ap_emoji'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.getElementById('ap_emoji').value='👕';
-    const zone=document.getElementById('imgUploadZone');
-    const prevImg=zone.querySelector('img.upload-preview');
-    if(prevImg) prevImg.remove();
-    document.getElementById('ap_img').value='';
+    document.getElementById('ap_imgs').value='';
+    document.getElementById('ap_img_previews').innerHTML='';
   }catch(e){
     showToast('Failed: '+e.message,'error');
   }finally{btn.textContent='Add to Catalogue →';btn.disabled=false;}
