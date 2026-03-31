@@ -10,13 +10,12 @@
 
 <!-- Firebase SDKs -->
 <script type="module">
-  import { initializeApp }                                        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { initializeApp }                                      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signOut, onAuthStateChanged,
-           GoogleAuthProvider, signInWithPopup }                  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getDatabase, ref, get, set, update, push, remove,
-           onValue, off, serverTimestamp }                        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+           GoogleAuthProvider, signInWithPopup }                   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, get, set, update, push, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
   import { getStorage, ref as sRef,
-           uploadBytesResumable, getDownloadURL, deleteObject }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+           uploadBytesResumable, getDownloadURL }                  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
@@ -35,81 +34,74 @@
   const storage = getStorage(app);
   const gp      = new GoogleAuthProvider();
 
-  /* ── Guest ID ── */
+  /* ── Temp guest ID ── */
   let guestId = localStorage.getItem('jersify_guest_id');
-  if (!guestId) {
-    guestId = 'guest_' + Math.random().toString(36).slice(2, 11);
-    localStorage.setItem('jersify_guest_id', guestId);
-  }
+  if (!guestId) { guestId = 'guest_' + Math.random().toString(36).slice(2,11); localStorage.setItem('jersify_guest_id', guestId); }
 
-  window.APP = { user: null, isAdmin: false, guestId, cart: [], products: [] };
-  window.FB  = {
-    auth, db, storage, gp, ref, get, set, update, push, remove, onValue, off,
-    sRef, uploadBytesResumable, getDownloadURL, deleteObject, signOut, serverTimestamp
+  window.APP = {
+    user: null, isAdmin: false,
+    guestId,
+    cart: [],
+    products: []
   };
 
-  /* ══════════════════════════════════════════
-     MEDIA SLOTS — real-time listener
-  ══════════════════════════════════════════ */
-  window.MEDIA = {};
-  onValue(ref(db, 'media'), snap => {
-    window.MEDIA = {};
-    if (snap.exists()) snap.forEach(c => { window.MEDIA[c.key] = c.val(); });
-    if (window.applyAllMedia) applyAllMedia();
-  });
+  window.FB = { auth, db, storage, gp, ref, get, set, update, push, remove, onValue,
+                sRef, uploadBytesResumable, getDownloadURL, signOut };
 
-  window.applyAllMedia = function () {
+  /* ── Media Slots ── */
+  window.MEDIA = {};
+  async function loadMedia() {
+    try {
+      const snap = await get(ref(db, 'media'));
+      if (snap.exists()) snap.forEach(c => { window.MEDIA[c.key] = c.val(); });
+    } catch(e) {}
+    applyAllMedia();
+  }
+  window.applyAllMedia = function() {
     Object.keys(window.MEDIA).forEach(slotId => applySlot(slotId, window.MEDIA[slotId]));
   };
-  window.applySlot = function (slotId, m) {
+  window.applySlot = function(slotId, m) {
     const slot = document.getElementById('slot-' + slotId);
     if (!slot || !m) return;
     if (m.type === 'image' && m.url) {
-      slot.innerHTML = `<img src="${m.url}" alt="${m.alt || slotId}" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"/>`;
+      slot.innerHTML = `<img src="${m.url}" alt="${m.alt||slotId}" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"/>`;
       slot.classList.add('slot-filled');
     } else if (m.type === 'video' && m.url) {
-      slot.innerHTML = `<video src="${m.url}" ${m.autoplay ? 'autoplay muted loop' : ''} ${m.controls ? 'controls' : ''} playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>`;
+      slot.innerHTML = `<video src="${m.url}" ${m.autoplay?'autoplay muted loop':''} ${m.controls?'controls':''} playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>`;
       slot.classList.add('slot-filled');
     } else if (m.type === 'youtube' && m.embedId) {
-      slot.innerHTML = `<iframe src="https://www.youtube.com/embed/${m.embedId}?autoplay=${m.autoplay ? 1 : 0}&mute=1&loop=1&playlist=${m.embedId}" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="width:100%;height:100%;border:none;display:block;"></iframe>`;
+      slot.innerHTML = `<iframe src="https://www.youtube.com/embed/${m.embedId}?autoplay=${m.autoplay?1:0}&mute=1&loop=1&playlist=${m.embedId}" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="width:100%;height:100%;border:none;display:block;"></iframe>`;
       slot.classList.add('slot-filled');
     }
   };
 
-  /* ══════════════════════════════════════════
-     CART HELPERS
-  ══════════════════════════════════════════ */
+  /* ── Cart DB path helper ── */
   window.cartPath = () => APP.user ? `carts/${APP.user.uid}` : `carts/${APP.guestId}`;
 
-  /* Cart real-time listener handle */
-  let cartListener = null;
-  window.subscribeCart = function () {
-    if (cartListener) { off(cartListener._ref); }
-    const cartRef = ref(db, window.cartPath());
-    cartListener = { _ref: cartRef };
-    onValue(cartRef, snap => {
+  /* ── Load cart from Firebase ── */
+  window.loadCartFromDB = async function() {
+    try {
+      const snap = await get(ref(db, window.cartPath()));
       APP.cart = [];
       if (snap.exists()) snap.forEach(c => APP.cart.push(c.val()));
-      if (window.updateBadge) updateBadge();
-      // If cart page is open, re-render it
-      if (document.getElementById('page-cart').classList.contains('active')) renderCartPage();
-    });
-  };
-
-  window.saveCartToDB = async function () {
-    try {
-      if (!APP.cart.length) {
-        await set(ref(db, window.cartPath()), null);
-      } else {
-        const cartObj = {};
-        APP.cart.forEach(item => { cartObj[item.id + '_' + item.size] = item; });
-        await set(ref(db, window.cartPath()), cartObj);
-      }
-    } catch (e) { console.error('saveCartToDB:', e); }
+    } catch(e) { APP.cart = []; }
     if (window.updateBadge) updateBadge();
   };
 
-  /* Merge guest → user cart on login */
+  /* ── Save cart to Firebase ── */
+  window.saveCartToDB = async function() {
+    try {
+      const cartObj = {};
+      APP.cart.forEach((item, i) => {
+        const key = item.id + '_' + item.size;
+        cartObj[key] = item;
+      });
+      await set(ref(db, window.cartPath()), APP.cart.length ? cartObj : null);
+    } catch(e) {}
+    if (window.updateBadge) updateBadge();
+  };
+
+  /* ── Merge guest cart → user cart on login ── */
   async function mergeGuestCart(uid) {
     try {
       const guestSnap = await get(ref(db, `carts/${APP.guestId}`));
@@ -127,34 +119,10 @@
       userCart.forEach(item => { merged[item.id + '_' + item.size] = item; });
       await set(ref(db, `carts/${uid}`), merged);
       await set(ref(db, `carts/${APP.guestId}`), null);
-    } catch (e) { console.error('mergeGuestCart:', e); }
+    } catch(e) {}
   }
 
-  /* ══════════════════════════════════════════
-     PRODUCTS — real-time listener
-  ══════════════════════════════════════════ */
-  onValue(ref(db, 'products'), snap => {
-    APP.products = [];
-    if (snap.exists()) snap.forEach(c => APP.products.push({ id: c.key, ...c.val() }));
-    if (window.renderFeatured) renderFeatured();
-    if (window.renderSwipeStack) renderSwipeStack();
-    if (document.getElementById('page-shop').classList.contains('active')) renderShopGrid();
-    renderAdminFAB();
-  });
-
-  /* ══════════════════════════════════════════
-     REVIEWS — real-time listener
-  ══════════════════════════════════════════ */
-  onValue(ref(db, 'reviews'), snap => {
-    const reviews = [];
-    if (snap.exists()) snap.forEach(c => reviews.push(c.val()));
-    if (window.renderReviews) renderReviews(reviews);
-  });
-
-  /* ══════════════════════════════════════════
-     AUTH STATE
-  ══════════════════════════════════════════ */
-  onAuthStateChanged(auth, async user => {
+  onAuthStateChanged(auth, async (user) => {
     const wasGuest = !APP.user && user;
     APP.user = user;
     if (user) {
@@ -163,20 +131,40 @@
         APP.isAdmin = snap.exists() && snap.val().status === true;
       } catch { APP.isAdmin = false; }
       if (wasGuest) await mergeGuestCart(user.uid);
-    } else {
-      APP.isAdmin = false;
-    }
-    // Re-subscribe cart for correct path (user vs guest)
-    subscribeCart();
-    if (window.renderAuthState) renderAuthState();
-    renderAdminFAB();
+    } else { APP.isAdmin = false; }
+    await loadCartFromDB();
+    if (window.renderAuthState) window.renderAuthState();
   });
 
-  /* ══════════════════════════════════════════
-     INIT on DOM ready
-  ══════════════════════════════════════════ */
+  async function loadProducts() {
+    try {
+      const snap = await get(ref(db, 'products'));
+      APP.products = [];
+      if (snap.exists()) {
+        snap.forEach(c => {
+          const p = { id: c.key, ...c.val() };
+          // Normalize images: RTDB stores arrays as {0:url,1:url} objects.
+          // SDK v10 usually converts back, but we normalize defensively.
+          if (p.images && !Array.isArray(p.images)) {
+            p.images = Object.values(p.images);
+          } else if (!p.images) {
+            p.images = [];
+          }
+          p.images = p.images.filter(Boolean);
+          // Ensure imageUrl always mirrors first image
+          if (!p.imageUrl && p.images.length) p.imageUrl = p.images[0];
+          APP.products.push(p);
+        });
+      }
+    } catch(e) { console.error('loadProducts failed:', e); }
+    if (window.renderFeatured) renderFeatured();
+    if (window.renderSwipeStack) renderSwipeStack();
+  }
+
   window.addEventListener('DOMContentLoaded', () => {
-    subscribeCart();
+    loadMedia();
+    loadProducts();
+    loadCartFromDB();
   });
 </script>
 
@@ -214,12 +202,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:10px}
 
 /* ── MEDIA SLOTS ── */
-.media-slot{position:relative;overflow:hidden;background:var(--surface);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;border:1.5px dashed var(--border2);transition:border-color .3s}
+.media-slot {
+  position:relative;overflow:hidden;background:var(--surface);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;
+  border:1.5px dashed var(--border2);transition:border-color .3s;
+}
 .media-slot.slot-filled{border:none}
 .media-slot-label{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.6}
 .media-slot-icon{font-size:28px;opacity:.4}
 .slot-id-badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-family:var(--font-mono);font-size:8px;letter-spacing:1px;padding:2px 7px;border-radius:4px;font-weight:700;z-index:2}
-.media-slot.slot-filled .slot-id-badge{display:none}
+.media-slot.slot-filled .slot-id-badge{background:var(--green)}
 
 /* ── PROMO STRIP ── */
 .promo-strip{background:var(--accent);overflow:hidden;height:32px;display:flex;align-items:center;position:relative;z-index:100}
@@ -228,7 +220,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .promo-dot{width:3px;height:3px;background:rgba(255,255,255,.5);border-radius:50%;display:inline-block;margin:0 4px;vertical-align:middle}
 
 /* ── TOP NAV ── */
-nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:var(--nav-h);background:rgba(13,13,15,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+nav {
+  position:fixed;top:32px;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;height:var(--nav-h);
+  background:rgba(13,13,15,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+}
 .nav-logo{font-family:var(--font-display);font-size:24px;letter-spacing:5px;color:var(--white);cursor:pointer;display:flex;align-items:center;gap:7px}
 .nav-logo-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:blink 1.5s ease-in-out infinite;box-shadow:0 0 8px var(--accent)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
@@ -240,7 +238,13 @@ nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;align-items:
 .nav-auth-btn:hover{background:var(--accent2);transform:translateY(-1px)}
 
 /* ── BOTTOM NAV ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,13,15,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;height:var(--bottom-h);padding-bottom:env(safe-area-inset-bottom,8px)}
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(13,13,15,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-around;
+  height:var(--bottom-h);padding-bottom:env(safe-area-inset-bottom,8px);
+}
 .bnav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none;padding:8px 16px;border-radius:12px;transition:all .2s;min-width:60px}
 .bnav-icon{font-size:20px;transition:transform .2s}
 .bnav-lbl{font-family:var(--font-body);font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;transition:color .2s}
@@ -249,23 +253,32 @@ nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;align-items:
 .bnav-cart-wrap{position:relative}
 .bnav-cart-badge{position:absolute;top:-2px;right:-2px;background:var(--accent);color:#fff;font-family:var(--font-mono);font-size:7px;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid var(--bg)}
 
-/* ── ADMIN FAB ── */
-.admin-fab{position:fixed;bottom:calc(var(--bottom-h) + 16px);right:16px;z-index:300;background:linear-gradient(135deg,#7c3aed,#3b82f6);color:#fff;border:none;width:52px;height:52px;border-radius:50%;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(124,58,237,.5);transition:all .25s;display:none;align-items:center;justify-content:center}
-.admin-fab:hover{transform:scale(1.1) translateY(-2px)}
-.admin-fab.show{display:flex}
-
 /* ── PAGES ── */
 .page{display:none;padding-top:calc(32px + var(--nav-h));padding-bottom:calc(var(--bottom-h) + 16px);min-height:100vh}
 .page.active{display:block;animation:pageFadeIn .3s ease}
 @keyframes pageFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── HERO ── */
-.hero{position:relative;overflow:hidden;background:linear-gradient(160deg,#0d0d0f 0%,#1a0a0c 50%,#0d0d0f 100%);padding:36px 18px 0}
+.hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#0d0d0f 0%,#1a0a0c 50%,#0d0d0f 100%);
+  padding:36px 18px 0;
+}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 40%,rgba(230,57,70,.22) 0%,transparent 70%)}
 .hero-inner{position:relative;z-index:2;max-width:480px;margin:0 auto}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(230,57,70,.12);border:1px solid rgba(230,57,70,.25);padding:5px 14px;border-radius:50px;font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:18px;animation:fadeUp .7s ease both}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(230,57,70,.12);border:1px solid rgba(230,57,70,.25);
+  padding:5px 14px;border-radius:50px;font-family:var(--font-mono);font-size:10px;
+  letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:18px;
+  animation:fadeUp .7s ease both;
+}
 .eyebrow-dot{width:5px;height:5px;background:var(--accent);border-radius:50%;animation:blink 1.5s ease-in-out infinite}
-.hero-title{font-family:var(--font-display);font-size:clamp(58px,15vw,100px);line-height:.9;letter-spacing:3px;color:var(--white);margin-bottom:12px;animation:fadeUp .7s .1s ease both}
+.hero-title{
+  font-family:var(--font-display);font-size:clamp(58px,15vw,100px);
+  line-height:.9;letter-spacing:3px;color:var(--white);margin-bottom:12px;
+  animation:fadeUp .7s .1s ease both;
+}
 .hero-title em{color:var(--accent);font-style:normal;display:block}
 .hero-sub{font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:24px;animation:fadeUp .7s .2s ease both}
 .hero-btns{display:flex;gap:10px;flex-wrap:wrap;animation:fadeUp .7s .3s ease both}
@@ -276,7 +289,11 @@ nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;align-items:
 
 /* ── HERO CARD ── */
 .hero-card-wrap{margin-top:32px;position:relative}
-.hero-card{background:var(--surface);border:1px solid var(--border2);border-radius:28px;padding:28px 22px 22px;text-align:center;position:relative;overflow:hidden;animation:fadeUp .7s .2s ease both}
+.hero-card{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:28px;padding:28px 22px 22px;text-align:center;
+  position:relative;overflow:hidden;animation:fadeUp .7s .2s ease both;
+}
 .hero-card::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:40%;height:3px;background:var(--accent);border-radius:0 0 3px 3px}
 .hero-card-glow{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:200px;height:200px;background:radial-gradient(circle,rgba(230,57,70,.15) 0%,transparent 70%);pointer-events:none}
 .hero-top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -314,22 +331,41 @@ nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;align-items:
 .cat-scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -16px;padding:0 16px 16px}
 .cat-scroll-wrap::-webkit-scrollbar{display:none}
 .cat-scroll{display:flex;gap:10px;width:max-content}
-.cat-pill{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:80px;height:90px;border-radius:18px;background:var(--surface);border:1.5px solid var(--border);cursor:pointer;transition:all .25s;flex-shrink:0;padding:10px}
+.cat-pill{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  min-width:80px;height:90px;border-radius:18px;
+  background:var(--surface);border:1.5px solid var(--border);
+  cursor:pointer;transition:all .25s;flex-shrink:0;padding:10px;
+}
 .cat-pill:hover,.cat-pill.active{background:var(--accent);border-color:var(--accent);transform:scale(1.05);box-shadow:0 6px 20px var(--accent-glow)}
 .cat-pill-icon{font-size:26px;line-height:1}
 .cat-pill-name{font-family:var(--font-body);font-size:10px;font-weight:800;color:var(--text2);text-align:center;letter-spacing:.5px;text-transform:uppercase;transition:color .2s;line-height:1.2}
 .cat-pill.active .cat-pill-name,.cat-pill:hover .cat-pill-name{color:#fff}
 
-/* ── SWIPE STACK ── */
+/* ── SWIPE STACK (Tinder/Reel style) ── */
 .swipe-section{margin:0 -16px 32px;padding:0 16px}
 .swipe-instruction{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;text-align:center;margin-bottom:12px}
-.swipe-stack-wrap{position:relative;height:480px;display:flex;align-items:center;justify-content:center}
-.swipe-card{position:absolute;width:100%;max-width:340px;background:var(--surface);border-radius:28px;overflow:hidden;border:1px solid var(--border2);cursor:grab;user-select:none;transition:box-shadow .3s;touch-action:none;will-change:transform}
+.swipe-stack-wrap{
+  position:relative;height:480px;
+  display:flex;align-items:center;justify-content:center;
+}
+.swipe-card{
+  position:absolute;width:100%;max-width:340px;
+  background:var(--surface);border-radius:28px;overflow:hidden;
+  border:1px solid var(--border2);
+  cursor:grab;user-select:none;
+  transition:box-shadow .3s;
+  touch-action:none;
+  will-change:transform;
+}
 .swipe-card:active{cursor:grabbing}
 .swipe-card.is-top{z-index:10;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px var(--accent-glow)}
 .swipe-card.is-2nd{z-index:9;transform:scale(.94) translateY(12px)!important}
 .swipe-card.is-3rd{z-index:8;transform:scale(.88) translateY(24px)!important}
-.swipe-card-img{width:100%;height:300px;position:relative;overflow:hidden;background:var(--surface2);display:flex;align-items:center;justify-content:center}
+.swipe-card-img{
+  width:100%;height:300px;position:relative;overflow:hidden;
+  background:var(--surface2);display:flex;align-items:center;justify-content:center;
+}
 .swipe-card-img img{width:100%;height:100%;object-fit:cover;display:block}
 .swipe-card-emoji{font-size:120px;filter:drop-shadow(0 16px 32px rgba(0,0,0,.6));animation:floatJersey 3s ease-in-out infinite}
 .swipe-badge{position:absolute;top:14px;left:14px;background:var(--accent);color:#fff;font-family:var(--font-display);font-size:11px;letter-spacing:1px;padding:4px 12px;border-radius:6px}
@@ -347,22 +383,40 @@ nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;align-items:
 .swipe-card-sizes{display:flex;gap:4px}
 .swipe-size{width:30px;height:30px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .2s}
 .swipe-size.active,.swipe-size:hover{background:var(--accent);border-color:var(--accent);color:#fff}
-.swipe-nope,.swipe-like{position:absolute;top:28px;padding:6px 14px;border-radius:8px;font-family:var(--font-display);font-size:22px;letter-spacing:2px;opacity:0;transform:rotate(-15deg);border:3px solid;z-index:20;pointer-events:none}
+
+/* Swipe action indicators */
+.swipe-nope,.swipe-like{
+  position:absolute;top:28px;padding:6px 14px;border-radius:8px;
+  font-family:var(--font-display);font-size:22px;letter-spacing:2px;
+  opacity:0;transform:rotate(-15deg);border:3px solid;z-index:20;pointer-events:none;
+}
 .swipe-like{left:18px;color:#10b981;border-color:#10b981;transform:rotate(-15deg)}
 .swipe-nope{right:18px;color:var(--accent);border-color:var(--accent);transform:rotate(15deg)}
+
+/* Swipe action buttons */
 .swipe-actions{display:flex;justify-content:center;gap:16px;margin-top:12px}
-.swipe-action-btn{width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;transition:all .25s;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.swipe-action-btn{
+  width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  transition:all .25s;box-shadow:0 4px 16px rgba(0,0,0,.4);
+}
 .swipe-action-btn.skip{background:var(--surface2);border:1.5px solid var(--border2);color:var(--text2)}
 .swipe-action-btn.skip:hover{background:rgba(230,57,70,.15);border-color:var(--accent);transform:scale(1.1)}
 .swipe-action-btn.cart{background:var(--accent);color:#fff}
 .swipe-action-btn.cart:hover{background:var(--accent2);transform:scale(1.1)}
 .swipe-action-btn.like{background:var(--surface2);border:1.5px solid var(--border2);color:var(--text2)}
 .swipe-action-btn.like:hover{background:rgba(16,185,129,.15);border-color:var(--green);transform:scale(1.1)}
+
+/* Swipe counter */
 .swipe-counter{text-align:center;font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:6px;text-transform:uppercase}
 
 /* ── GRID PRODUCTS ── */
-.products-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.product-card{background:var(--surface);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .3s;border:1px solid var(--border)}
+.products-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+.product-card{background:var(--surface);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .3s;border:1px solid var(--border);active:scale(.97)}
 .product-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:var(--shadow)}
 .product-img{position:relative;height:190px;background:var(--surface2);overflow:hidden;display:flex;align-items:center;justify-content:center}
 .product-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -393,7 +447,11 @@ nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;align-items:
 /* ── CLUB FILTER ── */
 .club-row{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -16px 28px;padding:0 16px}
 .club-row::-webkit-scrollbar{display:none}
-.club-btn{width:48px;height:48px;border-radius:14px;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:all .25s;flex-shrink:0}
+.club-btn{
+  width:48px;height:48px;border-radius:14px;background:var(--surface);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;
+  transition:all .25s;flex-shrink:0;
+}
 .club-btn:hover,.club-btn.active{background:var(--accent);border-color:var(--accent);transform:scale(1.1);box-shadow:0 4px 16px var(--accent-glow)}
 
 /* ── STATS BAND ── */
@@ -441,21 +499,28 @@ nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;align-items:
 /* ── DETAIL OVERLAY ── */
 .detail-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:flex-end}
 .detail-overlay.open{opacity:1;pointer-events:all}
-.detail-modal{background:var(--surface);width:100%;max-height:90vh;overflow-y:auto;border-radius:28px 28px 0 0;transform:translateY(100%);transition:transform .4s cubic-bezier(.16,1,.3,1);padding-bottom:env(safe-area-inset-bottom,0)}
+.detail-modal{
+  background:var(--surface);width:100%;max-height:90vh;overflow-y:auto;
+  border-radius:28px 28px 0 0;transform:translateY(100%);transition:transform .4s cubic-bezier(.16,1,.3,1);
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
 .detail-overlay.open .detail-modal{transform:translateY(0)}
-.detail-img-side{position:relative;background:var(--surface2);height:280px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:28px 28px 0 0}
+.detail-img-side{position:relative;background:var(--surface2);height:280px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:28px 28px 0 0;cursor:pointer}
 .detail-img-side img{width:100%;height:100%;object-fit:cover;transition:opacity .25s}
 .detail-emoji{font-size:110px;filter:drop-shadow(0 16px 32px rgba(0,0,0,.5));display:block;text-align:center}
 .detail-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:4;transition:all .2s}
 .detail-close:hover{background:rgba(230,57,70,.5)}
+/* Image nav arrows */
 .img-nav-btn{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;transition:all .2s;user-select:none}
 .img-nav-btn:hover{background:rgba(230,57,70,.65);border-color:var(--accent)}
 .img-nav-prev{left:12px}
 .img-nav-next{right:12px}
 .img-nav-btn.hidden{display:none}
+/* Image dots */
 .img-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3}
 .img-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35);transition:all .25s;cursor:pointer}
 .img-dot.active{background:#fff;width:16px;border-radius:3px}
+/* Swipe card image nav */
 .swipe-img-nav{position:absolute;inset:0;display:flex;pointer-events:none;z-index:3}
 .swipe-img-zone{flex:1;pointer-events:all;cursor:pointer}
 .swipe-img-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:4px;z-index:4}
@@ -511,7 +576,12 @@ nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;align-items:
 .cart-sum-row{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text2)}
 .cart-sum-row.total{color:var(--white);font-weight:900;font-size:16px;border-top:1px solid var(--border);padding-top:12px;margin-top:4px}
 .cart-sum-row.total .val{font-family:var(--font-display);font-size:26px;color:var(--accent)}
-.cart-checkout-cta{width:100%;background:var(--accent);color:#fff;border:none;padding:16px;border-radius:16px;font-family:var(--font-body);font-size:16px;font-weight:800;cursor:pointer;letter-spacing:.5px;box-shadow:0 6px 24px var(--accent-glow);transition:all .25s;margin-bottom:10px}
+.cart-checkout-cta{
+  width:100%;background:var(--accent);color:#fff;border:none;
+  padding:16px;border-radius:16px;font-family:var(--font-body);font-size:16px;
+  font-weight:800;cursor:pointer;letter-spacing:.5px;box-shadow:0 6px 24px var(--accent-glow);
+  transition:all .25s;margin-bottom:10px;
+}
 .cart-checkout-cta:hover{background:var(--accent2);transform:translateY(-2px)}
 .cart-continue{width:100%;background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:13px;border-radius:16px;font-family:var(--font-body);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
 .cart-continue:hover{background:var(--surface3);color:var(--white)}
@@ -585,25 +655,6 @@ nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;align-items:
 .profile-action-btn.danger{background:var(--accent);border-color:var(--accent);color:#fff}
 .profile-action-btn.danger:hover{background:#c0242f}
 
-/* ── ADD PRODUCT MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:3000;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .3s}
-.modal-overlay.open{opacity:1;pointer-events:all}
-.add-prod-modal{background:var(--surface);border-radius:28px 28px 0 0;width:100%;max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .4s cubic-bezier(.16,1,.3,1);padding-bottom:env(safe-area-inset-bottom,0)}
-.modal-overlay.open .add-prod-modal{transform:translateY(0)}
-.add-prod-top{background:var(--accent);padding:22px 24px;display:flex;justify-content:space-between;align-items:center}
-.add-prod-title{font-family:var(--font-display);font-size:28px;letter-spacing:3px;color:#fff}
-.modal-x{background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.add-prod-body{padding:22px 24px 28px}
-
-/* Upload progress */
-.upload-area{border:2px dashed var(--border2);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px;background:var(--surface2)}
-.upload-area:hover{border-color:var(--accent);background:rgba(230,57,70,.05)}
-.upload-area input{display:none}
-.upload-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.upload-thumb{width:60px;height:60px;border-radius:8px;object-fit:cover;border:1px solid var(--border2)}
-.progress-bar-wrap{background:var(--surface3);border-radius:4px;height:6px;margin-top:8px;overflow:hidden;display:none}
-.progress-bar{height:100%;background:var(--accent);border-radius:4px;width:0;transition:width .3s}
-
 /* ── TOAST ── */
 .toast-wrap{position:fixed;bottom:calc(var(--bottom-h) + 12px);left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;align-items:center;gap:8px;width:90%;max-width:360px}
 .toast{background:var(--surface);color:var(--white);border-radius:14px;padding:12px 18px;font-family:var(--font-body);font-size:13px;font-weight:700;box-shadow:var(--shadow);width:100%;display:flex;align-items:center;gap:10px;animation:toastIn .3s ease both;border:1px solid var(--border2)}
@@ -611,6 +662,16 @@ nav{position:fixed;top:32px;left:0;right:0;z-index:200;display:flex;align-items:
 .toast.success{border-color:var(--green);background:rgba(16,185,129,.12)}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes toastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-10px)}}
+
+/* ── ADD PRODUCT MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:3000;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.add-prod-modal{background:var(--surface);border-radius:28px 28px 0 0;width:100%;max-height:85vh;overflow-y:auto;transform:translateY(100%);transition:transform .4s cubic-bezier(.16,1,.3,1);padding-bottom:env(safe-area-inset-bottom,0)}
+.modal-overlay.open .add-prod-modal{transform:translateY(0)}
+.add-prod-top{background:var(--accent);padding:22px 24px;display:flex;justify-content:space-between;align-items:center}
+.add-prod-title{font-family:var(--font-display);font-size:28px;letter-spacing:3px;color:#fff}
+.modal-x{background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.add-prod-body{padding:22px 24px 28px}
 
 /* ── FOOTER ── */
 footer{background:var(--surface);border-top:1px solid var(--border);padding:40px 16px 28px;max-width:480px;margin:0 auto}
@@ -663,13 +724,16 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
 <!-- BOTTOM NAV -->
 <div class="bottom-nav">
   <button class="bnav-btn active" id="bnav-home" onclick="navigate('home')">
-    <span class="bnav-icon">🏠</span><span class="bnav-lbl">Home</span>
+    <span class="bnav-icon">🏠</span>
+    <span class="bnav-lbl">Home</span>
   </button>
   <button class="bnav-btn" id="bnav-swipe" onclick="navigate('swipe')">
-    <span class="bnav-icon">✨</span><span class="bnav-lbl">Drops</span>
+    <span class="bnav-icon">✨</span>
+    <span class="bnav-lbl">Drops</span>
   </button>
   <button class="bnav-btn" id="bnav-shop" onclick="navigate('shop')">
-    <span class="bnav-icon">🛍️</span><span class="bnav-lbl">Shop</span>
+    <span class="bnav-icon">🛍️</span>
+    <span class="bnav-lbl">Shop</span>
   </button>
   <button class="bnav-btn" id="bnav-cart" onclick="navigate('cart')">
     <span class="bnav-icon" style="position:relative">
@@ -678,15 +742,15 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
     <span class="bnav-lbl">Cart</span>
   </button>
   <button class="bnav-btn" id="bnav-profile" onclick="navigate('profile')">
-    <span class="bnav-icon">👤</span><span class="bnav-lbl">Me</span>
+    <span class="bnav-icon">👤</span>
+    <span class="bnav-lbl">Me</span>
   </button>
 </div>
 
-<!-- ADMIN FAB -->
-<button class="admin-fab" id="adminFab" onclick="openModal('addProduct')" title="Add Product">＋</button>
-
 <!-- ══════════ HOME PAGE ══════════ -->
 <div class="page active" id="page-home">
+
+  <!-- HERO -->
   <section class="hero">
     <div class="hero-inner">
       <div class="hero-eyebrow"><span class="eyebrow-dot"></span>New Drop — Friday Collection</div>
@@ -696,21 +760,23 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
         <button class="btn-primary" onclick="navigate('swipe')">Swipe Drops ↗</button>
         <button class="btn-ghost" onclick="navigate('shop')">Browse All</button>
       </div>
+
+      <!-- Hero Jersey Card -->
       <div class="hero-card-wrap">
         <div class="hero-card">
           <div class="hero-card-glow"></div>
           <div class="hero-top-row">
-            <span class="hero-brand-pill">JERSIFY</span>
+            <span class="hero-brand-pill">NIKE</span>
             <div class="hero-team-badge">⚽</div>
           </div>
-          <div class="hero-team-name" id="heroTeamName">DROP</div>
-          <span class="hero-jersey" id="heroEmoji">👕</span>
+          <div class="hero-team-name">P S G</div>
+          <span class="hero-jersey">👕</span>
           <div class="hero-dots">
             <div class="hero-dot active"></div><div class="hero-dot"></div>
             <div class="hero-dot"></div><div class="hero-dot"></div>
           </div>
           <div class="hero-price-row">
-            <div class="hero-price" id="heroPrice">₹—</div>
+            <div class="hero-price">₹220</div>
             <div class="hero-sizes">
               <div class="size-chip">S</div><div class="size-chip">M</div>
               <div class="size-chip active">L</div><div class="size-chip">XL</div>
@@ -725,13 +791,15 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
     </div>
   </section>
 
+  <!-- MAIN CONTENT -->
   <div class="main-wrap">
+
     <!-- Hero Banner Slot -->
     <div style="margin-bottom:24px;border-radius:var(--r);overflow:hidden">
       <div id="slot-img1" class="media-slot" style="min-height:180px;border-radius:var(--r)">
         <span class="slot-id-badge">img1</span>
         <div class="media-slot-icon">🖼️</div>
-        <div class="media-slot-label">Hero Banner<br><small style="opacity:.6">img1 · Upload via Admin</small></div>
+        <div class="media-slot-label">Hero Banner<br><small style="opacity:.6">img1 · 1300×280px · Upload via Admin</small></div>
       </div>
     </div>
 
@@ -800,15 +868,15 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
       <div id="slot-vid1" class="media-slot" style="min-height:260px;border-radius:var(--r)">
         <span class="slot-id-badge">vid1</span>
         <div class="media-slot-icon">🎬</div>
-        <div class="media-slot-label">Promo Video<br><small style="opacity:.6">vid1 · MP4 or YouTube</small></div>
+        <div class="media-slot-label">Promo Video<br><small style="opacity:.6">vid1 · MP4 or YouTube Embed</small></div>
       </div>
     </div>
 
     <!-- STATS -->
     <div class="stats-band">
       <div class="stats-inner">
-        <div><div class="stat-num" id="statShipped">50K+</div><div class="stat-lbl">Shipped</div></div>
-        <div><div class="stat-num" id="statDesigns">200+</div><div class="stat-lbl">Designs</div></div>
+        <div><div class="stat-num">50K+</div><div class="stat-lbl">Shipped</div></div>
+        <div><div class="stat-num">200+</div><div class="stat-lbl">Designs</div></div>
         <div><div class="stat-num">4.9★</div><div class="stat-lbl">Rating</div></div>
         <div><div class="stat-num">48H</div><div class="stat-lbl">Dispatch</div></div>
       </div>
@@ -846,8 +914,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
         <button class="newsletter-btn" onclick="subscribeNewsletter()">Join →</button>
       </div>
     </div>
-  </div>
 
+  </div><!-- /main-wrap -->
+
+  <!-- FOOTER (inside home) -->
   <footer>
     <div class="footer-brand">JERSIFY</div>
     <div class="footer-brand-sub">Drop culture for the bold.</div>
@@ -876,26 +946,30 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
       <span class="footer-copy">MADE FOR THE BOLD.</span>
     </div>
   </footer>
-</div>
+</div><!-- /home -->
 
 <!-- ══════════ SWIPE / DROPS PAGE ══════════ -->
 <div class="page" id="page-swipe">
   <div class="main-wrap" style="padding-top:16px">
     <div class="sec-header"><h2 class="sec-title">SWIPE DROPS</h2></div>
     <div class="swipe-instruction">← SKIP &nbsp;&nbsp; HOLD TO PEEK &nbsp;&nbsp; → CART</div>
-    <div class="swipe-stack-wrap" id="swipeStack"></div>
+    <div class="swipe-stack-wrap" id="swipeStack">
+      <!-- Cards rendered by JS -->
+    </div>
     <div class="swipe-actions">
       <button class="swipe-action-btn skip" onclick="swipeSkip()" title="Skip">✕</button>
       <button class="swipe-action-btn cart" onclick="swipeCart()" title="Add to Cart">🛒</button>
       <button class="swipe-action-btn like" onclick="swipeLike()" title="Wishlist">♡</button>
     </div>
     <div class="swipe-counter" id="swipeCounter">— / —</div>
+
+    <!-- Reel-style vid slot -->
     <div style="margin-top:28px">
       <div class="sec-header"><h2 class="sec-title">Drop Reels</h2></div>
       <div id="slot-vid3" class="media-slot" style="min-height:380px;border-radius:var(--r);max-width:100%">
         <span class="slot-id-badge">vid3</span>
         <div class="media-slot-icon">🎬</div>
-        <div class="media-slot-label">Vertical Drop Reel<br><small style="opacity:.6">vid3 · 9:16 · MP4 or YouTube</small></div>
+        <div class="media-slot-label">Vertical Drop Reel<br><small style="opacity:.6">vid3 · 9:16 vertical · MP4 or YouTube</small></div>
       </div>
     </div>
   </div>
@@ -903,7 +977,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
 
 <!-- ══════════ SHOP PAGE ══════════ -->
 <div class="page" id="page-shop">
-  <div>
+  <div style="margin-top:0">
     <div id="slot-shopbanner" class="media-slot" style="min-height:140px;border-radius:0;border-left:none;border-right:none;background:linear-gradient(135deg,#0d0d0f,#1a0a0c)">
       <span class="slot-id-badge">shopbanner</span>
       <div class="media-slot-icon">🛍️</div>
@@ -935,10 +1009,13 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
   <div class="cart-page-wrap">
     <h1 class="cart-page-title">YOUR BAG</h1>
     <div class="cart-page-count" id="cartPageCount">0 items</div>
+
     <div id="guestCartNotice" class="guest-cart-notice" style="display:none">
       ⚡ <span>Your cart is saved as guest. <a href="login.html" style="color:var(--gold);text-decoration:underline;cursor:pointer">Login</a> to keep it across devices.</span>
     </div>
+
     <div class="cart-page-items" id="cartPageItems"></div>
+
     <div id="cartPageSummary" style="display:none">
       <div class="cart-summary">
         <div class="cart-summary-title">Order Summary</div>
@@ -950,6 +1027,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
       <button class="cart-checkout-cta" onclick="navigate('checkout')">Checkout →</button>
       <button class="cart-continue" onclick="navigate('shop')">Continue Shopping</button>
     </div>
+
     <div id="cartPageEmpty" class="cart-page-empty" style="display:none">
       <div class="cart-page-empty-icon">🛒</div>
       <div style="font-size:18px;font-weight:800;color:var(--white);margin-bottom:8px">Your bag is empty</div>
@@ -998,7 +1076,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
       </div>
       <div id="upiSection" style="display:none">
         <div class="upi-box">
-          <div class="upi-qr" id="upiQrSlot">
+          <div class="upi-qr" id="slot-upi-qr">
             <div style="font-size:28px">📱</div>
             <div style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;text-align:center">UPI QR<br><small>Upload via Admin</small></div>
           </div>
@@ -1058,9 +1136,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
       <div class="profile-email" id="profileEmail">—</div>
       <button class="profile-action-btn outline" onclick="navigate('orders')">View Orders</button>
       <button class="profile-action-btn outline" onclick="navigate('cart')">My Cart</button>
-      <div id="adminDashBtn" style="display:none">
-        <button class="profile-action-btn outline" style="border-color:rgba(124,58,237,.5);color:#a78bfa" onclick="window.location.href='admin.html'">⚙️ Admin Dashboard</button>
-      </div>
       <button class="profile-action-btn danger" onclick="doSignOut()">Sign Out</button>
     </div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-top:14px">
@@ -1072,18 +1147,21 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
   </div>
 </div>
 
-<!-- ══════════ PRODUCT DETAIL OVERLAY ══════════ -->
+<!-- PRODUCT DETAIL OVERLAY -->
 <div class="detail-overlay" id="detailOverlay">
   <div class="detail-modal">
     <div class="detail-img-side" id="detailImgSide">
       <button class="detail-close" onclick="closeDetailModal()">✕</button>
       <span class="detail-emoji" id="detailEmoji">👕</span>
+      <!-- Image nav zones (left/right click) -->
       <div class="swipe-img-nav" id="detailImgNav" style="display:none">
-        <div class="swipe-img-zone" onclick="detailImgStep(-1)"></div>
-        <div class="swipe-img-zone" onclick="detailImgStep(1)"></div>
+        <div class="swipe-img-zone" onclick="detailImgStep(-1)" title="Previous image"></div>
+        <div class="swipe-img-zone" onclick="detailImgStep(1)" title="Next image"></div>
       </div>
+      <!-- Arrow buttons -->
       <button class="img-nav-btn img-nav-prev hidden" id="detailPrevBtn" onclick="detailImgStep(-1)">‹</button>
       <button class="img-nav-btn img-nav-next hidden" id="detailNextBtn" onclick="detailImgStep(1)">›</button>
+      <!-- Dots -->
       <div class="img-dots" id="detailImgDots"></div>
     </div>
     <div class="detail-info">
@@ -1093,7 +1171,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
       </div>
       <h2 class="detail-title" id="detailTitle">JERSEY</h2>
       <div class="detail-team" id="detailTeam">Team</div>
-      <div class="detail-stars">★★★★★ <span style="font-size:11px;color:var(--muted)" id="detailRatingInfo">4.8 (0 reviews)</span></div>
+      <div class="detail-stars">★★★★★ <span style="font-size:11px;color:var(--muted)" id="detailRatingInfo">4.8 (234 reviews)</span></div>
       <div class="detail-price-row">
         <span class="detail-price" id="detailPrice">0</span>
         <span style="font-size:18px;color:var(--muted)">₹</span>
@@ -1111,72 +1189,27 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
   </div>
 </div>
 
-<!-- ══════════ ADD PRODUCT MODAL (Admin) ══════════ -->
+<!-- ADD PRODUCT MODAL -->
 <div class="modal-overlay" id="addProductModal">
   <div class="add-prod-modal">
-    <div class="add-prod-top">
-      <span class="add-prod-title">ADD PRODUCT</span>
-      <button class="modal-x" onclick="closeModal('addProduct')">✕</button>
-    </div>
+    <div class="add-prod-top"><span class="add-prod-title">ADD PRODUCT</span><button class="modal-x" onclick="closeModal('addProduct')">✕</button></div>
     <div class="add-prod-body">
-      <div class="form-group"><label class="form-label">Jersey Name</label><input class="form-input" id="ap_name" placeholder="e.g. LIVERPOOL HOME 25/26"/></div>
-      <div class="form-group"><label class="form-label">Team / Edition</label><input class="form-input" id="ap_team" placeholder="e.g. Liverpool FC"/></div>
+      <div class="form-group"><label class="form-label">Jersey Name</label><input class="form-input" id="ap_name" placeholder="e.g. FC VOID #00"/></div>
+      <div class="form-group"><label class="form-label">Team / Edition</label><input class="form-input" id="ap_team" placeholder="e.g. Null FC"/></div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Price (₹)</label><input class="form-input" id="ap_price" type="number" placeholder="799"/></div>
-        <div class="form-group"><label class="form-label">Original Price (₹)</label><input class="form-input" id="ap_origprice" type="number" placeholder="1399 (optional)"/></div>
+        <div class="form-group"><label class="form-label">Price (₹)</label><input class="form-input" id="ap_price" type="number" placeholder="199"/></div>
+        <div class="form-group"><label class="form-label">Original Price</label><input class="form-input" id="ap_origprice" type="number" placeholder="240 (optional)"/></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Stock</label><input class="form-input" id="ap_stock" type="number" placeholder="10"/></div>
         <div class="form-group"><label class="form-label">Category</label>
           <select class="form-input" id="ap_category">
-            <option value="football">Football</option>
-            <option value="streetwear">Streetwear</option>
-            <option value="retro">Retro</option>
-            <option value="collab">Collab</option>
+            <option value="football">Football</option><option value="streetwear">Streetwear</option>
+            <option value="retro">Retro</option><option value="collab">Collab</option>
           </select>
         </div>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Club</label>
-          <select class="form-input" id="ap_club">
-            <option value="other">Other / Generic</option>
-            <option value="real">Real Madrid</option>
-            <option value="barca">Barcelona</option>
-            <option value="chelsea">Chelsea</option>
-            <option value="united">Man United</option>
-            <option value="city">Man City</option>
-            <option value="atletico">Atletico</option>
-            <option value="juve">Juventus</option>
-            <option value="psg">PSG</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label">Badge</label>
-          <select class="form-input" id="ap_badge">
-            <option value="DROP">DROP</option>
-            <option value="SALE">SALE</option>
-            <option value="COLLAB">COLLAB</option>
-            <option value="NEW">NEW</option>
-          </select>
-        </div>
-      </div>
-      <!-- Image Upload -->
-      <div class="form-group">
-        <label class="form-label">Product Images (up to 5)</label>
-        <div class="upload-area" onclick="document.getElementById('ap_images').click()">
-          <div style="font-size:28px;margin-bottom:6px">📸</div>
-          <div style="font-size:12px;color:var(--text2);font-weight:700">Tap to select images</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:4px">JPG, PNG, WEBP · Max 5MB each</div>
-          <input type="file" id="ap_images" multiple accept="image/*" onchange="previewImages(this)" style="display:none"/>
-        </div>
-        <div class="upload-preview" id="uploadPreview"></div>
-        <div class="progress-bar-wrap" id="uploadProgressWrap">
-          <div class="progress-bar" id="uploadProgress"></div>
-        </div>
-        <div id="uploadStatus" style="font-size:11px;color:var(--muted);margin-top:6px;font-weight:600"></div>
-      </div>
-      <button class="place-order-btn" id="ap_submit" style="margin-top:8px" onclick="addProductFromModal()">
-        Add to Catalogue
-      </button>
+      <button class="place-order-btn" style="margin-top:8px" onclick="addProductFromModal()">Add to Catalogue</button>
     </div>
   </div>
 </div>
@@ -1185,118 +1218,91 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
-/* ═══════════════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════════════ */
 const CLUB_EMOJI = { atletico:'❤️',roma:'🟤',city:'🩵',real:'⚪',barca:'🔵',chelsea:'💙',united:'🔴',juve:'⚫',psg:'🔵',other:'⚽' };
 function clubEmoji(c){ return CLUB_EMOJI[c] || '⚽'; }
-function badgeClass(b){ return {SALE:'sale',COLLAB:'collab'}[b] || ''; }
+function badgeClass(b){ return {SALE:'sale',COLLAB:'collab'}[b]||''; }
 
-/* ═══════════════════════════════════════════════════
-   NAVIGATION
-═══════════════════════════════════════════════════ */
+// ══════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════
+const PAGES = ['home','swipe','shop','cart','checkout','orders','profile'];
 function navigate(page){
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const el = document.getElementById('page-' + page);
-  if (el) el.classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const el = document.getElementById('page-'+page);
+  if(el) el.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  // Bottom nav highlight
   document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
-  const bBtn = document.getElementById('bnav-' + page);
-  if (bBtn) bBtn.classList.add('active');
-  if (page === 'shop')     renderShopGrid();
-  if (page === 'orders')   renderOrders();
-  if (page === 'checkout') renderCheckout();
-  if (page === 'profile')  renderProfile();
-  if (page === 'cart')     renderCartPage();
-  if (page === 'swipe')    renderSwipeStack();
-  setTimeout(() => { if (window.applyAllMedia) applyAllMedia(); }, 60);
+  const bBtn = document.getElementById('bnav-'+page);
+  if(bBtn) bBtn.classList.add('active');
+  // Page-specific renders
+  if(page==='shop') renderShopGrid();
+  if(page==='orders') renderOrders();
+  if(page==='checkout') renderCheckout();
+  if(page==='profile') renderProfile();
+  if(page==='cart') renderCartPage();
+  if(page==='swipe') renderSwipeStack();
+  setTimeout(()=>{ if(window.applyAllMedia) applyAllMedia(); },60);
 }
 
-/* ═══════════════════════════════════════════════════
-   ADMIN FAB
-═══════════════════════════════════════════════════ */
-function renderAdminFAB(){
-  const fab = document.getElementById('adminFab');
-  if (!fab) return;
-  fab.classList.toggle('show', !!(APP.user && APP.isAdmin));
-  const adminBtn = document.getElementById('adminDashBtn');
-  if (adminBtn) adminBtn.style.display = (APP.user && APP.isAdmin) ? 'block' : 'none';
-}
-
-/* ═══════════════════════════════════════════════════
-   PRODUCT RENDERING
-═══════════════════════════════════════════════════ */
+// ══════════════════════════════════
+//  PRODUCT RENDERING
+// ══════════════════════════════════
 function renderProductCard(p, container){
   const card = document.createElement('div');
   card.className = 'product-card';
-  card.onclick = () => openDetailModal(p);
+  card.onclick = ()=>openDetailModal(p);
   const bc = badgeClass(p.badge);
   const imgHTML = p.imageUrl
     ? `<img src="${p.imageUrl}" alt="${p.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy"/>`
-    : `<span class="product-emoji">${p.emoji || '👕'}</span>`;
-  card.innerHTML = `
+    : `<span class="product-emoji">${p.emoji||'👕'}</span>`;
+  card.innerHTML=`
     <div class="product-img">
       ${imgHTML}
       <button class="wishlist-btn" onclick="event.stopPropagation();toggleWishlist(this)">🤍</button>
       <div class="club-badge-img">${clubEmoji(p.club)}</div>
-      ${p.badge ? `<div class="product-badge ${bc}">${p.badge}</div>` : ''}
+      <div class="product-badge ${bc}">${p.badge||''}</div>
     </div>
     <div class="product-info">
       <div class="product-name">${p.name}</div>
       <div class="product-team">${p.team}</div>
       <div class="product-bottom">
-        <div class="product-price">₹${p.price}${p.originalPrice ? `<span>₹${p.originalPrice}</span>` : ''}</div>
+        <div class="product-price">₹${p.price}${p.originalPrice?`<span>₹${p.originalPrice}</span>`:''}</div>
         <button class="add-btn" onclick="event.stopPropagation();addToCart('${p.id}')">Add</button>
       </div>
     </div>`;
   container.appendChild(card);
 }
-
-function renderFeatured(filter, clubFilter){
-  if (filter !== undefined) activeCat = filter;
-  if (clubFilter !== undefined) activeClub = clubFilter;
+function renderFeatured(filter='all', clubFilter='all'){
   const g = document.getElementById('featuredGrid');
-  if (!g) return;
-  g.innerHTML = '';
-  if (!APP.products.length){
-    g.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 24px;color:var(--muted)">
+  if(!g) return; g.innerHTML='';
+  if(!APP.products.length){
+    g.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:48px 24px;color:var(--muted)">
       <div style="font-size:48px;margin-bottom:12px">👕</div>
       <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px">No jerseys yet</div>
       <div style="font-size:12px;font-weight:600">Add products via the Admin Dashboard</div>
     </div>`;
-    // Reset hero card
-    document.getElementById('heroTeamName').textContent = 'DROP';
-    document.getElementById('heroEmoji').textContent = '👕';
-    document.getElementById('heroPrice').textContent = '₹—';
     return;
   }
   let list = APP.products;
-  if (activeCat !== 'all') list = list.filter(p => p.category === activeCat);
-  if (activeClub !== 'all') list = list.filter(p => p.club === activeClub);
-  list.slice(0, 6).forEach(p => renderProductCard(p, g));
-  // Update hero card with first product
-  const first = APP.products[0];
-  document.getElementById('heroTeamName').textContent = first.team ? first.team.toUpperCase().slice(0, 8) : 'DROP';
-  document.getElementById('heroEmoji').textContent = first.emoji || '👕';
-  document.getElementById('heroPrice').textContent = '₹' + first.price;
-  // Update stats
-  const statDesigns = document.getElementById('statDesigns');
-  if (statDesigns) statDesigns.textContent = APP.products.length + '+';
+  if(filter !== 'all') list = list.filter(p=>p.category===filter);
+  if(clubFilter !== 'all') list = list.filter(p=>p.club===clubFilter);
+  list.slice(0,6).forEach(p=>renderProductCard(p,g));
 }
 window.renderFeatured = renderFeatured;
 
 let activeCat = 'all', activeClub = 'all';
 function filterByCat(cat, btn){
   activeCat = cat;
-  document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  renderFeatured();
+  document.querySelectorAll('.cat-pill').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderFeatured(cat, activeClub);
 }
 function filterByClub(club, btn){
   activeClub = club;
-  document.querySelectorAll('.club-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  renderFeatured();
+  document.querySelectorAll('.club-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderFeatured(activeCat, club);
 }
 function toggleWishlist(btn){
   btn.classList.toggle('liked');
@@ -1304,124 +1310,99 @@ function toggleWishlist(btn){
   showToast(btn.classList.contains('liked') ? 'Added to wishlist ❤️' : 'Removed from wishlist');
 }
 
-/* ═══════════════════════════════════════════════════
-   REVIEWS — real-time render
-═══════════════════════════════════════════════════ */
-window.renderReviews = function(reviews){
-  const sec = document.getElementById('reviewsSection');
-  if (!sec) return;
-  if (!reviews || !reviews.length){
-    sec.innerHTML = `<div class="testi-card" style="min-width:280px;text-align:center;padding:32px 20px">
-      <div style="font-size:36px;margin-bottom:10px">⭐</div>
-      <div style="font-size:14px;font-weight:800;color:var(--white);margin-bottom:6px">Be the first to review!</div>
-      <div style="font-size:12px;color:var(--muted);font-weight:600">Reviews from verified buyers appear here.</div>
-    </div>`;
-    return;
-  }
-  // Sort newest first
-  const sorted = [...reviews].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-  sec.innerHTML = sorted.map(r => `
-    <div class="testi-card">
-      <div class="testi-stars">${'★'.repeat(Math.min(5, r.rating || 5))}${'☆'.repeat(5 - Math.min(5, r.rating || 5))}</div>
-      <div class="testi-text">${r.text || ''}</div>
-      <div class="testi-author">
-        <div class="testi-avatar">${(r.name || 'U')[0].toUpperCase()}</div>
-        <div>
-          <div class="testi-name">${r.name || 'Verified Buyer'}</div>
-          <div class="testi-tag">${r.tag || 'Verified Purchase ✅'}</div>
-        </div>
-      </div>
-    </div>`).join('');
-};
-
-/* ═══════════════════════════════════════════════════
-   SHOP GRID
-═══════════════════════════════════════════════════ */
-let shopFilter = 'all', shopSearch = '';
+let shopFilter='all', shopSearch='';
 function renderShopGrid(filter, search){
-  if (filter !== undefined) shopFilter = filter;
-  if (search !== undefined) shopSearch = search;
+  if(filter !== undefined) shopFilter = filter;
+  if(search !== undefined) shopSearch = search;
   const g = document.getElementById('shopGrid');
   const empty = document.getElementById('shopEmpty');
-  if (!g) return;
-  g.innerHTML = '';
+  if(!g) return; g.innerHTML='';
   let list = APP.products;
-  if (shopFilter !== 'all') list = list.filter(p => p.category === shopFilter);
-  if (shopSearch) list = list.filter(p =>
-    p.name.toLowerCase().includes(shopSearch.toLowerCase()) ||
-    p.team.toLowerCase().includes(shopSearch.toLowerCase())
-  );
-  if (!list.length){ empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-  list.forEach(p => renderProductCard(p, g));
+  if(shopFilter !== 'all') list = list.filter(p=>p.category===shopFilter);
+  if(shopSearch) list = list.filter(p=>p.name.toLowerCase().includes(shopSearch.toLowerCase())||p.team.toLowerCase().includes(shopSearch.toLowerCase()));
+  if(!list.length){ empty.style.display='block'; return; }
+  empty.style.display='none';
+  list.forEach(p=>renderProductCard(p,g));
 }
 function filterProducts(cat, btn){
-  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderShopGrid(cat);
 }
 function searchProducts(val){ renderShopGrid(undefined, val); }
 
-/* ═══════════════════════════════════════════════════
-   SWIPE STACK
-═══════════════════════════════════════════════════ */
+// ══════════════════════════════════
+//  SWIPE / REEL STACK
+// ══════════════════════════════════
 let swipeIdx = 0;
 let swipeSelectedSize = '';
 const swipeWishlist = new Set();
 
 function renderSwipeStack(){
   const stack = document.getElementById('swipeStack');
-  if (!stack) return;
-  stack.innerHTML = '';
-  if (!APP.products.length){
-    stack.innerHTML = `<div style="text-align:center;padding:60px 24px;color:var(--muted)">
+  if(!stack) return;
+  stack.innerHTML='';
+  if(!APP.products.length){
+    stack.innerHTML=`<div style="text-align:center;padding:60px 24px;color:var(--muted)">
       <div style="font-size:48px;margin-bottom:12px">✨</div>
       <div style="font-size:16px;font-weight:800;color:var(--text)">No drops yet</div>
       <div style="font-size:12px;margin-top:6px">Products will appear here once added.</div>
     </div>`;
-    updateSwipeCounter(); return;
+    updateSwipeCounter();
+    return;
   }
-  if (swipeIdx >= APP.products.length) swipeIdx = 0;
+  // Clamp index so first card is always visible
+  if(swipeIdx >= APP.products.length) swipeIdx = 0;
   const visible = APP.products.slice(swipeIdx, swipeIdx + 3);
-  visible.forEach((p, i) => stack.appendChild(createSwipeCard(p, i)));
+  visible.forEach((p, i) => {
+    const card = createSwipeCard(p, i);
+    stack.appendChild(card);
+  });
   updateSwipeCounter();
   const topCard = stack.querySelector('.swipe-card.is-top');
-  if (topCard) initDrag(topCard, APP.products[swipeIdx]);
+  if(topCard) initDrag(topCard, APP.products[swipeIdx]);
 }
 window.renderSwipeStack = renderSwipeStack;
 
 function createSwipeCard(p, depth){
   const card = document.createElement('div');
-  card.className = `swipe-card ${['is-top','is-2nd','is-3rd'][depth] || ''}`;
+  card.className = `swipe-card ${['is-top','is-2nd','is-3rd'][depth]||''}`;
   const bc = badgeClass(p.badge);
-  const imgs = (p.images && p.images.length) ? p.images : (p.imageUrl ? [p.imageUrl] : []);
+  // Normalize images (RTDB may return {0:url,1:url} object)
+  let rawImgs = p.images;
+  if (rawImgs && !Array.isArray(rawImgs)) rawImgs = Object.values(rawImgs);
+  const imgs = (rawImgs && rawImgs.length) ? rawImgs.filter(Boolean) : (p.imageUrl ? [p.imageUrl] : []);
   let imgIdx = 0;
 
   function buildImgHTML(){
-    if (imgs.length){
+    if(imgs.length){
       return `<img src="${imgs[imgIdx]}" alt="${p.name}" loading="lazy" data-swipe-img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;transition:opacity .2s"/>`;
     }
-    return `<span class="swipe-card-emoji">${p.emoji || '👕'}</span>`;
+    return `<span class="swipe-card-emoji">${p.emoji||'👕'}</span>`;
   }
 
-  const multiDots = imgs.length > 1
-    ? `<div class="swipe-img-dots">${imgs.map((_, i) => `<div class="swipe-img-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}</div>` : '';
+  const multiImgDots = imgs.length > 1
+    ? `<div class="swipe-img-dots" id="swipeDots_${p.id}_${depth}">
+        ${imgs.map((_,i)=>`<div class="swipe-img-dot ${i===0?'active':''}"></div>`).join('')}
+       </div>` : '';
 
-  const multiNav = imgs.length > 1
-    ? `<div class="swipe-img-nav"><div class="swipe-img-zone" data-dir="-1"></div><div class="swipe-img-zone" data-dir="1"></div></div>` : '';
+  const multiImgNav = imgs.length > 1
+    ? `<div class="swipe-img-nav" id="swipeImgNav_${p.id}_${depth}">
+        <div class="swipe-img-zone" data-dir="-1"></div>
+        <div class="swipe-img-zone" data-dir="1"></div>
+       </div>` : '';
 
   const isLiked = swipeWishlist.has(p.id);
-  const firstSize = p.sizes?.[0] || 'M';
-
-  card.innerHTML = `
+  const firstSize = p.sizes?.[0]||'M';
+  card.innerHTML=`
     <div class="swipe-nope">NOPE</div>
     <div class="swipe-like">ADD</div>
-    <div class="swipe-card-img" style="position:relative">
+    <div class="swipe-card-img" style="position:relative" id="swipeImgWrap_${p.id}_${depth}">
       ${buildImgHTML()}
-      ${multiNav}
-      ${multiDots}
-      <div class="swipe-badge ${bc}">${p.badge || 'DROP'}</div>
-      <button class="swipe-wishlist ${isLiked ? 'liked' : ''}" onclick="event.stopPropagation();swipeToggleWish('${p.id}',this)">${isLiked ? '❤️' : '🤍'}</button>
+      ${multiImgNav}
+      ${multiImgDots}
+      <div class="swipe-badge ${bc}">${p.badge||'DROP'}</div>
+      <button class="swipe-wishlist ${isLiked?'liked':''}" onclick="event.stopPropagation();swipeToggleWish('${p.id}',this)">${isLiked?'❤️':'🤍'}</button>
       <div class="swipe-club-badge">${clubEmoji(p.club)}</div>
     </div>
     <div class="swipe-card-info">
@@ -1430,36 +1411,39 @@ function createSwipeCard(p, depth){
       <div class="swipe-card-bottom">
         <div>
           <span class="swipe-price">₹${p.price}</span>
-          ${p.originalPrice ? `<span class="swipe-price-orig">₹${p.originalPrice}</span>` : ''}
+          ${p.originalPrice?`<span class="swipe-price-orig">₹${p.originalPrice}</span>`:''}
         </div>
         <div class="swipe-card-sizes" id="swipeSizes_${p.id}">
-          ${(p.sizes || ['S','M','L','XL']).map((s, i) =>
-            `<div class="swipe-size ${i === 0 ? 'active' : ''}" onclick="event.stopPropagation();selSwipeSize('${s}',this,'${p.id}')">${s}</div>`
-          ).join('')}
+          ${(p.sizes||['S','M','L','XL']).map((s,i)=>`<div class="swipe-size ${i===0?'active':''}" onclick="event.stopPropagation();selSwipeSize('${s}',this,'${p.id}')">${s}</div>`).join('')}
         </div>
       </div>
     </div>`;
 
-  if (depth === 0) swipeSelectedSize = firstSize;
+  if(depth===0) swipeSelectedSize = firstSize;
 
-  // Multi-image tap zones
-  if (imgs.length > 1){
-    card.querySelectorAll('.swipe-img-zone').forEach(zone => {
-      zone.addEventListener('click', e => {
+  // Wire up image tap zones for multi-image
+  if(imgs.length > 1){
+    card.querySelectorAll('.swipe-img-zone').forEach(zone=>{
+      zone.addEventListener('click', e=>{
         e.stopPropagation();
         const dir = parseInt(zone.dataset.dir);
-        imgIdx = Math.max(0, Math.min(imgs.length - 1, imgIdx + dir));
-        const imgEl = card.querySelector('[data-swipe-img]');
-        if (imgEl){ imgEl.style.opacity = '0'; setTimeout(() => { imgEl.src = imgs[imgIdx]; imgEl.style.opacity = '1'; }, 150); }
-        card.querySelectorAll('.swipe-img-dot').forEach((d, i) => d.classList.toggle('active', i === imgIdx));
+        imgIdx = Math.max(0, Math.min(imgs.length-1, imgIdx+dir));
+        // Update image
+        const wrap = card.querySelector('.swipe-card-img');
+        const imgEl = wrap.querySelector('[data-swipe-img]');
+        if(imgEl){ imgEl.style.opacity='0'; setTimeout(()=>{imgEl.src=imgs[imgIdx];imgEl.style.opacity='1';},150); }
+        // Update dots
+        const dots = wrap.querySelectorAll('.swipe-img-dot');
+        dots.forEach((d,i)=>d.classList.toggle('active',i===imgIdx));
       });
     });
   }
+
   return card;
 }
 
 function selSwipeSize(size, el, pid){
-  document.querySelectorAll(`#swipeSizes_${pid} .swipe-size`).forEach(s => s.classList.remove('active'));
+  document.querySelectorAll(`#swipeSizes_${pid} .swipe-size`).forEach(s=>s.classList.remove('active'));
   el.classList.add('active');
   swipeSelectedSize = size;
 }
@@ -1467,231 +1451,253 @@ function swipeToggleWish(id, btn){
   swipeWishlist.has(id) ? swipeWishlist.delete(id) : swipeWishlist.add(id);
   btn.classList.toggle('liked');
   btn.textContent = btn.classList.contains('liked') ? '❤️' : '🤍';
-  showToast(btn.classList.contains('liked') ? 'Wishlisted ❤️' : 'Removed from wishlist');
+  showToast(btn.classList.contains('liked')?'Wishlisted ❤️':'Removed from wishlist');
 }
 
 function updateSwipeCounter(){
   const el = document.getElementById('swipeCounter');
-  if (!el) return;
-  if (!APP.products.length){ el.textContent = '—'; return; }
-  el.textContent = `${Math.max(0, APP.products.length - swipeIdx)} drops remaining`;
+  if(!el) return;
+  if(!APP.products.length){ el.textContent='—'; return; }
+  const remaining = APP.products.length - swipeIdx;
+  el.textContent = `${Math.max(0,remaining)} drops remaining`;
 }
 
-/* ─── Drag logic ─── */
+// ── Drag/swipe logic ──
 function initDrag(card, product){
-  let startX = 0, startY = 0, curX = 0, curY = 0, isDragging = false;
+  let startX=0, startY=0, curX=0, curY=0, isDragging=false;
   const nope = card.querySelector('.swipe-nope');
   const like = card.querySelector('.swipe-like');
 
-  function onStart(x, y){ startX = x; startY = y; isDragging = true; card.style.transition = 'none'; }
+  function onStart(x, y){
+    startX = x; startY = y; isDragging = true;
+    card.style.transition='none';
+  }
   function onMove(x, y){
-    if (!isDragging) return;
+    if(!isDragging) return;
     curX = x - startX; curY = y - startY;
-    card.style.transform = `translateX(${curX}px) translateY(${curY}px) rotate(${curX * 0.05}deg)`;
-    if (curX > 30){ nope.style.opacity = '0'; like.style.opacity = Math.min(1, (curX - 30) / 80); }
-    else if (curX < -30){ like.style.opacity = '0'; nope.style.opacity = Math.min(1, (-curX - 30) / 80); }
-    else { nope.style.opacity = '0'; like.style.opacity = '0'; }
+    const rot = curX * 0.05;
+    card.style.transform = `translateX(${curX}px) translateY(${curY}px) rotate(${rot}deg)`;
+    const abs = Math.abs(curX);
+    if(curX > 30){ nope.style.opacity='0'; like.style.opacity=Math.min(1,(curX-30)/80); }
+    else if(curX < -30){ like.style.opacity='0'; nope.style.opacity=Math.min(1,(-curX-30)/80); }
+    else { nope.style.opacity='0'; like.style.opacity='0'; }
   }
   function onEnd(){
-    if (!isDragging) return;
-    isDragging = false;
-    card.style.transition = 'transform .35s cubic-bezier(.25,.46,.45,.94)';
-    if (curX > 100){
-      card.style.transform = 'translateX(150%) rotate(20deg)';
-      setTimeout(() => { addToCart(product.id, swipeSelectedSize); nextSwipe(); }, 300);
-    } else if (curX < -100){
-      card.style.transform = 'translateX(-150%) rotate(-20deg)';
-      setTimeout(() => nextSwipe(), 300);
+    if(!isDragging) return;
+    isDragging=false;
+    card.style.transition='transform .35s cubic-bezier(.25,.46,.45,.94)';
+    if(curX > 100){
+      // cart swipe right
+      card.style.transform=`translateX(150%) rotate(20deg)`;
+      setTimeout(()=>{ addToCart(product.id, swipeSelectedSize); nextSwipe(); }, 300);
+    } else if(curX < -100){
+      // skip swipe left
+      card.style.transform=`translateX(-150%) rotate(-20deg)`;
+      setTimeout(()=>nextSwipe(), 300);
     } else {
-      card.style.transform = '';
-      nope.style.opacity = '0'; like.style.opacity = '0';
+      card.style.transform='';
+      nope.style.opacity='0'; like.style.opacity='0';
     }
-    curX = 0; curY = 0;
+    curX=0; curY=0;
   }
 
-  card.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
-  document.addEventListener('mousemove', e => { if (isDragging) onMove(e.clientX, e.clientY); });
-  document.addEventListener('mouseup', () => onEnd());
-  card.addEventListener('touchstart', e => { const t = e.touches[0]; onStart(t.clientX, t.clientY); }, { passive: true });
-  document.addEventListener('touchmove', e => { if (isDragging){ const t = e.touches[0]; onMove(t.clientX, t.clientY); } }, { passive: true });
-  document.addEventListener('touchend', () => onEnd(), { passive: true });
+  card.addEventListener('mousedown', e=>{ onStart(e.clientX, e.clientY); });
+  document.addEventListener('mousemove', e=>{ if(isDragging) onMove(e.clientX, e.clientY); });
+  document.addEventListener('mouseup', ()=>onEnd());
+  card.addEventListener('touchstart', e=>{ const t=e.touches[0]; onStart(t.clientX, t.clientY); },{passive:true});
+  document.addEventListener('touchmove', e=>{ if(isDragging){const t=e.touches[0];onMove(t.clientX,t.clientY);} },{passive:true});
+  document.addEventListener('touchend', ()=>onEnd(),{passive:true});
 }
 
 function nextSwipe(){
   swipeIdx++;
-  if (swipeIdx >= APP.products.length) swipeIdx = 0;
+  if(swipeIdx >= APP.products.length) swipeIdx = 0; // loop
   renderSwipeStack();
 }
 
 function swipeCart(){
-  if (!APP.products.length) return;
-  addToCart(APP.products[swipeIdx].id, swipeSelectedSize);
+  if(!APP.products.length) return;
+  const p = APP.products[swipeIdx];
+  addToCart(p.id, swipeSelectedSize);
   animateSwipeOut('right');
-  setTimeout(() => nextSwipe(), 350);
+  setTimeout(()=>nextSwipe(), 350);
 }
-function swipeSkip(){ animateSwipeOut('left'); setTimeout(() => nextSwipe(), 350); }
+function swipeSkip(){
+  animateSwipeOut('left');
+  setTimeout(()=>nextSwipe(), 350);
+}
 function swipeLike(){
-  if (!APP.products.length) return;
-  swipeWishlist.add(APP.products[swipeIdx].id);
-  showToast(`Wishlisted ${APP.products[swipeIdx].name} ❤️`);
+  if(!APP.products.length) return;
+  const p = APP.products[swipeIdx];
+  swipeWishlist.add(p.id);
+  showToast(`Wishlisted ${p.name} ❤️`);
   animateSwipeOut('up');
-  setTimeout(() => nextSwipe(), 350);
+  setTimeout(()=>nextSwipe(), 350);
 }
 function animateSwipeOut(dir){
   const card = document.querySelector('.swipe-card.is-top');
-  if (!card) return;
-  card.style.transition = 'transform .3s ease';
-  if (dir === 'right') card.style.transform = 'translateX(160%) rotate(20deg)';
-  else if (dir === 'left') card.style.transform = 'translateX(-160%) rotate(-20deg)';
-  else card.style.transform = 'translateY(-160%)';
+  if(!card) return;
+  card.style.transition='transform .3s ease';
+  if(dir==='right') card.style.transform='translateX(160%) rotate(20deg)';
+  else if(dir==='left') card.style.transform='translateX(-160%) rotate(-20deg)';
+  else card.style.transform='translateY(-160%)';
 }
 
-/* ═══════════════════════════════════════════════════
-   PRODUCT DETAIL MODAL
-═══════════════════════════════════════════════════ */
-let currentProduct = null, selectedSize = '';
+// ══════════════════════════════════
+//  PRODUCT DETAIL MODAL
+// ══════════════════════════════════
+let currentProduct=null, selectedSize='';
 let detailImgIdx = 0, detailImages = [];
 
 function buildDetailImages(p){
-  if (p.images && p.images.length) return p.images;
+  // RTDB may return images as {0:url,1:url} object instead of array — normalize it.
+  let imgs = p.images;
+  if (imgs && !Array.isArray(imgs)) imgs = Object.values(imgs);
+  if (imgs && imgs.length) return imgs.filter(Boolean);
   if (p.imageUrl) return [p.imageUrl];
   return [];
 }
 
 function renderDetailImg(){
   const imgSide = document.getElementById('detailImgSide');
-  imgSide.querySelectorAll('img.detail-real-img').forEach(el => el.remove());
-  const emojiEl = document.getElementById('detailEmoji');
-  const nav     = document.getElementById('detailImgNav');
-  const dotsWrap = document.getElementById('detailImgDots');
-  const prevBtn  = document.getElementById('detailPrevBtn');
-  const nextBtn  = document.getElementById('detailNextBtn');
+  // Remove old real img
+  imgSide.querySelectorAll('img.detail-real-img').forEach(el=>el.remove());
 
-  if (detailImages.length){
-    emojiEl.textContent = '';
+  const emojiEl = document.getElementById('detailEmoji');
+  const nav = document.getElementById('detailImgNav');
+  const dotsWrap = document.getElementById('detailImgDots');
+  const prevBtn = document.getElementById('detailPrevBtn');
+  const nextBtn = document.getElementById('detailNextBtn');
+
+  if(detailImages.length){
+    emojiEl.textContent='';
     const img = document.createElement('img');
-    img.className = 'detail-real-img';
+    img.className='detail-real-img';
     img.src = detailImages[detailImgIdx];
     img.alt = currentProduct.name;
-    img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:28px 28px 0 0';
+    img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:28px 28px 0 0';
     imgSide.insertBefore(img, imgSide.firstChild);
-    if (detailImages.length > 1){
-      nav.style.display = 'flex';
-      prevBtn.classList.toggle('hidden', detailImgIdx === 0);
-      nextBtn.classList.toggle('hidden', detailImgIdx === detailImages.length - 1);
-      dotsWrap.innerHTML = detailImages.map((_, i) => `<div class="img-dot ${i === detailImgIdx ? 'active' : ''}" onclick="detailImgGoto(${i})"></div>`).join('');
+
+    if(detailImages.length > 1){
+      nav.style.display='flex';
+      prevBtn.classList.toggle('hidden', detailImgIdx===0);
+      nextBtn.classList.toggle('hidden', detailImgIdx===detailImages.length-1);
+      dotsWrap.innerHTML = detailImages.map((_,i)=>`<div class="img-dot ${i===detailImgIdx?'active':''}" onclick="detailImgGoto(${i})"></div>`).join('');
     } else {
-      nav.style.display = 'none';
-      prevBtn.classList.add('hidden'); nextBtn.classList.add('hidden');
-      dotsWrap.innerHTML = '';
+      nav.style.display='none';
+      prevBtn.classList.add('hidden');
+      nextBtn.classList.add('hidden');
+      dotsWrap.innerHTML='';
     }
   } else {
-    emojiEl.textContent = currentProduct.emoji || '👕';
-    nav.style.display = 'none';
-    prevBtn.classList.add('hidden'); nextBtn.classList.add('hidden');
-    dotsWrap.innerHTML = '';
+    emojiEl.textContent = currentProduct.emoji||'👕';
+    nav.style.display='none';
+    prevBtn.classList.add('hidden');
+    nextBtn.classList.add('hidden');
+    dotsWrap.innerHTML='';
   }
 }
 
 function detailImgStep(dir){
-  detailImgIdx = Math.max(0, Math.min(detailImages.length - 1, detailImgIdx + dir));
+  detailImgIdx = Math.max(0, Math.min(detailImages.length-1, detailImgIdx+dir));
   renderDetailImg();
 }
-function detailImgGoto(i){ detailImgIdx = i; renderDetailImg(); }
+function detailImgGoto(i){
+  detailImgIdx=i; renderDetailImg();
+}
 
 function openDetailModal(p){
-  currentProduct = p; selectedSize = p.sizes?.[0] || 'M';
-  detailImgIdx = 0; detailImages = buildDetailImages(p);
+  currentProduct=p; selectedSize=p.sizes?.[0]||'M';
+  detailImgIdx=0;
+  detailImages = buildDetailImages(p);
   renderDetailImg();
-  document.getElementById('detailTitle').textContent = p.name;
-  document.getElementById('detailTeam').textContent = p.team;
-  document.getElementById('detailTeamLogo').textContent = clubEmoji(p.club);
-  document.getElementById('detailPrice').textContent = p.price;
-  document.getElementById('detailRatingInfo').textContent = `${p.rating || '4.8'} (${p.reviews || '0'} reviews)`;
-  const db2 = document.getElementById('detailBadge');
-  db2.className = 'detail-badge ' + badgeClass(p.badge); db2.textContent = p.badge || 'DROP';
-  const orig = document.getElementById('detailOriginal');
-  const disc = document.getElementById('detailDisc');
-  if (p.originalPrice && p.originalPrice > p.price){
-    orig.textContent = '₹' + p.originalPrice; orig.classList.remove('hidden');
-    disc.textContent = `-${Math.round((1 - p.price / p.originalPrice) * 100)}%`; disc.classList.remove('hidden');
+
+  document.getElementById('detailTitle').textContent=p.name;
+  document.getElementById('detailTeam').textContent=p.team;
+  document.getElementById('detailTeamLogo').textContent=clubEmoji(p.club);
+  document.getElementById('detailPrice').textContent=p.price;
+  document.getElementById('detailRatingInfo').textContent=`${p.rating||'4.8'} (${p.reviews||'0'} reviews)`;
+  const db=document.getElementById('detailBadge');
+  db.className='detail-badge '+badgeClass(p.badge); db.textContent=p.badge||'DROP';
+  const orig=document.getElementById('detailOriginal');
+  const disc=document.getElementById('detailDisc');
+  if(p.originalPrice){
+    orig.textContent='₹'+p.originalPrice; orig.classList.remove('hidden');
+    disc.textContent=`-${Math.round((1-p.price/p.originalPrice)*100)}%`; disc.classList.remove('hidden');
   } else { orig.classList.add('hidden'); disc.classList.add('hidden'); }
-  const stockEl = document.getElementById('detailStock');
-  stockEl.textContent = p.stock <= 5 ? `⚠️ Only ${p.stock} left!` : `✅ In stock (${p.stock} available)`;
-  stockEl.style.color = p.stock <= 5 ? 'var(--accent)' : 'var(--green)';
-  document.getElementById('detailSizes').innerHTML = (p.sizes || ['S','M','L','XL']).map((s, i) =>
-    `<div class="detail-size-chip ${i === 0 ? 'active' : ''}" onclick="selSize('${s}',this)">${s}</div>`
-  ).join('');
-  document.getElementById('detailCartBtn').onclick = () => addToCart(p.id);
-  document.getElementById('detailBuyBtn').onclick  = () => { addToCart(p.id); closeDetailModal(); navigate('cart'); };
+  const stockEl=document.getElementById('detailStock');
+  stockEl.textContent=p.stock<=5?`⚠️ Only ${p.stock} left!`:`✅ In stock (${p.stock} available)`;
+  stockEl.style.color=p.stock<=5?'var(--accent)':'var(--green)';
+  document.getElementById('detailSizes').innerHTML=(p.sizes||['S','M','L','XL']).map((s,i)=>`<div class="detail-size-chip ${i===0?'active':''}" onclick="selSize('${s}',this)">${s}</div>`).join('');
+  document.getElementById('detailCartBtn').onclick=()=>addToCart(p.id);
+  document.getElementById('detailBuyBtn').onclick=()=>{addToCart(p.id);closeDetailModal();navigate('cart');};
   document.getElementById('detailOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  document.body.style.overflow='hidden';
 }
-function selSize(size, el){
-  document.querySelectorAll('.detail-size-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active'); selectedSize = size;
+function selSize(size,el){
+  document.querySelectorAll('.detail-size-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); selectedSize=size;
 }
 function closeDetailModal(){
   document.getElementById('detailOverlay').classList.remove('open');
-  document.body.style.overflow = '';
+  document.body.style.overflow='';
 }
-document.getElementById('detailOverlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('detailOverlay')) closeDetailModal();
-});
+document.getElementById('detailOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('detailOverlay'))closeDetailModal();});
 
-/* ═══════════════════════════════════════════════════
-   CART — Firebase real-time backed
-═══════════════════════════════════════════════════ */
+// ══════════════════════════════════
+//  CART — Firebase backed
+// ══════════════════════════════════
 function addToCart(productId, sizeOverride){
-  const p = APP.products.find(x => x.id === productId);
-  if (!p){ showToast('Product not found', 'error'); return; }
+  const p = APP.products.find(x=>x.id===productId);
+  if(!p) return;
   const size = sizeOverride || selectedSize || p.sizes?.[0] || 'M';
-  const ex = APP.cart.find(i => i.id === productId && i.size === size);
-  if (ex) ex.qty++;
-  else APP.cart.push({ id: p.id, name: p.name, team: p.team, price: p.price, emoji: p.emoji || '👕', imageUrl: p.imageUrl || '', size, qty: 1 });
+  const ex = APP.cart.find(i=>i.id===productId && i.size===size);
+  if(ex) ex.qty++;
+  else APP.cart.push({ id:p.id, name:p.name, team:p.team, price:p.price, emoji:p.emoji||'👕', imageUrl:p.imageUrl||'', size, qty:1 });
   saveCartToDB();
-  showToast(`${p.name} added to bag 🛒`, 'success');
+  updateBadge();
+  showToast(`${p.name} added to bag 🛒`,'success');
 }
 
 function updateBadge(){
-  const t = APP.cart.reduce((s, i) => s + i.qty, 0);
+  const t = APP.cart.reduce((s,i)=>s+i.qty,0);
   const b1 = document.getElementById('cartBadge');
   const b2 = document.getElementById('bnavCartBadge');
-  if (b1) b1.textContent = t;
-  if (b2) b2.textContent = t;
+  if(b1) b1.textContent=t;
+  if(b2) b2.textContent=t;
 }
 window.updateBadge = updateBadge;
 
 function changeQty(idx, delta){
   APP.cart[idx].qty += delta;
-  if (APP.cart[idx].qty <= 0) APP.cart.splice(idx, 1);
-  saveCartToDB(); renderCartPage();
+  if(APP.cart[idx].qty <= 0) APP.cart.splice(idx,1);
+  saveCartToDB(); updateBadge(); renderCartPage();
 }
 function removeItem(idx){
-  APP.cart.splice(idx, 1);
-  saveCartToDB(); renderCartPage();
+  APP.cart.splice(idx,1);
+  saveCartToDB(); updateBadge(); renderCartPage();
 }
 
 function renderCartPage(){
-  const itemsEl   = document.getElementById('cartPageItems');
-  const emptyEl   = document.getElementById('cartPageEmpty');
+  const itemsEl = document.getElementById('cartPageItems');
+  const emptyEl = document.getElementById('cartPageEmpty');
   const summaryEl = document.getElementById('cartPageSummary');
-  const countEl   = document.getElementById('cartPageCount');
-  const noticeEl  = document.getElementById('guestCartNotice');
-  if (!itemsEl) return;
+  const countEl = document.getElementById('cartPageCount');
+  const noticeEl = document.getElementById('guestCartNotice');
+  if(!itemsEl) return;
 
-  const total = APP.cart.reduce((s, i) => s + i.qty, 0);
-  if (countEl) countEl.textContent = total + (total === 1 ? ' item' : ' items');
-  if (noticeEl) noticeEl.style.display = (!APP.user && APP.cart.length) ? 'flex' : 'none';
+  const total = APP.cart.reduce((s,i)=>s+i.qty,0);
+  if(countEl) countEl.textContent = total + (total===1?' item':' items');
+  if(noticeEl) noticeEl.style.display = (!APP.user && APP.cart.length) ? 'flex' : 'none';
 
-  if (!APP.cart.length){
-    itemsEl.innerHTML = ''; emptyEl.style.display = 'block'; summaryEl.style.display = 'none'; return;
+  if(!APP.cart.length){
+    itemsEl.innerHTML=''; emptyEl.style.display='block'; summaryEl.style.display='none'; return;
   }
-  emptyEl.style.display = 'none'; summaryEl.style.display = 'block';
-  itemsEl.innerHTML = APP.cart.map((item, i) => `
+  emptyEl.style.display='none'; summaryEl.style.display='block';
+  itemsEl.innerHTML = APP.cart.map((item,i)=>`
     <div class="cart-page-item">
       <div class="cart-item-thumb">
-        ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}"/>` : (item.emoji || '👕')}
+        ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}"/>` : item.emoji||'👕'}
       </div>
       <div class="cart-item-meta">
         <div class="cart-item-name">${item.name}</div>
@@ -1703,414 +1709,255 @@ function renderCartPage(){
         </div>
       </div>
       <div class="cart-item-right">
-        <span class="cart-item-price">₹${(item.price * item.qty).toFixed(0)}</span>
+        <span class="cart-item-price">₹${(item.price*item.qty).toFixed(0)}</span>
         <button class="remove-btn" onclick="removeItem(${i})">🗑</button>
       </div>
     </div>`).join('');
 
-  const sub = APP.cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const tax = sub * 0.08;
-  document.getElementById('cartSumSub').textContent   = '₹' + sub.toFixed(0);
-  document.getElementById('cartSumTax').textContent   = '₹' + tax.toFixed(0);
-  document.getElementById('cartSumTotal').textContent = '₹' + (sub + tax).toFixed(0);
+  const sub = APP.cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const tax = sub*0.08;
+  document.getElementById('cartSumSub').textContent='₹'+sub.toFixed(0);
+  document.getElementById('cartSumTax').textContent='₹'+tax.toFixed(0);
+  document.getElementById('cartSumTotal').textContent='₹'+(sub+tax).toFixed(0);
 }
 
-/* ═══════════════════════════════════════════════════
-   PAYMENT TABS
-═══════════════════════════════════════════════════ */
+// ══════════════════════════════════
+//  PAYMENT TABS
+// ══════════════════════════════════
 function switchPayTab(tab){
-  ['card','upi','cod'].forEach(t => {
-    document.getElementById(t + 'Section').style.display = 'none';
-    document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active');
+  ['card','upi','cod'].forEach(t=>{
+    document.getElementById(t+'Section').style.display='none';
+    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.remove('active');
   });
-  document.getElementById(tab + 'Section').style.display = 'block';
-  document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+  document.getElementById(tab+'Section').style.display='block';
+  document.getElementById('tab'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
 }
 function verifyUpi(){
-  const id = document.getElementById('upiId').value;
-  if (!id){ showToast('Enter a UPI ID', 'error'); return; }
-  showToast(`UPI verified: ${id} ✅`, 'success');
+  const id=document.getElementById('upiId').value;
+  if(!id){showToast('Enter a UPI ID','error');return;}
+  showToast(`UPI verified: ${id} ✅`,'success');
 }
 
-/* ═══════════════════════════════════════════════════
-   CHECKOUT
-═══════════════════════════════════════════════════ */
+// ══════════════════════════════════
+//  CHECKOUT
+// ══════════════════════════════════
 function renderCheckout(){
-  const items = document.getElementById('orderSummaryItems');
-  if (!items) return;
-  items.innerHTML = APP.cart.map(i =>
-    `<div class="order-sum-item"><span>${i.name} × ${i.qty} (${i.size})</span><span>₹${(i.price * i.qty).toFixed(0)}</span></div>`
-  ).join('');
-  const sub = APP.cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const tax = sub * 0.08;
-  document.getElementById('sum_sub').textContent   = '₹' + sub.toFixed(0);
-  document.getElementById('sum_tax').textContent   = '₹' + tax.toFixed(0);
-  document.getElementById('sum_total').textContent = '₹' + (sub + tax).toFixed(0);
-  document.getElementById('co_total').textContent  = '₹' + (sub + tax).toFixed(0);
-  if (APP.user){
-    document.getElementById('co_email').value = APP.user.email || '';
-    document.getElementById('co_name').value  = APP.user.displayName || '';
-  }
+  const items=document.getElementById('orderSummaryItems'); if(!items) return;
+  items.innerHTML=APP.cart.map(i=>`<div class="order-sum-item"><span>${i.name} × ${i.qty} (${i.size})</span><span>₹${(i.price*i.qty).toFixed(0)}</span></div>`).join('');
+  const sub=APP.cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const tax=sub*.08;
+  document.getElementById('sum_sub').textContent='₹'+sub.toFixed(0);
+  document.getElementById('sum_tax').textContent='₹'+tax.toFixed(0);
+  document.getElementById('sum_total').textContent='₹'+(sub+tax).toFixed(0);
+  document.getElementById('co_total').textContent='₹'+(sub+tax).toFixed(0);
+  if(APP.user){ document.getElementById('co_email').value=APP.user.email||''; document.getElementById('co_name').value=APP.user.displayName||''; }
 }
-function formatCard(el){ let v = el.value.replace(/\D/g,'').substring(0,16); el.value = v.replace(/(.{4})/g,'$1 ').trim(); }
-function formatExpiry(el){ let v = el.value.replace(/\D/g,''); if(v.length >= 2) v = v.substring(0,2) + ' / ' + v.substring(2,4); el.value = v; }
-
+function formatCard(el){ let v=el.value.replace(/\D/g,'').substring(0,16); el.value=v.replace(/(.{4})/g,'$1 ').trim(); }
+function formatExpiry(el){ let v=el.value.replace(/\D/g,''); if(v.length>=2) v=v.substring(0,2)+' / '+v.substring(2,4); el.value=v; }
 async function placeOrder(){
-  if (!APP.cart.length){ showToast('Your cart is empty!', 'error'); return; }
-  if (!APP.user){ showToast('Please login to place an order', 'error'); location.href = 'login.html?redirect=index.html'; return; }
-  const name = document.getElementById('co_name').value.trim();
-  const addr = document.getElementById('co_addr').value.trim();
-  if (!name || !addr){ showToast('Please fill in shipping details', 'error'); return; }
-  const sub   = APP.cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const tax   = parseFloat((sub * 0.08).toFixed(2));
-  const total = parseFloat((sub + tax).toFixed(2));
-  const orderId = 'JRS-' + Date.now();
-  const orderData = {
-    orderId, userId: APP.user.uid,
-    customerName: name,
-    email: document.getElementById('co_email').value,
-    phone: document.getElementById('co_phone').value,
-    address: addr + ', ' + document.getElementById('co_city').value + ' ' + document.getElementById('co_zip').value,
-    country: document.getElementById('co_country').value,
-    items: APP.cart.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, size: i.size, emoji: i.emoji || '👕', imageUrl: i.imageUrl || '' })),
-    subtotal: sub, tax, total, status: 'processing', createdAt: Date.now()
-  };
-  try {
-    await FB.set(FB.ref(FB.db, 'orders/' + orderId), orderData);
-    // Index order under user for fast lookup
-    await FB.set(FB.ref(FB.db, `users/${APP.user.uid}/orders/${orderId}`), true);
-    // Clear cart from DB (real-time listener will update APP.cart automatically)
-    await FB.set(FB.ref(FB.db, window.cartPath()), null);
-    showToast('Order ' + orderId + ' placed! 🎉', 'success');
+  if(!APP.cart.length){showToast('Your cart is empty!','error');return;}
+  if(!APP.user){showToast('Please login to place an order','error');location.href='login.html?redirect=index.html';return;}
+  const name=document.getElementById('co_name').value.trim();
+  const addr=document.getElementById('co_addr').value.trim();
+  if(!name||!addr){showToast('Please fill in shipping details','error');return;}
+  const sub=APP.cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const tax=parseFloat((sub*.08).toFixed(2));
+  const total=parseFloat((sub+tax).toFixed(2));
+  const orderId='JRS-'+Date.now();
+  const orderData={orderId,userId:APP.user.uid,customerName:name,
+    email:document.getElementById('co_email').value,
+    phone:document.getElementById('co_phone').value,
+    address:addr+', '+document.getElementById('co_city').value+' '+document.getElementById('co_zip').value,
+    country:document.getElementById('co_country').value,
+    items:APP.cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty,size:i.size,emoji:i.emoji||'👕'})),
+    subtotal:sub,tax,total,status:'processing',createdAt:Date.now()};
+  try{
+    await FB.set(FB.ref(FB.db,'orders/'+orderId), orderData);
+    const idx={}; idx[orderId]=true;
+    await FB.update(FB.ref(FB.db,'users/'+APP.user.uid+'/orders'), idx);
+    // Clear cart from DB
+    await FB.set(FB.ref(FB.db, 'carts/'+APP.user.uid), null);
+    APP.cart=[]; updateBadge();
+    showToast('Order '+orderId+' placed! 🎉','success');
     navigate('orders');
-  } catch (e) {
-    console.error('placeOrder:', e);
-    showToast('Failed to place order. Check your connection.', 'error');
+  }catch(e){
+    showToast('Failed to place order. Check your connection.','error');
   }
 }
 
-/* ═══════════════════════════════════════════════════
-   ORDERS — real-time listener per user
-═══════════════════════════════════════════════════ */
-let ordersListener = null;
-function renderOrders(){
-  const list = document.getElementById('ordersList');
-  if (!list) return;
-  if (!APP.user){
-    list.innerHTML = `<div style="text-align:center;padding:48px 24px;color:var(--muted)">
+// ══════════════════════════════════
+//  ORDERS
+// ══════════════════════════════════
+async function renderOrders(){
+  const list=document.getElementById('ordersList'); if(!list) return;
+  if(!APP.user){
+    list.innerHTML=`<div style="text-align:center;padding:48px 24px;color:var(--muted)">
       <div style="font-size:40px;margin-bottom:12px">🔒</div>
       <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:8px">Login to see your orders</div>
       <button class="btn-primary" style="margin-top:8px" onclick="location.href='login.html'">Login Now</button>
-    </div>`;
-    return;
+    </div>`; return;
   }
-  list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)">⏳ Loading orders…</div>';
-
-  // Detach previous listener
-  if (ordersListener){ FB.off(ordersListener._ref); }
-
-  const ordersRef = FB.ref(FB.db, 'orders');
-  ordersListener = { _ref: ordersRef };
-
-  FB.onValue(ordersRef, snap => {
-    const orders = [];
-    if (snap.exists()) snap.forEach(c => { const o = c.val(); if (o.userId === APP.user.uid) orders.push(o); });
-    orders.sort((a, b) => b.createdAt - a.createdAt);
-    if (!orders.length){
-      list.innerHTML = `<div style="text-align:center;padding:48px 24px;color:var(--muted)">
+  list.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)">⏳ Loading orders…</div>';
+  try{
+    const snap=await FB.get(FB.ref(FB.db,'orders'));
+    const orders=[];
+    if(snap.exists()) snap.forEach(c=>{const o=c.val();if(o.userId===APP.user.uid)orders.push(o);});
+    orders.sort((a,b)=>b.createdAt-a.createdAt);
+    if(!orders.length){
+      list.innerHTML=`<div style="text-align:center;padding:48px 24px;color:var(--muted)">
         <div style="font-size:40px;margin-bottom:12px">📦</div>
         <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:8px">No orders yet</div>
         <button class="btn-primary" style="margin-top:8px" onclick="navigate('swipe')">Swipe Drops ↗</button>
-      </div>`;
-      return;
+      </div>`; return;
     }
-    list.innerHTML = orders.map(o => `
+    list.innerHTML=orders.map(o=>`
       <div class="order-card">
         <div class="order-card-head">
-          <div><div class="order-id">${o.orderId}</div><div class="order-date">${new Date(o.createdAt).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}</div></div>
-          <span class="order-badge status-${o.status}">${o.status.replace('_', ' ')}</span>
+          <div><div class="order-id">${o.orderId}</div><div class="order-date">${new Date(o.createdAt).toLocaleDateString()}</div></div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <span class="order-badge status-${o.status}">${o.status.replace('_',' ')}</span>
+          </div>
         </div>
-        <div class="order-items-txt">${o.items.map(i => `${i.name} × ${i.qty} (${i.size})`).join(' · ')}</div>
+        <div class="order-items-txt">${o.items.map(i=>i.name+' × '+i.qty+' ('+i.size+')').join(' · ')}</div>
         <div class="order-price-row">
           <button class="track-ship-btn" onclick="showTrackSteps('${o.orderId}','${o.status}')">Track Shipment →</button>
           <span style="font-family:var(--font-display);font-size:22px;color:var(--accent)">₹${o.total}</span>
         </div>
       </div>`).join('');
-  });
+  }catch(e){
+    list.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)">⚠️ Could not load orders.</div>';
+  }
 }
-
-function showTrackSteps(orderId, status){
-  const map = { processing: 1, shipped: 2, out_for_delivery: 3, delivered: 4 };
-  const cur = map[status] ?? 1;
-  const icons  = ['✅','📦','🚚','🏃','🏠'];
-  const labels = ['Confirmed','Processing','Shipped','Out for Delivery','Delivered'];
-  const result = document.getElementById('trackResult');
-  result.innerHTML = `
+function showTrackSteps(orderId,status){
+  const map={processing:1,shipped:2,out_for_delivery:3,delivered:4};
+  const cur=map[status]??1;
+  const icons=['✅','📦','🚚','🏃','🏠'];
+  const labels=['Confirmed','Processing','Shipped','Out for Delivery','Delivered'];
+  const result=document.getElementById('trackResult');
+  result.innerHTML=`
     <div class="track-steps-box">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
         <div><div class="order-id">${orderId}</div><div style="font-size:10px;color:var(--muted);font-weight:600;margin-top:2px">Est. delivery: 3–5 business days</div></div>
-        <span class="order-badge status-${status}">${status.replace('_', ' ')}</span>
+        <span class="order-badge status-${status}">${status.replace('_',' ')}</span>
       </div>
       <div class="track-steps">
-        ${icons.map((icon, i) =>
-          `<div class="track-step ${i < cur ? 'done' : i === cur ? 'active' : ''}">
-            <div class="track-dot">${icon}</div>
-            <div class="track-step-lbl">${labels[i]}</div>
-          </div>`
-        ).join('')}
+        ${icons.map((icon,i)=>`<div class="track-step ${i<cur?'done':i===cur?'active':''}"><div class="track-dot">${icon}</div><div class="track-step-lbl">${labels[i]}</div></div>`).join('')}
       </div>
     </div>`;
-  result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  result.scrollIntoView({behavior:'smooth',block:'start'});
 }
-
 async function trackOrder(){
-  const id = document.getElementById('trackInput').value.trim();
-  if (!id){ showToast('Please enter an order ID', 'error'); return; }
-  try {
-    const snap = await FB.get(FB.ref(FB.db, 'orders/' + id));
-    if (snap.exists()) showTrackSteps(id, snap.val().status);
-    else showToast('Order not found', 'error');
-  } catch (e){ showToast('Could not fetch order', 'error'); }
+  const id=document.getElementById('trackInput').value.trim();
+  if(!id){showToast('Please enter an order ID','error');return;}
+  try{
+    const snap=await FB.get(FB.ref(FB.db,'orders/'+id));
+    if(snap.exists()) showTrackSteps(id,snap.val().status);
+    else showToast('Order not found','error');
+  }catch(e){showToast('Could not fetch order','error');}
 }
 
-/* ═══════════════════════════════════════════════════
-   AUTH
-═══════════════════════════════════════════════════ */
+// ══════════════════════════════════
+//  AUTH
+// ══════════════════════════════════
 async function doSignOut(){
-  try { await FB.signOut(FB.auth); } catch (e) {}
-  APP.user = null; APP.isAdmin = false; APP.cart = [];
+  try{await FB.signOut(FB.auth);}catch(e){}
+  APP.user=null; APP.isAdmin=false; APP.cart=[];
   updateBadge(); renderAuthState();
   navigate('home'); showToast('Signed out. See you soon! 👋');
 }
-window.renderAuthState = function(){
-  const user = APP.user;
-  const area = document.getElementById('navAuthArea');
-  if (user){
-    const initial = (user.displayName || user.email || '?')[0].toUpperCase();
-    area.innerHTML = `<button class="nav-auth-btn" onclick="navigate('profile')">${initial}</button>`;
+window.renderAuthState=function(){
+  const user=APP.user;
+  const area=document.getElementById('navAuthArea');
+  if(user){
+    const initial=(user.displayName||user.email||'?')[0].toUpperCase();
+    area.innerHTML=`<button class="nav-auth-btn" onclick="navigate('profile')">${initial}</button>`;
   } else {
-    area.innerHTML = `<button class="nav-auth-btn" onclick="window.location.href='login.html'">Login</button>`;
+    area.innerHTML=`<button class="nav-auth-btn" onclick="window.location.href='login.html'">Login</button>`;
   }
-  renderAdminFAB();
 };
 
-/* ═══════════════════════════════════════════════════
-   ADD PRODUCT MODAL — with real Storage upload
-═══════════════════════════════════════════════════ */
-let selectedFiles = [];
+// ══════════════════════════════════
+//  MODALS
+// ══════════════════════════════════
+function openModal(name){ document.getElementById('addProductModal').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(name){ document.getElementById('addProductModal').classList.remove('open'); document.body.style.overflow=''; }
+document.getElementById('addProductModal').addEventListener('click',e=>{if(e.target===document.getElementById('addProductModal'))closeModal('addProduct');});
+function addProductFromModal(){ showToast('Use the Admin Dashboard to add products','error'); closeModal('addProduct'); }
 
-function previewImages(input){
-  selectedFiles = Array.from(input.files).slice(0, 5);
-  const preview = document.getElementById('uploadPreview');
-  preview.innerHTML = '';
-  selectedFiles.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = document.createElement('img');
-      img.src = e.target.result;
-      img.className = 'upload-thumb';
-      preview.appendChild(img);
-    };
-    reader.readAsDataURL(file);
-  });
-  document.getElementById('uploadStatus').textContent = `${selectedFiles.length} image(s) selected`;
-}
-
-async function uploadImages(productKey){
-  if (!selectedFiles.length) return [];
-  const urls = [];
-  const progressWrap = document.getElementById('uploadProgressWrap');
-  const progressBar  = document.getElementById('uploadProgress');
-  const statusEl     = document.getElementById('uploadStatus');
-  progressWrap.style.display = 'block';
-
-  for (let i = 0; i < selectedFiles.length; i++){
-    const file = selectedFiles[i];
-    const ext  = file.name.split('.').pop();
-    const path = `products/${Date.now()}_${i}.${ext}`;
-    const storageRef = FB.sRef(FB.storage, path);
-    await new Promise((resolve, reject) => {
-      const task = FB.uploadBytesResumable(storageRef, file);
-      task.on('state_changed',
-        snap => {
-          const pct = ((i / selectedFiles.length) + (snap.bytesTransferred / snap.totalBytes / selectedFiles.length)) * 100;
-          progressBar.style.width = pct + '%';
-          statusEl.textContent = `Uploading ${i + 1}/${selectedFiles.length}… ${Math.round(pct)}%`;
-        },
-        err => { showToast('Upload failed: ' + err.message, 'error'); reject(err); },
-        async () => { urls.push(await FB.getDownloadURL(task.snapshot.ref)); resolve(); }
-      );
-    });
-  }
-  progressBar.style.width = '100%';
-  statusEl.textContent = `✅ ${urls.length} image(s) uploaded`;
-  return urls;
-}
-
-function openModal(name){
-  if (name === 'addProduct'){
-    if (!APP.isAdmin){ showToast('Admin access required', 'error'); return; }
-    // Reset form
-    ['ap_name','ap_team','ap_price','ap_origprice','ap_stock'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-    selectedFiles = [];
-    document.getElementById('uploadPreview').innerHTML = '';
-    document.getElementById('uploadProgressWrap').style.display = 'none';
-    document.getElementById('uploadProgress').style.width = '0';
-    document.getElementById('uploadStatus').textContent = '';
-    document.getElementById('addProductModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-}
-function closeModal(name){
-  document.getElementById('addProductModal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-document.getElementById('addProductModal').addEventListener('click', e => {
-  if (e.target === document.getElementById('addProductModal')) closeModal('addProduct');
-});
-
-async function addProductFromModal(){
-  if (!APP.isAdmin){ showToast('Admin access required', 'error'); return; }
-  const name     = document.getElementById('ap_name').value.trim();
-  const team     = document.getElementById('ap_team').value.trim();
-  const price    = parseInt(document.getElementById('ap_price').value);
-  const origprice = parseInt(document.getElementById('ap_origprice').value) || 0;
-  const stock    = parseInt(document.getElementById('ap_stock').value) || 10;
-  const category = document.getElementById('ap_category').value;
-  const club     = document.getElementById('ap_club').value;
-  const badge    = document.getElementById('ap_badge').value;
-
-  if (!name || !team || !price){ showToast('Please fill in Name, Team, and Price', 'error'); return; }
-
-  const submitBtn = document.getElementById('ap_submit');
-  submitBtn.disabled = true; submitBtn.textContent = 'Uploading…';
-
-  try {
-    const newRef = FB.push(FB.ref(FB.db, 'products'));
-    const key    = newRef.key;
-    const imageUrls = await uploadImages(key);
-
-    const productData = {
-      id: key, name, team, price, category, club, badge,
-      sizes: ['S','M','L','XL'],
-      stock,
-      emoji: '👕',
-      createdAt: Date.now(),
-      ...(origprice > price ? { originalPrice: origprice } : {}),
-      ...(imageUrls.length ? { imageUrl: imageUrls[0], images: imageUrls } : {})
-    };
-
-    await FB.set(newRef, productData);
-    showToast(`${name} added to catalogue! 🎉`, 'success');
-    closeModal('addProduct');
-  } catch (e) {
-    console.error('addProduct:', e);
-    showToast('Failed to add product: ' + e.message, 'error');
-  } finally {
-    submitBtn.disabled = false; submitBtn.textContent = 'Add to Catalogue';
-  }
-}
-
-/* ═══════════════════════════════════════════════════
-   PROFILE
-═══════════════════════════════════════════════════ */
-let profileListener = null;
+// ══════════════════════════════════
+//  PROFILE
+// ══════════════════════════════════
 async function renderProfile(){
-  const user = APP.user;
-  if (!user){ window.location.href = 'login.html'; return; }
-
-  // Real-time profile listener
-  if (profileListener){ FB.off(profileListener._ref); }
-  const profRef = FB.ref(FB.db, 'users/' + user.uid);
-  profileListener = { _ref: profRef };
-
-  FB.onValue(profRef, snap => {
-    const data = snap.exists() ? snap.val() : {};
-    const ava = document.getElementById('profileAvatar');
-    if (user.photoURL){
-      ava.innerHTML = `<img src="${user.photoURL}" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover"/>`;
-    } else {
-      ava.textContent = (user.displayName || user.email || '?')[0].toUpperCase();
-    }
-    document.getElementById('profileName').textContent  = data.displayName || user.displayName || 'JERSIFY USER';
-    document.getElementById('profileEmail').textContent = user.email || '';
-    document.getElementById('editName').value  = data.displayName || user.displayName || '';
-    document.getElementById('editEmail').value = user.email || '';
-  });
-
-  renderAdminFAB();
+  const user=APP.user;
+  if(!user){window.location.href='login.html';return;}
+  const snap=await FB.get(FB.ref(FB.db,'users/'+user.uid)).catch(()=>null);
+  const data=snap&&snap.exists()?snap.val():{};
+  const ava=document.getElementById('profileAvatar');
+  if(user.photoURL){ava.innerHTML=`<img src="${user.photoURL}" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover"/>`;}
+  else ava.textContent=(user.displayName||user.email||'?')[0].toUpperCase();
+  document.getElementById('profileName').textContent=data.displayName||user.displayName||'JERSIFY USER';
+  document.getElementById('profileEmail').textContent=user.email||'';
+  document.getElementById('editName').value=data.displayName||user.displayName||'';
+  document.getElementById('editEmail').value=user.email||'';
 }
-
 async function saveProfile(){
-  if (!APP.user) return;
-  const name = document.getElementById('editName').value.trim();
-  try {
-    await FB.update(FB.ref(FB.db, 'users/' + APP.user.uid), { displayName: name });
-    showToast('Profile updated! 🎉', 'success');
-  } catch (e){ showToast('Could not save. Try again.', 'error'); }
+  if(!APP.user) return;
+  const name=document.getElementById('editName').value.trim();
+  try{
+    await FB.update(FB.ref(FB.db,'users/'+APP.user.uid),{displayName:name});
+    showToast('Profile updated! 🎉','success');
+  }catch(e){showToast('Could not save. Try again.','error');}
 }
 
-/* ═══════════════════════════════════════════════════
-   NEWSLETTER — with duplicate guard
-═══════════════════════════════════════════════════ */
+// ══════════════════════════════════
+//  NEWSLETTER
+// ══════════════════════════════════
 async function subscribeNewsletter(){
-  const email = document.getElementById('nlEmail').value.trim();
-  if (!email || !email.includes('@')){ showToast('Enter a valid email address', 'error'); return; }
-  try {
-    const key  = email.toLowerCase().replace(/[.#$[\]]/g, '_');
-    const snap = await FB.get(FB.ref(FB.db, 'newsletter/' + key));
-    if (snap.exists()){
-      showToast("You're already on the drop list! 🔥"); return;
-    }
-    await FB.set(FB.ref(FB.db, 'newsletter/' + key), { email, subscribedAt: Date.now() });
-    document.getElementById('nlEmail').value = '';
-    showToast("You're on the drop list! 🔥", 'success');
-  } catch (e){ showToast('Could not subscribe. Try again.', 'error'); }
+  const email=document.getElementById('nlEmail').value.trim();
+  if(!email){showToast('Enter your email address','error');return;}
+  try{
+    const key=email.replace(/[.#$[\]]/g,'_');
+    await FB.set(FB.ref(FB.db,'newsletter/'+key),{email,subscribedAt:Date.now()});
+    document.getElementById('nlEmail').value='';
+    showToast("You're on the drop list! 🔥",'success');
+  }catch(e){showToast('Could not subscribe. Try again.','error');}
 }
 
-/* ═══════════════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════════════ */
-function showToast(msg, type = ''){
-  const wrap = document.getElementById('toastWrap');
-  const t    = document.createElement('div');
-  t.className = `toast${type ? ' ' + type : ''}`;
-  t.innerHTML = `<span>${{ success: '✅', error: '⚠️', '': 'ℹ️' }[type] || 'ℹ️'}</span>${msg}`;
+// ══════════════════════════════════
+//  TOAST
+// ══════════════════════════════════
+function showToast(msg,type=''){
+  const wrap=document.getElementById('toastWrap');
+  const t=document.createElement('div');
+  t.className=`toast${type?' '+type:''}`;
+  t.innerHTML=`<span>${{success:'✅',error:'⚠️','':'ℹ️'}[type]||'ℹ️'}</span>${msg}`;
   wrap.appendChild(t);
-  setTimeout(() => {
-    t.style.animation = 'toastOut .3s ease both';
-    setTimeout(() => t.remove(), 300);
-  }, 3200);
+  setTimeout(()=>{t.style.animation='toastOut .3s ease both';setTimeout(()=>t.remove(),300);},3200);
 }
 
-/* ═══════════════════════════════════════════════════
-   HERO CARD ROTATION
-═══════════════════════════════════════════════════ */
+// ══════════════════════════════════
+//  HERO
+// ══════════════════════════════════
 function heroAdd(){
-  if (!APP.products.length){ showToast('No products in store yet', 'error'); return; }
-  const p = APP.products[0];
-  addToCart(p.id, p.sizes?.[0] || 'M');
+  if(!APP.products.length){showToast('No products in store yet','error');return;}
+  const p=APP.products[0];
+  addToCart(p.id, p.sizes?.[0]||'M');
 }
-document.querySelectorAll('.size-chip').forEach(c => {
-  c.addEventListener('click', function(){
-    document.querySelectorAll('.size-chip').forEach(x => x.classList.remove('active'));
+document.querySelectorAll('.size-chip').forEach(c=>{
+  c.addEventListener('click',function(){
+    document.querySelectorAll('.size-chip').forEach(x=>x.classList.remove('active'));
     this.classList.add('active');
   });
 });
-let heroIdx = 0;
-setInterval(() => {
-  heroIdx = (heroIdx + 1) % 4;
-  document.querySelectorAll('.hero-dot').forEach((d, i) => d.classList.toggle('active', i === heroIdx));
-  if (APP.products.length){
-    const p = APP.products[heroIdx % APP.products.length];
-    const heroEmoji = document.getElementById('heroEmoji');
-    if (heroEmoji) heroEmoji.textContent = p.emoji || '👕';
-  }
-}, 2600);
+let heroIdx=0; const heroEmojis=['👕','🔴','🔵','⚪'];
+setInterval(()=>{
+  heroIdx=(heroIdx+1)%heroEmojis.length;
+  document.querySelectorAll('.hero-dot').forEach((d,i)=>d.classList.toggle('active',i===heroIdx));
+},2600);
 
-/* ═══════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════ */
+// ══════════════════════════════════
+//  INIT
+// ══════════════════════════════════
 renderFeatured();
 updateBadge();
 </script>
