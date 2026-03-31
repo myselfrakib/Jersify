@@ -806,14 +806,34 @@ async function initDashboard(){
 }
 
 /* ════════════════════════════════════════════
+   NORMALIZE PRODUCT FROM RTDB
+   Firebase stores arrays as {0:url,1:url}. SDK v10 usually converts back,
+   but we normalize defensively + ensure imageUrl always mirrors images[0].
+════════════════════════════════════════════ */
+function normalizeProduct(raw){
+  const p={...raw};
+  if(p.images){
+    if(!Array.isArray(p.images)) p.images=Object.values(p.images);
+    p.images=p.images.filter(Boolean);
+  } else {
+    p.images=[];
+  }
+  if(!p.imageUrl && p.images.length) p.imageUrl=p.images[0];
+  return p;
+}
+
+/* ════════════════════════════════════════════
    LOAD DATA
 ════════════════════════════════════════════ */
 async function loadProducts(){
   try{
     const snap=await FB.get(FB.ref(FB.db,'products'));
     PRODUCTS=[];
-    if(snap.exists()) snap.forEach(c=>PRODUCTS.push({id:c.key,...c.val()}));
-  }catch(e){ console.error('loadProducts:',e); showToast('Could not load products: '+(e.message||e),'error'); }
+    if(snap.exists()) snap.forEach(c=>PRODUCTS.push(normalizeProduct({id:c.key,...c.val()})));
+  }catch(e){
+    console.error('loadProducts error:',e);
+    showToast('Could not load products: '+(e.message||e.code||String(e)),'error');
+  }
   const c=PRODUCTS.length;
   document.getElementById('adminProductCount').textContent=c;
   const nb=document.getElementById('navProdBadge');
@@ -828,7 +848,7 @@ async function loadOrders(){
     ORDERS=[];
     if(snap.exists()) snap.forEach(c=>ORDERS.push(c.val()));
     ORDERS.sort((a,b)=>b.createdAt-a.createdAt);
-  }catch(e){ console.error('loadOrders:',e); }
+  }catch(e){}
   const c=ORDERS.length;
   document.getElementById('adminOrderCount').textContent=c;
   const nb=document.getElementById('navOrdBadge');
@@ -1008,9 +1028,9 @@ function openEditProduct(pid){
   const imgs = p.images && p.images.length ? p.images : (p.imageUrl ? [p.imageUrl] : []);
   if(imgs.length){
     row.innerHTML=imgs.map((url,i)=>`
-      <div style="position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;border:2px solid var(--border)">
+      <div style="position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;border:2px solid var(--border);flex-shrink:0">
         <img src="${url}" style="width:100%;height:100%;object-fit:cover"/>
-        <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.5);font-size:9px;font-weight:700;color:#fff;text-align:center;padding:2px">${i===0?'MAIN':i+1}</div>
+        <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);font-size:9px;font-weight:700;color:#fff;text-align:center;padding:2px">${i===0?'MAIN':i+1}</div>
       </div>`).join('');
     wrap.style.display='block';
   } else { wrap.style.display='none'; }
@@ -1030,20 +1050,21 @@ async function saveEditProduct(){
   const idx=PRODUCTS.findIndex(x=>x.id===pid);
   if(idx===-1){ showToast('Product not found','error'); btn.textContent='💾 Save Changes'; btn.disabled=false; return; }
 
-  const origPrice=parseInt(document.getElementById('ep_origprice').value)||0;
   const updates={
     name, price,
     team:document.getElementById('ep_team').value.trim()||'',
+    originalPrice:parseInt(document.getElementById('ep_origprice').value)||null,
     stock:parseInt(document.getElementById('ep_stock').value)||0,
     category:document.getElementById('ep_cat').value,
     badge:document.getElementById('ep_badge').value,
     club:document.getElementById('ep_club').value||'other',
     emoji:document.getElementById('ep_emoji').value||'👕',
-    imageUrl:PRODUCTS[idx].imageUrl||''
+    imageUrl:PRODUCTS[idx].imageUrl||'',
+    // Only carry images when >1 exist; null removes the field from RTDB (never write [])
+    images: (PRODUCTS[idx].images && PRODUCTS[idx].images.length>1)
+              ? PRODUCTS[idx].images
+              : null
   };
-  if(origPrice) updates.originalPrice=origPrice;
-  // Carry over existing images array if present
-  if(PRODUCTS[idx].images && PRODUCTS[idx].images.length) updates.images=PRODUCTS[idx].images;
 
   try{
     const files=Array.from(document.getElementById('ep_imgs').files).slice(0,5);
@@ -1067,14 +1088,16 @@ async function saveEditProduct(){
       }
       updates.imageUrl=urls[0];
       if(urls.length>1) updates.images=urls;
+      else updates.images=null; // clear any old multi-image array
       prog.style.display='none';
     }
 
     await FB.update(FB.ref(FB.db,`products/${pid}`),updates);
-    PRODUCTS[idx]={...PRODUCTS[idx],...updates};
+    PRODUCTS[idx]=normalizeProduct({...PRODUCTS[idx],...updates});
     renderProductsTable();
     closeModal('editProduct');
-    showToast(`${name} updated ✅`,'success');
+    const imgCount=PRODUCTS[idx].images.length;
+    showToast(`${name} updated ✅${imgCount>1?' ('+imgCount+' images)':''}`, 'success');
   }catch(e){
     showToast('Update failed: '+e.message,'error');
   }finally{
@@ -1110,10 +1133,10 @@ async function addProduct(){
   const btn=document.getElementById('addProdBtn');
   btn.textContent='Saving…';btn.disabled=true;
 
-  const origPrice=parseInt(document.getElementById('ap_origprice').value)||0;
   const p={
     name,price,
     team:document.getElementById('ap_team').value.trim()||'',
+    originalPrice:parseInt(document.getElementById('ap_origprice').value)||null,
     stock:parseInt(document.getElementById('ap_stock').value)||0,
     category:document.getElementById('ap_cat').value,
     badge:document.getElementById('ap_badge').value,
@@ -1122,8 +1145,10 @@ async function addProduct(){
     sizes:['S','M','L','XL'],
     imageUrl:'',
     createdAt:Date.now()
+    // NOTE: images key is ONLY added when we have actual URLs.
+    // Never write images:[] — Firebase RTDB converts empty arrays to null,
+    // which can cause validation issues on some rule configurations.
   };
-  if(origPrice) p.originalPrice=origPrice;
 
   try{
     const files=Array.from(document.getElementById('ap_imgs').files).slice(0,5);
@@ -1147,16 +1172,20 @@ async function addProduct(){
       }
       p.imageUrl=urls[0];
       if(urls.length>1) p.images=urls;
+      // single image: only imageUrl is set, no images array written
       prog.style.display='none';
     }
 
     const newRef=FB.push(FB.ref(FB.db,'products'));
     p.id=newRef.key;
     await FB.set(newRef,p);
-    PRODUCTS.push(p);
+    PRODUCTS.push(normalizeProduct(p));  // normalize so local array matches DB shape
     document.getElementById('adminProductCount').textContent=PRODUCTS.length;
+    const nb=document.getElementById('navProdBadge');
+    nb.textContent=PRODUCTS.length; nb.style.display='inline-flex';
     closeModal('addProduct');
-    showToast(`${p.name} added! 👕`,'success');
+    const imgCount=PRODUCTS[PRODUCTS.length-1].images.length;
+    showToast(`${p.name} added! 👕${imgCount>1?' ('+imgCount+' images)':''}`, 'success');
     renderProductsTable();
     /* Reset form */
     ['ap_name','ap_team','ap_price','ap_origprice','ap_stock','ap_emoji'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
@@ -1164,8 +1193,7 @@ async function addProduct(){
     document.getElementById('ap_imgs').value='';
     document.getElementById('ap_img_previews').innerHTML='';
   }catch(e){
-    console.error('addProduct error:',e);
-    showToast('Failed: '+(e.message||e),'error');
+    showToast('Failed: '+e.message,'error');
   }finally{btn.textContent='Add to Catalogue →';btn.disabled=false;}
 }
 
