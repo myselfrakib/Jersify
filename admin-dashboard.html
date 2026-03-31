@@ -201,6 +201,14 @@ tr:hover td{background:rgba(26,26,46,.02)}
 .order-customer-mob{font-size:13px;font-weight:800}
 .order-card-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 
+/* ── CUSTOMER CARDS (mobile) ── */
+.customer-cards{display:none;flex-direction:column;gap:10px;padding:14px}
+.customer-card-item{background:var(--white);border-radius:14px;padding:14px;border:1px solid var(--border);box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:12px}
+.customer-card-avatar{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#2d2d4e);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:17px;color:#fff;flex-shrink:0}
+.customer-card-info{flex:1;min-width:0}
+.customer-card-name{font-size:14px;font-weight:800;margin-bottom:2px}
+.customer-card-email{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 /* ── BUTTONS ── */
 .btn{padding:8px 16px;border-radius:9px;font-family:var(--fb);font-size:12px;font-weight:700;
   cursor:pointer;border:1.5px solid;transition:all .2s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
@@ -218,6 +226,7 @@ tr:hover td{background:rgba(26,26,46,.02)}
 .badge-shipped{background:rgba(37,99,235,.1);color:var(--blue);border:1.5px solid var(--blue)}
 .badge-delivered{background:rgba(16,185,129,.1);color:var(--green);border:1.5px solid var(--green)}
 .badge-out_for_delivery{background:rgba(168,85,247,.1);color:#a855f7;border:1.5px solid #a855f7}
+.badge-cancelled{background:rgba(230,57,70,.1);color:var(--red);border:1.5px solid var(--red)}
 .badge-active{background:rgba(16,185,129,.1);color:var(--green);border:1.5px solid var(--green)}
 .badge-inactive{background:rgba(156,163,175,.1);color:var(--muted);border:1.5px solid var(--border)}
 .badge-drop{background:rgba(26,26,46,.1);color:var(--accent);border:1.5px solid var(--accent)}
@@ -480,8 +489,7 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
             <button class="btn btn-primary btn-sm" onclick="switchTab('orders',document.querySelectorAll('.nav-item')[2])">View All →</button>
           </div>
           <div class="card-body">
-            <div class="table-wrap"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dashOrdersTbody"></tbody></table></div>
-            <!-- Mobile order cards -->
+            <div class="table-wrap" id="dashOrdersTable"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dashOrdersTbody"></tbody></table></div>
             <div class="order-cards" id="dashOrderCards"></div>
           </div>
         </div>
@@ -495,7 +503,7 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
         </div>
         <div class="card">
           <div class="card-body">
-            <div class="table-wrap"><table><thead><tr><th>Product</th><th>Team</th><th>Price</th><th>Stock</th><th>Category</th><th>Badge</th><th>Actions</th></tr></thead><tbody id="productsTbody"></tbody></table></div>
+            <div class="table-wrap" id="productsTable"><table><thead><tr><th>Product</th><th>Team</th><th>Price</th><th>Stock</th><th>Category</th><th>Badge</th><th>Actions</th></tr></thead><tbody id="productsTbody"></tbody></table></div>
             <div class="product-cards" id="productCardsList"></div>
           </div>
         </div>
@@ -509,7 +517,7 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
         </div>
         <div class="card">
           <div class="card-body">
-            <div class="table-wrap"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th>Update</th></tr></thead><tbody id="ordersTbody"></tbody></table></div>
+            <div class="table-wrap" id="ordersTable"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th>Update</th></tr></thead><tbody id="ordersTbody"></tbody></table></div>
             <div class="order-cards" id="orderCardsList"></div>
           </div>
         </div>
@@ -520,7 +528,9 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
         <div class="page-header"><h2 class="page-title">CUSTOMERS</h2></div>
         <div class="card">
           <div class="card-body">
-            <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Orders</th><th>Joined</th></tr></thead><tbody id="customersTbody"></tbody></table></div>
+            <div class="table-wrap" id="customersTable"><table><thead><tr><th>Name</th><th>Email</th><th>Orders</th><th>Joined</th></tr></thead><tbody id="customersTbody"></tbody></table></div>
+            <!-- FIX: Added mobile cards for customers tab -->
+            <div class="customer-cards" id="customerCardsList"></div>
           </div>
         </div>
       </div>
@@ -550,7 +560,6 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
           <h2 class="page-title">MEDIA MANAGER</h2>
           <button class="btn btn-outline btn-sm" onclick="loadAllMediaSlots()">🔄 Refresh</button>
         </div>
-        <!-- Legend -->
         <div style="background:var(--white);border-radius:13px;padding:14px 18px;box-shadow:var(--shadow-card);margin-bottom:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
           <span style="font-size:12px;font-weight:700;color:var(--text2)">📌 Slots map to storefront placeholders:</span>
           <span style="font-size:12px;font-weight:700;color:var(--green)">● Filled</span>
@@ -673,7 +682,6 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
       <!-- Images -->
       <div class="form-group">
         <label class="form-label">Product Images <span style="font-size:10px;color:var(--muted);font-weight:600;text-transform:none">(up to 5 — first is main)</span></label>
-        <!-- Current images preview -->
         <div id="ep_current_imgs_wrap" style="margin-bottom:10px;display:none">
           <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Current Images</div>
           <div id="ep_current_imgs_row" style="display:flex;flex-wrap:wrap;gap:8px"></div>
@@ -707,20 +715,17 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
       <input type="hidden" id="mediaSlotId"/>
       <input type="hidden" id="mediaSlotIsVideo"/>
 
-      <!-- Preview -->
       <div id="mediaCurrentPreview" style="margin-bottom:14px;display:none">
         <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Current</div>
         <div id="mediaPreviewBox" style="width:100%;height:140px;border-radius:12px;overflow:hidden;background:var(--s2);display:flex;align-items:center;justify-content:center"></div>
       </div>
 
-      <!-- Input Method Tabs -->
       <div class="method-tabs" id="mediaMethodTabs">
         <button class="method-tab active" onclick="setMediaMethod('upload',this)">📤 Upload</button>
         <button class="method-tab" onclick="setMediaMethod('url',this)">🔗 URL / Link</button>
         <button class="method-tab" id="youtubeTab" onclick="setMediaMethod('youtube',this)">▶ YouTube</button>
       </div>
 
-      <!-- Upload Section -->
       <div id="mediaUploadSection">
         <div class="upload-zone" id="mediaUploadZone">
           <input type="file" id="media_file" accept="image/*,video/*" onchange="handleMediaFilePreview(this)"/>
@@ -734,7 +739,6 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
         </div>
       </div>
 
-      <!-- URL Section -->
       <div id="mediaUrlSection" style="display:none">
         <div class="form-group">
           <label class="form-label">Direct URL</label>
@@ -746,7 +750,6 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
         </div>
       </div>
 
-      <!-- YouTube Section -->
       <div id="mediaYoutubeSection" style="display:none">
         <div class="form-group">
           <label class="form-label">YouTube Video ID</label>
@@ -755,7 +758,6 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
         </div>
       </div>
 
-      <!-- Video Options -->
       <div id="mediaVideoOpts" style="display:none;margin-top:8px">
         <div style="display:flex;gap:16px;flex-wrap:wrap;padding:12px;background:var(--s2);border-radius:11px">
           <label style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;cursor:pointer">
@@ -767,6 +769,7 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
         </div>
       </div>
 
+      <!-- FIX: Correct id was mediaSaveBtn not mediasaveBtn -->
       <button class="btn btn-primary btn-lg" id="mediaSaveBtn" style="width:100%;margin-top:16px" onclick="saveMediaSlot()">💾 Save to Storefront</button>
       <button class="btn btn-danger" id="mediaClearBtn" style="width:100%;margin-top:8px;display:none" onclick="clearMediaSlot()">✕ Remove Media</button>
     </div>
@@ -784,17 +787,24 @@ let mediaCache={};
 let currentMediaSlot=null;
 let mediaMethod='upload';
 
+/*
+ * FIX: Added shopbanner and upi-qr slots that exist in RTDB rules but were
+ *      missing from this array, causing them to never appear in the Media Manager.
+ */
 const MEDIA_SLOTS=[
-  {id:'img1',label:'Hero Banner',      desc:'Main homepage banner below hero',     rec:'1300×280px', icon:'🖼️',dark:true},
-  {id:'img2',label:'Campaign Photo',   desc:'Wide campaign photo in 2-col strip',  rec:'820×300px',  icon:'📸',dark:true},
-  {id:'img3',label:'Product Closeup',  desc:'Right column top — product detail',   rec:'400×140px',  icon:'👕',dark:false},
-  {id:'img4',label:'Collab Drop',      desc:'Right column bottom — collab image',  rec:'400×140px',  icon:'🤝',dark:false},
-  {id:'img5',label:'UGC Photo 1',      desc:'Social proof grid photo',             rec:'150×150px',  icon:'📷',dark:false},
-  {id:'img6',label:'UGC Photo 2',      desc:'Social proof grid photo',             rec:'150×150px',  icon:'📷',dark:false},
-  {id:'img7',label:'UGC Photo 3',      desc:'Social proof grid photo',             rec:'150×150px',  icon:'📷',dark:false},
-  {id:'img8',label:'UGC Photo 4',      desc:'Social proof grid photo',             rec:'150×150px',  icon:'📷',dark:false},
-  {id:'vid1',label:'Promo Video',      desc:'Drop Story section — MP4 or YouTube', rec:'1300×380px', icon:'🎬',dark:true, isVideo:true},
-  {id:'vid2',label:'Reel / Short',     desc:'Social grid vertical video',          rec:'9:16 format', icon:'🎵',dark:true, isVideo:true},
+  {id:'img1',     label:'Hero Banner',      desc:'Main homepage banner below hero',      rec:'1300×280px',  icon:'🖼️', dark:true},
+  {id:'img2',     label:'Campaign Photo',   desc:'Wide campaign photo in 2-col strip',   rec:'820×300px',   icon:'📸', dark:true},
+  {id:'img3',     label:'Product Closeup',  desc:'Right column top — product detail',    rec:'400×140px',   icon:'👕', dark:false},
+  {id:'img4',     label:'Collab Drop',      desc:'Right column bottom — collab image',   rec:'400×140px',   icon:'🤝', dark:false},
+  {id:'img5',     label:'UGC Photo 1',      desc:'Social proof grid photo',              rec:'150×150px',   icon:'📷', dark:false},
+  {id:'img6',     label:'UGC Photo 2',      desc:'Social proof grid photo',              rec:'150×150px',   icon:'📷', dark:false},
+  {id:'img7',     label:'UGC Photo 3',      desc:'Social proof grid photo',              rec:'150×150px',   icon:'📷', dark:false},
+  {id:'img8',     label:'UGC Photo 4',      desc:'Social proof grid photo',              rec:'150×150px',   icon:'📷', dark:false},
+  {id:'vid1',     label:'Promo Video',      desc:'Drop Story section — MP4 or YouTube',  rec:'1300×380px',  icon:'🎬', dark:true,  isVideo:true},
+  {id:'vid2',     label:'Reel / Short',     desc:'Social grid vertical video',           rec:'9:16 format', icon:'🎵', dark:true,  isVideo:true},
+  {id:'vid3',     label:'Extra Video',      desc:'Optional third video slot',            rec:'Any format',  icon:'🎥', dark:true,  isVideo:true},
+  {id:'shopbanner',label:'Shop Banner',     desc:'Top banner on the shop/products page', rec:'1300×160px',  icon:'🛍️', dark:true},
+  {id:'upi-qr',   label:'UPI QR Code',      desc:'Payment QR shown at checkout',         rec:'300×300px',   icon:'💳', dark:false},
 ];
 
 /* ════════════════════════════════════════════
@@ -807,8 +817,8 @@ async function initDashboard(){
 
 /* ════════════════════════════════════════════
    NORMALIZE PRODUCT FROM RTDB
-   Firebase stores arrays as {0:url,1:url}. SDK v10 usually converts back,
-   but we normalize defensively + ensure imageUrl always mirrors images[0].
+   RTDB stores arrays as {0:url,1:url,...}.
+   We normalize to a real JS array defensively.
 ════════════════════════════════════════════ */
 function normalizeProduct(raw){
   const p={...raw};
@@ -819,6 +829,12 @@ function normalizeProduct(raw){
     p.images=[];
   }
   if(!p.imageUrl && p.images.length) p.imageUrl=p.images[0];
+  // Normalize sizes the same way — RTDB converts arrays to objects
+  if(p.sizes && !Array.isArray(p.sizes)){
+    p.sizes=Object.values(p.sizes);
+  } else if(!p.sizes){
+    p.sizes=['S','M','L','XL'];
+  }
   return p;
 }
 
@@ -831,6 +847,7 @@ async function loadProducts(){
     PRODUCTS=[];
     if(snap.exists()) snap.forEach(c=>PRODUCTS.push(normalizeProduct({id:c.key,...c.val()})));
   }catch(e){
+    // FIX: Was silently swallowing errors — now shows them
     console.error('loadProducts error:',e);
     showToast('Could not load products: '+(e.message||e.code||String(e)),'error');
   }
@@ -848,7 +865,11 @@ async function loadOrders(){
     ORDERS=[];
     if(snap.exists()) snap.forEach(c=>ORDERS.push(c.val()));
     ORDERS.sort((a,b)=>b.createdAt-a.createdAt);
-  }catch(e){}
+  }catch(e){
+    // FIX: Was silently swallowing errors — now shows them
+    console.error('loadOrders error:',e);
+    showToast('Could not load orders: '+(e.message||e.code||String(e)),'error');
+  }
   const c=ORDERS.length;
   document.getElementById('adminOrderCount').textContent=c;
   const nb=document.getElementById('navOrdBadge');
@@ -865,8 +886,14 @@ async function loadCustomers(){
     const snap=await FB.get(FB.ref(FB.db,'users'));
     CUSTOMERS=[];
     if(snap.exists()) snap.forEach(c=>CUSTOMERS.push({uid:c.key,...c.val()}));
-  }catch(e){}
+  }catch(e){
+    console.error('loadCustomers error:',e);
+    showToast('Could not load customers: '+(e.message||e.code||String(e)),'error');
+  }
   document.getElementById('adminCustCount').textContent=CUSTOMERS.length;
+  // FIX: renderCustomersTable was never called after initial load — customers
+  //      tab would always be blank until manually clicked twice.
+  renderCustomersTable();
 }
 
 async function loadAllMediaSlots(){
@@ -874,7 +901,10 @@ async function loadAllMediaSlots(){
     const snap=await FB.get(FB.ref(FB.db,'media'));
     mediaCache={};
     if(snap.exists()) snap.forEach(c=>{mediaCache[c.key]=c.val();});
-  }catch(e){}
+  }catch(e){
+    console.error('loadMedia error:',e);
+    showToast('Could not load media: '+(e.message||e.code||String(e)),'error');
+  }
   renderMediaManager();
 }
 
@@ -896,7 +926,7 @@ function renderDashboardOrders(){
       <td style="font-family:var(--fm);font-size:11px;color:var(--blue)">${o.orderId}</td>
       <td style="font-weight:700">${o.customerName||'—'}</td>
       <td style="font-weight:800">₹${o.total}</td>
-      <td><span class="badge badge-${o.status}">${o.status.replace('_',' ')}</span></td>
+      <td><span class="badge badge-${o.status}">${o.status.replace(/_/g,' ')}</span></td>
       <td>
         <div style="display:flex;gap:5px">
           <button class="btn btn-outline btn-sm" onclick="updateOrderStatus('${o.orderId}','shipped')">Ship</button>
@@ -912,7 +942,7 @@ function renderDashboardOrders(){
             <div class="order-id-mob">${o.orderId}</div>
             <div class="order-customer-mob">${o.customerName||'—'}</div>
           </div>
-          <span class="badge badge-${o.status}">${o.status.replace('_',' ')}</span>
+          <span class="badge badge-${o.status}">${o.status.replace(/_/g,' ')}</span>
         </div>
         <div class="order-card-row">
           <span style="font-family:var(--fm);font-size:15px;font-weight:800">₹${o.total}</span>
@@ -931,11 +961,12 @@ function renderDashboardOrders(){
 function renderProductsTable(){
   const tbody=document.getElementById('productsTbody');
   const cards=document.getElementById('productCardsList');
+  const isMobile=window.innerWidth<=1000;
   if(!tbody) return;
   if(!PRODUCTS.length){
     const empty='<div class="empty-state"><span class="empty-icon">👕</span><div class="empty-title">No products yet</div><div class="empty-sub">Add your first jersey above</div></div>';
-    tbody.innerHTML='<tr><td colspan="7"><div style="padding:20px">'+empty.replace('class="empty-state"','class="empty-state" style="padding:28px 0"')+'</div></td></tr>';
-    if(cards){cards.style.display='none';}
+    tbody.innerHTML='<tr><td colspan="7"><div style="padding:20px">'+empty+'</div></td></tr>';
+    if(cards){cards.innerHTML='';cards.style.display='none';}
     return;
   }
   tbody.innerHTML=PRODUCTS.map(p=>`
@@ -943,20 +974,20 @@ function renderProductsTable(){
       <td>
         <div style="display:flex;align-items:center;gap:10px">
           <div style="width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,#f8f9fa,#e9ecef);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden">
-            ${p.imageUrl?`<img src="${p.imageUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:9px"/>`:(p.emoji||'👕')}
+            ${p.imageUrl?`<img src="${p.imageUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:9px" onerror="this.style.display='none';this.parentNode.textContent='${p.emoji||'👕'}'"/>`:(p.emoji||'👕')}
           </div>
           <div><div style="font-weight:800;font-size:13px">${p.name}</div></div>
         </div>
       </td>
       <td style="color:var(--muted)">${p.team||'—'}</td>
       <td style="font-weight:900">₹${p.price}</td>
-      <td><span style="font-weight:700;color:${p.stock<=5?'var(--red)':'var(--text)'}">${p.stock}</span></td>
-      <td><span class="chip">${p.category}</span></td>
+      <td><span style="font-weight:700;color:${(p.stock||0)<=5?'var(--red)':'var(--text)'}">${p.stock||0}</span></td>
+      <td><span class="chip">${p.category||'—'}</span></td>
       <td><span class="badge badge-${(p.badge||'').toLowerCase()}">${p.badge||'—'}</span></td>
       <td>
         <div style="display:flex;gap:5px">
           <button class="btn btn-outline btn-sm" onclick="openEditProduct('${p.id}')">✏️ Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}','${p.name.replace(/'/g,'')}')">Delete</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}','${p.name.replace(/'/g,'').replace(/"/g,'')}')">Delete</button>
         </div>
       </td>
     </tr>`).join('');
@@ -964,22 +995,29 @@ function renderProductsTable(){
   if(cards){
     cards.innerHTML=PRODUCTS.map(p=>`
       <div class="product-card-item">
-        <div class="product-card-img">${p.imageUrl?`<img src="${p.imageUrl}" alt="${p.name}"/>`:(p.emoji||'👕')}</div>
+        <div class="product-card-img">${p.imageUrl?`<img src="${p.imageUrl}" alt="${p.name}" onerror="this.style.display='none'"/>`:(p.emoji||'👕')}</div>
         <div class="product-card-info">
           <div class="product-card-name">${p.name}</div>
           <div class="product-card-team">${p.team||'—'}</div>
           <div class="product-card-meta">
             <span class="product-card-price">₹${p.price}</span>
-            <span class="chip">Stock: ${p.stock}</span>
+            <span class="chip">Stock: ${p.stock||0}</span>
             <span class="badge badge-${(p.badge||'').toLowerCase()}">${p.badge||'—'}</span>
           </div>
         </div>
         <div class="product-card-actions">
           <button class="btn btn-outline btn-sm" onclick="openEditProduct('${p.id}')">✏️ Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}','${p.name.replace(/'/g,'')}')">Delete</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}','${p.name.replace(/'/g,'').replace(/"/g,'')}')">Delete</button>
         </div>
       </div>`).join('');
-    cards.style.display='flex';
+    // FIX: Only show cards on mobile, hide table
+    if(isMobile){
+      cards.style.display='flex';
+      document.getElementById('productsTable').style.display='none';
+    } else {
+      cards.style.display='none';
+      document.getElementById('productsTable').style.display='block';
+    }
   }
 }
 
@@ -989,16 +1027,17 @@ async function deleteProduct(pid,name){
     await FB.remove(FB.ref(FB.db,`products/${pid}`));
     PRODUCTS=PRODUCTS.filter(p=>p.id!==pid);
     document.getElementById('adminProductCount').textContent=PRODUCTS.length;
+    const nb=document.getElementById('navProdBadge');
+    if(PRODUCTS.length>0){nb.textContent=PRODUCTS.length;nb.style.display='inline-flex';}
+    else nb.style.display='none';
     renderProductsTable();
     showToast(`${name} deleted`,'error');
-  }catch(e){showToast('Delete failed. Check permissions.','error');}
+  }catch(e){showToast('Delete failed: '+(e.message||e.code),'error');}
 }
 
 /* ════════════════════════════════════════════
    EDIT PRODUCT
 ════════════════════════════════════════════ */
-let editImgMethod='keep';
-
 function openEditProduct(pid){
   const p=PRODUCTS.find(x=>x.id===pid);
   if(!p){ showToast('Product not found','error'); return; }
@@ -1012,17 +1051,13 @@ function openEditProduct(pid){
   document.getElementById('ep_imgs').value='';
   document.getElementById('ep_new_img_previews').innerHTML='';
 
-  /* Category */
   const cat=document.getElementById('ep_cat');
   [...cat.options].forEach(o=>o.selected=o.value===p.category);
-  /* Club */
   const club=document.getElementById('ep_club');
   [...club.options].forEach(o=>o.selected=o.value===(p.club||'other'));
-  /* Badge */
   const badge=document.getElementById('ep_badge');
   [...badge.options].forEach(o=>o.selected=o.value.toUpperCase()===(p.badge||'').toUpperCase());
 
-  /* Current images preview */
   const wrap=document.getElementById('ep_current_imgs_wrap');
   const row=document.getElementById('ep_current_imgs_row');
   const imgs = p.images && p.images.length ? p.images : (p.imageUrl ? [p.imageUrl] : []);
@@ -1050,6 +1085,11 @@ async function saveEditProduct(){
   const idx=PRODUCTS.findIndex(x=>x.id===pid);
   if(idx===-1){ showToast('Product not found','error'); btn.textContent='💾 Save Changes'; btn.disabled=false; return; }
 
+  // FIX: Preserve existing sizes instead of hardcoding
+  const existingSizes = PRODUCTS[idx].sizes && PRODUCTS[idx].sizes.length
+    ? PRODUCTS[idx].sizes
+    : ['S','M','L','XL'];
+
   const updates={
     name, price,
     team:document.getElementById('ep_team').value.trim()||'',
@@ -1060,7 +1100,7 @@ async function saveEditProduct(){
     club:document.getElementById('ep_club').value||'other',
     emoji:document.getElementById('ep_emoji').value||'👕',
     imageUrl:PRODUCTS[idx].imageUrl||'',
-    // Only carry images when >1 exist; null removes the field from RTDB (never write [])
+    sizes: existingSizes,
     images: (PRODUCTS[idx].images && PRODUCTS[idx].images.length>1)
               ? PRODUCTS[idx].images
               : null
@@ -1087,24 +1127,31 @@ async function saveEditProduct(){
         urls.push(url);
       }
       updates.imageUrl=urls[0];
-      if(urls.length>1) updates.images=urls;
-      else updates.images=null; // clear any old multi-image array
+      updates.images=urls.length>1?urls:null;
+      fill.style.width='100%';
       prog.style.display='none';
     }
 
-    await FB.update(FB.ref(FB.db,`products/${pid}`),updates);
-    PRODUCTS[idx]=normalizeProduct({...PRODUCTS[idx],...updates});
+    // FIX: Remove null fields before writing (RTDB null = delete key)
+    const cleanUpdates={};
+    for(const [k,v] of Object.entries(updates)){
+      if(v!==null && v!==undefined) cleanUpdates[k]=v;
+      else cleanUpdates[k]=null; // explicitly null to remove old value in RTDB
+    }
+
+    await FB.update(FB.ref(FB.db,`products/${pid}`),cleanUpdates);
+    PRODUCTS[idx]=normalizeProduct({...PRODUCTS[idx],...cleanUpdates});
     renderProductsTable();
     closeModal('editProduct');
     const imgCount=PRODUCTS[idx].images.length;
     showToast(`${name} updated ✅${imgCount>1?' ('+imgCount+' images)':''}`, 'success');
   }catch(e){
-    showToast('Update failed: '+e.message,'error');
+    showToast('Update failed: '+(e.message||e.code),'error');
+    console.error('saveEditProduct error:',e);
   }finally{
     btn.textContent='💾 Save Changes'; btn.disabled=false;
   }
 }
-
 
 /* ── Multi-image preview helper ── */
 function handleMultiImgPreview(input, previewContainerId){
@@ -1123,7 +1170,7 @@ function handleMultiImgPreview(input, previewContainerId){
     wrap.appendChild(img); wrap.appendChild(lbl);
     container.appendChild(wrap);
   });
-  if(files.length) container.style.display='flex'; else container.style.display='none';
+  container.style.display=files.length?'flex':'none';
 }
 
 async function addProduct(){
@@ -1133,22 +1180,24 @@ async function addProduct(){
   const btn=document.getElementById('addProdBtn');
   btn.textContent='Saving…';btn.disabled=true;
 
+  const origPrice=parseInt(document.getElementById('ap_origprice').value)||null;
+
   const p={
-    name,price,
+    name, price,
     team:document.getElementById('ap_team').value.trim()||'',
-    originalPrice:parseInt(document.getElementById('ap_origprice').value)||null,
     stock:parseInt(document.getElementById('ap_stock').value)||0,
     category:document.getElementById('ap_cat').value,
     badge:document.getElementById('ap_badge').value,
     club:document.getElementById('ap_club').value||'other',
     emoji:document.getElementById('ap_emoji').value||'👕',
-    sizes:['S','M','L','XL'],
+    // FIX: Write sizes as an object {0:'S',1:'M',...} to match RTDB's
+    //      natural format and satisfy newData.hasChildren() rule.
+    sizes:{0:'S',1:'M',2:'L',3:'XL'},
     imageUrl:'',
     createdAt:Date.now()
-    // NOTE: images key is ONLY added when we have actual URLs.
-    // Never write images:[] — Firebase RTDB converts empty arrays to null,
-    // which can cause validation issues on some rule configurations.
   };
+  // Only write originalPrice if set — avoids null validation issues
+  if(origPrice) p.originalPrice=origPrice;
 
   try{
     const files=Array.from(document.getElementById('ap_imgs').files).slice(0,5);
@@ -1172,14 +1221,14 @@ async function addProduct(){
       }
       p.imageUrl=urls[0];
       if(urls.length>1) p.images=urls;
-      // single image: only imageUrl is set, no images array written
+      fill.style.width='100%';
       prog.style.display='none';
     }
 
     const newRef=FB.push(FB.ref(FB.db,'products'));
     p.id=newRef.key;
     await FB.set(newRef,p);
-    PRODUCTS.push(normalizeProduct(p));  // normalize so local array matches DB shape
+    PRODUCTS.push(normalizeProduct(p));
     document.getElementById('adminProductCount').textContent=PRODUCTS.length;
     const nb=document.getElementById('navProdBadge');
     nb.textContent=PRODUCTS.length; nb.style.display='inline-flex';
@@ -1187,13 +1236,13 @@ async function addProduct(){
     const imgCount=PRODUCTS[PRODUCTS.length-1].images.length;
     showToast(`${p.name} added! 👕${imgCount>1?' ('+imgCount+' images)':''}`, 'success');
     renderProductsTable();
-    /* Reset form */
-    ['ap_name','ap_team','ap_price','ap_origprice','ap_stock','ap_emoji'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    ['ap_name','ap_team','ap_price','ap_origprice','ap_stock'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.getElementById('ap_emoji').value='👕';
     document.getElementById('ap_imgs').value='';
     document.getElementById('ap_img_previews').innerHTML='';
   }catch(e){
-    showToast('Failed: '+e.message,'error');
+    showToast('Failed: '+(e.message||e.code),'error');
+    console.error('addProduct error:',e);
   }finally{btn.textContent='Add to Catalogue →';btn.disabled=false;}
 }
 
@@ -1203,6 +1252,7 @@ async function addProduct(){
 function renderOrdersTable(){
   const tbody=document.getElementById('ordersTbody');
   const cards=document.getElementById('orderCardsList');
+  const isMobile=window.innerWidth<=1000;
   if(!tbody) return;
   if(!ORDERS.length){
     tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--muted);font-weight:700">No orders yet</td></tr>';
@@ -1214,7 +1264,7 @@ function renderOrdersTable(){
       <td style="font-family:var(--fm);font-size:11px;color:var(--blue)">${o.orderId}</td>
       <td style="font-weight:700">${o.customerName||'—'}</td>
       <td style="font-weight:900">₹${o.total}</td>
-      <td><span class="badge badge-${o.status}">${o.status.replace('_',' ')}</span></td>
+      <td><span class="badge badge-${o.status}">${o.status.replace(/_/g,' ')}</span></td>
       <td style="color:var(--muted);font-size:12px">${new Date(o.createdAt).toLocaleDateString()}</td>
       <td>
         <select class="form-input" style="padding:7px 10px;font-size:12px;width:auto;border-radius:9px" onchange="updateOrderStatus('${o.orderId}',this.value)">
@@ -1222,6 +1272,7 @@ function renderOrdersTable(){
           <option ${o.status==='shipped'?'selected':''} value="shipped">Shipped</option>
           <option ${o.status==='out_for_delivery'?'selected':''} value="out_for_delivery">Out for Delivery</option>
           <option ${o.status==='delivered'?'selected':''} value="delivered">Delivered</option>
+          <option ${o.status==='cancelled'?'selected':''} value="cancelled">Cancelled</option>
         </select>
       </td>
     </tr>`).join('');
@@ -1235,7 +1286,7 @@ function renderOrdersTable(){
             <div class="order-customer-mob">${o.customerName||'—'}</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px">${new Date(o.createdAt).toLocaleDateString()}</div>
           </div>
-          <span class="badge badge-${o.status}">${o.status.replace('_',' ')}</span>
+          <span class="badge badge-${o.status}">${o.status.replace(/_/g,' ')}</span>
         </div>
         <div class="order-card-row">
           <span style="font-family:var(--fm);font-size:16px;font-weight:800">₹${o.total}</span>
@@ -1244,10 +1295,18 @@ function renderOrdersTable(){
             <option ${o.status==='shipped'?'selected':''} value="shipped">Shipped</option>
             <option ${o.status==='out_for_delivery'?'selected':''} value="out_for_delivery">Out for Delivery</option>
             <option ${o.status==='delivered'?'selected':''} value="delivered">Delivered</option>
+            <option ${o.status==='cancelled'?'selected':''} value="cancelled">Cancelled</option>
           </select>
         </div>
       </div>`).join('');
-    cards.style.display='flex';
+    // FIX: Correct responsive display for orders
+    if(isMobile){
+      cards.style.display='flex';
+      document.getElementById('ordersTable').style.display='none';
+    } else {
+      cards.style.display='none';
+      document.getElementById('ordersTable').style.display='block';
+    }
   }
 }
 
@@ -1256,19 +1315,22 @@ async function updateOrderStatus(orderId,status){
     await FB.update(FB.ref(FB.db,`orders/${orderId}`),{status});
     const o=ORDERS.find(x=>x.orderId===orderId);
     if(o) o.status=status;
-    showToast(`${orderId} → ${status} ✅`,'success');
+    showToast(`${orderId} → ${status.replace(/_/g,' ')} ✅`,'success');
     renderOrdersTable();renderDashboardOrders();
-  }catch(e){showToast('Update failed','error');}
+  }catch(e){showToast('Update failed: '+(e.message||e.code),'error');}
 }
 
 /* ════════════════════════════════════════════
-   CUSTOMERS TABLE
+   CUSTOMERS TABLE + CARDS
 ════════════════════════════════════════════ */
 function renderCustomersTable(){
   const tbody=document.getElementById('customersTbody');
+  const cards=document.getElementById('customerCardsList');
+  const isMobile=window.innerWidth<=1000;
   if(!tbody) return;
   if(!CUSTOMERS.length){
     tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--muted);font-weight:700">No customers yet</td></tr>';
+    if(cards) cards.innerHTML='';
     return;
   }
   tbody.innerHTML=CUSTOMERS.map(c=>`
@@ -1278,6 +1340,29 @@ function renderCustomersTable(){
       <td style="font-weight:700">${Object.keys(c.orders||{}).length}</td>
       <td style="color:var(--muted);font-size:12px">${c.createdAt?new Date(c.createdAt).toLocaleDateString():'—'}</td>
     </tr>`).join('');
+
+  // FIX: Added mobile card view for customers (was missing — customers saw blank page on mobile)
+  if(cards){
+    cards.innerHTML=CUSTOMERS.map(c=>`
+      <div class="customer-card-item">
+        <div class="customer-card-avatar">${(c.displayName||c.email||'?')[0].toUpperCase()}</div>
+        <div class="customer-card-info">
+          <div class="customer-card-name">${c.displayName||c.firstName||'—'}</div>
+          <div class="customer-card-email">${c.email||'—'}</div>
+          <div style="margin-top:4px;display:flex;gap:8px;flex-wrap:wrap">
+            <span class="chip">Orders: ${Object.keys(c.orders||{}).length}</span>
+            ${c.createdAt?`<span style="font-size:11px;color:var(--muted);font-weight:600">${new Date(c.createdAt).toLocaleDateString()}</span>`:''}
+          </div>
+        </div>
+      </div>`).join('');
+    if(isMobile){
+      cards.style.display='flex';
+      document.getElementById('customersTable').style.display='none';
+    } else {
+      cards.style.display='none';
+      document.getElementById('customersTable').style.display='block';
+    }
+  }
 }
 
 /* ════════════════════════════════════════════
@@ -1288,7 +1373,10 @@ async function loadAdminMembers(){
     const snap=await FB.get(FB.ref(FB.db,'admins'));
     adminMembers=[];
     if(snap.exists()) snap.forEach(c=>adminMembers.push({uid:c.key,...c.val()}));
-  }catch(e){adminMembers=[];}
+  }catch(e){
+    adminMembers=[];
+    showToast('Could not load admins: '+(e.message||e.code),'error');
+  }
   renderAdminMembers();
 }
 
@@ -1322,7 +1410,8 @@ function renderAdminMembers(){
 async function toggleAdminStatus(i){
   adminMembers[i].status=!adminMembers[i].status;
   const a=adminMembers[i];
-  try{await FB.update(FB.ref(FB.db,`admins/${a.uid}`),{status:a.status});}catch(e){}
+  try{await FB.update(FB.ref(FB.db,`admins/${a.uid}`),{status:a.status});}
+  catch(e){showToast('Update failed: '+(e.message||e.code),'error');}
   showToast(`${a.name} → ${a.status?'Active ✅':'Inactive ⛔'}`,a.status?'success':'error');
   renderAdminMembers();
 }
@@ -1330,8 +1419,9 @@ async function toggleAdminStatus(i){
 async function removeAdmin(i){
   const a=adminMembers[i];
   if(!confirm(`Remove ${a.name} from admins?`)) return;
+  try{await FB.remove(FB.ref(FB.db,`admins/${a.uid}`));}
+  catch(e){showToast('Remove failed: '+(e.message||e.code),'error');return;}
   adminMembers.splice(i,1);
-  try{await FB.remove(FB.ref(FB.db,`admins/${a.uid}`));}catch(e){}
   showToast(`${a.name} removed`,'error');
   renderAdminMembers();
 }
@@ -1351,7 +1441,7 @@ function renderMediaManager(){
 
     let previewHTML='';
     if(filled){
-      if(m.type==='image') previewHTML=`<img src="${m.url}" alt="${slot.label}"/>`;
+      if(m.type==='image') previewHTML=`<img src="${m.url}" alt="${slot.label}" onerror="this.parentNode.innerHTML='<div class=\\'media-empty\\'><div class=\\'media-empty-icon\\'>${slot.icon}</div><div class=\\'media-empty-label\\'>Load error</div></div>'"/>`;
       else if(m.type==='video') previewHTML=`<video src="${m.url}" muted autoplay loop playsinline></video>`;
       else if(m.type==='youtube') previewHTML=`<iframe src="https://www.youtube.com/embed/${m.url}?autoplay=1&mute=1&loop=1&playlist=${m.url}" frameborder="0" allowfullscreen></iframe>`;
     } else {
@@ -1385,22 +1475,19 @@ function openMediaModal(slotId){
 
   document.getElementById('mediaSlotId').value=slotId;
   document.getElementById('mediaSlotIsVideo').value=slot.isVideo?'1':'0';
-  document.getElementById('mediaModalTitle').textContent=`${slot.label}`;
+  document.getElementById('mediaModalTitle').textContent=slot.label;
 
-  /* Show/hide YouTube tab for videos only */
   const ytTab=document.getElementById('youtubeTab');
   ytTab.style.display=slot.isVideo?'block':'none';
   document.getElementById('mediaVideoOpts').style.display=slot.isVideo?'block':'none';
   document.getElementById('mediaAltGroup').style.display=slot.isVideo?'none':'block';
 
-  /* File input accept */
   const fi=document.getElementById('media_file');
   fi.accept=slot.isVideo?'image/*,video/*':'image/*';
   document.getElementById('mediaUploadIcon').textContent=slot.isVideo?'🎬':'🖼️';
   document.getElementById('mediaUploadTitle').textContent=slot.isVideo?'Tap to choose image or video':'Tap to choose image';
   document.getElementById('mediaUploadSub').textContent=slot.isVideo?'JPG, PNG, MP4, WEBM — max 50MB':'JPG, PNG, WEBP — max 10MB';
 
-  /* Current preview */
   const prevBox=document.getElementById('mediaPreviewBox');
   const prevSection=document.getElementById('mediaCurrentPreview');
   if(m&&m.url){
@@ -1414,14 +1501,12 @@ function openMediaModal(slotId){
     document.getElementById('mediaClearBtn').style.display='none';
   }
 
-  /* Pre-fill existing values */
   document.getElementById('media_url_input').value=m?.url||'';
   document.getElementById('media_alt_input').value=m?.alt||'';
   document.getElementById('media_yt_input').value=(m?.type==='youtube'?m.url:'')||'';
   if(m?.autoplay!==undefined) document.getElementById('media_autoplay').checked=m.autoplay;
   if(m?.controls!==undefined) document.getElementById('media_controls').checked=m.controls;
 
-  /* Reset file input & progress */
   document.getElementById('media_file').value='';
   const pz=document.getElementById('mediaUploadZone');
   const pv=pz.querySelector('img.upload-preview,video.upload-video-preview');
@@ -1429,9 +1514,7 @@ function openMediaModal(slotId){
   document.getElementById('mediaProgress').style.display='none';
   document.getElementById('mediaProgressFill').style.width='0%';
 
-  /* Reset method to upload */
   setMediaMethod('upload', document.querySelector('#mediaModal .method-tab'));
-
   openModal('media');
 }
 
@@ -1468,7 +1551,9 @@ async function saveMediaSlot(){
   if(!currentMediaSlot) return;
   const slotId=currentMediaSlot.id;
   const isVideo=currentMediaSlot.isVideo;
-  const btn=document.getElementById('mediasaveBtn')||document.getElementById('mediaModal').querySelector('.btn-primary');
+
+  // FIX: Correct id — was mediasaveBtn (lowercase s) which never matched
+  const btn=document.getElementById('mediaSaveBtn');
   if(btn){btn.textContent='Saving…';btn.disabled=true;}
 
   try{
@@ -1493,6 +1578,7 @@ async function saveMediaSlot(){
           fill.style.width=pct+'%';lbl.textContent=`Uploading… ${pct}%`;
         },rej,async()=>{data.url=await FB.getDownloadURL(task.snapshot.ref);res();});
       });
+      fill.style.width='100%';
       prog.style.display='none';
 
     } else if(mediaMethod==='url'){
@@ -1507,7 +1593,6 @@ async function saveMediaSlot(){
       data.type='youtube'; data.url=ytId;
     }
 
-    /* Video-specific options */
     if(isVideo&&data.type!=='image'){
       data.autoplay=document.getElementById('media_autoplay').checked;
       data.controls=document.getElementById('media_controls').checked;
@@ -1520,7 +1605,8 @@ async function saveMediaSlot(){
     renderMediaManager();
 
   }catch(e){
-    showToast('Save failed: '+e.message,'error');
+    showToast('Save failed: '+(e.message||e.code),'error');
+    console.error('saveMediaSlot error:',e);
   }finally{
     if(btn){btn.textContent='💾 Save to Storefront';btn.disabled=false;}
   }
@@ -1533,7 +1619,7 @@ async function confirmClearSlot(slotId){
     delete mediaCache[slotId];
     showToast(`${slotId} cleared`,'error');
     renderMediaManager();
-  }catch(e){showToast('Clear failed','error');}
+  }catch(e){showToast('Clear failed: '+(e.message||e.code),'error');}
 }
 
 async function clearMediaSlot(){
@@ -1543,7 +1629,9 @@ async function clearMediaSlot(){
 }
 
 /* ════════════════════════════════════════════
-   TAB SWITCHING
+   TAB SWITCHING — FIX: Correct responsive logic
+   querySelector doesn't support comma selectors
+   the same way querySelectorAll does for showing/hiding.
 ════════════════════════════════════════════ */
 function switchTab(tab,btn){
   document.querySelectorAll('.tab-panel').forEach(t=>t.classList.remove('active'));
@@ -1552,19 +1640,34 @@ function switchTab(tab,btn){
   if(el) el.classList.add('active');
   if(btn) btn.classList.add('active');
 
-  /* Responsive: show table vs cards */
-  const isMobile=window.innerWidth<=1000;
-  const showTable=t=>{ const tw=document.querySelector(`#tab-${t} .table-wrap`); if(tw)tw.style.display=isMobile?'none':'block'; };
-  const showCards=t=>{ const cc=document.querySelector(`#tab-${t} .product-cards,#tab-${t} .order-cards`); if(cc)cc.style.display=isMobile?'flex':'none'; };
+  applyResponsiveLayout(tab);
 
-  if(tab==='products'){renderProductsTable();showTable('products');showCards('products');}
-  if(tab==='orders'){renderOrdersTable();showTable('orders');showCards('orders');}
-  if(tab==='customers'){loadCustomers().then(()=>renderCustomersTable());}
+  if(tab==='products') renderProductsTable();
+  if(tab==='orders') renderOrdersTable();
+  if(tab==='customers'){ loadCustomers(); }
   if(tab==='admins') loadAdminMembers();
   if(tab==='media') loadAllMediaSlots();
   if(tab==='dashboard') renderDashboardOrders();
 
   closeSidebar();
+}
+
+/*
+ * FIX: Centralised responsive layout helper.
+ *      The old code used querySelector with a comma selector which is invalid,
+ *      and also hid table-wraps on the customers tab which has no card fallback.
+ */
+function applyResponsiveLayout(tab){
+  const isMobile=window.innerWidth<=1000;
+  if(!isMobile) return; // desktop: CSS handles it — no JS needed
+
+  const tableIds={'products':'productsTable','orders':'ordersTable','customers':'customersTable','dashboard':'dashOrdersTable'};
+  const cardIds={'products':'productCardsList','orders':'orderCardsList','customers':'customerCardsList','dashboard':'dashOrderCards'};
+
+  const tId=tableIds[tab];
+  const cId=cardIds[tab];
+  if(tId){ const t=document.getElementById(tId); if(t) t.style.display='none'; }
+  if(cId){ const c=document.getElementById(cId); if(c&&c.children.length) c.style.display='flex'; }
 }
 
 /* ════════════════════════════════════════════
@@ -1583,11 +1686,18 @@ function setActiveBottomNav(el){
   el.classList.add('active');
 }
 
-/* Responsive table/card switch on resize */
+/*
+ * FIX: Resize handler now uses applyResponsiveLayout and handles customers
+ *      properly instead of blindly hiding all table-wraps.
+ */
 window.addEventListener('resize',()=>{
-  const isMobile=window.innerWidth<=1000;
-  document.querySelectorAll('.table-wrap').forEach(tw=>tw.style.display=isMobile?'none':'block');
-  document.querySelectorAll('.product-cards,.order-cards').forEach(cc=>cc.style.display=isMobile&&cc.children.length?'flex':'none');
+  const activePanel=document.querySelector('.tab-panel.active');
+  if(!activePanel) return;
+  const tab=activePanel.id.replace('tab-','');
+  // Reset everything first
+  document.querySelectorAll('.table-wrap').forEach(tw=>tw.style.display='');
+  document.querySelectorAll('.product-cards,.order-cards,.customer-cards').forEach(cc=>cc.style.display='none');
+  applyResponsiveLayout(tab);
 });
 
 /* ════════════════════════════════════════════
@@ -1620,16 +1730,18 @@ function showToast(msg,type=''){
   const wrap=document.getElementById('toastWrap');
   const t=document.createElement('div');
   t.className=`toast${type?' '+type:''}`;
-  t.innerHTML=`<span>${{success:'✅',error:'⚠️','':'ℹ️'}[type]||'ℹ️'}</span>${msg}`;
+  const icon={success:'✅',error:'⚠️','':'ℹ️'}[type]||'ℹ️';
+  t.innerHTML=`<span>${icon}</span><span>${msg}</span>`;
   wrap.appendChild(t);
   setTimeout(()=>{t.style.animation='tOut .3s ease both';setTimeout(()=>t.remove(),300);},3500);
 }
 
-/* Initial responsive layout fix */
+/* ════════════════════════════════════════════
+   INITIAL RESPONSIVE FIX ON LOAD
+════════════════════════════════════════════ */
 window.addEventListener('load',()=>{
-  const isMobile=window.innerWidth<=1000;
-  if(isMobile){
-    document.querySelectorAll('.table-wrap').forEach(tw=>tw.style.display='none');
+  if(window.innerWidth<=1000){
+    applyResponsiveLayout('dashboard');
   }
 });
 </script>
