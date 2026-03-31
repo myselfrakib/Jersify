@@ -9,11 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 
 <script type="module">
-  import { initializeApp }                                      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signOut, onAuthStateChanged }               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getDatabase, ref, get, set, update, push, remove }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-  import { getStorage, ref as sRef,
-           uploadBytesResumable, getDownloadURL }               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, get, set, update, push, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey:"AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
@@ -25,32 +24,50 @@
     appId:"1:461181023878:web:6ebfbae603baf4a873c307"
   };
 
-  const app     = initializeApp(firebaseConfig);
-  const auth    = getAuth(app);
-  const db      = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
   const storage = getStorage(app);
 
-  window.FB = { auth, db, storage, signOut,
-    ref, get, set, update, push, remove,
-    sRef, uploadBytesResumable, getDownloadURL };
+  window.FB = { auth, db, storage, signOut, ref, get, set, update, push, remove, onValue, sRef, uploadBytesResumable, getDownloadURL };
 
-  onAuthStateChanged(auth, async user => {
-    if (!user) { location.href='admin-login.html'; return; }
-    try {
-      const snap = await get(ref(db,`admins/${user.uid}`));
-      if (!snap.exists() || snap.val().status!==true) {
-        await signOut(auth); location.href='admin-login.html'; return;
+  let adminWatcher = null;
+
+  function redirectToLogin() {
+    location.href = 'admin-login.html';
+  }
+
+  function beginIfReady(user, adminData) {
+    window.__pendingAdminBootstrap = { user, adminData };
+    if (typeof window.__beginAdminPanel === 'function') {
+      window.__beginAdminPanel(user, adminData);
+    }
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      if (adminWatcher) { try { adminWatcher(); } catch (_) {} adminWatcher = null; }
+      redirectToLogin();
+      return;
+    }
+
+    if (adminWatcher) {
+      try { adminWatcher(); } catch (_) {}
+      adminWatcher = null;
+    }
+
+    const adminRef = ref(db, `admins/${user.uid}`);
+    adminWatcher = onValue(adminRef, async (snap) => {
+      if (!snap.exists() || snap.val()?.status !== true) {
+        try { await signOut(auth); } catch (_) {}
+        redirectToLogin();
+        return;
       }
-      document.getElementById('loadingScreen').style.display='none';
-      document.getElementById('dashboardWrap').style.display='flex';
-      const d=snap.val();
-      document.getElementById('sidebarName').textContent = d.name||user.email.split('@')[0];
-      document.getElementById('sidebarRole').textContent = d.role||'Admin';
-      document.getElementById('sidebarAvatar').textContent = (d.name||user.email)[0].toUpperCase();
-      document.getElementById('mobileAdminName').textContent = d.name||user.email.split('@')[0];
-      document.getElementById('adminDateLabel').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-      initDashboard();
-    } catch(e) { location.href='admin-login.html'; }
+      beginIfReady(user, snap.val());
+    }, async () => {
+      try { await signOut(auth); } catch (_) {}
+      redirectToLogin();
+    });
   });
 </script>
 
@@ -777,859 +794,1069 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
 
 <script>
 /* ════════════════════════════════════════════
-   DATA
+   STATE
 ════════════════════════════════════════════ */
-let PRODUCTS=[], ORDERS=[], CUSTOMERS=[], adminMembers=[];
-let mediaCache={};
-let currentMediaSlot=null;
-let mediaMethod='upload';
+let PRODUCTS = [];
+let ORDERS = [];
+let CUSTOMERS = [];
+let ADMIN_MEMBERS = [];
+let MEDIA_CACHE = {};
+let currentMediaSlot = null;
+let mediaMethod = 'upload';
+let currentUser = null;
+let currentAdmin = null;
+let realtimeStarted = false;
+let readyBooted = false;
+let activeTab = 'dashboard';
 
-const MEDIA_SLOTS=[
-  {id:'img1',label:'Hero Banner',      desc:'Main homepage banner below hero',     rec:'1300×280px', icon:'🖼️',dark:true},
-  {id:'img2',label:'Campaign Photo',   desc:'Wide campaign photo in 2-col strip',  rec:'820×300px',  icon:'📸',dark:true},
-  {id:'img3',label:'Product Closeup',  desc:'Right column top — product detail',   rec:'400×140px',  icon:'👕',dark:false},
-  {id:'img4',label:'Collab Drop',      desc:'Right column bottom — collab image',  rec:'400×140px',  icon:'🤝',dark:false},
-  {id:'img5',label:'UGC Photo 1',      desc:'Social proof grid photo',             rec:'150×150px',  icon:'📷',dark:false},
-  {id:'img6',label:'UGC Photo 2',      desc:'Social proof grid photo',             rec:'150×150px',  icon:'📷',dark:false},
-  {id:'img7',label:'UGC Photo 3',      desc:'Social proof grid photo',             rec:'150×150px',  icon:'📷',dark:false},
-  {id:'img8',label:'UGC Photo 4',      desc:'Social proof grid photo',             rec:'150×150px',  icon:'📷',dark:false},
-  {id:'vid1',label:'Promo Video',      desc:'Drop Story section — MP4 or YouTube', rec:'1300×380px', icon:'🎬',dark:true, isVideo:true},
-  {id:'vid2',label:'Reel / Short',     desc:'Social grid vertical video',          rec:'9:16 format', icon:'🎵',dark:true, isVideo:true},
+const MEDIA_SLOTS = [
+  { id:'img1', label:'Hero Banner',    desc:'Main homepage banner below hero',     rec:'1300×280px', icon:'🖼️', dark:true },
+  { id:'img2', label:'Campaign Photo', desc:'Wide campaign photo in 2-col strip',  rec:'820×300px',  icon:'📸', dark:true },
+  { id:'img3', label:'Product Closeup',desc:'Right column top — product detail',   rec:'400×140px',  icon:'👕', dark:false },
+  { id:'img4', label:'Collab Drop',    desc:'Right column bottom — collab image',   rec:'400×140px',  icon:'🤝', dark:false },
+  { id:'img5', label:'UGC Photo 1',    desc:'Social proof grid photo',              rec:'150×150px',  icon:'📷', dark:false },
+  { id:'img6', label:'UGC Photo 2',    desc:'Social proof grid photo',              rec:'150×150px',  icon:'📷', dark:false },
+  { id:'img7', label:'UGC Photo 3',    desc:'Social proof grid photo',              rec:'150×150px',  icon:'📷', dark:false },
+  { id:'img8', label:'UGC Photo 4',    desc:'Social proof grid photo',              rec:'150×150px',  icon:'📷', dark:false },
+  { id:'vid1', label:'Promo Video',    desc:'Drop Story section — MP4 or YouTube', rec:'1300×380px', icon:'🎬', dark:true, isVideo:true },
+  { id:'vid2', label:'Reel / Short',   desc:'Social grid vertical video',          rec:'9:16 format', icon:'🎵', dark:true, isVideo:true },
 ];
 
-/* ════════════════════════════════════════════
-   INIT
-════════════════════════════════════════════ */
-async function initDashboard(){
-  await Promise.all([loadProducts(), loadOrders(), loadCustomers()]);
-  loadAllMediaSlots();
+const $ = (id) => document.getElementById(id);
+const dbRef = (path) => FB.ref(FB.db, path);
+
+function esc(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
-/* ════════════════════════════════════════════
-   NORMALIZE PRODUCT FROM RTDB
-   Firebase stores arrays as {0:url,1:url}. SDK v10 usually converts back,
-   but we normalize defensively + ensure imageUrl always mirrors images[0].
-════════════════════════════════════════════ */
-function normalizeProduct(raw){
-  const p={...raw};
-  if(p.images){
-    if(!Array.isArray(p.images)) p.images=Object.values(p.images);
-    p.images=p.images.filter(Boolean);
+function money(n) {
+  const num = Number(n || 0);
+  return '₹' + num.toLocaleString('en-IN');
+}
+
+function fmtDate(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function fmtDateTime(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleString('en-IN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function normalizeProduct(raw = {}, key = '') {
+  const p = { ...raw, id: raw.id || key, key: raw.key || key };
+  if (p.images) {
+    if (!Array.isArray(p.images)) p.images = Object.values(p.images);
+    p.images = p.images.filter(Boolean);
   } else {
-    p.images=[];
+    p.images = [];
   }
-  if(!p.imageUrl && p.images.length) p.imageUrl=p.images[0];
+  if (!p.imageUrl && p.images.length) p.imageUrl = p.images[0];
   return p;
 }
 
-/* ════════════════════════════════════════════
-   LOAD DATA
-════════════════════════════════════════════ */
-async function loadProducts(){
-  try{
-    const snap=await FB.get(FB.ref(FB.db,'products'));
-    PRODUCTS=[];
-    if(snap.exists()) snap.forEach(c=>PRODUCTS.push(normalizeProduct({id:c.key,...c.val()})));
-  }catch(e){
-    console.error('loadProducts error:',e);
-    showToast('Could not load products: '+(e.message||e.code||String(e)),'error');
+function normalizeOrder(raw = {}, key = '') {
+  return { ...raw, key: raw.key || key, orderKey: raw.orderKey || key };
+}
+
+function updateLabelAndBadges() {
+  const prodCount = PRODUCTS.length;
+  const orderCount = ORDERS.length;
+  const custCount = CUSTOMERS.length;
+
+  const pCount = $('adminProductCount'); if (pCount) pCount.textContent = prodCount;
+  const oCount = $('adminOrderCount'); if (oCount) oCount.textContent = orderCount;
+  const cCount = $('adminCustCount'); if (cCount) cCount.textContent = custCount;
+
+  const prodBadge = $('navProdBadge');
+  const ordBadge = $('navOrdBadge');
+  const ordDot = $('bnavOrdDot');
+  const prodDot = $('bnavProdDot');
+
+  if (prodBadge) {
+    if (prodCount > 0) { prodBadge.textContent = prodCount; prodBadge.style.display = 'inline-flex'; }
+    else prodBadge.style.display = 'none';
   }
-  const c=PRODUCTS.length;
-  document.getElementById('adminProductCount').textContent=c;
-  const nb=document.getElementById('navProdBadge');
-  if(c>0){nb.textContent=c;nb.style.display='inline-flex';}
-  renderProductsTable();
-  renderDashboardOrders();
+  if (ordBadge) {
+    if (orderCount > 0) { ordBadge.textContent = orderCount; ordBadge.style.display = 'inline-flex'; }
+    else ordBadge.style.display = 'none';
+  }
+  if (ordDot) ordDot.classList.toggle('show', orderCount > 0);
+  if (prodDot) prodDot.classList.toggle('show', prodCount > 0);
+
+  const revenue = ORDERS.reduce((sum, o) => sum + Number(o.total || 0), 0);
+  const rev = $('statRevenue'); if (rev) rev.textContent = money(revenue);
+  const adminCountLabel = $('adminCountLabel');
+  if (adminCountLabel) adminCountLabel.textContent = `${ADMIN_MEMBERS.length} total`;
 }
 
-async function loadOrders(){
-  try{
-    const snap=await FB.get(FB.ref(FB.db,'orders'));
-    ORDERS=[];
-    if(snap.exists()) snap.forEach(c=>ORDERS.push(c.val()));
-    ORDERS.sort((a,b)=>b.createdAt-a.createdAt);
-  }catch(e){}
-  const c=ORDERS.length;
-  document.getElementById('adminOrderCount').textContent=c;
-  const nb=document.getElementById('navOrdBadge');
-  const bd=document.getElementById('bnavOrdDot');
-  if(c>0){nb.textContent=c;nb.style.display='inline-flex';if(bd)bd.classList.add('show');}
-  const rev=ORDERS.reduce((s,o)=>s+(o.total||0),0);
-  document.getElementById('statRevenue').textContent='₹'+rev.toLocaleString('en-IN');
-  renderDashboardOrders();
-  renderOrdersTable();
+function orderStatusClass(status) {
+  return `badge-${String(status || 'processing').toLowerCase().replace(/\s+/g, '_')}`;
 }
 
-async function loadCustomers(){
-  try{
-    const snap=await FB.get(FB.ref(FB.db,'users'));
-    CUSTOMERS=[];
-    if(snap.exists()) snap.forEach(c=>CUSTOMERS.push({uid:c.key,...c.val()}));
-  }catch(e){}
-  document.getElementById('adminCustCount').textContent=CUSTOMERS.length;
-}
-
-async function loadAllMediaSlots(){
-  try{
-    const snap=await FB.get(FB.ref(FB.db,'media'));
-    mediaCache={};
-    if(snap.exists()) snap.forEach(c=>{mediaCache[c.key]=c.val();});
-  }catch(e){}
-  renderMediaManager();
+function countOrdersForCustomer(c) {
+  const candidates = [c.uid, c.userId, c.customerId, c.email, c.customerEmail, c.phone, c.customerPhone].filter(Boolean).map(x => String(x).toLowerCase());
+  if (!candidates.length) return 0;
+  return ORDERS.filter(o => {
+    const fields = [o.uid, o.userId, o.customerId, o.email, o.customerEmail, o.phone, o.customerPhone].filter(Boolean).map(x => String(x).toLowerCase());
+    return fields.some(f => candidates.includes(f));
+  }).length;
 }
 
 /* ════════════════════════════════════════════
-   DASHBOARD ORDERS
+   LIVE SYNC
 ════════════════════════════════════════════ */
-function renderDashboardOrders(){
-  const tbody=document.getElementById('dashOrdersTbody');
-  const cards=document.getElementById('dashOrderCards');
-  if(!tbody) return;
-  const list=ORDERS.slice(0,5);
-  if(!list.length){
-    tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:28px;color:var(--muted);font-weight:700">No orders yet</td></tr>';
-    if(cards) cards.innerHTML='<div class="empty-state"><span class="empty-icon">📦</span><div class="empty-title">No orders yet</div></div>';
+function startRealtimeSync() {
+  if (realtimeStarted) return;
+  realtimeStarted = true;
+
+  FB.onValue(dbRef('products'), (snap) => {
+    const list = [];
+    snap.forEach((child) => list.push(normalizeProduct(child.val(), child.key)));
+    PRODUCTS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    updateLabelAndBadges();
+    renderProductsTable();
+    renderDashboardOrders();
+  }, (err) => {
+    console.error('products listener failed', err);
+    showToast('Products sync failed', 'error');
+  });
+
+  FB.onValue(dbRef('orders'), (snap) => {
+    const list = [];
+    snap.forEach((child) => list.push(normalizeOrder(child.val(), child.key)));
+    ORDERS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    updateLabelAndBadges();
+    renderDashboardOrders();
+    renderOrdersTable();
+    renderCustomersTable();
+  }, (err) => {
+    console.error('orders listener failed', err);
+    showToast('Orders sync failed', 'error');
+  });
+
+  FB.onValue(dbRef('users'), (snap) => {
+    const list = [];
+    snap.forEach((child) => list.push({ uid: child.key, ...child.val() }));
+    CUSTOMERS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    updateLabelAndBadges();
+    renderCustomersTable();
+  }, (err) => {
+    console.error('users listener failed', err);
+    showToast('Customers sync failed', 'error');
+  });
+
+  FB.onValue(dbRef('admins'), (snap) => {
+    const list = [];
+    snap.forEach((child) => list.push({ uid: child.key, ...child.val() }));
+    ADMIN_MEMBERS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    updateLabelAndBadges();
+    renderAdminMembers();
+  }, (err) => {
+    console.error('admins listener failed', err);
+    showToast('Admins sync failed', 'error');
+  });
+
+  FB.onValue(dbRef('media'), (snap) => {
+    const map = {};
+    snap.forEach((child) => { map[child.key] = child.val(); });
+    MEDIA_CACHE = map;
+    renderMediaManager();
+  }, (err) => {
+    console.error('media listener failed', err);
+    showToast('Media sync failed', 'error');
+  });
+}
+
+async function fetchSnapshot(path, setter) {
+  try {
+    const snap = await FB.get(dbRef(path));
+    const value = setter(snap);
+    return value;
+  } catch (err) {
+    console.error(`${path} fetch failed`, err);
+    return null;
+  }
+}
+
+async function loadProducts() {
+  return fetchSnapshot('products', (snap) => {
+    const list = [];
+    if (snap.exists()) snap.forEach((child) => list.push(normalizeProduct(child.val(), child.key)));
+    PRODUCTS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    updateLabelAndBadges();
+    renderProductsTable();
+    renderDashboardOrders();
+  });
+}
+
+async function loadOrders() {
+  return fetchSnapshot('orders', (snap) => {
+    const list = [];
+    if (snap.exists()) snap.forEach((child) => list.push(normalizeOrder(child.val(), child.key)));
+    ORDERS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    updateLabelAndBadges();
+    renderDashboardOrders();
+    renderOrdersTable();
+    renderCustomersTable();
+  });
+}
+
+async function loadCustomers() {
+  return fetchSnapshot('users', (snap) => {
+    const list = [];
+    if (snap.exists()) snap.forEach((child) => list.push({ uid: child.key, ...child.val() }));
+    CUSTOMERS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    updateLabelAndBadges();
+    renderCustomersTable();
+  });
+}
+
+async function loadAdminMembers() {
+  return fetchSnapshot('admins', (snap) => {
+    const list = [];
+    if (snap.exists()) snap.forEach((child) => list.push({ uid: child.key, ...child.val() }));
+    ADMIN_MEMBERS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    updateLabelAndBadges();
+    renderAdminMembers();
+  });
+}
+
+async function loadAllMediaSlots() {
+  return fetchSnapshot('media', (snap) => {
+    const map = {};
+    if (snap.exists()) snap.forEach((child) => { map[child.key] = child.val(); });
+    MEDIA_CACHE = map;
+    renderMediaManager();
+  });
+}
+
+async function initDashboard(silent = false) {
+  await Promise.all([
+    loadProducts(),
+    loadOrders(),
+    loadCustomers(),
+    loadAdminMembers(),
+    loadAllMediaSlots(),
+  ]);
+  applyResponsiveLayout();
+  if (!silent) showToast('Dashboard refreshed', 'success');
+}
+
+/* ════════════════════════════════════════════
+   BOOTSTRAP
+════════════════════════════════════════════ */
+window.__beginAdminPanel = function(user, adminData) {
+  currentUser = user;
+  currentAdmin = adminData || {};
+  if (readyBooted) {
+    updateAdminHeader(user, adminData || {});
     return;
   }
-  tbody.innerHTML=list.map(o=>`
+  readyBooted = true;
+
+  const loading = $('loadingScreen');
+  const wrap = $('dashboardWrap');
+  if (loading) loading.style.display = 'none';
+  if (wrap) wrap.style.display = 'flex';
+
+  updateAdminHeader(user, adminData || {});
+  startRealtimeSync();
+  initDashboard(true);
+  applyResponsiveLayout();
+};
+
+function updateAdminHeader(user, adminData) {
+  const name = adminData.name || user.email?.split('@')[0] || 'Admin';
+  const role = adminData.role || 'Admin';
+  const avatar = String(name || 'A')[0].toUpperCase();
+
+  if ($('sidebarName')) $('sidebarName').textContent = name;
+  if ($('sidebarRole')) $('sidebarRole').textContent = role;
+  if ($('sidebarAvatar')) $('sidebarAvatar').textContent = avatar;
+  if ($('mobileAdminName')) $('mobileAdminName').textContent = name;
+  if ($('adminDateLabel')) {
+    $('adminDateLabel').textContent = new Date().toLocaleDateString('en-IN', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+  }
+}
+
+if (window.__pendingAdminBootstrap) {
+  window.__beginAdminPanel(window.__pendingAdminBootstrap.user, window.__pendingAdminBootstrap.adminData);
+}
+
+/* ════════════════════════════════════════════
+   RENDER: DASHBOARD ORDERS
+════════════════════════════════════════════ */
+function renderDashboardOrders() {
+  const tbody = $('dashOrdersTbody');
+  const cards = $('dashOrderCards');
+  if (!tbody) return;
+  const list = ORDERS.slice(0, 5);
+
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:28px;color:var(--muted);font-weight:700">No orders yet</td></tr>';
+    if (cards) cards.innerHTML = '<div class="empty-state"><span class="empty-icon">📦</span><div class="empty-title">No orders yet</div><div class="empty-sub">Incoming orders will appear here</div></div>';
+    return;
+  }
+
+  tbody.innerHTML = list.map((o) => `
     <tr>
-      <td style="font-family:var(--fm);font-size:11px;color:var(--blue)">${o.orderId}</td>
-      <td style="font-weight:700">${o.customerName||'—'}</td>
-      <td style="font-weight:800">₹${o.total}</td>
-      <td><span class="badge badge-${o.status}">${o.status.replace('_',' ')}</span></td>
+      <td style="font-family:var(--fm);font-size:11px;color:var(--blue)">${esc(o.orderId || o.key || '—')}</td>
+      <td style="font-weight:700">${esc(o.customerName || o.name || '—')}</td>
+      <td style="font-weight:800">${money(o.total)}</td>
+      <td><span class="badge ${orderStatusClass(o.status)}">${esc(String(o.status || 'processing').replace(/_/g, ' '))}</span></td>
       <td>
-        <div style="display:flex;gap:5px">
-          <button class="btn btn-outline btn-sm" onclick="updateOrderStatus('${o.orderId}','shipped')">Ship</button>
-          <button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${o.orderId}','delivered')">✓</button>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <button class="btn btn-outline btn-sm" onclick="updateOrderStatus('${esc(o.key || o.orderId)}','shipped')">Ship</button>
+          <button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${esc(o.key || o.orderId)}','delivered')">✓</button>
         </div>
       </td>
     </tr>`).join('');
-  if(cards){
-    cards.innerHTML=list.map(o=>`
+
+  if (cards) {
+    cards.innerHTML = list.map((o) => `
       <div class="order-card-item">
         <div class="order-card-top">
           <div>
-            <div class="order-id-mob">${o.orderId}</div>
-            <div class="order-customer-mob">${o.customerName||'—'}</div>
+            <div class="order-id-mob">${esc(o.orderId || o.key || '—')}</div>
+            <div class="order-customer-mob">${esc(o.customerName || o.name || '—')}</div>
           </div>
-          <span class="badge badge-${o.status}">${o.status.replace('_',' ')}</span>
+          <span class="badge ${orderStatusClass(o.status)}">${esc(String(o.status || 'processing').replace(/_/g, ' '))}</span>
         </div>
         <div class="order-card-row">
-          <span style="font-family:var(--fm);font-size:15px;font-weight:800">₹${o.total}</span>
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-outline btn-sm" onclick="updateOrderStatus('${o.orderId}','shipped')">Ship</button>
-            <button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${o.orderId}','delivered')">Done ✓</button>
+          <span style="font-family:var(--fm);font-size:15px;font-weight:800">${money(o.total)}</span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-outline btn-sm" onclick="updateOrderStatus('${esc(o.key || o.orderId)}','shipped')">Ship</button>
+            <button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${esc(o.key || o.orderId)}','delivered')">Done ✓</button>
           </div>
         </div>
       </div>`).join('');
   }
+  applyResponsiveLayout();
 }
 
 /* ════════════════════════════════════════════
-   PRODUCTS TABLE + CARDS
+   RENDER: PRODUCTS
 ════════════════════════════════════════════ */
-function renderProductsTable(){
-  const tbody=document.getElementById('productsTbody');
-  const cards=document.getElementById('productCardsList');
-  if(!tbody) return;
-  if(!PRODUCTS.length){
-    const empty='<div class="empty-state"><span class="empty-icon">👕</span><div class="empty-title">No products yet</div><div class="empty-sub">Add your first jersey above</div></div>';
-    tbody.innerHTML='<tr><td colspan="7"><div style="padding:20px">'+empty.replace('class="empty-state"','class="empty-state" style="padding:28px 0"')+'</div></td></tr>';
-    if(cards){cards.style.display='none';}
+function renderProductsTable() {
+  const tbody = $('productsTbody');
+  const cards = $('productCardsList');
+  if (!tbody) return;
+
+  if (!PRODUCTS.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div style="padding:20px"><div class="empty-state" style="padding:28px 0"><span class="empty-icon">👕</span><div class="empty-title">No products yet</div><div class="empty-sub">Add your first jersey above</div></div></div></td></tr>';
+    if (cards) cards.innerHTML = '<div class="empty-state"><span class="empty-icon">👕</span><div class="empty-title">No products yet</div><div class="empty-sub">Add your first jersey above</div></div>';
+    applyResponsiveLayout();
     return;
   }
-  tbody.innerHTML=PRODUCTS.map(p=>`
-    <tr>
-      <td>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,#f8f9fa,#e9ecef);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden">
-            ${p.imageUrl?`<img src="${p.imageUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:9px"/>`:(p.emoji||'👕')}
-          </div>
-          <div><div style="font-weight:800;font-size:13px">${p.name}</div></div>
-        </div>
-      </td>
-      <td style="color:var(--muted)">${p.team||'—'}</td>
-      <td style="font-weight:900">₹${p.price}</td>
-      <td><span style="font-weight:700;color:${p.stock<=5?'var(--red)':'var(--text)'}">${p.stock}</span></td>
-      <td><span class="chip">${p.category}</span></td>
-      <td><span class="badge badge-${(p.badge||'').toLowerCase()}">${p.badge||'—'}</span></td>
-      <td>
-        <div style="display:flex;gap:5px">
-          <button class="btn btn-outline btn-sm" onclick="openEditProduct('${p.id}')">✏️ Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}','${p.name.replace(/'/g,'')}')">Delete</button>
-        </div>
-      </td>
-    </tr>`).join('');
 
-  if(cards){
-    cards.innerHTML=PRODUCTS.map(p=>`
+  tbody.innerHTML = PRODUCTS.map((p) => {
+    const badge = (p.badge || 'DROP').toString().toLowerCase();
+    return `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,#f8f9fa,#e9ecef);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden">
+              ${p.imageUrl ? `<img src="${esc(p.imageUrl)}" style="width:100%;height:100%;object-fit:cover;border-radius:9px"/>` : esc(p.emoji || '👕')}
+            </div>
+            <div>
+              <div style="font-weight:800;font-size:13px">${esc(p.name || 'Untitled')}</div>
+            </div>
+          </div>
+        </td>
+        <td style="color:var(--muted)">${esc(p.team || '—')}</td>
+        <td style="font-weight:900">${money(p.price)}</td>
+        <td><span style="font-weight:700;color:${Number(p.stock || 0) <= 5 ? 'var(--red)' : 'var(--text)'}">${esc(p.stock ?? '0')}</span></td>
+        <td><span class="chip">${esc(p.category || '—')}</span></td>
+        <td><span class="badge badge-${esc(badge)}">${esc(p.badge || '—')}</span></td>
+        <td>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <button class="btn btn-outline btn-sm" onclick="openEditProduct('${esc(p.key || p.id)}')">✏️ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteProduct('${esc(p.key || p.id)}','${esc(p.name || '')}')">Delete</button>
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
+
+  if (cards) {
+    cards.innerHTML = PRODUCTS.map((p) => {
+      const badge = (p.badge || 'DROP').toString().toLowerCase();
+      return `
       <div class="product-card-item">
-        <div class="product-card-img">${p.imageUrl?`<img src="${p.imageUrl}" alt="${p.name}"/>`:(p.emoji||'👕')}</div>
+        <div class="product-card-img">${p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name || '')}"/>` : esc(p.emoji || '👕')}</div>
         <div class="product-card-info">
-          <div class="product-card-name">${p.name}</div>
-          <div class="product-card-team">${p.team||'—'}</div>
+          <div class="product-card-name">${esc(p.name || 'Untitled')}</div>
+          <div class="product-card-team">${esc(p.team || '—')}</div>
           <div class="product-card-meta">
-            <span class="product-card-price">₹${p.price}</span>
-            <span class="chip">Stock: ${p.stock}</span>
-            <span class="badge badge-${(p.badge||'').toLowerCase()}">${p.badge||'—'}</span>
+            <span class="product-card-price">${money(p.price)}</span>
+            <span class="badge badge-${esc(badge)}">${esc(p.badge || '—')}</span>
           </div>
         </div>
         <div class="product-card-actions">
-          <button class="btn btn-outline btn-sm" onclick="openEditProduct('${p.id}')">✏️ Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}','${p.name.replace(/'/g,'')}')">Delete</button>
+          <button class="btn btn-outline btn-sm" onclick="openEditProduct('${esc(p.key || p.id)}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${esc(p.key || p.id)}','${esc(p.name || '')}')">Delete</button>
         </div>
-      </div>`).join('');
-    cards.style.display='flex';
+      </div>`;
+    }).join('');
   }
-}
-
-async function deleteProduct(pid,name){
-  if(!confirm(`Delete "${name}"? This cannot be undone.`)) return;
-  try{
-    await FB.remove(FB.ref(FB.db,`products/${pid}`));
-    PRODUCTS=PRODUCTS.filter(p=>p.id!==pid);
-    document.getElementById('adminProductCount').textContent=PRODUCTS.length;
-    renderProductsTable();
-    showToast(`${name} deleted`,'error');
-  }catch(e){showToast('Delete failed. Check permissions.','error');}
+  applyResponsiveLayout();
 }
 
 /* ════════════════════════════════════════════
-   EDIT PRODUCT
+   RENDER: ORDERS
 ════════════════════════════════════════════ */
-let editImgMethod='keep';
+function renderOrdersTable() {
+  const tbody = $('ordersTbody');
+  const cards = $('orderCardsList');
+  if (!tbody) return;
 
-function openEditProduct(pid){
-  const p=PRODUCTS.find(x=>x.id===pid);
-  if(!p){ showToast('Product not found','error'); return; }
-  document.getElementById('ep_id').value=p.id;
-  document.getElementById('ep_name').value=p.name||'';
-  document.getElementById('ep_team').value=p.team||'';
-  document.getElementById('ep_price').value=p.price||'';
-  document.getElementById('ep_origprice').value=p.originalPrice||'';
-  document.getElementById('ep_stock').value=p.stock||'';
-  document.getElementById('ep_emoji').value=p.emoji||'👕';
-  document.getElementById('ep_imgs').value='';
-  document.getElementById('ep_new_img_previews').innerHTML='';
-
-  /* Category */
-  const cat=document.getElementById('ep_cat');
-  [...cat.options].forEach(o=>o.selected=o.value===p.category);
-  /* Club */
-  const club=document.getElementById('ep_club');
-  [...club.options].forEach(o=>o.selected=o.value===(p.club||'other'));
-  /* Badge */
-  const badge=document.getElementById('ep_badge');
-  [...badge.options].forEach(o=>o.selected=o.value.toUpperCase()===(p.badge||'').toUpperCase());
-
-  /* Current images preview */
-  const wrap=document.getElementById('ep_current_imgs_wrap');
-  const row=document.getElementById('ep_current_imgs_row');
-  const imgs = p.images && p.images.length ? p.images : (p.imageUrl ? [p.imageUrl] : []);
-  if(imgs.length){
-    row.innerHTML=imgs.map((url,i)=>`
-      <div style="position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;border:2px solid var(--border);flex-shrink:0">
-        <img src="${url}" style="width:100%;height:100%;object-fit:cover"/>
-        <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);font-size:9px;font-weight:700;color:#fff;text-align:center;padding:2px">${i===0?'MAIN':i+1}</div>
-      </div>`).join('');
-    wrap.style.display='block';
-  } else { wrap.style.display='none'; }
-
-  openModal('editProduct');
-}
-
-async function saveEditProduct(){
-  const pid=document.getElementById('ep_id').value;
-  const name=document.getElementById('ep_name').value.trim();
-  const price=parseInt(document.getElementById('ep_price').value)||0;
-  if(!name||!price){ showToast('Name and price are required','error'); return; }
-
-  const btn=document.getElementById('editProdBtn');
-  btn.textContent='Saving…'; btn.disabled=true;
-
-  const idx=PRODUCTS.findIndex(x=>x.id===pid);
-  if(idx===-1){ showToast('Product not found','error'); btn.textContent='💾 Save Changes'; btn.disabled=false; return; }
-
-  const updates={
-    name, price,
-    team:document.getElementById('ep_team').value.trim()||'',
-    originalPrice:parseInt(document.getElementById('ep_origprice').value)||null,
-    stock:parseInt(document.getElementById('ep_stock').value)||0,
-    category:document.getElementById('ep_cat').value,
-    badge:document.getElementById('ep_badge').value,
-    club:document.getElementById('ep_club').value||'other',
-    emoji:document.getElementById('ep_emoji').value||'👕',
-    imageUrl:PRODUCTS[idx].imageUrl||'',
-    // Only carry images when >1 exist; null removes the field from RTDB (never write [])
-    images: (PRODUCTS[idx].images && PRODUCTS[idx].images.length>1)
-              ? PRODUCTS[idx].images
-              : null
-  };
-
-  try{
-    const files=Array.from(document.getElementById('ep_imgs').files).slice(0,5);
-    if(files.length){
-      const prog=document.getElementById('ep_imgProgress');
-      const fill=document.getElementById('ep_imgProgressFill');
-      const lbl=document.getElementById('ep_imgProgressLabel');
-      prog.style.display='block';
-      const urls=[];
-      for(let i=0;i<files.length;i++){
-        lbl.textContent=`Uploading image ${i+1}/${files.length}…`;
-        const storageRef=FB.sRef(FB.storage,`products/${Date.now()}_${files[i].name}`);
-        const url=await new Promise((res,rej)=>{
-          const task=FB.uploadBytesResumable(storageRef,files[i]);
-          task.on('state_changed',snap=>{
-            const pct=Math.round(snap.bytesTransferred/snap.totalBytes*100);
-            fill.style.width=((i/files.length)+(pct/(100*files.length)))*100+'%';
-          },rej,async()=>{res(await FB.getDownloadURL(task.snapshot.ref));});
-        });
-        urls.push(url);
-      }
-      updates.imageUrl=urls[0];
-      if(urls.length>1) updates.images=urls;
-      else updates.images=null; // clear any old multi-image array
-      prog.style.display='none';
-    }
-
-    await FB.update(FB.ref(FB.db,`products/${pid}`),updates);
-    PRODUCTS[idx]=normalizeProduct({...PRODUCTS[idx],...updates});
-    renderProductsTable();
-    closeModal('editProduct');
-    const imgCount=PRODUCTS[idx].images.length;
-    showToast(`${name} updated ✅${imgCount>1?' ('+imgCount+' images)':''}`, 'success');
-  }catch(e){
-    showToast('Update failed: '+e.message,'error');
-  }finally{
-    btn.textContent='💾 Save Changes'; btn.disabled=false;
-  }
-}
-
-
-/* ── Multi-image preview helper ── */
-function handleMultiImgPreview(input, previewContainerId){
-  const files = Array.from(input.files).slice(0,5);
-  const container = document.getElementById(previewContainerId);
-  container.innerHTML='';
-  files.forEach((file,i)=>{
-    const wrap = document.createElement('div');
-    wrap.style.cssText='position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;border:2px solid var(--border);flex-shrink:0';
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    img.style.cssText='width:100%;height:100%;object-fit:cover';
-    const lbl = document.createElement('div');
-    lbl.style.cssText='position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.5);font-size:9px;font-weight:700;color:#fff;text-align:center;padding:2px';
-    lbl.textContent = i===0?'MAIN':`${i+1}`;
-    wrap.appendChild(img); wrap.appendChild(lbl);
-    container.appendChild(wrap);
-  });
-  if(files.length) container.style.display='flex'; else container.style.display='none';
-}
-
-async function addProduct(){
-  const name=document.getElementById('ap_name').value.trim();
-  const price=parseInt(document.getElementById('ap_price').value)||0;
-  if(!name||!price){showToast('Name and price are required','error');return;}
-  const btn=document.getElementById('addProdBtn');
-  btn.textContent='Saving…';btn.disabled=true;
-
-  const p={
-    name,price,
-    team:document.getElementById('ap_team').value.trim()||'',
-    originalPrice:parseInt(document.getElementById('ap_origprice').value)||null,
-    stock:parseInt(document.getElementById('ap_stock').value)||0,
-    category:document.getElementById('ap_cat').value,
-    badge:document.getElementById('ap_badge').value,
-    club:document.getElementById('ap_club').value||'other',
-    emoji:document.getElementById('ap_emoji').value||'👕',
-    sizes:['S','M','L','XL'],
-    imageUrl:'',
-    createdAt:Date.now()
-    // NOTE: images key is ONLY added when we have actual URLs.
-    // Never write images:[] — Firebase RTDB converts empty arrays to null,
-    // which can cause validation issues on some rule configurations.
-  };
-
-  try{
-    const files=Array.from(document.getElementById('ap_imgs').files).slice(0,5);
-    if(files.length){
-      const prog=document.getElementById('imgProgress');
-      const fill=document.getElementById('imgProgressFill');
-      const lbl=document.getElementById('imgProgressLabel');
-      prog.style.display='block';
-      const urls=[];
-      for(let i=0;i<files.length;i++){
-        lbl.textContent=`Uploading image ${i+1}/${files.length}…`;
-        const storageRef=FB.sRef(FB.storage,`products/${Date.now()}_${files[i].name}`);
-        const url=await new Promise((res,rej)=>{
-          const task=FB.uploadBytesResumable(storageRef,files[i]);
-          task.on('state_changed',snap=>{
-            const pct=Math.round(snap.bytesTransferred/snap.totalBytes*100);
-            fill.style.width=((i/files.length)+(pct/(100*files.length)))*100+'%';
-          },rej,async()=>{res(await FB.getDownloadURL(task.snapshot.ref));});
-        });
-        urls.push(url);
-      }
-      p.imageUrl=urls[0];
-      if(urls.length>1) p.images=urls;
-      // single image: only imageUrl is set, no images array written
-      prog.style.display='none';
-    }
-
-    const newRef=FB.push(FB.ref(FB.db,'products'));
-    p.id=newRef.key;
-    await FB.set(newRef,p);
-    PRODUCTS.push(normalizeProduct(p));  // normalize so local array matches DB shape
-    document.getElementById('adminProductCount').textContent=PRODUCTS.length;
-    const nb=document.getElementById('navProdBadge');
-    nb.textContent=PRODUCTS.length; nb.style.display='inline-flex';
-    closeModal('addProduct');
-    const imgCount=PRODUCTS[PRODUCTS.length-1].images.length;
-    showToast(`${p.name} added! 👕${imgCount>1?' ('+imgCount+' images)':''}`, 'success');
-    renderProductsTable();
-    /* Reset form */
-    ['ap_name','ap_team','ap_price','ap_origprice','ap_stock','ap_emoji'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-    document.getElementById('ap_emoji').value='👕';
-    document.getElementById('ap_imgs').value='';
-    document.getElementById('ap_img_previews').innerHTML='';
-  }catch(e){
-    showToast('Failed: '+e.message,'error');
-  }finally{btn.textContent='Add to Catalogue →';btn.disabled=false;}
-}
-
-/* ════════════════════════════════════════════
-   ORDERS TABLE + CARDS
-════════════════════════════════════════════ */
-function renderOrdersTable(){
-  const tbody=document.getElementById('ordersTbody');
-  const cards=document.getElementById('orderCardsList');
-  if(!tbody) return;
-  if(!ORDERS.length){
-    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--muted);font-weight:700">No orders yet</td></tr>';
-    if(cards) cards.innerHTML='';
+  if (!ORDERS.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--muted);font-weight:700">No orders yet</td></tr>';
+    if (cards) cards.innerHTML = '<div class="empty-state"><span class="empty-icon">📦</span><div class="empty-title">No orders yet</div><div class="empty-sub">Order activity will appear here</div></div>';
+    applyResponsiveLayout();
     return;
   }
-  tbody.innerHTML=ORDERS.map(o=>`
+
+  tbody.innerHTML = ORDERS.map((o) => `
     <tr>
-      <td style="font-family:var(--fm);font-size:11px;color:var(--blue)">${o.orderId}</td>
-      <td style="font-weight:700">${o.customerName||'—'}</td>
-      <td style="font-weight:900">₹${o.total}</td>
-      <td><span class="badge badge-${o.status}">${o.status.replace('_',' ')}</span></td>
-      <td style="color:var(--muted);font-size:12px">${new Date(o.createdAt).toLocaleDateString()}</td>
+      <td style="font-family:var(--fm);font-size:11px;color:var(--blue)">${esc(o.orderId || o.key || '—')}</td>
+      <td>${esc(o.customerName || o.name || '—')}</td>
+      <td style="font-weight:800">${money(o.total)}</td>
+      <td><span class="badge ${orderStatusClass(o.status)}">${esc(String(o.status || 'processing').replace(/_/g, ' '))}</span></td>
+      <td style="color:var(--muted)">${esc(fmtDate(o.createdAt))}</td>
       <td>
-        <select class="form-input" style="padding:7px 10px;font-size:12px;width:auto;border-radius:9px" onchange="updateOrderStatus('${o.orderId}',this.value)">
-          <option ${o.status==='processing'?'selected':''} value="processing">Processing</option>
-          <option ${o.status==='shipped'?'selected':''} value="shipped">Shipped</option>
-          <option ${o.status==='out_for_delivery'?'selected':''} value="out_for_delivery">Out for Delivery</option>
-          <option ${o.status==='delivered'?'selected':''} value="delivered">Delivered</option>
+        <select class="form-input" style="min-width:150px" onchange="updateOrderStatus('${esc(o.key || o.orderId)}',this.value)">
+          <option value="processing" ${String(o.status || '') === 'processing' ? 'selected' : ''}>Processing</option>
+          <option value="shipped" ${String(o.status || '') === 'shipped' ? 'selected' : ''}>Shipped</option>
+          <option value="out_for_delivery" ${String(o.status || '') === 'out_for_delivery' ? 'selected' : ''}>Out for delivery</option>
+          <option value="delivered" ${String(o.status || '') === 'delivered' ? 'selected' : ''}>Delivered</option>
         </select>
       </td>
     </tr>`).join('');
 
-  if(cards){
-    cards.innerHTML=ORDERS.map(o=>`
+  if (cards) {
+    cards.innerHTML = ORDERS.map((o) => `
       <div class="order-card-item">
         <div class="order-card-top">
           <div>
-            <div class="order-id-mob">${o.orderId}</div>
-            <div class="order-customer-mob">${o.customerName||'—'}</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:2px">${new Date(o.createdAt).toLocaleDateString()}</div>
+            <div class="order-id-mob">${esc(o.orderId || o.key || '—')}</div>
+            <div class="order-customer-mob">${esc(o.customerName || o.name || '—')}</div>
           </div>
-          <span class="badge badge-${o.status}">${o.status.replace('_',' ')}</span>
+          <span class="badge ${orderStatusClass(o.status)}">${esc(String(o.status || 'processing').replace(/_/g, ' '))}</span>
         </div>
-        <div class="order-card-row">
-          <span style="font-family:var(--fm);font-size:16px;font-weight:800">₹${o.total}</span>
-          <select class="form-input" style="padding:7px 10px;font-size:12px;width:auto;border-radius:9px" onchange="updateOrderStatus('${o.orderId}',this.value)">
-            <option ${o.status==='processing'?'selected':''} value="processing">Processing</option>
-            <option ${o.status==='shipped'?'selected':''} value="shipped">Shipped</option>
-            <option ${o.status==='out_for_delivery'?'selected':''} value="out_for_delivery">Out for Delivery</option>
-            <option ${o.status==='delivered'?'selected':''} value="delivered">Delivered</option>
-          </select>
+        <div class="order-card-row" style="margin-bottom:10px">
+          <span style="font-family:var(--fm);font-size:15px;font-weight:800">${money(o.total)}</span>
+          <span style="font-size:11px;color:var(--muted);font-weight:700">${esc(fmtDate(o.createdAt))}</span>
         </div>
+        <select class="form-input" onchange="updateOrderStatus('${esc(o.key || o.orderId)}',this.value)">
+          <option value="processing" ${String(o.status || '') === 'processing' ? 'selected' : ''}>Processing</option>
+          <option value="shipped" ${String(o.status || '') === 'shipped' ? 'selected' : ''}>Shipped</option>
+          <option value="out_for_delivery" ${String(o.status || '') === 'out_for_delivery' ? 'selected' : ''}>Out for delivery</option>
+          <option value="delivered" ${String(o.status || '') === 'delivered' ? 'selected' : ''}>Delivered</option>
+        </select>
       </div>`).join('');
-    cards.style.display='flex';
   }
-}
-
-async function updateOrderStatus(orderId,status){
-  try{
-    await FB.update(FB.ref(FB.db,`orders/${orderId}`),{status});
-    const o=ORDERS.find(x=>x.orderId===orderId);
-    if(o) o.status=status;
-    showToast(`${orderId} → ${status} ✅`,'success');
-    renderOrdersTable();renderDashboardOrders();
-  }catch(e){showToast('Update failed','error');}
+  applyResponsiveLayout();
 }
 
 /* ════════════════════════════════════════════
-   CUSTOMERS TABLE
+   RENDER: CUSTOMERS
 ════════════════════════════════════════════ */
-function renderCustomersTable(){
-  const tbody=document.getElementById('customersTbody');
-  if(!tbody) return;
-  if(!CUSTOMERS.length){
-    tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--muted);font-weight:700">No customers yet</td></tr>';
+function renderCustomersTable() {
+  const tbody = $('customersTbody');
+  if (!tbody) return;
+
+  if (!CUSTOMERS.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--muted);font-weight:700">No customers yet</td></tr>';
     return;
   }
-  tbody.innerHTML=CUSTOMERS.map(c=>`
+
+  tbody.innerHTML = CUSTOMERS.map((c) => `
     <tr>
-      <td style="font-weight:800">${c.displayName||c.firstName||'—'}</td>
-      <td style="color:var(--muted);font-size:12px">${c.email||'—'}</td>
-      <td style="font-weight:700">${Object.keys(c.orders||{}).length}</td>
-      <td style="color:var(--muted);font-size:12px">${c.createdAt?new Date(c.createdAt).toLocaleDateString():'—'}</td>
+      <td style="font-weight:800">${esc(c.name || c.displayName || '—')}</td>
+      <td style="color:var(--muted)">${esc(c.email || '—')}</td>
+      <td style="font-weight:800">${countOrdersForCustomer(c)}</td>
+      <td style="color:var(--muted)">${esc(fmtDate(c.createdAt || c.joinedAt || c.registeredAt))}</td>
     </tr>`).join('');
 }
 
 /* ════════════════════════════════════════════
-   ADMIN MEMBERS
+   RENDER: ADMINS
 ════════════════════════════════════════════ */
-async function loadAdminMembers(){
-  try{
-    const snap=await FB.get(FB.ref(FB.db,'admins'));
-    adminMembers=[];
-    if(snap.exists()) snap.forEach(c=>adminMembers.push({uid:c.key,...c.val()}));
-  }catch(e){adminMembers=[];}
-  renderAdminMembers();
-}
+function renderAdminMembers() {
+  const wrap = $('adminMembersList');
+  if (!wrap) return;
 
-function renderAdminMembers(){
-  const list=document.getElementById('adminMembersList');
-  const label=document.getElementById('adminCountLabel');
-  if(!list) return;
-  if(label) label.textContent=`${adminMembers.length} member${adminMembers.length!==1?'s':''}`;
-  if(!adminMembers.length){
-    list.innerHTML='<div class="empty-state"><span class="empty-icon">🔐</span><div class="empty-title">No admins found</div></div>';
+  if (!ADMIN_MEMBERS.length) {
+    wrap.innerHTML = '<div class="empty-state"><span class="empty-icon">🔐</span><div class="empty-title">No admin records</div><div class="empty-sub">Admins will appear here</div></div>';
     return;
   }
-  list.innerHTML=adminMembers.map((a,i)=>`
-    <div class="member-row">
-      <div class="member-avatar">${(a.name||'A')[0].toUpperCase()}</div>
-      <div class="member-info">
-        <div class="member-name">${a.name||'—'}</div>
-        <div class="member-email">${a.email||'—'}</div>
-        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
-          <span class="chip">${a.role||'Admin'}</span>
-          <span class="badge ${a.status?'badge-active':'badge-inactive'}">${a.status?'● Active':'● Inactive'}</span>
+
+  wrap.innerHTML = ADMIN_MEMBERS.map((a) => {
+    const active = a.status === true;
+    const isMe = currentUser && a.uid === currentUser.uid;
+    return `
+      <div class="member-row">
+        <div class="member-avatar">${esc(String(a.name || a.email || 'A')[0].toUpperCase())}</div>
+        <div class="member-info">
+          <div class="member-name">${esc(a.name || '—')} ${isMe ? '<span class="chip" style="margin-left:6px">You</span>' : ''}</div>
+          <div class="member-email">${esc(a.email || '—')}</div>
+          <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+            <span class="badge ${active ? 'badge-active' : 'badge-inactive'}">${active ? 'ACTIVE' : 'INACTIVE'}</span>
+            <span class="chip">${esc(a.role || 'Admin')}</span>
+            <span class="chip">Last login: ${esc(fmtDateTime(a.lastLogin))}</span>
+          </div>
         </div>
-      </div>
-      <div class="member-actions">
-        <button class="btn btn-sm ${a.status?'btn-danger':'btn-success'}" onclick="toggleAdminStatus(${i})">${a.status?'Disable':'Enable'}</button>
-        <button class="btn btn-danger btn-sm" onclick="removeAdmin(${i})">Remove</button>
-      </div>
-    </div>`).join('');
-}
-
-async function toggleAdminStatus(i){
-  adminMembers[i].status=!adminMembers[i].status;
-  const a=adminMembers[i];
-  try{await FB.update(FB.ref(FB.db,`admins/${a.uid}`),{status:a.status});}catch(e){}
-  showToast(`${a.name} → ${a.status?'Active ✅':'Inactive ⛔'}`,a.status?'success':'error');
-  renderAdminMembers();
-}
-
-async function removeAdmin(i){
-  const a=adminMembers[i];
-  if(!confirm(`Remove ${a.name} from admins?`)) return;
-  adminMembers.splice(i,1);
-  try{await FB.remove(FB.ref(FB.db,`admins/${a.uid}`));}catch(e){}
-  showToast(`${a.name} removed`,'error');
-  renderAdminMembers();
+        <div class="member-actions">
+          <button class="btn ${active ? 'btn-outline' : 'btn-success'} btn-sm" onclick="toggleAdminStatus('${esc(a.uid)}')">${active ? 'Deactivate' : 'Activate'}</button>
+          <button class="btn btn-danger btn-sm" onclick="removeAdmin('${esc(a.uid)}')" ${isMe ? 'disabled style="opacity:.45;cursor:not-allowed"' : ''}>Remove</button>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 /* ════════════════════════════════════════════
-   MEDIA MANAGER
+   RENDER: MEDIA MANAGER
 ════════════════════════════════════════════ */
-function renderMediaManager(){
-  const grid=document.getElementById('mediaManagerGrid');
-  if(!grid) return;
-  grid.innerHTML='';
-  MEDIA_SLOTS.forEach(slot=>{
-    const m=mediaCache[slot.id];
-    const filled=!!(m&&m.url);
-    const card=document.createElement('div');
-    card.className='media-card';
+function mediaPreviewHtml(item, slot) {
+  if (!item || !item.url) {
+    return `<div class="media-empty ${slot.dark ? '' : 'light'}"><div class="media-empty-icon">${slot.icon}</div><div class="media-empty-label">Empty Slot</div></div>`;
+  }
+  if (item.type === 'video') {
+    return `<video src="${esc(item.url)}" muted autoplay loop playsinline></video>`;
+  }
+  if (item.type === 'youtube') {
+    return `<iframe src="https://www.youtube.com/embed/${esc(item.url)}?autoplay=1&mute=1&controls=1&loop=1&playlist=${esc(item.url)}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  }
+  return `<img src="${esc(item.url)}" alt="${esc(item.alt || slot.label)}"/>`;
+}
 
-    let previewHTML='';
-    if(filled){
-      if(m.type==='image') previewHTML=`<img src="${m.url}" alt="${slot.label}"/>`;
-      else if(m.type==='video') previewHTML=`<video src="${m.url}" muted autoplay loop playsinline></video>`;
-      else if(m.type==='youtube') previewHTML=`<iframe src="https://www.youtube.com/embed/${m.url}?autoplay=1&mute=1&loop=1&playlist=${m.url}" frameborder="0" allowfullscreen></iframe>`;
-    } else {
-      previewHTML=`<div class="media-empty"><div class="media-empty-icon">${slot.icon}</div><div class="media-empty-label">${slot.label}<br>${slot.rec}</div></div>`;
-    }
-
-    card.innerHTML=`
-      <div class="media-preview${slot.dark?'':' light'}">
-        ${previewHTML}
-        <div class="slot-badge ${filled?'filled':''}">${slot.id}</div>
-      </div>
-      <div class="media-info">
-        <div class="media-title"><span class="sdot ${filled?'filled':'empty'}"></span>${slot.label}</div>
-        <div class="media-desc">${slot.desc} · <strong>${slot.rec}</strong></div>
-        <div class="media-form">
-          <button class="media-save-btn" onclick="openMediaModal('${slot.id}')">
-            ${filled?'✏️ Edit / Replace':'📤 Upload / Add Media'}
-          </button>
-          ${filled?`<button class="media-clear-btn" onclick="confirmClearSlot('${slot.id}')">✕ Remove</button>`:''}
+function renderMediaManager() {
+  const grid = $('mediaManagerGrid');
+  if (!grid) return;
+  grid.innerHTML = MEDIA_SLOTS.map((slot) => {
+    const item = MEDIA_CACHE[slot.id];
+    const filled = !!(item && item.url);
+    return `
+      <div class="media-card">
+        <div class="media-preview ${slot.dark ? '' : 'light'}">
+          ${mediaPreviewHtml(item, slot)}
+          <div class="slot-badge ${filled ? 'filled' : ''}">${filled ? 'FILLED' : 'EMPTY'}</div>
+        </div>
+        <div class="media-info">
+          <div class="media-title">${esc(slot.icon)} ${esc(slot.label)} ${slot.isVideo ? '<span class="chip">Video</span>' : ''}</div>
+          <div class="media-desc">${esc(slot.desc)}<br><span style="font-family:var(--fm)">${esc(slot.rec)}</span></div>
+          <div class="media-form">
+            <button class="media-save-btn" onclick="openMediaModal('${esc(slot.id)}')">${filled ? 'Edit Slot' : 'Upload / Link'}</button>
+            ${filled ? `<button class="media-clear-btn" onclick="confirmClearSlot('${esc(slot.id)}')">Clear Slot</button>` : ''}
+          </div>
         </div>
       </div>`;
-    grid.appendChild(card);
+  }).join('');
+}
+
+/* ════════════════════════════════════════════
+   PRODUCTS CRUD
+════════════════════════════════════════════ */
+function handleMultiImgPreview(input, previewContainerId) {
+  const wrap = $(previewContainerId);
+  if (!wrap) return;
+  const files = Array.from(input.files || []).slice(0, 5);
+  wrap.innerHTML = '';
+  if (!files.length) return;
+
+  files.forEach((file) => {
+    const url = URL.createObjectURL(file);
+    const box = document.createElement('div');
+    box.style.cssText = 'width:74px;height:74px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:var(--s2);position:relative';
+    box.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover"/>`;
+    wrap.appendChild(box);
   });
 }
 
-function openMediaModal(slotId){
-  const slot=MEDIA_SLOTS.find(s=>s.id===slotId);
-  if(!slot) return;
-  currentMediaSlot=slot;
-  const m=mediaCache[slotId];
+async function uploadFilesToStorage(files, folder, progressIds = {}) {
+  const fileList = Array.from(files || []).slice(0, 5);
+  const urls = [];
+  const wrap = progressIds.wrap ? $(progressIds.wrap) : null;
+  const fill = progressIds.fill ? $(progressIds.fill) : null;
+  const label = progressIds.label ? $(progressIds.label) : null;
+  if (wrap) wrap.style.display = fileList.length ? 'block' : 'none';
 
-  document.getElementById('mediaSlotId').value=slotId;
-  document.getElementById('mediaSlotIsVideo').value=slot.isVideo?'1':'0';
-  document.getElementById('mediaModalTitle').textContent=`${slot.label}`;
-
-  /* Show/hide YouTube tab for videos only */
-  const ytTab=document.getElementById('youtubeTab');
-  ytTab.style.display=slot.isVideo?'block':'none';
-  document.getElementById('mediaVideoOpts').style.display=slot.isVideo?'block':'none';
-  document.getElementById('mediaAltGroup').style.display=slot.isVideo?'none':'block';
-
-  /* File input accept */
-  const fi=document.getElementById('media_file');
-  fi.accept=slot.isVideo?'image/*,video/*':'image/*';
-  document.getElementById('mediaUploadIcon').textContent=slot.isVideo?'🎬':'🖼️';
-  document.getElementById('mediaUploadTitle').textContent=slot.isVideo?'Tap to choose image or video':'Tap to choose image';
-  document.getElementById('mediaUploadSub').textContent=slot.isVideo?'JPG, PNG, MP4, WEBM — max 50MB':'JPG, PNG, WEBP — max 10MB';
-
-  /* Current preview */
-  const prevBox=document.getElementById('mediaPreviewBox');
-  const prevSection=document.getElementById('mediaCurrentPreview');
-  if(m&&m.url){
-    prevSection.style.display='block';
-    if(m.type==='image') prevBox.innerHTML=`<img src="${m.url}" style="width:100%;height:100%;object-fit:cover"/>`;
-    else if(m.type==='video') prevBox.innerHTML=`<video src="${m.url}" muted autoplay loop style="width:100%;height:100%;object-fit:cover"></video>`;
-    else if(m.type==='youtube') prevBox.innerHTML=`<iframe src="https://www.youtube.com/embed/${m.url}?autoplay=1&mute=1" frameborder="0" style="width:100%;height:100%;border:none"></iframe>`;
-    document.getElementById('mediaClearBtn').style.display='block';
-  } else {
-    prevSection.style.display='none';
-    document.getElementById('mediaClearBtn').style.display='none';
+  for (let i = 0; i < fileList.length; i++) {
+    const file = fileList[i];
+    const storageRef = FB.sRef(FB.storage, `${folder}/${Date.now()}_${i}_${file.name}`);
+    const url = await new Promise((resolve, reject) => {
+      const task = FB.uploadBytesResumable(storageRef, file);
+      task.on('state_changed', (snap) => {
+        const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+        if (fill) fill.style.width = `${pct}%`;
+        if (label) label.textContent = `Uploading ${i + 1}/${fileList.length}… ${pct}%`;
+      }, reject, async () => {
+        const dl = await FB.getDownloadURL(task.snapshot.ref);
+        resolve(dl);
+      });
+    });
+    urls.push(url);
   }
 
-  /* Pre-fill existing values */
-  document.getElementById('media_url_input').value=m?.url||'';
-  document.getElementById('media_alt_input').value=m?.alt||'';
-  document.getElementById('media_yt_input').value=(m?.type==='youtube'?m.url:'')||'';
-  if(m?.autoplay!==undefined) document.getElementById('media_autoplay').checked=m.autoplay;
-  if(m?.controls!==undefined) document.getElementById('media_controls').checked=m.controls;
+  if (wrap) wrap.style.display = 'none';
+  if (fill) fill.style.width = '0%';
+  return urls;
+}
 
-  /* Reset file input & progress */
-  document.getElementById('media_file').value='';
-  const pz=document.getElementById('mediaUploadZone');
-  const pv=pz.querySelector('img.upload-preview,video.upload-video-preview');
-  if(pv) pv.remove();
-  document.getElementById('mediaProgress').style.display='none';
-  document.getElementById('mediaProgressFill').style.width='0%';
+function readProductForm(prefix) {
+  return {
+    name: $(prefix + 'name')?.value.trim(),
+    team: $(prefix + 'team')?.value.trim(),
+    price: Number($(prefix + 'price')?.value || 0),
+    originalPrice: Number($(prefix + 'origprice')?.value || 0),
+    stock: Number($(prefix + 'stock')?.value || 0),
+    emoji: $(prefix + 'emoji')?.value.trim() || '👕',
+    category: $(prefix + 'cat')?.value || 'football',
+    club: $(prefix + 'club')?.value || 'other',
+    badge: $(prefix + 'badge')?.value || 'DROP',
+  };
+}
 
-  /* Reset method to upload */
-  setMediaMethod('upload', document.querySelector('#mediaModal .method-tab'));
+function validateProductData(data) {
+  if (!data.name) return 'Jersey name is required';
+  if (!data.price || data.price < 0) return 'Valid price is required';
+  return '';
+}
 
+async function addProduct() {
+  const btn = $('addProdBtn');
+  const data = readProductForm('ap_');
+  const error = validateProductData(data);
+  if (error) { showToast(error, 'error'); return; }
+
+  try {
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+    const files = $('ap_imgs')?.files || [];
+    const images = files.length ? await uploadFilesToStorage(files, 'products', { wrap: 'imgProgress', fill: 'imgProgressFill', label: 'imgProgressLabel' }) : [];
+    const payload = {
+      ...data,
+      images,
+      imageUrl: images[0] || '',
+      sizes: ['S', 'M', 'L', 'XL'],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    const newRef = FB.push(dbRef('products'));
+    await FB.set(newRef, payload);
+    $('ap_name').value = '';
+    $('ap_team').value = '';
+    $('ap_price').value = '';
+    $('ap_origprice').value = '';
+    $('ap_stock').value = '';
+    $('ap_emoji').value = '👕';
+    $('ap_imgs').value = '';
+    $('ap_img_previews').innerHTML = '';
+    closeModal('addProduct');
+    showToast('Product added', 'success');
+  } catch (err) {
+    console.error(err);
+    showToast('Add failed: ' + (err.message || err), 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Add to Catalogue →'; }
+  }
+}
+
+function openEditProduct(pid) {
+  const p = PRODUCTS.find((x) => String(x.key || x.id) === String(pid));
+  if (!p) { showToast('Product not found', 'error'); return; }
+  $('ep_id').value = p.key || p.id;
+  $('ep_name').value = p.name || '';
+  $('ep_team').value = p.team || '';
+  $('ep_price').value = p.price ?? '';
+  $('ep_origprice').value = p.originalPrice ?? '';
+  $('ep_stock').value = p.stock ?? '';
+  $('ep_emoji').value = p.emoji || '👕';
+  $('ep_cat').value = p.category || 'football';
+  $('ep_club').value = p.club || 'other';
+  $('ep_badge').value = p.badge || 'DROP';
+  $('ep_imgs').value = '';
+  $('ep_new_img_previews').innerHTML = '';
+  renderCurrentImages(p.images || (p.imageUrl ? [p.imageUrl] : []));
+  const input = $('ep_imgs');
+  if (input) input.onchange = function() { handleMultiImgPreview(this, 'ep_new_img_previews'); };
+  openModal('editProduct');
+}
+
+function renderCurrentImages(images = []) {
+  const wrap = $('ep_current_imgs_wrap');
+  const row = $('ep_current_imgs_row');
+  if (!wrap || !row) return;
+  if (!images.length) {
+    wrap.style.display = 'none';
+    row.innerHTML = '';
+    return;
+  }
+  wrap.style.display = 'block';
+  row.innerHTML = images.map((url, idx) => `
+    <div style="width:74px;height:74px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:var(--s2);position:relative">
+      <img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover"/>
+      <div style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,.65);color:#fff;font-size:9px;padding:1px 4px;border-radius:4px">${idx + 1}</div>
+    </div>
+  `).join('');
+}
+
+async function saveEditProduct() {
+  const pid = $('ep_id').value;
+  const p = PRODUCTS.find((x) => String(x.key || x.id) === String(pid));
+  if (!pid || !p) { showToast('Product not found', 'error'); return; }
+
+  const data = readProductForm('ep_');
+  const error = validateProductData(data);
+  if (error) { showToast(error, 'error'); return; }
+
+  const btn = $('editProdBtn');
+  try {
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+    const files = $('ep_imgs')?.files || [];
+    const images = files.length ? await uploadFilesToStorage(files, 'products', { wrap: 'ep_imgProgress', fill: 'ep_imgProgressFill', label: 'ep_imgProgressLabel' }) : (p.images || (p.imageUrl ? [p.imageUrl] : []));
+    const payload = { ...data, images, imageUrl: images[0] || '', updatedAt: Date.now() };
+    await FB.update(dbRef(`products/${pid}`), payload);
+    closeModal('editProduct');
+    showToast('Product updated', 'success');
+  } catch (err) {
+    console.error(err);
+    showToast('Update failed: ' + (err.message || err), 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '💾 Save Changes'; }
+  }
+}
+
+async function deleteProduct(pid, name) {
+  if (!pid) return;
+  if (!confirm(`Delete ${name || 'this product'}?`)) return;
+  try {
+    await FB.remove(dbRef(`products/${pid}`));
+    showToast('Product deleted', 'success');
+  } catch (err) {
+    showToast('Delete failed', 'error');
+  }
+}
+
+/* ════════════════════════════════════════════
+   ORDERS ACTIONS
+════════════════════════════════════════════ */
+async function updateOrderStatus(orderKey, status) {
+  if (!orderKey) return;
+  try {
+    await FB.update(dbRef(`orders/${orderKey}`), { status, updatedAt: Date.now() });
+    showToast(`Order marked ${String(status).replace(/_/g, ' ')}`, 'success');
+  } catch (err) {
+    showToast('Order update failed', 'error');
+  }
+}
+
+/* ════════════════════════════════════════════
+   ADMINS ACTIONS
+════════════════════════════════════════════ */
+async function toggleAdminStatus(uid) {
+  const member = ADMIN_MEMBERS.find((a) => a.uid === uid);
+  if (!member) return;
+  const next = !(member.status === true);
+  try {
+    await FB.update(dbRef(`admins/${uid}`), { status: next, updatedAt: Date.now() });
+    showToast(next ? 'Admin activated' : 'Admin deactivated', 'success');
+    if (currentUser && currentUser.uid === uid && !next) {
+      try { await FB.signOut(FB.auth); } catch (_) {}
+      location.href = 'admin-login.html';
+    }
+  } catch (err) {
+    showToast('Admin update failed', 'error');
+  }
+}
+
+async function removeAdmin(uid) {
+  if (!uid) return;
+  if (currentUser && currentUser.uid === uid) {
+    showToast('You cannot remove your own account', 'error');
+    return;
+  }
+  if (!confirm('Remove this admin account?')) return;
+  try {
+    await FB.remove(dbRef(`admins/${uid}`));
+    showToast('Admin removed', 'success');
+  } catch (err) {
+    showToast('Remove failed', 'error');
+  }
+}
+
+/* ════════════════════════════════════════════
+   MEDIA MODAL + ACTIONS
+════════════════════════════════════════════ */
+function openMediaModal(slotId) {
+  const slot = MEDIA_SLOTS.find((s) => s.id === slotId);
+  if (!slot) return;
+  currentMediaSlot = slot;
+  $('mediaSlotId').value = slot.id;
+  $('mediaSlotIsVideo').value = slot.isVideo ? '1' : '0';
+  $('mediaModalTitle').textContent = `${slot.label}`;
+  $('mediaUploadIcon').textContent = slot.icon;
+  $('mediaUploadTitle').textContent = slot.isVideo ? 'Tap to choose image or video' : 'Tap to choose image';
+  $('mediaUploadSub').textContent = slot.isVideo ? 'JPG, PNG, WEBP, MP4, WEBM — max 50MB' : 'JPG, PNG, WEBP — max 10MB';
+
+  const item = MEDIA_CACHE[slot.id];
+  const prevSection = $('mediaCurrentPreview');
+  const prevBox = $('mediaPreviewBox');
+  if (item && item.url) {
+    prevSection.style.display = 'block';
+    prevBox.innerHTML = mediaPreviewHtml(item, slot);
+    $('mediaClearBtn').style.display = 'block';
+  } else {
+    prevSection.style.display = 'none';
+    $('mediaClearBtn').style.display = 'none';
+  }
+
+  $('media_file').value = '';
+  $('media_url_input').value = item?.type === 'image' ? (item?.url || '') : '';
+  $('media_alt_input').value = item?.alt || '';
+  $('media_yt_input').value = item?.type === 'youtube' ? (item?.url || '') : '';
+  $('media_autoplay').checked = item?.autoplay !== undefined ? !!item.autoplay : true;
+  $('media_controls').checked = item?.controls !== undefined ? !!item.controls : false;
+
+  const pz = $('mediaUploadZone');
+  const oldPreview = pz.querySelector('img.upload-preview,video.upload-video-preview');
+  if (oldPreview) oldPreview.remove();
+  $('mediaProgress').style.display = 'none';
+  $('mediaProgressFill').style.width = '0%';
+
+  $('youtubeTab').style.display = slot.isVideo ? 'block' : 'none';
+  $('mediaVideoOpts').style.display = slot.isVideo ? 'block' : 'none';
+
+  const defaultMethod = item?.type === 'youtube' ? 'youtube' : (item?.type === 'image' ? 'url' : 'upload');
+  const buttons = Array.from(document.querySelectorAll('#mediaModal .method-tab'));
+  const btn = buttons.find((b) => b.textContent.includes(defaultMethod === 'upload' ? 'Upload' : defaultMethod === 'url' ? 'URL' : 'YouTube')) || buttons[0];
+  setMediaMethod(defaultMethod, btn);
   openModal('media');
 }
 
-function setMediaMethod(method,btn){
-  mediaMethod=method;
-  document.querySelectorAll('#mediaModal .method-tab').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  document.getElementById('mediaUploadSection').style.display=method==='upload'?'block':'none';
-  document.getElementById('mediaUrlSection').style.display=method==='url'?'block':'none';
-  document.getElementById('mediaYoutubeSection').style.display=method==='youtube'?'block':'none';
+function setMediaMethod(method, btn) {
+  mediaMethod = method;
+  document.querySelectorAll('#mediaModal .method-tab').forEach((b) => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  $('mediaUploadSection').style.display = method === 'upload' ? 'block' : 'none';
+  $('mediaUrlSection').style.display = method === 'url' ? 'block' : 'none';
+  $('mediaYoutubeSection').style.display = method === 'youtube' ? 'block' : 'none';
 }
 
-function handleMediaFilePreview(input){
-  const file=input.files[0]; if(!file) return;
-  const zone=document.getElementById('mediaUploadZone');
-  const existing=zone.querySelector('img.upload-preview,video.upload-video-preview');
-  if(existing) existing.remove();
-  const isVid=file.type.startsWith('video/');
-  if(isVid){
-    const v=document.createElement('video');
-    v.className='upload-video-preview';
-    v.src=URL.createObjectURL(file);
-    v.muted=true; v.controls=true;
-    zone.appendChild(v);
-  } else {
-    const img=document.createElement('img');
-    img.className='upload-preview';
-    img.src=URL.createObjectURL(file);
-    zone.appendChild(img);
+function handleMediaFilePreview(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  const zone = $('mediaUploadZone');
+  const existing = zone.querySelector('img.upload-preview,video.upload-video-preview');
+  if (existing) existing.remove();
+  const isVideo = file.type.startsWith('video/');
+  const el = document.createElement(isVideo ? 'video' : 'img');
+  el.className = isVideo ? 'upload-video-preview' : 'upload-preview';
+  el.src = URL.createObjectURL(file);
+  if (isVideo) {
+    el.muted = true;
+    el.controls = true;
+    el.playsInline = true;
   }
+  zone.appendChild(el);
 }
 
-async function saveMediaSlot(){
-  if(!currentMediaSlot) return;
-  const slotId=currentMediaSlot.id;
-  const isVideo=currentMediaSlot.isVideo;
-  const btn=document.getElementById('mediasaveBtn')||document.getElementById('mediaModal').querySelector('.btn-primary');
-  if(btn){btn.textContent='Saving…';btn.disabled=true;}
+async function saveMediaSlot() {
+  if (!currentMediaSlot) return;
+  const slotId = currentMediaSlot.id;
+  const slot = currentMediaSlot;
+  const saveBtn = $('mediaSaveBtn');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
 
-  try{
-    let data={updatedAt:Date.now()};
+  try {
+    let payload = { updatedAt: Date.now() };
 
-    if(mediaMethod==='upload'){
-      const file=document.getElementById('media_file').files[0];
-      if(!file){ showToast('Please choose a file first','error'); return; }
-      const isVidFile=file.type.startsWith('video/');
-      data.type=isVidFile?'video':'image';
-
-      const prog=document.getElementById('mediaProgress');
-      const fill=document.getElementById('mediaProgressFill');
-      const lbl=document.getElementById('mediaProgressLabel');
-      prog.style.display='block';
-
-      const storageRef=FB.sRef(FB.storage,`media/${slotId}/${Date.now()}_${file.name}`);
-      await new Promise((res,rej)=>{
-        const task=FB.uploadBytesResumable(storageRef,file);
-        task.on('state_changed',snap=>{
-          const pct=Math.round(snap.bytesTransferred/snap.totalBytes*100);
-          fill.style.width=pct+'%';lbl.textContent=`Uploading… ${pct}%`;
-        },rej,async()=>{data.url=await FB.getDownloadURL(task.snapshot.ref);res();});
+    if (mediaMethod === 'upload') {
+      const file = $('media_file').files?.[0];
+      if (!file) { showToast('Please choose a file first', 'error'); return; }
+      const isVideo = file.type.startsWith('video/');
+      payload.type = isVideo ? 'video' : 'image';
+      const storageRef = FB.sRef(FB.storage, `media/${slotId}/${Date.now()}_${file.name}`);
+      const url = await new Promise((resolve, reject) => {
+        const task = FB.uploadBytesResumable(storageRef, file);
+        $('mediaProgress').style.display = 'block';
+        task.on('state_changed', (snap) => {
+          const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+          $('mediaProgressFill').style.width = `${pct}%`;
+          $('mediaProgressLabel').textContent = `Uploading… ${pct}%`;
+        }, reject, async () => {
+          const dl = await FB.getDownloadURL(task.snapshot.ref);
+          resolve(dl);
+        });
       });
-      prog.style.display='none';
-
-    } else if(mediaMethod==='url'){
-      const url=document.getElementById('media_url_input').value.trim();
-      if(!url){ showToast('Please enter a URL','error'); return; }
-      data.type='image'; data.url=url;
-      data.alt=document.getElementById('media_alt_input').value.trim()||slotId;
-
-    } else if(mediaMethod==='youtube'){
-      const ytId=document.getElementById('media_yt_input').value.trim();
-      if(!ytId){ showToast('Please enter a YouTube video ID','error'); return; }
-      data.type='youtube'; data.url=ytId;
+      payload.url = url;
+      if (slot.isVideo || isVideo) {
+        payload.autoplay = $('media_autoplay').checked;
+        payload.controls = $('media_controls').checked;
+      }
+    } else if (mediaMethod === 'url') {
+      const url = $('media_url_input').value.trim();
+      if (!url) { showToast('Please enter a URL', 'error'); return; }
+      payload.type = 'image';
+      payload.url = url;
+      payload.alt = $('media_alt_input').value.trim() || slot.label;
+    } else if (mediaMethod === 'youtube') {
+      const yt = $('media_yt_input').value.trim();
+      if (!yt) { showToast('Please enter a YouTube video ID', 'error'); return; }
+      payload.type = 'youtube';
+      payload.url = yt;
+      payload.autoplay = true;
+      payload.controls = false;
     }
 
-    /* Video-specific options */
-    if(isVideo&&data.type!=='image'){
-      data.autoplay=document.getElementById('media_autoplay').checked;
-      data.controls=document.getElementById('media_controls').checked;
+    if (slot.isVideo && payload.type !== 'image') {
+      payload.autoplay = $('media_autoplay').checked;
+      payload.controls = $('media_controls').checked;
     }
 
-    await FB.set(FB.ref(FB.db,`media/${slotId}`),data);
-    mediaCache[slotId]=data;
-    showToast(`${slotId} saved! Storefront updated ✅`,'success');
+    await FB.set(dbRef(`media/${slotId}`), payload);
+    MEDIA_CACHE[slotId] = payload;
+    showToast(`${slotId} saved`, 'success');
     closeModal('media');
     renderMediaManager();
-
-  }catch(e){
-    showToast('Save failed: '+e.message,'error');
-  }finally{
-    if(btn){btn.textContent='💾 Save to Storefront';btn.disabled=false;}
+  } catch (err) {
+    console.error(err);
+    showToast('Save failed: ' + (err.message || err), 'error');
+  } finally {
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Save to Storefront'; }
   }
 }
 
-async function confirmClearSlot(slotId){
-  if(!confirm(`Remove media from ${slotId}? The storefront placeholder will return.`)) return;
-  try{
-    await FB.remove(FB.ref(FB.db,`media/${slotId}`));
-    delete mediaCache[slotId];
-    showToast(`${slotId} cleared`,'error');
+async function confirmClearSlot(slotId) {
+  if (!confirm(`Remove media from ${slotId}?`)) return;
+  try {
+    await FB.remove(dbRef(`media/${slotId}`));
+    delete MEDIA_CACHE[slotId];
+    showToast(`${slotId} cleared`, 'success');
     renderMediaManager();
-  }catch(e){showToast('Clear failed','error');}
+  } catch (err) {
+    showToast('Clear failed', 'error');
+  }
 }
 
-async function clearMediaSlot(){
-  const slotId=document.getElementById('mediaSlotId').value;
+async function clearMediaSlot() {
+  const slotId = $('mediaSlotId').value;
   closeModal('media');
   await confirmClearSlot(slotId);
 }
 
 /* ════════════════════════════════════════════
-   TAB SWITCHING
+   TAB / LAYOUT / MODALS
 ════════════════════════════════════════════ */
-function switchTab(tab,btn){
-  document.querySelectorAll('.tab-panel').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const el=document.getElementById('tab-'+tab);
-  if(el) el.classList.add('active');
-  if(btn) btn.classList.add('active');
+function applyResponsiveLayout() {
+  const mobile = window.innerWidth <= 1000;
+  ['dashboard', 'products', 'orders'].forEach((tab) => {
+    const tableWrap = document.querySelector(`#tab-${tab} .table-wrap`);
+    if (tableWrap) tableWrap.style.display = mobile ? 'none' : 'block';
+  });
+  const prodCards = $('productCardsList'); if (prodCards) prodCards.style.display = mobile ? 'flex' : 'none';
+  const orderCards = $('orderCardsList'); if (orderCards) orderCards.style.display = mobile ? 'flex' : 'none';
+  const dashCards = $('dashOrderCards'); if (dashCards) dashCards.style.display = mobile ? 'flex' : 'none';
+}
 
-  /* Responsive: show table vs cards */
-  const isMobile=window.innerWidth<=1000;
-  const showTable=t=>{ const tw=document.querySelector(`#tab-${t} .table-wrap`); if(tw)tw.style.display=isMobile?'none':'block'; };
-  const showCards=t=>{ const cc=document.querySelector(`#tab-${t} .product-cards,#tab-${t} .order-cards`); if(cc)cc.style.display=isMobile?'flex':'none'; };
+function switchTab(tab, btn) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-panel').forEach((t) => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach((n) => n.classList.remove('active'));
+  const el = $('tab-' + tab);
+  if (el) el.classList.add('active');
+  if (btn) btn.classList.add('active');
 
-  if(tab==='products'){renderProductsTable();showTable('products');showCards('products');}
-  if(tab==='orders'){renderOrdersTable();showTable('orders');showCards('orders');}
-  if(tab==='customers'){loadCustomers().then(()=>renderCustomersTable());}
-  if(tab==='admins') loadAdminMembers();
-  if(tab==='media') loadAllMediaSlots();
-  if(tab==='dashboard') renderDashboardOrders();
+  if (tab === 'products') renderProductsTable();
+  if (tab === 'orders') renderOrdersTable();
+  if (tab === 'customers') renderCustomersTable();
+  if (tab === 'admins') renderAdminMembers();
+  if (tab === 'media') renderMediaManager();
+  if (tab === 'dashboard') renderDashboardOrders();
 
+  applyResponsiveLayout();
   closeSidebar();
 }
 
-/* ════════════════════════════════════════════
-   SIDEBAR / MOBILE
-════════════════════════════════════════════ */
-function toggleSidebar(){
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-function closeSidebar(){
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('open');
-}
-function setActiveBottomNav(el){
-  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
+function toggleSidebar() {
+  $('sidebar')?.classList.toggle('open');
+  $('sidebarOverlay')?.classList.toggle('open');
 }
 
-/* Responsive table/card switch on resize */
-window.addEventListener('resize',()=>{
-  const isMobile=window.innerWidth<=1000;
-  document.querySelectorAll('.table-wrap').forEach(tw=>tw.style.display=isMobile?'none':'block');
-  document.querySelectorAll('.product-cards,.order-cards').forEach(cc=>cc.style.display=isMobile&&cc.children.length?'flex':'none');
+function closeSidebar() {
+  $('sidebar')?.classList.remove('open');
+  $('sidebarOverlay')?.classList.remove('open');
+}
+
+function setActiveBottomNav(el) {
+  document.querySelectorAll('.bnav-item').forEach((b) => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function openModal(name) {
+  const modal = $(name + 'Modal');
+  if (!modal) return;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(name) {
+  const modal = $(name + 'Modal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('.modal-overlay').forEach((ov) => {
+  ov.addEventListener('click', (e) => {
+    if (e.target === ov) closeModal(ov.id.replace('Modal', ''));
+  });
 });
 
-/* ════════════════════════════════════════════
-   MODAL
-════════════════════════════════════════════ */
-function openModal(name){
-  document.getElementById(name+'Modal').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeModal(name){
-  document.getElementById(name+'Modal').classList.remove('open');
-  document.body.style.overflow='';
-}
-document.querySelectorAll('.modal-overlay').forEach(ov=>{
-  ov.addEventListener('click',e=>{if(e.target===ov)closeModal(ov.id.replace('Modal',''));});
-});
+window.addEventListener('resize', applyResponsiveLayout);
+window.addEventListener('load', applyResponsiveLayout);
 
 /* ════════════════════════════════════════════
-   SIGN OUT
+   SIGN OUT / TOAST
 ════════════════════════════════════════════ */
-async function doSignOut(){
-  try{await FB.signOut(FB.auth);}catch(e){}
-  location.href='admin-login.html';
+async function doSignOut() {
+  try { await FB.signOut(FB.auth); } catch (_) {}
+  location.href = 'admin-login.html';
 }
 
-/* ════════════════════════════════════════════
-   TOAST
-════════════════════════════════════════════ */
-function showToast(msg,type=''){
-  const wrap=document.getElementById('toastWrap');
-  const t=document.createElement('div');
-  t.className=`toast${type?' '+type:''}`;
-  t.innerHTML=`<span>${{success:'✅',error:'⚠️','':'ℹ️'}[type]||'ℹ️'}</span>${msg}`;
+function showToast(msg, type = '') {
+  const wrap = $('toastWrap');
+  if (!wrap) return;
+  const t = document.createElement('div');
+  t.className = `toast${type ? ' ' + type : ''}`;
+  const icon = { success:'✅', error:'⚠️', '':'ℹ️' }[type] || 'ℹ️';
+  t.innerHTML = `<span>${icon}</span><span>${esc(msg)}</span>`;
   wrap.appendChild(t);
-  setTimeout(()=>{t.style.animation='tOut .3s ease both';setTimeout(()=>t.remove(),300);},3500);
+  setTimeout(() => {
+    t.style.animation = 'tOut .3s ease both';
+    setTimeout(() => t.remove(), 300);
+  }, 3200);
 }
 
-/* Initial responsive layout fix */
-window.addEventListener('load',()=>{
-  const isMobile=window.innerWidth<=1000;
-  if(isMobile){
-    document.querySelectorAll('.table-wrap').forEach(tw=>tw.style.display='none');
+/* ════════════════════════════════════════════
+   INITIAL FALLBACK
+════════════════════════════════════════════ */
+window.addEventListener('load', () => {
+  applyResponsiveLayout();
+  if (window.__pendingAdminBootstrap && typeof window.__beginAdminPanel === 'function') {
+    window.__beginAdminPanel(window.__pendingAdminBootstrap.user, window.__pendingAdminBootstrap.adminData);
   }
 });
 </script>
