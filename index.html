@@ -50,15 +50,21 @@
 
   /* ── Media Slots ── */
   window.MEDIA = {};
+  let mediaUnsub = null;
   async function loadMedia() {
     try {
-      const snap = await get(ref(db, 'media'));
-      if (snap.exists()) snap.forEach(c => { window.MEDIA[c.key] = c.val(); });
+      if (mediaUnsub) { try { mediaUnsub(); } catch(e) {} }
+      mediaUnsub = onValue(ref(db, 'media'), snap => {
+        window.MEDIA = {};
+        if (snap.exists()) snap.forEach(c => { window.MEDIA[c.key] = c.val(); });
+        applyAllMedia();
+        renderReelStrip();
+      });
     } catch(e) {}
-    applyAllMedia();
   }
   window.applyAllMedia = function() {
     Object.keys(window.MEDIA).forEach(slotId => applySlot(slotId, window.MEDIA[slotId]));
+    renderReelStrip();
   };
   window.applySlot = function(slotId, m) {
     const slot = document.getElementById('slot-' + slotId);
@@ -73,6 +79,51 @@
       slot.innerHTML = `<iframe src="https://www.youtube.com/embed/${m.embedId}?autoplay=${m.autoplay?1:0}&mute=1&loop=1&playlist=${m.embedId}" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="width:100%;height:100%;border:none;display:block;"></iframe>`;
       slot.classList.add('slot-filled');
     }
+  };
+
+  const REEL_SLOTS = ['reel1','reel2','reel3','reel4','reel5','reel6'];
+
+  window.renderReelStrip = function() {
+    const wrap = document.getElementById('reelStrip');
+    if (!wrap) return;
+    const slots = REEL_SLOTS.map(id => ({ id, media: window.MEDIA[id], label: id.replace('reel','Reel ') }));
+    wrap.innerHTML = slots.map(({id, media, label}) => {
+      const link = (media && media.link) ? String(media.link) : '#';
+      const target = /^https?:\/\//i.test(link) ? '_blank' : '_self';
+      const rel = target === '_blank' ? 'noopener noreferrer' : '';
+      if (!media || !media.url) {
+        return `
+          <a class="reel-card" href="${link}" target="${target}" ${rel ? `rel="${rel}"` : ''} aria-label="${label}">
+            <div class="reel-empty">
+              <div class="reel-empty-icon">🎬</div>
+              <div class="reel-empty-lbl">${label}</div>
+            </div>
+          </a>`;
+      }
+      let inner = '';
+      if (media.type === 'youtube' && media.url) {
+        inner = `<iframe src="https://www.youtube.com/embed/${media.url}?autoplay=1&mute=1&loop=1&playlist=${media.url}" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>`;
+      } else if (media.type === 'video' && media.url) {
+        inner = `<video src="${media.url}" ${media.autoplay ? 'autoplay muted loop' : ''} ${media.controls ? 'controls' : ''} playsinline></video>`;
+      } else {
+        inner = `<img src="${media.url}" alt="${media.alt || label}" loading="lazy"/>`;
+      }
+      const title = media.title || media.alt || label;
+      return `
+        <a class="reel-card" href="${link}" target="${target}" ${rel ? `rel="${rel}"` : ''} aria-label="${title}">
+          <div class="reel-media">${inner}</div>
+          <div class="reel-overlay">
+            <div class="reel-top">
+              <div class="reel-pill">${id}</div>
+              <div class="reel-play">↗</div>
+            </div>
+            <div class="reel-bottom">
+              <div class="reel-title">${title}</div>
+              <div class="reel-link">${link && link !== '#' ? link : 'Tap to open'}</div>
+            </div>
+          </div>
+        </a>`;
+    }).join('');
   };
 
   /* ── Cart DB path helper ── */
@@ -136,29 +187,32 @@
     if (window.renderAuthState) window.renderAuthState();
   });
 
+  let productUnsub = null;
   async function loadProducts() {
     try {
-      const snap = await get(ref(db, 'products'));
-      APP.products = [];
-      if (snap.exists()) {
-        snap.forEach(c => {
-          const p = { id: c.key, ...c.val() };
-          // Normalize images: RTDB stores arrays as {0:url,1:url} objects.
-          // SDK v10 usually converts back, but we normalize defensively.
-          if (p.images && !Array.isArray(p.images)) {
-            p.images = Object.values(p.images);
-          } else if (!p.images) {
-            p.images = [];
-          }
-          p.images = p.images.filter(Boolean);
-          // Ensure imageUrl always mirrors first image
-          if (!p.imageUrl && p.images.length) p.imageUrl = p.images[0];
-          APP.products.push(p);
-        });
-      }
+      if (productUnsub) { try { productUnsub(); } catch(e) {} }
+      productUnsub = onValue(ref(db, 'products'), snap => {
+        APP.products = [];
+        if (snap.exists()) {
+          snap.forEach(c => {
+            const p = { id: c.key, ...c.val() };
+            // Normalize images: RTDB stores arrays as {0:url,1:url} objects.
+            // SDK v10 usually converts back, but we normalize defensively.
+            if (p.images && !Array.isArray(p.images)) {
+              p.images = Object.values(p.images);
+            } else if (!p.images) {
+              p.images = [];
+            }
+            p.images = p.images.filter(Boolean);
+            // Ensure imageUrl always mirrors first image
+            if (!p.imageUrl && p.images.length) p.imageUrl = p.images[0];
+            APP.products.push(p);
+          });
+        }
+        if (window.renderFeatured) renderFeatured();
+        if (window.renderSwipeStack) renderSwipeStack();
+      });
     } catch(e) { console.error('loadProducts failed:', e); }
-    if (window.renderFeatured) renderFeatured();
-    if (window.renderSwipeStack) renderSwipeStack();
   }
 
   window.addEventListener('DOMContentLoaded', () => {
@@ -212,6 +266,42 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-hei
 .media-slot-icon{font-size:28px;opacity:.4}
 .slot-id-badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-family:var(--font-mono);font-size:8px;letter-spacing:1px;padding:2px 7px;border-radius:4px;font-weight:700;z-index:2}
 .media-slot.slot-filled .slot-id-badge{background:var(--green)}
+
+/* ── REEL STRIP ── */
+.reel-strip-wrap{margin:22px 0 24px}
+.reel-strip-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px}
+.reel-strip-title{font-family:var(--font-display);font-size:26px;letter-spacing:2px;color:var(--white)}
+.reel-strip-sub{font-size:11px;color:var(--text2);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.reel-strip{display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:6px}
+.reel-strip::-webkit-scrollbar{display:none}
+.reel-card{
+  position:relative;flex:0 0 170px;height:300px;border-radius:24px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+  border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;transition:transform .2s,border-color .2s
+}
+.reel-card:hover{transform:translateY(-3px);border-color:rgba(230,57,70,.22)}
+.reel-media{position:absolute;inset:0;background:#111}
+.reel-media video,.reel-media img,.reel-media iframe{width:100%;height:100%;object-fit:cover}
+.reel-overlay{
+  position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08) 0%, rgba(0,0,0,.55) 100%);
+  display:flex;flex-direction:column;justify-content:space-between;padding:12px
+}
+.reel-top{display:flex;justify-content:space-between;gap:8px;align-items:start}
+.reel-pill{font-family:var(--font-mono);font-size:8px;letter-spacing:1.8px;text-transform:uppercase;background:rgba(0,0,0,.45);color:#fff;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.12)}
+.reel-play{width:34px;height:34px;border-radius:50%;background:rgba(230,57,70,.9);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 8px 18px rgba(230,57,70,.3)}
+.reel-bottom{display:flex;flex-direction:column;gap:6px}
+.reel-title{font-family:var(--font-display);font-size:24px;line-height:.92;letter-spacing:1.5px;color:#fff}
+.reel-link{font-size:10px;font-weight:800;color:rgba(255,255,255,.72);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reel-empty{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;
+  background:var(--surface);border:1px dashed var(--border2);color:var(--muted);font-weight:700
+}
+.reel-empty-icon{font-size:28px;opacity:.5}
+.reel-empty-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase}
+@media(max-width:640px){
+  .reel-card{flex-basis:150px;height:260px}
+  .reel-strip-title{font-size:24px}
+}
 
 /* ── PROMO STRIP ── */
 .promo-strip{background:var(--accent);overflow:hidden;height:32px;display:flex;align-items:center;position:relative;z-index:100}
@@ -794,13 +884,16 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
   <!-- MAIN CONTENT -->
   <div class="main-wrap">
 
-    <!-- Hero Banner Slot -->
-    <div style="margin-bottom:24px;border-radius:var(--r);overflow:hidden">
-      <div id="slot-img1" class="media-slot" style="min-height:180px;border-radius:var(--r)">
-        <span class="slot-id-badge">img1</span>
-        <div class="media-slot-icon">🖼️</div>
-        <div class="media-slot-label">Hero Banner<br><small style="opacity:.6">img1 · 1300×280px · Upload via Admin</small></div>
+    <!-- REEL STRIP -->
+    <div class="reel-strip-wrap">
+      <div class="reel-strip-head">
+        <div>
+          <div class="reel-strip-title">Reel Stories</div>
+          <div class="reel-strip-sub">tap a reel to open its linked destination</div>
+        </div>
+        <span class="sec-link" onclick="navigate('swipe')">See Drops →</span>
       </div>
+      <div class="reel-strip" id="reelStrip"></div>
     </div>
 
     <!-- FEATURES -->
@@ -1962,4 +2055,4 @@ renderFeatured();
 updateBadge();
 </script>
 </body>
-</html>
+  </html>
