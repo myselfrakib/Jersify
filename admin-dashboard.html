@@ -763,6 +763,12 @@ code{background:var(--s2);padding:1px 5px;border-radius:4px;font-family:var(--fm
         </div>
       </div>
 
+      <div class="form-group">
+        <label class="form-label">Destination Link</label>
+        <input class="form-input" id="media_link_input" placeholder="https://your-link-here.com or /drops"/>
+        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:5px">Clicking the media on the storefront redirects to this link.</div>
+      </div>
+
       <!-- YouTube Section -->
       <div id="mediaYoutubeSection" style="display:none">
         <div class="form-group">
@@ -818,8 +824,16 @@ const MEDIA_SLOTS = [
   { id:'img6', label:'UGC Photo 2',    desc:'Social proof grid photo',              rec:'150×150px',  icon:'📷', dark:false },
   { id:'img7', label:'UGC Photo 3',    desc:'Social proof grid photo',              rec:'150×150px',  icon:'📷', dark:false },
   { id:'img8', label:'UGC Photo 4',    desc:'Social proof grid photo',              rec:'150×150px',  icon:'📷', dark:false },
-  { id:'vid1', label:'Promo Video',    desc:'Drop Story section — MP4 or YouTube', rec:'1300×380px', icon:'🎬', dark:true, isVideo:true },
-  { id:'vid2', label:'Reel / Short',   desc:'Social grid vertical video',          rec:'9:16 format', icon:'🎵', dark:true, isVideo:true },
+
+  { id:'reel1', label:'Reel 1',        desc:'Scrollable reel strip video card',    rec:'9:16 video',  icon:'🎬', dark:true, isVideo:true, reel:true },
+  { id:'reel2', label:'Reel 2',        desc:'Scrollable reel strip video card',    rec:'9:16 video',  icon:'🎬', dark:true, isVideo:true, reel:true },
+  { id:'reel3', label:'Reel 3',        desc:'Scrollable reel strip video card',    rec:'9:16 video',  icon:'🎬', dark:true, isVideo:true, reel:true },
+  { id:'reel4', label:'Reel 4',        desc:'Scrollable reel strip video card',    rec:'9:16 video',  icon:'🎬', dark:true, isVideo:true, reel:true },
+  { id:'reel5', label:'Reel 5',        desc:'Scrollable reel strip video card',    rec:'9:16 video',  icon:'🎬', dark:true, isVideo:true, reel:true },
+  { id:'reel6', label:'Reel 6',        desc:'Scrollable reel strip video card',    rec:'9:16 video',  icon:'🎬', dark:true, isVideo:true, reel:true },
+
+  { id:'vid1', label:'Promo Video',    desc:'Drop Story section — MP4 or YouTube', rec:'1300×380px', icon:'🎥', dark:true, isVideo:true },
+  { id:'vid2', label:'Story Short',    desc:'Social grid vertical video',          rec:'9:16 format', icon:'🎵', dark:true, isVideo:true },
 ];
 
 const $ = (id) => document.getElementById(id);
@@ -856,13 +870,8 @@ function fmtDateTime(ts) {
 function normalizeProduct(raw = {}, key = '') {
   const p = { ...raw, id: raw.id || key, key: raw.key || key };
   if (p.images) {
-    if (Array.isArray(p.images)) {
-      p.images = p.images.filter(Boolean);
-    } else if (typeof p.images === 'object') {
-      p.images = Object.values(p.images).filter(Boolean);
-    } else {
-      p.images = [];
-    }
+    if (!Array.isArray(p.images)) p.images = Object.values(p.images);
+    p.images = p.images.filter(Boolean);
   } else {
     p.images = [];
   }
@@ -872,40 +881,6 @@ function normalizeProduct(raw = {}, key = '') {
 
 function normalizeOrder(raw = {}, key = '') {
   return { ...raw, key: raw.key || key, orderKey: raw.orderKey || key };
-}
-
-function snapshotToArray(snap, mapper) {
-  const list = [];
-  if (!snap || !snap.exists()) return list;
-
-  snap.forEach((child) => {
-    const value = child.val();
-    if (value !== null && value !== undefined) {
-      list.push(mapper ? mapper(value, child.key) : { ...value, key: child.key });
-    }
-  });
-
-  if (list.length) return list;
-
-  const raw = snap.val();
-  if (!raw || typeof raw !== 'object') return list;
-
-  if (Array.isArray(raw)) {
-    raw.forEach((value, index) => {
-      if (value !== null && value !== undefined) {
-        list.push(mapper ? mapper(value, String(index)) : { ...value, key: String(index) });
-      }
-    });
-    return list;
-  }
-
-  Object.entries(raw).forEach(([key, value]) => {
-    if (value !== null && value !== undefined) {
-      list.push(mapper ? mapper(value, key) : { ...value, key });
-    }
-  });
-
-  return list;
 }
 
 function updateLabelAndBadges() {
@@ -960,8 +935,9 @@ function startRealtimeSync() {
   realtimeStarted = true;
 
   FB.onValue(dbRef('products'), (snap) => {
-    const list = snapshotToArray(snap, normalizeProduct);
-    PRODUCTS = list.sort((a, b) => (Number(b.createdAt || 0) - Number(a.createdAt || 0)));
+    const list = [];
+    snap.forEach((child) => list.push(normalizeProduct(child.val(), child.key)));
+    PRODUCTS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     updateLabelAndBadges();
     renderProductsTable();
     renderDashboardOrders();
@@ -971,8 +947,9 @@ function startRealtimeSync() {
   });
 
   FB.onValue(dbRef('orders'), (snap) => {
-    const list = snapshotToArray(snap, normalizeOrder);
-    ORDERS = list.sort((a, b) => (Number(b.createdAt || 0) - Number(a.createdAt || 0)));
+    const list = [];
+    snap.forEach((child) => list.push(normalizeOrder(child.val(), child.key)));
+    ORDERS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     updateLabelAndBadges();
     renderDashboardOrders();
     renderOrdersTable();
@@ -983,8 +960,9 @@ function startRealtimeSync() {
   });
 
   FB.onValue(dbRef('users'), (snap) => {
-    const list = snapshotToArray(snap, (value, key) => ({ uid: key, ...(value || {}) }));
-    CUSTOMERS = list.sort((a, b) => (Number(b.createdAt || 0) - Number(a.createdAt || 0)));
+    const list = [];
+    snap.forEach((child) => list.push({ uid: child.key, ...child.val() }));
+    CUSTOMERS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     updateLabelAndBadges();
     renderCustomersTable();
   }, (err) => {
@@ -993,8 +971,9 @@ function startRealtimeSync() {
   });
 
   FB.onValue(dbRef('admins'), (snap) => {
-    const list = snapshotToArray(snap, (value, key) => ({ uid: key, ...(value || {}) }));
-    ADMIN_MEMBERS = list.sort((a, b) => (Number(b.createdAt || 0) - Number(a.createdAt || 0)));
+    const list = [];
+    snap.forEach((child) => list.push({ uid: child.key, ...child.val() }));
+    ADMIN_MEMBERS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     updateLabelAndBadges();
     renderAdminMembers();
   }, (err) => {
@@ -1003,9 +982,8 @@ function startRealtimeSync() {
   });
 
   FB.onValue(dbRef('media'), (snap) => {
-    const list = snapshotToArray(snap, (value, key) => ({ ...(value || {}), key }));
     const map = {};
-    list.forEach((item) => { map[item.key] = item; });
+    snap.forEach((child) => { map[child.key] = child.val(); });
     MEDIA_CACHE = map;
     renderMediaManager();
   }, (err) => {
@@ -1027,8 +1005,9 @@ async function fetchSnapshot(path, setter) {
 
 async function loadProducts() {
   return fetchSnapshot('products', (snap) => {
-    const list = snapshotToArray(snap, normalizeProduct);
-    PRODUCTS = list.sort((a, b) => (Number(b.createdAt || 0) - Number(a.createdAt || 0)));
+    const list = [];
+    if (snap.exists()) snap.forEach((child) => list.push(normalizeProduct(child.val(), child.key)));
+    PRODUCTS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     updateLabelAndBadges();
     renderProductsTable();
     renderDashboardOrders();
@@ -1037,8 +1016,9 @@ async function loadProducts() {
 
 async function loadOrders() {
   return fetchSnapshot('orders', (snap) => {
-    const list = snapshotToArray(snap, normalizeOrder);
-    ORDERS = list.sort((a, b) => (Number(b.createdAt || 0) - Number(a.createdAt || 0)));
+    const list = [];
+    if (snap.exists()) snap.forEach((child) => list.push(normalizeOrder(child.val(), child.key)));
+    ORDERS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     updateLabelAndBadges();
     renderDashboardOrders();
     renderOrdersTable();
@@ -1048,8 +1028,9 @@ async function loadOrders() {
 
 async function loadCustomers() {
   return fetchSnapshot('users', (snap) => {
-    const list = snapshotToArray(snap, (value, key) => ({ uid: key, ...(value || {}) }));
-    CUSTOMERS = list.sort((a, b) => (Number(b.createdAt || 0) - Number(a.createdAt || 0)));
+    const list = [];
+    if (snap.exists()) snap.forEach((child) => list.push({ uid: child.key, ...child.val() }));
+    CUSTOMERS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     updateLabelAndBadges();
     renderCustomersTable();
   });
@@ -1057,8 +1038,9 @@ async function loadCustomers() {
 
 async function loadAdminMembers() {
   return fetchSnapshot('admins', (snap) => {
-    const list = snapshotToArray(snap, (value, key) => ({ uid: key, ...(value || {}) }));
-    ADMIN_MEMBERS = list.sort((a, b) => (Number(b.createdAt || 0) - Number(a.createdAt || 0)));
+    const list = [];
+    if (snap.exists()) snap.forEach((child) => list.push({ uid: child.key, ...child.val() }));
+    ADMIN_MEMBERS = list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     updateLabelAndBadges();
     renderAdminMembers();
   });
@@ -1066,9 +1048,8 @@ async function loadAdminMembers() {
 
 async function loadAllMediaSlots() {
   return fetchSnapshot('media', (snap) => {
-    const list = snapshotToArray(snap, (value, key) => ({ ...(value || {}), key }));
     const map = {};
-    list.forEach((item) => { map[item.key] = item; });
+    if (snap.exists()) snap.forEach((child) => { map[child.key] = child.val(); });
     MEDIA_CACHE = map;
     renderMediaManager();
   });
@@ -1188,42 +1169,6 @@ function renderProductsTable() {
   const cards = $('productCardsList');
   if (!tbody) return;
 
-  const rows = PRODUCTS.map((p) => {
-    const key = String(p.key || p.id || '');
-    const badge = String(p.badge || 'DROP').toLowerCase();
-    const price = money(p.price);
-    const stock = Number(p.stock || 0);
-    const thumb = p.imageUrl
-      ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name || 'Product')}" style="width:100%;height:100%;object-fit:cover;border-radius:9px"/>`
-      : esc(p.emoji || '👕');
-
-    return `
-      <tr data-product-id="${esc(key)}">
-        <td>
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,#f8f9fa,#e9ecef);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden">
-              ${thumb}
-            </div>
-            <div style="min-width:0">
-              <div style="font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.name || 'Untitled')}</div>
-              <div style="font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.team || '—')}</div>
-            </div>
-          </div>
-        </td>
-        <td style="color:var(--muted)">${esc(p.team || '—')}</td>
-        <td style="font-weight:900">${price}</td>
-        <td><span style="font-weight:700;color:${stock <= 5 ? 'var(--red)' : 'var(--text)'}">${esc(String(p.stock ?? 0))}</span></td>
-        <td><span class="chip">${esc(p.category || '—')}</span></td>
-        <td><span class="badge badge-${esc(badge)}">${esc(String(p.badge || '—'))}</span></td>
-        <td>
-          <div style="display:flex;gap:5px;flex-wrap:wrap">
-            <button class="btn btn-outline btn-sm" onclick="openEditProduct('${esc(key)}')">✏️ Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteProduct('${esc(key)}','${esc(p.name || '')}')">Delete</button>
-          </div>
-        </td>
-      </tr>`;
-  }).join('');
-
   if (!PRODUCTS.length) {
     tbody.innerHTML = '<tr><td colspan="7"><div style="padding:20px"><div class="empty-state" style="padding:28px 0"><span class="empty-icon">👕</span><div class="empty-title">No products yet</div><div class="empty-sub">Add your first jersey above</div></div></div></td></tr>';
     if (cards) cards.innerHTML = '<div class="empty-state"><span class="empty-icon">👕</span><div class="empty-title">No products yet</div><div class="empty-sub">Add your first jersey above</div></div>';
@@ -1231,38 +1176,58 @@ function renderProductsTable() {
     return;
   }
 
-  tbody.innerHTML = rows;
+  tbody.innerHTML = PRODUCTS.map((p) => {
+    const badge = (p.badge || 'DROP').toString().toLowerCase();
+    return `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,#f8f9fa,#e9ecef);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden">
+              ${p.imageUrl ? `<img src="${esc(p.imageUrl)}" style="width:100%;height:100%;object-fit:cover;border-radius:9px"/>` : esc(p.emoji || '👕')}
+            </div>
+            <div>
+              <div style="font-weight:800;font-size:13px">${esc(p.name || 'Untitled')}</div>
+            </div>
+          </div>
+        </td>
+        <td style="color:var(--muted)">${esc(p.team || '—')}</td>
+        <td style="font-weight:900">${money(p.price)}</td>
+        <td><span style="font-weight:700;color:${Number(p.stock || 0) <= 5 ? 'var(--red)' : 'var(--text)'}">${esc(p.stock ?? '0')}</span></td>
+        <td><span class="chip">${esc(p.category || '—')}</span></td>
+        <td><span class="badge badge-${esc(badge)}">${esc(p.badge || '—')}</span></td>
+        <td>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <button class="btn btn-outline btn-sm" onclick="openEditProduct('${esc(p.key || p.id)}')">✏️ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteProduct('${esc(p.key || p.id)}','${esc(p.name || '')}')">Delete</button>
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
 
   if (cards) {
     cards.innerHTML = PRODUCTS.map((p) => {
-      const key = String(p.key || p.id || '');
-      const badge = String(p.badge || 'DROP').toLowerCase();
-      const price = money(p.price);
-      const thumb = p.imageUrl
-        ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name || 'Product')}"/>`
-        : esc(p.emoji || '👕');
-
+      const badge = (p.badge || 'DROP').toString().toLowerCase();
       return `
-      <div class="product-card-item" data-product-id="${esc(key)}">
-        <div class="product-card-img">${thumb}</div>
+      <div class="product-card-item">
+        <div class="product-card-img">${p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name || '')}"/>` : esc(p.emoji || '👕')}</div>
         <div class="product-card-info">
           <div class="product-card-name">${esc(p.name || 'Untitled')}</div>
           <div class="product-card-team">${esc(p.team || '—')}</div>
           <div class="product-card-meta">
-            <span class="product-card-price">${price}</span>
-            <span class="badge badge-${esc(badge)}">${esc(String(p.badge || '—'))}</span>
+            <span class="product-card-price">${money(p.price)}</span>
+            <span class="badge badge-${esc(badge)}">${esc(p.badge || '—')}</span>
           </div>
-          <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:6px">Stock: ${esc(String(p.stock ?? 0))} • ${esc(p.category || '—')}</div>
         </div>
         <div class="product-card-actions">
-          <button class="btn btn-outline btn-sm" onclick="openEditProduct('${esc(key)}')">Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${esc(key)}','${esc(p.name || '')}')">Delete</button>
+          <button class="btn btn-outline btn-sm" onclick="openEditProduct('${esc(p.key || p.id)}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${esc(p.key || p.id)}','${esc(p.name || '')}')">Delete</button>
         </div>
       </div>`;
     }).join('');
   }
   applyResponsiveLayout();
 }
+
 /* ════════════════════════════════════════════
    RENDER: ORDERS
 ════════════════════════════════════════════ */
@@ -1657,7 +1622,7 @@ function openMediaModal(slotId) {
   $('mediaSlotIsVideo').value = slot.isVideo ? '1' : '0';
   $('mediaModalTitle').textContent = `${slot.label}`;
   $('mediaUploadIcon').textContent = slot.icon;
-  $('mediaUploadTitle').textContent = slot.isVideo ? 'Tap to choose image or video' : 'Tap to choose image';
+  $('mediaUploadTitle').textContent = slot.reel ? 'Tap to choose reel video' : (slot.isVideo ? 'Tap to choose image or video' : 'Tap to choose image');
   $('mediaUploadSub').textContent = slot.isVideo ? 'JPG, PNG, WEBP, MP4, WEBM — max 50MB' : 'JPG, PNG, WEBP — max 10MB';
 
   const item = MEDIA_CACHE[slot.id];
@@ -1675,6 +1640,7 @@ function openMediaModal(slotId) {
   $('media_file').value = '';
   $('media_url_input').value = item?.type === 'image' ? (item?.url || '') : '';
   $('media_alt_input').value = item?.alt || '';
+  $('media_link_input').value = item?.link || '';
   $('media_yt_input').value = item?.type === 'youtube' ? (item?.url || '') : '';
   $('media_autoplay').checked = item?.autoplay !== undefined ? !!item.autoplay : true;
   $('media_controls').checked = item?.controls !== undefined ? !!item.controls : false;
@@ -1774,6 +1740,10 @@ async function saveMediaSlot() {
       payload.autoplay = $('media_autoplay').checked;
       payload.controls = $('media_controls').checked;
     }
+
+    const mediaLink = $('media_link_input').value.trim();
+    if (mediaLink) payload.link = mediaLink;
+    else delete payload.link;
 
     await FB.set(dbRef(`media/${slotId}`), payload);
     MEDIA_CACHE[slotId] = payload;
@@ -1910,4 +1880,4 @@ window.addEventListener('load', () => {
 });
 </script>
 </body>
-</html>
+  </html>
