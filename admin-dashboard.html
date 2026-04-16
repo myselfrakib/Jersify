@@ -1,611 +1,1368 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel | jersify</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JERSIFY — Admin Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+  import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+
+  // ── CONFIGURE YOUR FIREBASE PROJECT HERE ──
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+  const storage = getStorage(app);
+  const auth = getAuth(app);
+
+  // Expose to window for use outside module
+  window._fb = { db, storage, auth, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc, ref, uploadBytesResumable, getDownloadURL, deleteObject, signInWithEmailAndPassword, signOut, onAuthStateChanged };
+</script>
+
 <style>
+:root{
+  --bg:#0b0f1a;
+  --surface:#131929;
+  --surface2:#1a2338;
+  --surface3:#212d42;
+  --sky:#74ACDF;
+  --sky2:#4a8bc4;
+  --gold:#F6C400;
+  --red:#e74c3c;
+  --green:#27ae60;
+  --text:#e8f0fe;
+  --muted:#7a90b0;
+  --border:rgba(116,172,223,0.15);
+  --radius:14px;
+  --nav:220px;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans);font-size:14px;color:var(--color-text-primary);background:var(--color-background-tertiary)}
-h2{font-size:18px;font-weight:500}
-h3{font-size:15px;font-weight:500}
-label{font-size:13px;color:var(--color-text-secondary);display:block;margin-bottom:4px}
-input,textarea,select{width:100%;font-size:13px;padding:7px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;font-family:var(--font-sans)}
-input:focus,textarea:focus,select:focus{border-color:var(--color-border-primary);box-shadow:0 0 0 2px rgba(128,128,128,0.15)}
-textarea{resize:vertical;min-height:70px}
-button{font-family:var(--font-sans);font-size:13px;cursor:pointer;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);padding:7px 14px;background:var(--color-background-primary);color:var(--color-text-primary)}
-button:hover{background:var(--color-background-secondary)}
-button.primary{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary)}
-button.primary:hover{opacity:0.85}
-button.danger{color:var(--color-text-danger);border-color:var(--color-border-danger)}
-button.danger:hover{background:var(--color-background-danger)}
-.app{display:grid;grid-template-columns:200px 1fr;min-height:100vh}
-.sidebar{background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);padding:16px 0}
-.sidebar-brand{padding:0 16px 16px;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:8px}
-.sidebar-brand .logo{font-size:15px;font-weight:500}
-.sidebar-brand .sub{font-size:12px;color:var(--color-text-secondary)}
-.nav-item{display:flex;align-items:center;gap:8px;padding:8px 16px;font-size:13px;cursor:pointer;color:var(--color-text-secondary);border-left:2px solid transparent;transition:all .15s}
-.nav-item:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
-.nav-item.active{color:var(--color-text-primary);background:var(--color-background-secondary);border-left-color:var(--color-text-primary);font-weight:500}
-.nav-icon{font-size:15px;width:18px;text-align:center}
-.main{padding:24px;overflow-y:auto}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.badge{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--color-background-success);color:var(--color-text-success);border:0.5px solid var(--color-border-success)}
-.panel{display:none}
-.panel.active{display:block}
-.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px 20px;margin-bottom:16px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.field{margin-bottom:12px}
-.field:last-child{margin-bottom:0}
-.row{display:flex;gap:8px;align-items:flex-end}
-.row .field{flex:1;margin-bottom:0}
-.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:0.5px solid var(--color-border-tertiary)}
-.list-item{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
-.list-item .handle{color:var(--color-text-tertiary);cursor:grab;padding-top:2px;font-size:16px}
-.list-item .body{flex:1;display:grid;gap:8px}
-.list-item .actions{display:flex;gap:6px;flex-shrink:0}
-.tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.tag{font-size:12px;padding:3px 10px;border-radius:99px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:4px}
-.tag .del{cursor:pointer;color:var(--color-text-tertiary);font-size:14px;line-height:1}
-.tag .del:hover{color:var(--color-text-danger)}
-.add-tag-row{display:flex;gap:6px;margin-top:8px}
-.add-tag-row input{flex:1}
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.stat-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px}
-.stat-card .num{font-size:22px;font-weight:500;margin-bottom:2px}
-.stat-card .lbl{font-size:12px;color:var(--color-text-secondary)}
-.pct-bar{height:4px;background:var(--color-background-secondary);border-radius:99px;margin-top:8px;overflow:hidden}
-.pct-fill{height:100%;background:var(--color-text-primary);border-radius:99px}
-.toast{position:fixed;bottom:20px;right:20px;background:var(--color-text-primary);color:var(--color-background-primary);padding:10px 16px;border-radius:var(--border-radius-md);font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:99}
-.toast.show{opacity:1}
-.chip-preview{display:inline-block;padding:4px 10px;border-radius:99px;background:rgba(243,175,26,.18);color:#274f3f;font-size:12px;font-weight:500;margin:2px}
-.preview-btn{width:100%;margin-top:12px;text-align:center}
-.divider{height:0.5px;background:var(--color-border-tertiary);margin:16px 0}
+html,body{height:100%;font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+
+/* ── AUTH SCREEN ── */
+#authScreen{
+  position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;
+}
+.auth-box{
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px 36px;width:360px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.5);
+}
+.auth-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;color:var(--sky);text-align:center;margin-bottom:4px}
+.auth-sub{text-align:center;color:var(--muted);font-size:12px;margin-bottom:28px;letter-spacing:1px;text-transform:uppercase}
+.auth-input{
+  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;color:var(--text);font-size:14px;margin-bottom:12px;outline:none;transition:.2s;
+}
+.auth-input:focus{border-color:var(--sky)}
+.auth-btn{
+  width:100%;background:linear-gradient(135deg,var(--sky2),var(--bg));border:none;border-radius:10px;
+  color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;letter-spacing:1px;
+  padding:13px;cursor:pointer;margin-top:4px;transition:.2s;
+}
+.auth-btn:hover{background:linear-gradient(135deg,var(--sky),var(--sky2))}
+.auth-err{color:var(--red);font-size:12px;text-align:center;margin-top:8px;min-height:18px}
+
+/* ── LAYOUT ── */
+#app{display:flex;height:100vh;overflow:hidden}
+#app.hidden{display:none}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--nav);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sidebar-logo{
+  padding:24px 20px 16px;border-bottom:1px solid var(--border);
+  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--sky);
+  display:flex;align-items:center;gap:10px;
+}
+.sidebar-logo span{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:2px;display:block;margin-top:2px;font-family:'Barlow Condensed',sans-serif}
+.nav-section{padding:12px 12px 4px;font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:10px;
+  margin:2px 8px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:600;
+  transition:.18s;border:1px solid transparent;
+}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:linear-gradient(135deg,rgba(116,172,223,0.18),rgba(116,172,223,0.06));color:var(--sky);border-color:rgba(116,172,223,0.25)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--sky2);color:#fff;border-radius:999px;font-size:10px;font-weight:800;padding:1px 7px}
+.sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid var(--border)}
+.logout-btn{
+  display:flex;align-items:center;gap:8px;color:var(--muted);cursor:pointer;
+  font-size:12px;font-weight:600;padding:8px 10px;border-radius:8px;transition:.18s;width:100%;background:none;border:none;
+}
+.logout-btn:hover{color:var(--red);background:rgba(231,76,60,0.1)}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{
+  background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.topbar-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:1px}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.btn{
+  border:none;border-radius:8px;padding:8px 16px;font-family:'Barlow Condensed',sans-serif;
+  font-size:13px;font-weight:800;letter-spacing:.5px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.18s;
+}
+.btn-primary{background:linear-gradient(135deg,var(--sky2),#1a3a5c);color:#fff}
+.btn-primary:hover{background:linear-gradient(135deg,var(--sky),var(--sky2))}
+.btn-gold{background:var(--gold);color:#0c1a2e}
+.btn-red{background:rgba(231,76,60,0.15);color:var(--red);border:1px solid rgba(231,76,60,0.3)}
+.btn-red:hover{background:rgba(231,76,60,0.25)}
+.btn-sm{padding:5px 11px;font-size:11px}
+.content{flex:1;overflow-y:auto;padding:24px}
+.content::-webkit-scrollbar{width:5px}
+.content::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:4px}
+
+/* ── TABS ── */
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;
+  position:relative;overflow:hidden;
+}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--sky),var(--gold))}
+.stat-card-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--sky);line-height:1}
+.stat-card-label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-top:4px}
+.stat-card-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:32px;opacity:.25}
+
+/* ── CARDS / TABLES ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
+.card-header{
+  padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;
+  justify-content:space-between;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;letter-spacing:.5px;
+}
+.card-body{padding:18px}
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:12px 14px;border-bottom:1px solid rgba(116,172,223,0.07);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(116,172,223,0.04)}
+.flag-thumb{width:32px;height:32px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border)}
+.flag-thumb-svg{width:32px;height:32px;border-radius:50%;overflow:hidden;border:1.5px solid var(--border);background:var(--surface2);display:inline-flex;align-items:center;justify-content:center}
+.badge{display:inline-block;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;letter-spacing:.3px}
+.badge-sky{background:rgba(116,172,223,0.15);color:var(--sky)}
+.badge-gold{background:rgba(246,196,0,0.15);color:var(--gold)}
+.badge-red{background:rgba(231,76,60,0.15);color:var(--red)}
+.badge-green{background:rgba(39,174,96,0.15);color:var(--green)}
+
+/* ── FORMS / MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+  z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.2s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  width:min(540px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.6);
+  transform:translateY(20px);transition:.25s;
+}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:.5px}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:22px;line-height:1;padding:2px 6px;border-radius:6px;transition:.15s}
+.modal-close:hover{background:var(--surface2);color:var(--text)}
+.modal-body{padding:20px 24px 24px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{margin-bottom:14px}
+.form-group.full{grid-column:1/-1}
+label{display:block;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+input[type=text],input[type=email],input[type=url],select,textarea{
+  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;
+  padding:10px 13px;color:var(--text);font-size:13px;outline:none;transition:.18s;font-family:'Barlow',sans-serif;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--sky)}
+textarea{resize:vertical;min-height:80px}
+select option{background:var(--surface2)}
+
+/* ── UPLOAD ── */
+.upload-zone{
+  border:2px dashed var(--border);border-radius:12px;padding:28px;text-align:center;
+  cursor:pointer;transition:.2s;background:var(--surface2);position:relative;
+}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--sky);background:rgba(116,172,223,0.06)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-icon{font-size:28px;margin-bottom:8px}
+.upload-text{font-size:12px;color:var(--muted);line-height:1.5}
+.upload-preview{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
+.preview-item{
+  width:70px;height:70px;border-radius:10px;overflow:hidden;position:relative;
+  border:1px solid var(--border);background:var(--surface3);
+}
+.preview-item img{width:100%;height:100%;object-fit:cover}
+.preview-remove{
+  position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;
+  background:var(--red);color:#fff;border:none;cursor:pointer;font-size:10px;display:grid;place-items:center;
+}
+
+/* ── PROGRESS ── */
+.progress-bar-wrap{background:var(--surface3);border-radius:999px;height:6px;overflow:hidden;margin-top:8px}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--sky),var(--gold));border-radius:999px;transition:width .3s}
+
+/* ── MEDIA GRID ── */
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.media-item{
+  background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  position:relative;cursor:pointer;transition:.18s;
+}
+.media-item:hover{border-color:var(--sky)}
+.media-item img{width:100%;height:110px;object-fit:cover;display:block}
+.media-item-info{padding:8px 10px}
+.media-item-name{font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.media-item-size{font-size:10px;color:var(--muted)}
+.media-item-actions{position:absolute;top:6px;right:6px;display:flex;gap:4px;opacity:0;transition:.15s}
+.media-item:hover .media-item-actions{opacity:1}
+.media-action-btn{
+  width:26px;height:26px;border-radius:6px;border:none;cursor:pointer;display:grid;place-items:center;
+  font-size:11px;backdrop-filter:blur(6px);
+}
+.ma-copy{background:rgba(116,172,223,0.8);color:#fff}
+.ma-del{background:rgba(231,76,60,0.8);color:#fff}
+
+/* ── HERO EDITOR ── */
+.hero-preview{
+  border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#0c1a2e,#1a3a5c);
+  padding:24px;position:relative;margin-bottom:16px;min-height:120px;
+}
+.color-pair{display:flex;gap:10px}
+.color-swatch{width:36px;height:36px;border-radius:8px;border:2px solid var(--border);cursor:pointer;overflow:hidden;position:relative}
+.color-swatch input[type=color]{position:absolute;inset:-4px;opacity:0;cursor:pointer;width:150%;height:150%}
+
+/* ── TOAST ── */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px}
+.toast{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;
+  font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;min-width:240px;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);animation:toastIn .25s ease;
+}
+.toast.success{border-color:rgba(39,174,96,.4);color:var(--green)}
+.toast.error{border-color:rgba(231,76,60,.4);color:var(--red)}
+.toast.info{border-color:var(--border);color:var(--sky)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── SKELETON ── */
+.skeleton{background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── SEARCH ── */
+.search-bar{
+  background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px 13px;
+  color:var(--text);font-size:13px;outline:none;width:240px;transition:.18s;
+}
+.search-bar:focus{border-color:var(--sky);width:280px}
+
+/* ── LIVE SYNC INDICATOR ── */
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse-dot 2s ease infinite;display:inline-block;margin-right:6px}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.sync-label{font-size:11px;color:var(--muted);font-weight:600}
+
+/* ── SVG PREVIEW ── */
+.svg-preview-box{
+  background:var(--surface3);border:1px solid var(--border);border-radius:10px;
+  padding:14px;display:flex;align-items:center;justify-content:center;min-height:80px;
+}
+.svg-preview-box svg,.svg-preview-box img{max-width:60px;max-height:60px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .form-row{grid-template-columns:1fr}
+}
 </style>
-
-<div class="app">
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="logo">⚙ Admin Panel</div>
-      <div class="sub">Rakib's Portfolio</div>
-    </div>
-    <div class="nav-item active" onclick="show('dashboard')"><span class="nav-icon">◈</span>Dashboard</div>
-    <div class="nav-item" onclick="show('hero')"><span class="nav-icon">⌂</span>Hero Section</div>
-    <div class="nav-item" onclick="show('services')"><span class="nav-icon">◎</span>Services</div>
-    <div class="nav-item" onclick="show('about')"><span class="nav-icon">◉</span>About</div>
-    <div class="nav-item" onclick="show('tools')"><span class="nav-icon">◆</span>Skills & Tools</div>
-    <div class="nav-item" onclick="show('projects')"><span class="nav-icon">▣</span>Projects</div>
-    <div class="nav-item" onclick="show('timeline')"><span class="nav-icon">◐</span>Timeline</div>
-    <div class="nav-item" onclick="show('testimonials')"><span class="nav-icon">❝</span>Testimonials</div>
-    <div class="nav-item" onclick="show('faq')"><span class="nav-icon">?</span>FAQs</div>
-    <div class="nav-item" onclick="show('contact')"><span class="nav-icon">✉</span>Contact</div>
-    <div class="nav-item" onclick="show('social')"><span class="nav-icon">◈</span>Social Links</div>
-    <div class="nav-item" onclick="show('export')"><span class="nav-icon">↓</span>Export Code</div>
-  </aside>
-
-  <main class="main">
-    <div id="toast" class="toast">Saved successfully</div>
-
-    <!-- DASHBOARD -->
-    <div class="panel active" id="panel-dashboard">
-      <div class="topbar"><h2>Dashboard</h2><span class="badge">Live</span></div>
-      <div class="stat-grid">
-        <div class="stat-card"><div class="num" id="dash-projects">4</div><div class="lbl">Projects</div></div>
-        <div class="stat-card"><div class="num" id="dash-services">3</div><div class="lbl">Services</div></div>
-        <div class="stat-card"><div class="num" id="dash-skills">6</div><div class="lbl">Skills</div></div>
-        <div class="stat-card"><div class="num" id="dash-faq">3</div><div class="lbl">FAQs</div></div>
-      </div>
-      <div class="card">
-        <div class="section-head"><h3>Quick overview</h3></div>
-        <p style="color:var(--color-text-secondary);font-size:13px;line-height:1.7">Use the sidebar to edit each section of your portfolio. Changes are stored in this admin panel and you can export the final HTML at any time using the <strong>Export Code</strong> section.</p>
-        <div class="divider"></div>
-        <div class="grid2">
-          <div>
-            <label>Portfolio owner</label>
-            <input id="owner-name" value="Rakib" oninput="syncBrand()"/>
-          </div>
-          <div>
-            <label>Job title</label>
-            <input id="owner-title" value="Full Stack Web Developer" oninput="syncBrand()"/>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- HERO -->
-    <div class="panel" id="panel-hero">
-      <div class="topbar"><h2>Hero Section</h2><button class="primary" onclick="save('hero')">Save changes</button></div>
-      <div class="card">
-        <div class="section-head"><h3>Headline &amp; intro</h3></div>
-        <div class="field"><label>Greeting badge text</label><input id="h-greeting" value="Hello There!"/></div>
-        <div class="grid2">
-          <div class="field"><label>Name accent (highlighted)</label><input id="h-name" value="Rakib,"/></div>
-          <div class="field"><label>Role line</label><input id="h-role" value="Full Stack Web Developer."/></div>
-        </div>
-        <div class="field"><label>Hero description</label><textarea id="h-desc">I build modern, fast, and responsive web experiences with clean UI, strong backend logic, and practical user-focused solutions.</textarea></div>
-      </div>
-      <div class="card">
-        <div class="section-head"><h3>Metric chips</h3></div>
-        <div class="grid3">
-          <div>
-            <div class="field"><label>Chip 1 title</label><input id="h-m1t" value="Frontend"/></div>
-            <div class="field"><label>Chip 1 subtitle</label><input id="h-m1s" value="HTML · CSS · JavaScript"/></div>
-          </div>
-          <div>
-            <div class="field"><label>Chip 2 title</label><input id="h-m2t" value="Backend"/></div>
-            <div class="field"><label>Chip 2 subtitle</label><input id="h-m2s" value="Node.js · Express.js"/></div>
-          </div>
-          <div>
-            <div class="field"><label>Chip 3 title</label><input id="h-m3t" value="Focus"/></div>
-            <div class="field"><label>Chip 3 subtitle</label><input id="h-m3s" value="UI, speed, usability"/></div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="section-head"><h3>Floating card chips</h3></div>
-        <div class="grid2">
-          <div class="field"><label>Chip top-left (HTML•CSS•JS)</label><input id="h-c4" value="HTML • CSS • JS"/></div>
-          <div class="field"><label>Chip bottom-left (Node.js)</label><input id="h-c1" value="Node.js • Express"/></div>
-          <div class="field"><label>Chip right (Web Apps)</label><input id="h-c2" value="Web Apps"/></div>
-          <div class="field"><label>Circle chip (Available...)</label><input id="h-c3" value="Available for work"/></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SERVICES -->
-    <div class="panel" id="panel-services">
-      <div class="topbar"><h2>Services</h2><button class="primary" onclick="addService()">+ Add service</button></div>
-      <div id="services-list"></div>
-    </div>
-
-    <!-- ABOUT -->
-    <div class="panel" id="panel-about">
-      <div class="topbar"><h2>About Section</h2><button class="primary" onclick="save('about')">Save changes</button></div>
-      <div class="card">
-        <div class="section-head"><h3>Bio</h3></div>
-        <div class="field"><label>About me paragraph</label><textarea id="ab-bio">I design and build practical web products with a sharp eye for UI and a focus on performance. My stack includes HTML, CSS, JavaScript, Node.js, and Express.js. I like simple, fast, usable interfaces — not bloated nonsense.</textarea></div>
-      </div>
-      <div class="card">
-        <div class="section-head"><h3>Stats</h3></div>
-        <div class="grid3">
-          <div>
-            <div class="field"><label>Stat 1 number</label><input id="ab-s1n" value="10+"/></div>
-            <div class="field"><label>Stat 1 label</label><input id="ab-s1l" value="Projects Built"/></div>
-          </div>
-          <div>
-            <div class="field"><label>Stat 2 number</label><input id="ab-s2n" value="4"/></div>
-            <div class="field"><label>Stat 2 label</label><input id="ab-s2l" value="Core Tech Skills"/></div>
-          </div>
-          <div>
-            <div class="field"><label>Stat 3 number</label><input id="ab-s3n" value="100%"/></div>
-            <div class="field"><label>Stat 3 label</label><input id="ab-s3l" value="Responsive Focus"/></div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="section-head"><h3>Skill tags</h3></div>
-        <div id="about-tags" class="tag-row"></div>
-        <div class="add-tag-row">
-          <input id="about-tag-input" placeholder="Add tag e.g. React"/>
-          <button onclick="addAboutTag()">Add</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TOOLS -->
-    <div class="panel" id="panel-tools">
-      <div class="topbar"><h2>Skills &amp; Tools</h2><button class="primary" onclick="addTool()">+ Add skill</button></div>
-      <div id="tools-list"></div>
-    </div>
-
-    <!-- PROJECTS -->
-    <div class="panel" id="panel-projects">
-      <div class="topbar"><h2>Projects</h2><button class="primary" onclick="addProject()">+ Add project</button></div>
-      <div id="projects-list"></div>
-    </div>
-
-    <!-- TIMELINE -->
-    <div class="panel" id="panel-timeline">
-      <div class="topbar"><h2>Timeline</h2><button class="primary" onclick="addTimeline()">+ Add entry</button></div>
-      <div id="timeline-list"></div>
-    </div>
-
-    <!-- TESTIMONIALS -->
-    <div class="panel" id="panel-testimonials">
-      <div class="topbar"><h2>Testimonials</h2><button class="primary" onclick="addTestimonial()">+ Add testimonial</button></div>
-      <div id="testimonials-list"></div>
-    </div>
-
-    <!-- FAQS -->
-    <div class="panel" id="panel-faq">
-      <div class="topbar"><h2>FAQs</h2><button class="primary" onclick="addFaq()">+ Add FAQ</button></div>
-      <div id="faq-list"></div>
-    </div>
-
-    <!-- CONTACT -->
-    <div class="panel" id="panel-contact">
-      <div class="topbar"><h2>Contact Info</h2><button class="primary" onclick="save('contact')">Save changes</button></div>
-      <div class="card">
-        <div class="grid2">
-          <div class="field"><label>Phone</label><input id="c-phone" value="+919907718066"/></div>
-          <div class="field"><label>Email</label><input id="c-email" value="sekhrakib667@gmail.com"/></div>
-          <div class="field"><label>GitHub</label><input id="c-github" value="github.com/myselfrakib/"/></div>
-          <div class="field"><label>LinkedIn</label><input id="c-linkedin" value="linkedin.com/Rakibsekh"/></div>
-        </div>
-        <div class="divider"></div>
-        <div class="section-head"><h3>Section text</h3></div>
-        <div class="grid2">
-          <div class="field"><label>Section label</label><input id="c-label" value="Contact Us"/></div>
-          <div class="field"><label>Section title</label><input id="c-title" value="Let's Talk for Your Next Project"/></div>
-        </div>
-        <div class="field"><label>Subtitle</label><input id="c-subtitle" value="The contact section should be simple, clean, and impossible to miss."/></div>
-      </div>
-    </div>
-
-    <!-- SOCIAL -->
-    <div class="panel" id="panel-social">
-      <div class="topbar"><h2>Social Links</h2><button class="primary" onclick="save('social')">Save changes</button></div>
-      <div class="card">
-        <div class="grid2">
-          <div class="field"><label>GitHub URL</label><input id="s-github" value="https://github.com/your-github"/></div>
-          <div class="field"><label>LinkedIn URL</label><input id="s-linkedin" value="https://linkedin.com/in/your-linkedin"/></div>
-          <div class="field"><label>X (Twitter) URL</label><input id="s-x" value="https://x.com/your-x"/></div>
-          <div class="field"><label>Email address</label><input id="s-email" value="youremail@example.com"/></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- EXPORT -->
-    <div class="panel" id="panel-export">
-      <div class="topbar"><h2>Export Code</h2><button class="primary" onclick="generateExport()">Generate HTML</button></div>
-      <div class="card">
-        <p style="color:var(--color-text-secondary);font-size:13px;margin-bottom:12px">Click "Generate HTML" to produce the updated portfolio HTML based on your admin settings. Copy it and replace your <code>index.html</code> file.</p>
-        <textarea id="export-output" style="min-height:320px;font-family:var(--font-mono);font-size:12px" placeholder="Generated HTML will appear here..."></textarea>
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button onclick="copyExport()">Copy to clipboard</button>
-          <button onclick="downloadExport()">Download index.html</button>
-        </div>
-      </div>
-    </div>
-
-  </main>
-</div>
-
-<script>
-const state = {
-  services: [
-    {icon:'fa-solid fa-code',title:'Frontend Development',desc:'Responsive, accessible, and polished interfaces built with HTML, CSS, and JavaScript.'},
-    {icon:'fa-solid fa-server',title:'Backend Development',desc:'REST APIs and server-side logic with Node.js and Express.js for real-world applications.'},
-    {icon:'fa-solid fa-layer-group',title:'Full Stack Builds',desc:'End-to-end websites and dashboards with clean flow, structure, and maintainable code.'}
-  ],
-  tools: [
-    {icon:'fa-brands fa-html5',name:'HTML5',pct:98},
-    {icon:'fa-brands fa-css3-alt',name:'CSS3',pct:95},
-    {icon:'fa-brands fa-js',name:'JavaScript',pct:90},
-    {icon:'fa-brands fa-node-js',name:'Node.js',pct:88},
-    {icon:'fa-solid fa-gears',name:'Express.js',pct:85},
-    {icon:'fa-solid fa-database',name:'MongoDB',pct:80}
-  ],
-  projects: [
-    {title:'E-commerce Product Landing Page',desc:'A modern landing page with sharp visuals, smooth scrolling, and strong conversion focus.',tags:'UI/UX,Frontend,Responsive',img:'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80',link:'#'},
-    {title:'Admin Dashboard with API Integration',desc:'A structured dashboard with auth, data handling, and clear admin workflow support.',tags:'Backend,Node.js,Express',img:'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80',link:'#'},
-    {title:'Cab Booking Platform',desc:'Designed for real booking flows, user actions, and practical business operations.',tags:'Full Stack,Booking,Firebase',img:'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80',link:'#'},
-    {title:'Developer Portfolio Website',desc:'Personal branding site with strong visual hierarchy, hover states, and social redirects.',tags:'Portfolio,Branding,Animations',img:'https://images.unsplash.com/photo-1522542550221-31fd19575a2d?auto=format&fit=crop&w=1200&q=80',link:'#'}
-  ],
-  timeline: [
-    {period:'2024 - Present',title:'Self-Driven Full Stack Development',desc:'Building real projects with HTML, CSS, JavaScript, Node.js, and Express.js.'},
-    {period:'2023 - 2024',title:'Frontend UI Practice',desc:'Focused on responsive design systems, component consistency, and layout polish.'},
-    {period:'Freelance / Projects',title:'Website Builds for Clients',desc:'Landing pages, dashboards, and custom business websites with practical UX.'},
-    {period:'Backend Practice',title:'Node.js & Express APIs',desc:'Auth systems, forms, routing, and API-driven application structure.'}
-  ],
-  testimonials: [
-    {quote:'Rakib delivered a clean, mobile-friendly site with fast turnaround and no unnecessary clutter.',name:'Client Name',role:'Founder, Business'},
-    {quote:'The backend structure was solid, and the UI looked sharp on every device. Exactly what was needed.',name:'Client Name',role:'Product Owner'}
-  ],
-  faqs: [
-    {q:'What do you build?',a:'I build responsive websites, landing pages, dashboards, and backend-powered web apps.'},
-    {q:'Can I see your code?',a:'Yes. Add your GitHub link in the social section and project buttons will redirect there or to live demos.'},
-    {q:'Are you available for freelance work?',a:'Yes, I am currently accepting new projects. Feel free to reach out via the contact form.'}
-  ],
-  aboutTags: ['HTML','CSS','JavaScript','Node.js','Express.js','MongoDB','REST API']
-};
-
-function show(section) {
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('panel-'+section).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>{
-    if(n.getAttribute('onclick')==="show('"+section+"')") n.classList.add('active');
-  });
-  if(section==='services') renderServices();
-  if(section==='tools') renderTools();
-  if(section==='projects') renderProjects();
-  if(section==='timeline') renderTimeline();
-  if(section==='testimonials') renderTestimonials();
-  if(section==='faq') renderFaqs();
-  if(section==='about') renderAboutTags();
-}
-
-function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg||'Saved successfully';
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
-}
-
-function save(sec){toast('Section saved!');}
-
-function syncBrand(){}
-
-function renderAboutTags(){
-  const el=document.getElementById('about-tags');
-  el.innerHTML=state.aboutTags.map((t,i)=>`<span class="tag">${t}<span class="del" onclick="removeAboutTag(${i})">×</span></span>`).join('');
-}
-function addAboutTag(){
-  const inp=document.getElementById('about-tag-input');
-  const v=inp.value.trim();
-  if(v){state.aboutTags.push(v);inp.value='';renderAboutTags();}
-}
-function removeAboutTag(i){state.aboutTags.splice(i,1);renderAboutTags();}
-
-function renderServices(){
-  document.getElementById('dash-services').textContent=state.services.length;
-  document.getElementById('services-list').innerHTML=state.services.map((s,i)=>`
-    <div class="card">
-      <div class="section-head">
-        <h3>Service ${i+1}</h3>
-        <button class="danger" onclick="removeItem('services',${i});renderServices()">Remove</button>
-      </div>
-      <div class="grid2">
-        <div class="field"><label>Icon class (Font Awesome)</label><input value="${s.icon}" oninput="state.services[${i}].icon=this.value"/></div>
-        <div class="field"><label>Title</label><input value="${s.title}" oninput="state.services[${i}].title=this.value"/></div>
-      </div>
-      <div class="field"><label>Description</label><textarea oninput="state.services[${i}].desc=this.value">${s.desc}</textarea></div>
-    </div>`).join('');
-}
-function addService(){
-  state.services.push({icon:'fa-solid fa-star',title:'New Service',desc:'Description here.'});
-  renderServices();
-}
-
-function renderTools(){
-  document.getElementById('dash-skills').textContent=state.tools.length;
-  document.getElementById('tools-list').innerHTML=state.tools.map((t,i)=>`
-    <div class="card">
-      <div class="section-head">
-        <h3>${t.name}</h3>
-        <button class="danger" onclick="removeItem('tools',${i});renderTools()">Remove</button>
-      </div>
-      <div class="grid3">
-        <div class="field"><label>Name</label><input value="${t.name}" oninput="state.tools[${i}].name=this.value"/></div>
-        <div class="field"><label>Icon class</label><input value="${t.icon}" oninput="state.tools[${i}].icon=this.value"/></div>
-        <div class="field"><label>Proficiency %</label><input type="number" min="0" max="100" value="${t.pct}" oninput="state.tools[${i}].pct=+this.value"/></div>
-      </div>
-      <div class="pct-bar"><div class="pct-fill" style="width:${t.pct}%"></div></div>
-    </div>`).join('');
-}
-function addTool(){
-  state.tools.push({icon:'fa-solid fa-code',name:'New Skill',pct:75});
-  renderTools();
-}
-
-function renderProjects(){
-  document.getElementById('dash-projects').textContent=state.projects.length;
-  document.getElementById('projects-list').innerHTML=state.projects.map((p,i)=>`
-    <div class="card">
-      <div class="section-head">
-        <h3>Project ${i+1}: ${p.title}</h3>
-        <button class="danger" onclick="removeItem('projects',${i});renderProjects()">Remove</button>
-      </div>
-      <div class="grid2">
-        <div class="field"><label>Title</label><input value="${p.title}" oninput="state.projects[${i}].title=this.value"/></div>
-        <div class="field"><label>Live demo URL</label><input value="${p.link}" oninput="state.projects[${i}].link=this.value"/></div>
-      </div>
-      <div class="field"><label>Description</label><textarea oninput="state.projects[${i}].desc=this.value">${p.desc}</textarea></div>
-      <div class="grid2">
-        <div class="field"><label>Tags (comma-separated)</label><input value="${p.tags}" oninput="state.projects[${i}].tags=this.value"/></div>
-        <div class="field"><label>Image URL</label><input value="${p.img}" oninput="state.projects[${i}].img=this.value"/></div>
-      </div>
-      <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">${p.tags.split(',').map(t=>`<span class="chip-preview">${t.trim()}</span>`).join('')}</div>
-    </div>`).join('');
-}
-function addProject(){
-  state.projects.push({title:'New Project',desc:'Project description.',tags:'Tag1,Tag2',img:'',link:'#'});
-  renderProjects();
-}
-
-function renderTimeline(){
-  document.getElementById('timeline-list').innerHTML=state.timeline.map((t,i)=>`
-    <div class="card">
-      <div class="section-head">
-        <h3>${t.title}</h3>
-        <button class="danger" onclick="removeItem('timeline',${i});renderTimeline()">Remove</button>
-      </div>
-      <div class="grid2">
-        <div class="field"><label>Period / label</label><input value="${t.period}" oninput="state.timeline[${i}].period=this.value"/></div>
-        <div class="field"><label>Title</label><input value="${t.title}" oninput="state.timeline[${i}].title=this.value"/></div>
-      </div>
-      <div class="field"><label>Description</label><textarea oninput="state.timeline[${i}].desc=this.value">${t.desc}</textarea></div>
-    </div>`).join('');
-}
-function addTimeline(){
-  state.timeline.push({period:'Year',title:'New Entry',desc:'Details here.'});
-  renderTimeline();
-}
-
-function renderTestimonials(){
-  document.getElementById('testimonials-list').innerHTML=state.testimonials.map((t,i)=>`
-    <div class="card">
-      <div class="section-head">
-        <h3>${t.name}</h3>
-        <button class="danger" onclick="removeItem('testimonials',${i});renderTestimonials()">Remove</button>
-      </div>
-      <div class="field"><label>Quote</label><textarea oninput="state.testimonials[${i}].quote=this.value">${t.quote}</textarea></div>
-      <div class="grid2">
-        <div class="field"><label>Client name</label><input value="${t.name}" oninput="state.testimonials[${i}].name=this.value"/></div>
-        <div class="field"><label>Role / company</label><input value="${t.role}" oninput="state.testimonials[${i}].role=this.value"/></div>
-      </div>
-    </div>`).join('');
-}
-function addTestimonial(){
-  state.testimonials.push({quote:'Great work delivered on time.',name:'Client Name',role:'Founder'});
-  renderTestimonials();
-}
-
-function renderFaqs(){
-  document.getElementById('dash-faq').textContent=state.faqs.length;
-  document.getElementById('faq-list').innerHTML=state.faqs.map((f,i)=>`
-    <div class="card">
-      <div class="section-head">
-        <h3>FAQ ${i+1}</h3>
-        <button class="danger" onclick="removeItem('faqs',${i});renderFaqs()">Remove</button>
-      </div>
-      <div class="field"><label>Question</label><input value="${f.q}" oninput="state.faqs[${i}].q=this.value"/></div>
-      <div class="field"><label>Answer</label><textarea oninput="state.faqs[${i}].a=this.value">${f.a}</textarea></div>
-    </div>`).join('');
-}
-function addFaq(){
-  state.faqs.push({q:'New question?',a:'Answer here.'});
-  renderFaqs();
-}
-
-function removeItem(key,i){state[key].splice(i,1);}
-
-function g(id){return document.getElementById(id)?document.getElementById(id).value:'';}
-
-function generateExport(){
-  const name=g('owner-name')||'Rakib';
-  const title=g('owner-title')||'Full Stack Web Developer';
-  const greeting=g('h-greeting')||'Hello There!';
-  const hname=g('h-name')||'Rakib,';
-  const hrole=g('h-role')||'Full Stack Web Developer.';
-  const hdesc=g('h-desc')||'';
-  const phone=g('c-phone');const email=g('c-email');const gh=g('c-github');const li=g('c-linkedin');
-  const sgithub=g('s-github');const slinkedin=g('s-linkedin');const sx=g('s-x');const semail=g('s-email');
-  const about=g('ab-bio');
-  const s1n=g('ab-s1n');const s1l=g('ab-s1l');const s2n=g('ab-s2n');const s2l=g('ab-s2l');const s3n=g('ab-s3n');const s3l=g('ab-s3l');
-
-  const servicesHTML=state.services.map(s=>`
-        <article class="card"><div class="service-icon"><i class="${s.icon}"></i></div><h3>${s.title}</h3><p>${s.desc}</p><span class="learn">Learn more <i class="fa-solid fa-arrow-right-long"></i></span></article>`).join('');
-
-  const toolsHTML=state.tools.map(t=>`
-        <div class="tool"><div class="tool-icon"><i class="${t.icon}"></i></div><div class="pct">${t.pct}%</div><div class="name">${t.name}</div></div>`).join('');
-
-  const projectsHTML=state.projects.map(p=>{
-    const chips=p.tags.split(',').map(t=>`<span class="chip">${t.trim()}</span>`).join('');
-    const imgTag=p.img?`<img src="${p.img}" alt="${p.title}" />`:'';
-    return `
-        <article class="card project-card">
-          <div class="project-media">${imgTag}</div>
-          <div class="project-body"><div class="chips">${chips}</div><h3 class="project-title">${p.title}</h3><p>${p.desc}</p><div class="project-footer"><span class="learn">Live Demo</span><button class="circle-btn" onclick="window.open('${p.link}', '_blank')"><i class="fa-solid fa-arrow-up-right-from-square"></i></button></div></div>
-        </article>`;}).join('');
-
-  const timelineItems=state.timeline.map(t=>`<div class="timeline-item"><div class="period">${t.period}</div><h4>${t.title}</h4><p>${t.desc}</p></div>`).join('');
-  const half=Math.ceil(state.timeline.length/2);
-  const tl1=state.timeline.slice(0,half).map(t=>`<div class="timeline-item"><div class="period">${t.period}</div><h4>${t.title}</h4><p>${t.desc}</p></div>`).join('');
-  const tl2=state.timeline.slice(half).map(t=>`<div class="timeline-item"><div class="period">${t.period}</div><h4>${t.title}</h4><p>${t.desc}</p></div>`).join('');
-
-  const testimonialsHTML=state.testimonials.map(t=>`
-          <div class="card" style="background: rgba(255,255,255,.96);"><p>${t.quote}</p><strong style="display:block; margin-top:14px;">${t.name}</strong><span style="color:var(--muted)">${t.role}</span></div>`).join('');
-
-  const faqsHTML=state.faqs.map((f,i)=>`
-        <div class="faq-item${i===0?' open':''}"><button class="faq-q">${f.q} <span>${i===0?'−':'+'}</span></button><div class="faq-a">${f.a}</div></div>`).join('');
-
-  const tagsHTML=state.aboutTags.map(t=>`<span class="tag">${t}</span>`).join('');
-
-  const html=`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${name} | ${title}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <!-- [styles kept from original - omitted for brevity in preview] -->
 </head>
 <body>
-  <!-- HERO -->
-  <section id="home">
-    <div class="hello">${greeting}</div>
-    <h1>I'm <span class="accent">${hname}</span> ${hrole}</h1>
-    <p>${hdesc}</p>
-  </section>
 
-  <!-- SERVICES -->
-  <section id="services">
-    <div class="grid-3">${servicesHTML}</div>
-  </section>
-
-  <!-- ABOUT -->
-  <section id="about">
-    <p>${about}</p>
-    <div class="stats">
-      <div class="stat"><strong>${s1n}</strong><span>${s1l}</span></div>
-      <div class="stat"><strong>${s2n}</strong><span>${s2l}</span></div>
-      <div class="stat"><strong>${s3n}</strong><span>${s3l}</span></div>
-    </div>
-    <div class="tags">${tagsHTML}</div>
-  </section>
-
-  <!-- TOOLS -->
-  <section><div class="tools">${toolsHTML}</div></section>
-
-  <!-- PROJECTS -->
-  <section id="projects"><div class="grid-2">${projectsHTML}</div></section>
-
-  <!-- TIMELINE -->
-  <section><div class="timeline">
-    <div class="timeline-list">${tl1}</div>
-    <div class="timeline-list">${tl2}</div>
-  </div></section>
-
-  <!-- TESTIMONIALS -->
-  <section><div class="grid-2">${testimonialsHTML}</div></section>
-
-  <!-- FAQS -->
-  <section><div class="faq">${faqsHTML}</div></section>
-
-  <!-- CONTACT -->
-  <section id="contact">
-    <div class="contact-line"><i class="fa-solid fa-phone"></i> ${phone}</div>
-    <div class="contact-line"><i class="fa-solid fa-envelope"></i> ${email}</div>
-    <div class="contact-line"><i class="fa-brands fa-github"></i> ${gh}</div>
-    <div class="contact-line"><i class="fa-brands fa-linkedin-in"></i> ${li}</div>
-  </section>
-
-  <!-- SOCIAL -->
-  <div class="social-row">
-    <a class="social" href="${sgithub}" target="_blank"><i class="fa-brands fa-github"></i></a>
-    <a class="social" href="${slinkedin}" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
-    <a class="social" href="${sx}" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
-    <a class="social" href="mailto:${semail}"><i class="fa-solid fa-envelope"></i></a>
+<!-- ══ AUTH ══ -->
+<div id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo">JERSIFY</div>
+    <div class="auth-sub">Admin Console</div>
+    <input class="auth-input" id="authEmail" type="email" placeholder="admin@jersify.com" autocomplete="email"/>
+    <input class="auth-input" id="authPass" type="password" placeholder="Password" autocomplete="current-password"/>
+    <button class="auth-btn" onclick="doLogin()">Sign In →</button>
+    <div class="auth-err" id="authErr"></div>
   </div>
-</body>
-</html>`;
+</div>
 
-  document.getElementById('export-output').value=html;
-  toast('HTML generated! Copy or download below.');
+<!-- ══ APP ══ -->
+<div id="app" class="hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="8" fill="#74ACDF" opacity=".2"/><path d="M7 8l-3.5 4 3.5 1.5v9h14v-9L25 12l-3.5-4c-1 -.8-2.5-1.5-3.5-2-.5-.3-1-.5-4-.5s-3.5.2-4 .5c-1 .5-2.5 1.2-3.5 2z" fill="#74ACDF"/></svg>
+      <div><div>JERSIFY</div><span>ADMIN v2.0</span></div>
+    </div>
+
+    <div class="nav-section">Main</div>
+    <div class="nav-item active" onclick="switchTab('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="switchTab('countries',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      Countries <span class="nav-badge" id="countBadgeNav">0</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('clubs',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Clubs <span class="nav-badge" id="clubBadgeNav">0</span>
+    </div>
+
+    <div class="nav-section">Content</div>
+    <div class="nav-item" onclick="switchTab('hero',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Hero Banners
+    </div>
+    <div class="nav-item" onclick="switchTab('products',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Products
+    </div>
+    <div class="nav-item" onclick="switchTab('players',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20v-2a8 8 0 0 1 16 0v2"/></svg>
+      Players
+    </div>
+
+    <div class="nav-section">Assets</div>
+    <div class="nav-item" onclick="switchTab('media',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      Media Library
+    </div>
+    <div class="nav-item" onclick="switchTab('timeline',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Timeline
+    </div>
+
+    <div class="sidebar-footer">
+      <div style="display:flex;align-items:center;margin-bottom:10px;">
+        <span class="sync-dot"></span><span class="sync-label">Live Sync Active</span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-actions">
+        <input class="search-bar" id="globalSearch" placeholder="Search..." oninput="globalSearchFn()"/>
+        <div id="topbarBtn"></div>
+      </div>
+    </div>
+
+    <div class="content" id="mainContent">
+
+      <!-- ═══ DASHBOARD ═══ -->
+      <div class="tab-pane active" id="tab-dashboard">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-card-val" id="statCountries">—</div><div class="stat-card-label">Countries</div><div class="stat-card-icon">🌍</div></div>
+          <div class="stat-card"><div class="stat-card-val" id="statClubs">—</div><div class="stat-card-label">Clubs</div><div class="stat-card-icon">🏟️</div></div>
+          <div class="stat-card"><div class="stat-card-val" id="statProducts">—</div><div class="stat-card-label">Products</div><div class="stat-card-icon">👕</div></div>
+          <div class="stat-card"><div class="stat-card-val" id="statMedia">—</div><div class="stat-card-label">Media Files</div><div class="stat-card-icon">🖼️</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">Recent Countries</div>
+          <div class="card-body" id="recentCountries" style="min-height:60px">
+            <div style="color:var(--muted);font-size:13px">Loading…</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Quick Actions</div>
+          <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="switchTab('countries',null);openCountryModal()">+ Add Country</button>
+            <button class="btn btn-primary" onclick="switchTab('clubs',null);openClubModal()">+ Add Club</button>
+            <button class="btn btn-primary" onclick="switchTab('products',null);openProductModal()">+ Add Product</button>
+            <button class="btn btn-gold" onclick="switchTab('media',null)">📁 Media Library</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ COUNTRIES ═══ -->
+      <div class="tab-pane" id="tab-countries">
+        <div class="card">
+          <div class="card-header">
+            All Countries
+            <button class="btn btn-primary btn-sm" onclick="openCountryModal()">+ Add Country</button>
+          </div>
+          <table>
+            <thead><tr><th>Logo</th><th>Name</th><th>Code</th><th>Confederation</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="countriesTable"><tr><td colspan="6" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ CLUBS ═══ -->
+      <div class="tab-pane" id="tab-clubs">
+        <div class="card">
+          <div class="card-header">
+            All Clubs
+            <button class="btn btn-primary btn-sm" onclick="openClubModal()">+ Add Club</button>
+          </div>
+          <table>
+            <thead><tr><th>Logo</th><th>Name</th><th>League</th><th>Country</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="clubsTable"><tr><td colspan="6" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ HERO BANNERS ═══ -->
+      <div class="tab-pane" id="tab-hero">
+        <div class="card">
+          <div class="card-header">
+            Hero Banners
+            <button class="btn btn-primary btn-sm" onclick="openHeroModal()">+ Add Banner</button>
+          </div>
+          <table>
+            <thead><tr><th>Page</th><th>Title</th><th>Subtitle</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="heroTable"><tr><td colspan="5" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ PRODUCTS ═══ -->
+      <div class="tab-pane" id="tab-products">
+        <div class="card">
+          <div class="card-header">
+            Products / Kits
+            <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ Add Product</button>
+          </div>
+          <table>
+            <thead><tr><th>Name</th><th>Country/Club</th><th>Type</th><th>Price (₹)</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="productsTable"><tr><td colspan="6" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ PLAYERS ═══ -->
+      <div class="tab-pane" id="tab-players">
+        <div class="card">
+          <div class="card-header">
+            Players
+            <button class="btn btn-primary btn-sm" onclick="openPlayerModal()">+ Add Player</button>
+          </div>
+          <table>
+            <thead><tr><th>#</th><th>Name</th><th>Team</th><th>Position</th><th>Goals</th><th>Caps</th><th>Actions</th></tr></thead>
+            <tbody id="playersTable"><tr><td colspan="7" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ MEDIA ═══ -->
+      <div class="tab-pane" id="tab-media">
+        <div class="card">
+          <div class="card-header">
+            Upload Files
+            <div style="font-size:11px;color:var(--muted);font-weight:400">SVG, PNG, JPG, WEBP — max 5MB</div>
+          </div>
+          <div class="card-body">
+            <div class="upload-zone" id="uploadZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+              <input type="file" id="mediaFileInput" multiple accept="image/*,.svg" onchange="handleFileSelect(event)"/>
+              <div class="upload-icon">☁️</div>
+              <div class="upload-text"><strong style="color:var(--sky)">Click to browse</strong> or drag & drop files here<br>Stored in Firebase Storage · URL auto-copied</div>
+            </div>
+            <div id="uploadQueue" class="upload-preview" style="margin-top:14px"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            Media Library
+            <select id="mediaFilter" onchange="filterMedia()" style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:4px 10px;color:var(--text);font-size:12px;outline:none">
+              <option value="">All Files</option>
+              <option value="countries">Countries</option>
+              <option value="clubs">Clubs</option>
+              <option value="products">Products</option>
+              <option value="media">General</option>
+            </select>
+          </div>
+          <div class="card-body">
+            <div class="media-grid" id="mediaGrid">
+              <div style="color:var(--muted);font-size:13px">Loading…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ TIMELINE ═══ -->
+      <div class="tab-pane" id="tab-timeline">
+        <div class="card">
+          <div class="card-header">
+            History Timeline
+            <button class="btn btn-primary btn-sm" onclick="openTimelineModal()">+ Add Entry</button>
+          </div>
+          <table>
+            <thead><tr><th>Year</th><th>Event</th><th>Detail</th><th>Team</th><th>Actions</th></tr></thead>
+          <tbody id="timelineTable"><tr><td colspan="5" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ MODALS ══ -->
+
+<!-- Country Modal -->
+<div class="modal-overlay" id="countryModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="countryModalTitle">Add Country</div>
+      <button class="modal-close" onclick="closeModal('countryModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Country Name*</label>
+          <input type="text" id="c_name" placeholder="e.g. Argentina"/>
+        </div>
+        <div class="form-group">
+          <label>Code (3-letter)*</label>
+          <input type="text" id="c_code" placeholder="ARG" maxlength="3" style="text-transform:uppercase"/>
+        </div>
+        <div class="form-group">
+          <label>Confederation</label>
+          <select id="c_conf">
+            <option>CONMEBOL</option><option>UEFA</option><option>AFC</option>
+            <option>CAF</option><option>CONCACAF</option><option>OFC</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>FIFA Ranking</label>
+          <input type="text" id="c_rank" placeholder="#1"/>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>Logo (SVG or PNG) — Upload to Firebase Storage</label>
+        <div class="upload-zone" style="padding:16px">
+          <input type="file" id="c_logo_file" accept="image/*,.svg" onchange="previewLogo(event,'c_logo_preview','c_logo_url')"/>
+          <div class="upload-text">Click to select logo file</div>
+        </div>
+        <div class="svg-preview-box" id="c_logo_preview" style="margin-top:8px;display:none"></div>
+        <input type="text" id="c_logo_url" placeholder="or paste logo URL / SVG code" style="margin-top:8px"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>World Cup Titles</label>
+          <input type="text" id="c_wc" placeholder="3"/>
+        </div>
+        <div class="form-group">
+          <label>Copa / Cups</label>
+          <input type="text" id="c_cups" placeholder="15"/>
+        </div>
+        <div class="form-group">
+          <label>Olympic Gold</label>
+          <input type="text" id="c_olympic" placeholder="2"/>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="c_status"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+        </div>
+      </div>
+      <div id="c_progress" style="display:none">
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="c_progress_fill" style="width:0%"></div></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px" id="c_progress_label">Uploading…</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-primary" style="flex:1" onclick="saveCountry()">💾 Save Country</button>
+        <button class="btn" style="background:var(--surface2)" onclick="closeModal('countryModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Club Modal -->
+<div class="modal-overlay" id="clubModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="clubModalTitle">Add Club</div>
+      <button class="modal-close" onclick="closeModal('clubModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Club Name*</label>
+          <input type="text" id="cl_name" placeholder="e.g. FC Barcelona"/>
+        </div>
+        <div class="form-group">
+          <label>Short Code</label>
+          <input type="text" id="cl_code" placeholder="BAR" maxlength="4" style="text-transform:uppercase"/>
+        </div>
+        <div class="form-group">
+          <label>League</label>
+          <input type="text" id="cl_league" placeholder="La Liga"/>
+        </div>
+        <div class="form-group">
+          <label>Country</label>
+          <input type="text" id="cl_country" placeholder="Spain"/>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>Club Logo — Upload</label>
+        <div class="upload-zone" style="padding:16px">
+          <input type="file" id="cl_logo_file" accept="image/*,.svg" onchange="previewLogo(event,'cl_logo_preview','cl_logo_url')"/>
+          <div class="upload-text">Click to select logo</div>
+        </div>
+        <div class="svg-preview-box" id="cl_logo_preview" style="margin-top:8px;display:none"></div>
+        <input type="text" id="cl_logo_url" placeholder="or paste URL" style="margin-top:8px"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Primary Color</label>
+          <div class="color-pair">
+            <div class="color-swatch" style="background:#a50044"><input type="color" id="cl_color1" value="#a50044"/></div>
+            <input type="text" id="cl_color1_text" value="#a50044" style="flex:1"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="cl_status"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+        </div>
+      </div>
+      <div id="cl_progress" style="display:none">
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="cl_progress_fill" style="width:0%"></div></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-primary" style="flex:1" onclick="saveClub()">💾 Save Club</button>
+        <button class="btn" style="background:var(--surface2)" onclick="closeModal('clubModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Product Modal -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add / Edit Product</div>
+      <button class="modal-close" onclick="closeModal('productModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Product Name*</label>
+          <input type="text" id="p_name" placeholder="Home Kit 2025"/>
+        </div>
+        <div class="form-group">
+          <label>Team / Country</label>
+          <input type="text" id="p_team" placeholder="Argentina"/>
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="p_type">
+            <option>Home Kit</option><option>Away Kit</option><option>Third Kit</option>
+            <option>Special Edition</option><option>Fan Kit</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Price (₹)*</label>
+          <input type="text" id="p_price" placeholder="1499"/>
+        </div>
+        <div class="form-group">
+          <label>Badge Label</label>
+          <input type="text" id="p_badge" placeholder="NEW 2025"/>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="p_status"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>Product Image</label>
+        <div class="upload-zone" style="padding:16px">
+          <input type="file" id="p_img_file" accept="image/*" onchange="previewLogo(event,'p_img_preview','p_img_url')"/>
+          <div class="upload-text">Click to upload product image</div>
+        </div>
+        <div class="svg-preview-box" id="p_img_preview" style="margin-top:8px;display:none"></div>
+        <input type="text" id="p_img_url" placeholder="or paste image URL" style="margin-top:8px"/>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-primary" style="flex:1" onclick="saveProduct()">💾 Save Product</button>
+        <button class="btn" style="background:var(--surface2)" onclick="closeModal('productModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Player Modal -->
+<div class="modal-overlay" id="playerModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add / Edit Player</div>
+      <button class="modal-close" onclick="closeModal('playerModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name*</label>
+          <input type="text" id="pl_name" placeholder="Lionel Messi"/>
+        </div>
+        <div class="form-group">
+          <label>Jersey Number</label>
+          <input type="text" id="pl_num" placeholder="10"/>
+        </div>
+        <div class="form-group">
+          <label>Position</label>
+          <select id="pl_pos">
+            <option>Forward</option><option>Midfielder</option><option>Defender</option><option>Goalkeeper</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Team</label>
+          <input type="text" id="pl_team" placeholder="Argentina"/>
+        </div>
+        <div class="form-group">
+          <label>Goals</label>
+          <input type="text" id="pl_goals" placeholder="108"/>
+        </div>
+        <div class="form-group">
+          <label>Assists</label>
+          <input type="text" id="pl_assists" placeholder="56"/>
+        </div>
+        <div class="form-group">
+          <label>Caps</label>
+          <input type="text" id="pl_caps" placeholder="180"/>
+        </div>
+        <div class="form-group">
+          <label>Club</label>
+          <input type="text" id="pl_club" placeholder="Inter Miami CF"/>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>Role / Description</label>
+        <textarea id="pl_desc" placeholder="Captain · Forward · GOAT"></textarea>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-primary" style="flex:1" onclick="savePlayer()">💾 Save Player</button>
+        <button class="btn" style="background:var(--surface2)" onclick="closeModal('playerModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hero Banner Modal -->
+<div class="modal-overlay" id="heroModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add / Edit Hero Banner</div>
+      <button class="modal-close" onclick="closeModal('heroModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Page (Country/Club slug)</label>
+          <input type="text" id="h_page" placeholder="argentina"/>
+        </div>
+        <div class="form-group">
+          <label>Title*</label>
+          <input type="text" id="h_title" placeholder="ARGENTINA"/>
+        </div>
+        <div class="form-group full">
+          <label>Subtitle</label>
+          <input type="text" id="h_sub" placeholder="National Team · AFA"/>
+        </div>
+        <div class="form-group">
+          <label>Stat Pills (comma-separated)</label>
+          <input type="text" id="h_pills" placeholder="FIFA #1, 3× World Champs"/>
+        </div>
+        <div class="form-group">
+          <label>Primary Color</label>
+          <input type="text" id="h_color" placeholder="#74ACDF"/>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>Background Image</label>
+        <div class="upload-zone" style="padding:14px">
+          <input type="file" id="h_img_file" accept="image/*" onchange="previewLogo(event,'h_img_preview','h_img_url')"/>
+          <div class="upload-text">Upload hero background</div>
+        </div>
+        <div class="svg-preview-box" id="h_img_preview" style="margin-top:8px;display:none"></div>
+        <input type="text" id="h_img_url" placeholder="or paste image URL" style="margin-top:8px"/>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-primary" style="flex:1" onclick="saveHero()">💾 Save Banner</button>
+        <button class="btn" style="background:var(--surface2)" onclick="closeModal('heroModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Timeline Modal -->
+<div class="modal-overlay" id="timelineModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Timeline Entry</div>
+      <button class="modal-close" onclick="closeModal('timelineModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Year</label>
+          <input type="text" id="tl_year" placeholder="2022"/>
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" id="tl_loc" placeholder="Qatar"/>
+        </div>
+        <div class="form-group full">
+          <label>Event Title*</label>
+          <input type="text" id="tl_event" placeholder="World Cup Champions"/>
+        </div>
+        <div class="form-group full">
+          <label>Detail</label>
+          <textarea id="tl_detail" placeholder="Description of the event…"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Icon (emoji)</label>
+          <input type="text" id="tl_icon" placeholder="🏆"/>
+        </div>
+        <div class="form-group">
+          <label>Team</label>
+          <input type="text" id="tl_team" placeholder="argentina"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-primary" style="flex:1" onclick="saveTimeline()">💾 Save Entry</button>
+        <button class="btn" style="background:var(--surface2)" onclick="closeModal('timelineModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="width:380px">
+    <div class="modal-header">
+      <div class="modal-title">Confirm Delete</div>
+      <button class="modal-close" onclick="closeModal('confirmModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="color:var(--muted);margin-bottom:20px;font-size:14px" id="confirmMsg">Are you sure you want to delete this item? This action cannot be undone.</div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-red" style="flex:1" id="confirmOkBtn">Delete</button>
+        <button class="btn" style="background:var(--surface2);flex:1" onclick="closeModal('confirmModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  GLOBALS
+// ═══════════════════════════════════════════════════════
+let _editId = null;
+let _editCollection = null;
+let _allMedia = [];
+let _unsubscribers = [];
+
+function waitFb(){ return new Promise(r=>{ const t=setInterval(()=>{ if(window._fb){clearInterval(t);r(window._fb)} },50) }) }
+
+// ═══════════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════════
+async function doLogin(){
+  const {auth,signInWithEmailAndPassword}=await waitFb();
+  const email=document.getElementById('authEmail').value.trim();
+  const pass=document.getElementById('authPass').value;
+  document.getElementById('authErr').textContent='';
+  try{
+    await signInWithEmailAndPassword(auth,email,pass);
+  }catch(e){
+    document.getElementById('authErr').textContent=e.message.replace('Firebase: ','').replace(/\(.*\)/,'');
+  }
+}
+async function doLogout(){
+  const {auth,signOut}=await waitFb();
+  await signOut(auth);
+}
+async function initAuth(){
+  const fb=await waitFb();
+  fb.onAuthStateChanged(fb.auth,user=>{
+    if(user){
+      document.getElementById('authScreen').style.display='none';
+      document.getElementById('app').classList.remove('hidden');
+      initApp();
+    } else {
+      document.getElementById('authScreen').style.display='flex';
+      document.getElementById('app').classList.add('hidden');
+      _unsubscribers.forEach(u=>u());
+      _unsubscribers=[];
+    }
+  });
+}
+document.getElementById('authPass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin() });
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+async function initApp(){
+  listenCollection('countries',renderCountries);
+  listenCollection('clubs',renderClubs);
+  listenCollection('products',renderProducts);
+  listenCollection('players',renderPlayers);
+  listenCollection('heroes',renderHeroes);
+  listenCollection('timeline',renderTimeline);
+  listenCollection('media',renderMedia);
+  updateDashboardStats();
 }
 
-function copyExport(){
-  const el=document.getElementById('export-output');
-  if(el.value){navigator.clipboard.writeText(el.value).then(()=>toast('Copied to clipboard!'));}
-  else{toast('Generate HTML first');}
+// ═══════════════════════════════════════════════════════
+//  FIRESTORE REAL-TIME LISTENER
+// ═══════════════════════════════════════════════════════
+async function listenCollection(col,callback){
+  const {db,collection,onSnapshot}=await waitFb();
+  const unsub=onSnapshot(collection(db,col),(snap)=>{
+    const data=snap.docs.map(d=>({id:d.id,...d.data()}));
+    callback(data);
+    updateBadges(col,data.length);
+  });
+  _unsubscribers.push(unsub);
 }
-function downloadExport(){
-  const val=document.getElementById('export-output').value;
-  if(!val){toast('Generate HTML first');return;}
-  const a=document.createElement('a');
-  a.href='data:text/html;charset=utf-8,'+encodeURIComponent(val);
-  a.download='index.html';
-  a.click();
-  toast('Download started!');
+
+function updateBadges(col,count){
+  if(col==='countries'){ setEl('countBadgeNav',count); setEl('statCountries',count) }
+  if(col==='clubs'){ setEl('clubBadgeNav',count); setEl('statClubs',count) }
+  if(col==='products') setEl('statProducts',count);
+  if(col==='media') setEl('statMedia',count);
 }
+
+// ═══════════════════════════════════════════════════════
+//  RENDERERS
+// ═══════════════════════════════════════════════════════
+function renderCountries(data){
+  const tbody=document.getElementById('countriesTable');
+  if(!data.length){ tbody.innerHTML=emptyRow(6,'No countries yet'); return }
+  tbody.innerHTML=data.map(c=>`
+    <tr>
+      <td>${logoThumb(c.logoUrl,c.name)}</td>
+      <td><strong>${c.name||'—'}</strong></td>
+      <td><span class="badge badge-sky">${c.code||'—'}</span></td>
+      <td>${c.confederation||'—'}</td>
+      <td><span class="badge ${c.status==='active'?'badge-green':'badge-red'}">${c.status||'active'}</span></td>
+      <td>${actionBtns('countries',c.id)}</td>
+    </tr>`).join('');
+
+  // Dashboard recent
+  const rc=document.getElementById('recentCountries');
+  if(rc) rc.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:10px">${data.slice(0,8).map(c=>`
+    <div style="display:flex;align-items:center;gap:8px;background:var(--surface2);border-radius:10px;padding:8px 12px;border:1px solid var(--border)">
+      ${logoThumb(c.logoUrl,c.name)}
+      <span style="font-weight:700;font-size:13px">${c.name}</span>
+      <span class="badge badge-sky">${c.code||''}</span>
+    </div>`).join('')}</div>`;
+}
+
+function renderClubs(data){
+  const tbody=document.getElementById('clubsTable');
+  if(!data.length){ tbody.innerHTML=emptyRow(6,'No clubs yet'); return }
+  tbody.innerHTML=data.map(c=>`
+    <tr>
+      <td>${logoThumb(c.logoUrl,c.name)}</td>
+      <td><strong>${c.name||'—'}</strong></td>
+      <td>${c.league||'—'}</td>
+      <td>${c.country||'—'}</td>
+      <td><span class="badge ${c.status==='active'?'badge-green':'badge-red'}">${c.status||'active'}</span></td>
+      <td>${actionBtns('clubs',c.id)}</td>
+    </tr>`).join('');
+}
+
+function renderProducts(data){
+  const tbody=document.getElementById('productsTable');
+  if(!data.length){ tbody.innerHTML=emptyRow(6,'No products yet'); return }
+  tbody.innerHTML=data.map(p=>`
+    <tr>
+      <td><strong>${p.name||'—'}</strong>${p.badge?`<span class="badge badge-gold" style="margin-left:6px">${p.badge}</span>`:''}</td>
+      <td>${p.team||'—'}</td>
+      <td>${p.type||'—'}</td>
+      <td>₹${p.price||'—'}</td>
+      <td><span class="badge ${p.status==='active'?'badge-green':'badge-red'}">${p.status||'active'}</span></td>
+      <td>${actionBtns('products',p.id)}</td>
+    </tr>`).join('');
+}
+
+function renderPlayers(data){
+  const tbody=document.getElementById('playersTable');
+  if(!data.length){ tbody.innerHTML=emptyRow(7,'No players yet'); return }
+  tbody.innerHTML=data.map(p=>`
+    <tr>
+      <td><span class="badge badge-sky">${p.number||'—'}</span></td>
+      <td><strong>${p.name||'—'}</strong></td>
+      <td>${p.team||'—'}</td>
+      <td>${p.position||'—'}</td>
+      <td>${p.goals||0}</td>
+      <td>${p.caps||0}</td>
+      <td>${actionBtns('players',p.id)}</td>
+    </tr>`).join('');
+}
+
+function renderHeroes(data){
+  const tbody=document.getElementById('heroTable');
+  if(!data.length){ tbody.innerHTML=emptyRow(5,'No banners yet'); return }
+  tbody.innerHTML=data.map(h=>`
+    <tr>
+      <td><span class="badge badge-sky">${h.page||'—'}</span></td>
+      <td><strong>${h.title||'—'}</strong></td>
+      <td>${h.subtitle||'—'}</td>
+      <td><span class="badge badge-green">active</span></td>
+      <td>${actionBtns('heroes',h.id)}</td>
+    </tr>`).join('');
+}
+
+function renderTimeline(data){
+  const tbody=document.getElementById('timelineTable');
+  if(!data.length){ tbody.innerHTML=emptyRow(5,'No entries yet'); return }
+  const sorted=[...data].sort((a,b)=>(b.year||0)-(a.year||0));
+  tbody.innerHTML=sorted.map(t=>`
+    <tr>
+      <td><strong>${t.year||'—'}</strong> ${t.location?`<span class="badge badge-sky">${t.location}</span>`:''}</td>
+      <td>${t.icon||'📅'} ${t.event||'—'}</td>
+      <td style="color:var(--muted);max-width:200px">${t.detail||'—'}</td>
+      <td>${t.team||'—'}</td>
+      <td>${actionBtns('timeline',t.id)}</td>
+    </tr>`).join('');
+}
+
+function renderMedia(data){
+  _allMedia=data;
+  filterMedia();
+}
+
+function filterMedia(){
+  const filter=document.getElementById('mediaFilter').value;
+  const data=filter?_allMedia.filter(m=>m.folder===filter):_allMedia;
+  const grid=document.getElementById('mediaGrid');
+  if(!data.length){ grid.innerHTML=`<div style="color:var(--muted);font-size:13px;grid-column:1/-1">No media files yet — upload some above!</div>`; return }
+  grid.innerHTML=data.map(m=>`
+    <div class="media-item">
+      ${m.url?`<img src="${m.url}" alt="${m.name||''}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'140\\' height=\\'110\\'><rect fill=\\'%231a2338\\' width=\\'140\\' height=\\'110\\'/><text y=\\'60\\' x=\\'70\\' text-anchor=\\'middle\\' fill=\\'%2374ACDF\\' font-size=\\'28\\'>📷</text></svg>'"/>`:`<div style="height:110px;display:grid;place-items:center;font-size:32px">📄</div>`}
+      <div class="media-item-actions">
+        <button class="media-action-btn ma-copy" onclick="copyUrl('${m.url||''}',event)" title="Copy URL">⎘</button>
+        <button class="media-action-btn ma-del" onclick="deleteMedia('${m.id}','${m.storagePath||''}',event)" title="Delete">✕</button>
+      </div>
+      <div class="media-item-info">
+        <div class="media-item-name">${m.name||'file'}</div>
+        <div class="media-item-size">${m.folder||'media'}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  SAVE HELPERS
+// ═══════════════════════════════════════════════════════
+async function saveCountry(){
+  const name=g('c_name');const code=g('c_code').toUpperCase();
+  if(!name||!code){ toast('Name and Code are required','error'); return }
+  let logoUrl=g('c_logo_url');
+  const file=document.getElementById('c_logo_file').files[0];
+  if(file) logoUrl=await uploadFile(file,`countries/${code}_${Date.now()}`,showProgress('c_progress','c_progress_fill','c_progress_label'));
+  const data={name,code,confederation:g('c_conf'),rank:g('c_rank'),logoUrl,worldCupTitles:g('c_wc'),cups:g('c_cups'),olympic:g('c_olympic'),status:g('c_status'),updatedAt:Date.now()};
+  await saveDoc('countries',data,_editId);
+  closeModal('countryModal'); toast('Country saved! 🌍','success'); resetForm(['c_name','c_code','c_rank','c_logo_url','c_wc','c_cups','c_olympic']);
+}
+
+async function saveClub(){
+  const name=g('cl_name');if(!name){ toast('Club name required','error'); return }
+  let logoUrl=g('cl_logo_url');
+  const file=document.getElementById('cl_logo_file').files[0];
+  if(file) logoUrl=await uploadFile(file,`clubs/${name.replace(/\s/g,'_')}_${Date.now()}`,showProgress('cl_progress','cl_progress_fill',null));
+  const data={name,code:g('cl_code').toUpperCase(),league:g('cl_league'),country:g('cl_country'),logoUrl,primaryColor:g('cl_color1'),status:g('cl_status'),updatedAt:Date.now()};
+  await saveDoc('clubs',data,_editId);
+  closeModal('clubModal'); toast('Club saved! 🏟️','success'); resetForm(['cl_name','cl_code','cl_league','cl_country','cl_logo_url']);
+}
+
+async function saveProduct(){
+  const name=g('p_name');if(!name){ toast('Product name required','error'); return }
+  let imgUrl=g('p_img_url');
+  const file=document.getElementById('p_img_file').files[0];
+  if(file) imgUrl=await uploadFile(file,`products/${Date.now()}_${file.name}`,null);
+  const data={name,team:g('p_team'),type:g('p_type'),price:g('p_price'),badge:g('p_badge'),imgUrl,status:g('p_status'),updatedAt:Date.now()};
+  await saveDoc('products',data,_editId);
+  closeModal('productModal'); toast('Product saved! 👕','success');
+}
+
+async function savePlayer(){
+  const name=g('pl_name');if(!name){ toast('Player name required','error'); return }
+  const data={name,number:g('pl_num'),position:g('pl_pos'),team:g('pl_team'),goals:g('pl_goals'),assists:g('pl_assists'),caps:g('pl_caps'),club:g('pl_club'),description:g('pl_desc'),updatedAt:Date.now()};
+  await saveDoc('players',data,_editId);
+  closeModal('playerModal'); toast('Player saved! ⚽','success');
+}
+
+async function saveHero(){
+  const page=g('h_page');const title=g('h_title');if(!page||!title){ toast('Page and Title required','error'); return }
+  let bgUrl=g('h_img_url');
+  const file=document.getElementById('h_img_file').files[0];
+  if(file) bgUrl=await uploadFile(file,`heroes/${page}_${Date.now()}`,null);
+  const data={page,title,subtitle:g('h_sub'),pills:g('h_pills').split(',').map(s=>s.trim()).filter(Boolean),primaryColor:g('h_color'),bgUrl,updatedAt:Date.now()};
+  await saveDoc('heroes',data,_editId);
+  closeModal('heroModal'); toast('Hero banner saved!','success');
+}
+
+async function saveTimeline(){
+  const event=g('tl_event');if(!event){ toast('Event title required','error'); return }
+  const data={year:parseInt(g('tl_year'))||0,location:g('tl_loc'),event,detail:g('tl_detail'),icon:g('tl_icon')||'📅',team:g('tl_team'),updatedAt:Date.now()};
+  await saveDoc('timeline',data,_editId);
+  closeModal('timelineModal'); toast('Timeline entry saved!','success');
+}
+
+// ═══════════════════════════════════════════════════════
+//  FIRESTORE CRUD
+// ═══════════════════════════════════════════════════════
+async function saveDoc(col,data,id){
+  const {db,collection,addDoc,doc,updateDoc,setDoc}=await waitFb();
+  if(id) await updateDoc(doc(db,col,id),data);
+  else await addDoc(collection(db,col),data);
+}
+
+async function deleteDocById(col,id){
+  const {db,doc,deleteDoc}=await waitFb();
+  await deleteDoc(doc(db,col,id));
+}
+
+// ═══════════════════════════════════════════════════════
+//  FIREBASE STORAGE UPLOAD
+// ═══════════════════════════════════════════════════════
+async function uploadFile(file,path,progressCb){
+  const {storage,ref,uploadBytesResumable,getDownloadURL}=await waitFb();
+  return new Promise((resolve,reject)=>{
+    const storageRef=ref(storage,path);
+    const task=uploadBytesResumable(storageRef,file);
+    task.on('state_changed',(snap)=>{
+      const pct=Math.round(snap.bytesTransferred/snap.totalBytes*100);
+      if(progressCb) progressCb(pct);
+    },reject,async()=>{
+      const url=await getDownloadURL(task.snapshot.ref);
+      // Save to media collection
+      await saveDoc('media',{name:file.name,url,storagePath:path,folder:path.split('/')[0],size:file.size,createdAt:Date.now()},null);
+      resolve(url);
+    });
+  });
+}
+
+function showProgress(wrapId,fillId,labelId){
+  const wrap=document.getElementById(wrapId);
+  if(wrap) wrap.style.display='block';
+  return (pct)=>{
+    const fill=document.getElementById(fillId);
+    if(fill) fill.style.width=pct+'%';
+    if(labelId){ const lbl=document.getElementById(labelId); if(lbl) lbl.textContent=`Uploading… ${pct}%` }
+    if(pct===100){ setTimeout(()=>{ if(wrap) wrap.style.display='none' },1200) }
+  };
+}
+
+// Media upload from library tab
+async function handleFileSelect(e){ await uploadFilesFromInput(Array.from(e.target.files)) }
+function handleDragOver(e){ e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover') }
+function handleDragLeave(){ document.getElementById('uploadZone').classList.remove('dragover') }
+async function handleDrop(e){ e.preventDefault(); document.getElementById('uploadZone').classList.remove('dragover'); await uploadFilesFromInput(Array.from(e.dataTransfer.files)) }
+
+async function uploadFilesFromInput(files){
+  for(const file of files){
+    if(file.size>5*1024*1024){ toast(`${file.name} exceeds 5MB`,'error'); continue }
+    const queue=document.getElementById('uploadQueue');
+    const item=document.createElement('div');
+    item.style.cssText='width:140px;background:var(--surface2);border-radius:10px;padding:10px;border:1px solid var(--border)';
+    item.innerHTML=`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${file.name}</div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%" id="q_${file.name.replace(/\W/g,'_')}"></div></div>`;
+    queue.appendChild(item);
+    try{
+      const url=await uploadFile(file,`media/${Date.now()}_${file.name}`,(pct)=>{
+        const el=item.querySelector('.progress-bar-fill');
+        if(el) el.style.width=pct+'%';
+      });
+      item.innerHTML+=`<div style="font-size:10px;color:var(--green);margin-top:4px">✓ Done</div>`;
+      toast(`${file.name} uploaded!`,'success');
+    }catch(err){
+      item.innerHTML+=`<div style="font-size:10px;color:var(--red);margin-top:4px">✗ Failed</div>`;
+      toast(`Upload failed: ${file.name}`,'error');
+    }
+  }
+}
+
+async function deleteMedia(id,storagePath,e){
+  e&&e.stopPropagation();
+  confirmAction('Delete this media file?',async()=>{
+    try{
+      if(storagePath){
+        const {storage,ref,deleteObject}=await waitFb();
+        await deleteObject(ref(storage,storagePath));
+      }
+      await deleteDocById('media',id);
+      toast('Media deleted','info');
+    }catch(err){ toast('Error: '+err.message,'error') }
+  });
+}
+
+function copyUrl(url,e){
+  e&&e.stopPropagation();
+  navigator.clipboard.writeText(url).then(()=>toast('URL copied!','success'));
+}
+
+// ═══════════════════════════════════════════════════════
+//  ACTIONS (EDIT / DELETE)
+// ═══════════════════════════════════════════════════════
+function actionBtns(col,id){
+  return `<div style="display:flex;gap:6px">
+    <button class="btn btn-sm btn-primary" onclick="editItem('${col}','${id}')">Edit</button>
+    <button class="btn btn-sm btn-red" onclick="deleteItem('${col}','${id}')">Delete</button>
+  </div>`;
+}
+
+async function editItem(col,id){
+  // Load doc and fill form
+  const {db,collection,getDocs}=await waitFb();
+  const snap=await getDocs(collection(db,col)); // simple approach — find by id
+  const docData=snap.docs.find(d=>d.id===id);
+  if(!docData){ toast('Item not found','error'); return }
+  const data=docData.data();
+  _editId=id; _editCollection=col;
+
+  if(col==='countries'){
+    switchTab('countries'); openCountryModal();
+    document.getElementById('countryModalTitle').textContent='Edit Country';
+    s('c_name',data.name);s('c_code',data.code);s('c_conf',data.confederation);s('c_rank',data.rank);
+    s('c_logo_url',data.logoUrl);s('c_wc',data.worldCupTitles);s('c_cups',data.cups);s('c_olympic',data.olympic);s('c_status',data.status||'active');
+  } else if(col==='clubs'){
+    switchTab('clubs'); openClubModal();
+    document.getElementById('clubModalTitle').textContent='Edit Club';
+    s('cl_name',data.name);s('cl_code',data.code);s('cl_league',data.league);s('cl_country',data.country);s('cl_logo_url',data.logoUrl);s('cl_status',data.status||'active');
+  } else if(col==='products'){
+    switchTab('products'); openProductModal();
+    s('p_name',data.name);s('p_team',data.team);s('p_type',data.type);s('p_price',data.price);s('p_badge',data.badge);s('p_img_url',data.imgUrl);s('p_status',data.status||'active');
+  } else if(col==='players'){
+    switchTab('players'); openPlayerModal();
+    s('pl_name',data.name);s('pl_num',data.number);s('pl_pos',data.position);s('pl_team',data.team);
+    s('pl_goals',data.goals);s('pl_assists',data.assists);s('pl_caps',data.caps);s('pl_club',data.club);s('pl_desc',data.description);
+  } else if(col==='heroes'){
+    switchTab('hero'); openHeroModal();
+    s('h_page',data.page);s('h_title',data.title);s('h_sub',data.subtitle);s('h_pills',(data.pills||[]).join(', '));s('h_color',data.primaryColor);s('h_img_url',data.bgUrl);
+  } else if(col==='timeline'){
+    switchTab('timeline'); openTimelineModal();
+    s('tl_year',data.year);s('tl_loc',data.location);s('tl_event',data.event);s('tl_detail',data.detail);s('tl_icon',data.icon);s('tl_team',data.team);
+  }
+}
+
+function deleteItem(col,id){
+  confirmAction(`Delete this item from "${col}"?`,async()=>{
+    try{ await deleteDocById(col,id); toast('Deleted successfully','info') }
+    catch(e){ toast('Error: '+e.message,'error') }
+  });
+}
+
+function confirmAction(msg,cb){
+  document.getElementById('confirmMsg').textContent=msg;
+  document.getElementById('confirmOkBtn').onclick=()=>{ closeModal('confirmModal'); cb() };
+  openModal('confirmModal');
+}
+
+// ═══════════════════════════════════════════════════════
+//  MODAL CONTROLS
+// ═══════════════════════════════════════════════════════
+function openCountryModal(){ _editId=null; document.getElementById('countryModalTitle').textContent='Add Country'; openModal('countryModal') }
+function openClubModal(){ _editId=null; document.getElementById('clubModalTitle').textContent='Add Club'; openModal('clubModal') }
+function openProductModal(){ _editId=null; openModal('productModal') }
+function openPlayerModal(){ _editId=null; openModal('playerModal') }
+function openHeroModal(){ _editId=null; openModal('heroModal') }
+function openTimelineModal(){ _editId=null; openModal('timelineModal') }
+function openModal(id){ document.getElementById(id).classList.add('open') }
+function closeModal(id){ document.getElementById(id).classList.remove('open') }
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open') }));
+
+// ═══════════════════════════════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════════════════════════════
+const tabTitles={dashboard:'Dashboard',countries:'Countries',clubs:'Clubs',hero:'Hero Banners',products:'Products / Kits',players:'Players',media:'Media Library',timeline:'Timeline'};
+function switchTab(name,el){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('pageTitle').textContent=tabTitles[name]||name;
+  if(el){ document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); el.classList.add('active') }
+  else { document.querySelectorAll('.nav-item').forEach(i=>{ if(i.textContent.toLowerCase().includes(name.toLowerCase().split(' ')[0])) i.classList.add('active') }) }
+}
+
+// ═══════════════════════════════════════════════════════
+//  LOGO PREVIEW
+// ═══════════════════════════════════════════════════════
+function previewLogo(event,previewId,urlId){
+  const file=event.target.files[0]; if(!file) return;
+  const preview=document.getElementById(previewId);
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const isSvg=file.name.endsWith('.svg')||file.type==='image/svg+xml';
+    preview.style.display='flex';
+    if(isSvg) preview.innerHTML=e.target.result;
+    else preview.innerHTML=`<img src="${e.target.result}" style="max-width:80px;max-height:60px;border-radius:6px"/>`;
+    document.getElementById(urlId).value='[file selected — will upload on save]';
+  };
+  if(file.name.endsWith('.svg')) reader.readAsText(file);
+  else reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+function toast(msg,type='info'){
+  const c=document.getElementById('toastContainer');
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span>${type==='success'?'✓':type==='error'?'✗':'ℹ'}</span>${msg}`;
+  c.appendChild(el);
+  setTimeout(()=>el.remove(),3200);
+}
+
+// ═══════════════════════════════════════════════════════
+//  SEARCH
+// ═══════════════════════════════════════════════════════
+function globalSearchFn(){
+  const q=document.getElementById('globalSearch').value.toLowerCase();
+  document.querySelectorAll('table tbody tr').forEach(row=>{
+    row.style.display=row.textContent.toLowerCase().includes(q)?'':'none';
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════
+function g(id){ const el=document.getElementById(id); return el?el.value.trim():'' }
+function s(id,val){ const el=document.getElementById(id); if(el&&val!==undefined) el.value=val||'' }
+function setEl(id,val){ const el=document.getElementById(id); if(el) el.textContent=val }
+function emptyRow(cols,msg){ return `<tr><td colspan="${cols}" style="color:var(--muted);text-align:center;padding:30px">${msg}</td></tr>` }
+function resetForm(ids){ ids.forEach(id=>s(id,'')) }
+
+function logoThumb(url,name){
+  if(!url) return `<div class="flag-thumb-svg" title="${name||''}"><span style="font-size:14px">🏳</span></div>`;
+  const isSvg=url.trim().startsWith('<svg')||url.trim().startsWith('<SVG');
+  if(isSvg) return `<div class="flag-thumb-svg">${url}</div>`;
+  return `<img class="flag-thumb" src="${url}" alt="${name||''}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'32\\' height=\\'32\\'><rect fill=\\'%231a2338\\' width=\\'32\\' height=\\'32\\' rx=\\'16\\'/><text y=\\'22\\' x=\\'16\\' text-anchor=\\'middle\\' fill=\\'%2374ACDF\\' font-size=\\'16\\'>🏳</text></svg>'"/>`;
+}
+
+function updateDashboardStats(){ /* Handled by real-time listeners */ }
+
+// ── START ──
+initAuth();
 </script>
 </body>
 </html>
