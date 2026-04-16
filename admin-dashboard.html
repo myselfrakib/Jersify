@@ -12,7 +12,7 @@
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
   import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
   import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
-  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+  import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
   // ── CONFIGURE YOUR FIREBASE PROJECT HERE ──
   const firebaseConfig = {
@@ -30,7 +30,7 @@
   const auth = getAuth(app);
 
   // Expose to window for use outside module
-  window._fb = { db, storage, auth, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc, ref, uploadBytesResumable, getDownloadURL, deleteObject, signInWithEmailAndPassword, signOut, onAuthStateChanged };
+  window._fb = { db, storage, auth, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc, ref, uploadBytesResumable, getDownloadURL, deleteObject, signOut, onAuthStateChanged };
 </script>
 
 <style>
@@ -53,32 +53,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
 
-/* ── AUTH SCREEN ── */
-#authScreen{
-  position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;
-}
-.auth-box{
-  background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px 36px;width:360px;
-  box-shadow:0 24px 60px rgba(0,0,0,0.5);
-}
-.auth-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;color:var(--sky);text-align:center;margin-bottom:4px}
-.auth-sub{text-align:center;color:var(--muted);font-size:12px;margin-bottom:28px;letter-spacing:1px;text-transform:uppercase}
-.auth-input{
-  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;
-  padding:12px 14px;color:var(--text);font-size:14px;margin-bottom:12px;outline:none;transition:.2s;
-}
-.auth-input:focus{border-color:var(--sky)}
-.auth-btn{
-  width:100%;background:linear-gradient(135deg,var(--sky2),var(--bg));border:none;border-radius:10px;
-  color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;letter-spacing:1px;
-  padding:13px;cursor:pointer;margin-top:4px;transition:.2s;
-}
-.auth-btn:hover{background:linear-gradient(135deg,var(--sky),var(--sky2))}
-.auth-err{color:var(--red);font-size:12px;text-align:center;margin-top:8px;min-height:18px}
-
 /* ── LAYOUT ── */
 #app{display:flex;height:100vh;overflow:hidden}
-#app.hidden{display:none}
 
 /* ── SIDEBAR ── */
 .sidebar{
@@ -238,14 +214,17 @@ select option{background:var(--surface2)}
 .ma-copy{background:rgba(116,172,223,0.8);color:#fff}
 .ma-del{background:rgba(231,76,60,0.8);color:#fff}
 
-/* ── HERO EDITOR ── */
-.hero-preview{
-  border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#0c1a2e,#1a3a5c);
-  padding:24px;position:relative;margin-bottom:16px;min-height:120px;
-}
+/* ── COLOR SWATCH ── */
 .color-pair{display:flex;gap:10px}
 .color-swatch{width:36px;height:36px;border-radius:8px;border:2px solid var(--border);cursor:pointer;overflow:hidden;position:relative}
 .color-swatch input[type=color]{position:absolute;inset:-4px;opacity:0;cursor:pointer;width:150%;height:150%}
+
+/* ── SVG PREVIEW ── */
+.svg-preview-box{
+  background:var(--surface3);border:1px solid var(--border);border-radius:10px;
+  padding:14px;display:flex;align-items:center;justify-content:center;min-height:80px;
+}
+.svg-preview-box svg,.svg-preview-box img{max-width:60px;max-height:60px}
 
 /* ── TOAST ── */
 .toast-container{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px}
@@ -259,10 +238,6 @@ select option{background:var(--surface2)}
 .toast.info{border-color:var(--border);color:var(--sky)}
 @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 
-/* ── SKELETON ── */
-.skeleton{background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
 /* ── SEARCH ── */
 .search-bar{
   background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px 13px;
@@ -275,13 +250,6 @@ select option{background:var(--surface2)}
 @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
 .sync-label{font-size:11px;color:var(--muted);font-weight:600}
 
-/* ── SVG PREVIEW ── */
-.svg-preview-box{
-  background:var(--surface3);border:1px solid var(--border);border-radius:10px;
-  padding:14px;display:flex;align-items:center;justify-content:center;min-height:80px;
-}
-.svg-preview-box svg,.svg-preview-box img{max-width:60px;max-height:60px}
-
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
   .sidebar{display:none}
@@ -292,20 +260,8 @@ select option{background:var(--surface2)}
 </head>
 <body>
 
-<!-- ══ AUTH ══ -->
-<div id="authScreen">
-  <div class="auth-box">
-    <div class="auth-logo">JERSIFY</div>
-    <div class="auth-sub">Admin Console</div>
-    <input class="auth-input" id="authEmail" type="email" placeholder="admin@jersify.com" autocomplete="email"/>
-    <input class="auth-input" id="authPass" type="password" placeholder="Password" autocomplete="current-password"/>
-    <button class="auth-btn" onclick="doLogin()">Sign In →</button>
-    <div class="auth-err" id="authErr"></div>
-  </div>
-</div>
-
 <!-- ══ APP ══ -->
-<div id="app" class="hidden">
+<div id="app">
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
@@ -883,68 +839,45 @@ let _unsubscribers = [];
 function waitFb(){ return new Promise(r=>{ const t=setInterval(()=>{ if(window._fb){clearInterval(t);r(window._fb)} },50) }) }
 
 // ═══════════════════════════════════════════════════════
-//  AUTH
+//  LOGOUT (sign out and redirect to login page)
 // ═══════════════════════════════════════════════════════
-async function doLogin(){
-  const {auth,signInWithEmailAndPassword}=await waitFb();
-  const email=document.getElementById('authEmail').value.trim();
-  const pass=document.getElementById('authPass').value;
-  document.getElementById('authErr').textContent='';
-  try{
-    await signInWithEmailAndPassword(auth,email,pass);
-  }catch(e){
-    document.getElementById('authErr').textContent=e.message.replace('Firebase: ','').replace(/\(.*\)/,'');
-  }
-}
 async function doLogout(){
-  const {auth,signOut}=await waitFb();
-  await signOut(auth);
+  const {auth, signOut} = await waitFb();
+  try {
+    await signOut(auth);
+  } catch(e) {
+    // ignore errors on sign out
+  }
+  window.location.href = 'admin-login.html';
 }
-async function initAuth(){
-  const fb=await waitFb();
-  fb.onAuthStateChanged(fb.auth,user=>{
-    if(user){
-      document.getElementById('authScreen').style.display='none';
-      document.getElementById('app').classList.remove('hidden');
-      initApp();
-    } else {
-      document.getElementById('authScreen').style.display='flex';
-      document.getElementById('app').classList.add('hidden');
-      _unsubscribers.forEach(u=>u());
-      _unsubscribers=[];
-    }
-  });
-}
-document.getElementById('authPass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin() });
 
 // ═══════════════════════════════════════════════════════
-//  INIT
+//  INIT — load data directly, no auth check
 // ═══════════════════════════════════════════════════════
 async function initApp(){
-  listenCollection('countries',renderCountries);
-  listenCollection('clubs',renderClubs);
-  listenCollection('products',renderProducts);
-  listenCollection('players',renderPlayers);
-  listenCollection('heroes',renderHeroes);
-  listenCollection('timeline',renderTimeline);
-  listenCollection('media',renderMedia);
-  updateDashboardStats();
+  listenCollection('countries', renderCountries);
+  listenCollection('clubs',     renderClubs);
+  listenCollection('products',  renderProducts);
+  listenCollection('players',   renderPlayers);
+  listenCollection('heroes',    renderHeroes);
+  listenCollection('timeline',  renderTimeline);
+  listenCollection('media',     renderMedia);
 }
 
 // ═══════════════════════════════════════════════════════
 //  FIRESTORE REAL-TIME LISTENER
 // ═══════════════════════════════════════════════════════
-async function listenCollection(col,callback){
-  const {db,collection,onSnapshot}=await waitFb();
-  const unsub=onSnapshot(collection(db,col),(snap)=>{
-    const data=snap.docs.map(d=>({id:d.id,...d.data()}));
+async function listenCollection(col, callback){
+  const {db, collection, onSnapshot} = await waitFb();
+  const unsub = onSnapshot(collection(db, col), (snap) => {
+    const data = snap.docs.map(d => ({id: d.id, ...d.data()}));
     callback(data);
-    updateBadges(col,data.length);
+    updateBadges(col, data.length);
   });
   _unsubscribers.push(unsub);
 }
 
-function updateBadges(col,count){
+function updateBadges(col, count){
   if(col==='countries'){ setEl('countBadgeNav',count); setEl('statCountries',count) }
   if(col==='clubs'){ setEl('clubBadgeNav',count); setEl('statClubs',count) }
   if(col==='products') setEl('statProducts',count);
@@ -967,7 +900,6 @@ function renderCountries(data){
       <td>${actionBtns('countries',c.id)}</td>
     </tr>`).join('');
 
-  // Dashboard recent
   const rc=document.getElementById('recentCountries');
   if(rc) rc.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:10px">${data.slice(0,8).map(c=>`
     <div style="display:flex;align-items:center;gap:8px;background:var(--surface2);border-radius:10px;padding:8px 12px;border:1px solid var(--border)">
@@ -1156,7 +1088,6 @@ async function uploadFile(file,path,progressCb){
       if(progressCb) progressCb(pct);
     },reject,async()=>{
       const url=await getDownloadURL(task.snapshot.ref);
-      // Save to media collection
       await saveDoc('media',{name:file.name,url,storagePath:path,folder:path.split('/')[0],size:file.size,createdAt:Date.now()},null);
       resolve(url);
     });
@@ -1174,7 +1105,6 @@ function showProgress(wrapId,fillId,labelId){
   };
 }
 
-// Media upload from library tab
 async function handleFileSelect(e){ await uploadFilesFromInput(Array.from(e.target.files)) }
 function handleDragOver(e){ e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover') }
 function handleDragLeave(){ document.getElementById('uploadZone').classList.remove('dragover') }
@@ -1186,10 +1116,10 @@ async function uploadFilesFromInput(files){
     const queue=document.getElementById('uploadQueue');
     const item=document.createElement('div');
     item.style.cssText='width:140px;background:var(--surface2);border-radius:10px;padding:10px;border:1px solid var(--border)';
-    item.innerHTML=`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${file.name}</div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%" id="q_${file.name.replace(/\W/g,'_')}"></div></div>`;
+    item.innerHTML=`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${file.name}</div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%"></div></div>`;
     queue.appendChild(item);
     try{
-      const url=await uploadFile(file,`media/${Date.now()}_${file.name}`,(pct)=>{
+      await uploadFile(file,`media/${Date.now()}_${file.name}`,(pct)=>{
         const el=item.querySelector('.progress-bar-fill');
         if(el) el.style.width=pct+'%';
       });
@@ -1232,9 +1162,8 @@ function actionBtns(col,id){
 }
 
 async function editItem(col,id){
-  // Load doc and fill form
   const {db,collection,getDocs}=await waitFb();
-  const snap=await getDocs(collection(db,col)); // simple approach — find by id
+  const snap=await getDocs(collection(db,col));
   const docData=snap.docs.find(d=>d.id===id);
   if(!docData){ toast('Item not found','error'); return }
   const data=docData.data();
@@ -1359,10 +1288,8 @@ function logoThumb(url,name){
   return `<img class="flag-thumb" src="${url}" alt="${name||''}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'32\\' height=\\'32\\'><rect fill=\\'%231a2338\\' width=\\'32\\' height=\\'32\\' rx=\\'16\\'/><text y=\\'22\\' x=\\'16\\' text-anchor=\\'middle\\' fill=\\'%2374ACDF\\' font-size=\\'16\\'>🏳</text></svg>'"/>`;
 }
 
-function updateDashboardStats(){ /* Handled by real-time listeners */ }
-
-// ── START ──
-initAuth();
+// ── START — load data immediately, no auth gate ──
+initApp();
 </script>
 </body>
 </html>
