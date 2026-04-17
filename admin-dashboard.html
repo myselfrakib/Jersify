@@ -1,1586 +1,2606 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>JERSIFY — Admin Panel</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JERSIFY — Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
 
-<!-- Firebase SDKs -->
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-  import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-  import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
-  import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-  import { getDatabase, ref as rtdbRef, set as rtdbSet, remove as rtdbRemove } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+    import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
+    import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { getDatabase, ref as rtdbRef, set as rtdbSet, remove as rtdbRemove } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
-  // ── CONFIGURE YOUR FIREBASE PROJECT HERE ──
-  const firebaseConfig = {
-    apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
-    authDomain: "jersify-f9b5e.firebaseapp.com",
-    projectId: "jersify-f9b5e",
-    storageBucket: "jersify-f9b5e.firebasestorage.app",
-    messagingSenderId: "461181023878",
-    appId: "1:461181023878:web:6ebfbae603baf4a873c307",
-    measurementId: "G-V5E7D09PJ0",
-    databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
-  };
+    // ── CONFIGURE YOUR FIREBASE PROJECT HERE ──
+    const firebaseConfig = {
+      apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
+      authDomain: "jersify-f9b5e.firebaseapp.com",
+      projectId: "jersify-f9b5e",
+      storageBucket: "jersify-f9b5e.firebasestorage.app",
+      messagingSenderId: "461181023878",
+      appId: "1:461181023878:web:6ebfbae603baf4a873c307",
+      measurementId: "G-V5E7D09PJ0",
+      databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
-  const storage = getStorage(app);
-  const auth = getAuth(app);
-  const rtdb = getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    const auth = getAuth(app);
+    const rtdb = getDatabase(app);
 
-  // Expose to window for use outside module
-  window._fb = { db, storage, auth, rtdb, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc, storageRef, uploadBytesResumable, getDownloadURL, deleteObject, signOut, onAuthStateChanged, rtdbRef, rtdbSet, rtdbRemove };
-</script>
+    // Expose to window for use outside module
+    window._fb = { db, storage, auth, rtdb, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc, storageRef, uploadBytesResumable, getDownloadURL, deleteObject, signOut, onAuthStateChanged, rtdbRef, rtdbSet, rtdbRemove };
+  </script>
 
-<style>
-:root{
-  --bg:#0b0f1a;
-  --surface:#131929;
-  --surface2:#1a2338;
-  --surface3:#212d42;
-  --sky:#74ACDF;
-  --sky2:#4a8bc4;
-  --gold:#F6C400;
-  --red:#e74c3c;
-  --green:#27ae60;
-  --text:#e8f0fe;
-  --muted:#7a90b0;
-  --border:rgba(116,172,223,0.15);
-  --radius:14px;
-  --nav:220px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --surface: #131929;
+      --surface2: #1a2338;
+      --surface3: #212d42;
+      --sky: #74ACDF;
+      --sky2: #4a8bc4;
+      --gold: #F6C400;
+      --red: #e74c3c;
+      --green: #27ae60;
+      --text: #e8f0fe;
+      --muted: #7a90b0;
+      --border: rgba(116, 172, 223, 0.15);
+      --radius: 14px;
+      --nav: 220px;
+    }
 
-/* ── LAYOUT ── */
-#app{display:flex;height:100vh;overflow:hidden}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-/* ── SIDEBAR ── */
-.sidebar{
-  width:var(--nav);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;overflow:hidden;
-}
-.sidebar-logo{
-  padding:24px 20px 16px;border-bottom:1px solid var(--border);
-  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--sky);
-  display:flex;align-items:center;gap:10px;
-}
-.sidebar-logo span{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:2px;display:block;margin-top:2px;font-family:'Barlow Condensed',sans-serif}
-.nav-section{padding:12px 12px 4px;font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
-.nav-item{
-  display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:10px;
-  margin:2px 8px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:600;
-  transition:.18s;border:1px solid transparent;
-}
-.nav-item:hover{background:var(--surface2);color:var(--text)}
-.nav-item.active{background:linear-gradient(135deg,rgba(116,172,223,0.18),rgba(116,172,223,0.06));color:var(--sky);border-color:rgba(116,172,223,0.25)}
-.nav-item svg{width:16px;height:16px;flex-shrink:0}
-.nav-badge{margin-left:auto;background:var(--sky2);color:#fff;border-radius:999px;font-size:10px;font-weight:800;padding:1px 7px}
-.sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid var(--border)}
-.logout-btn{
-  display:flex;align-items:center;gap:8px;color:var(--muted);cursor:pointer;
-  font-size:12px;font-weight:600;padding:8px 10px;border-radius:8px;transition:.18s;width:100%;background:none;border:none;
-}
-.logout-btn:hover{color:var(--red);background:rgba(231,76,60,0.1)}
+    html,
+    body {
+      height: 100%;
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px
+    }
 
-/* ── MAIN ── */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.topbar{
-  background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;
-  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
-}
-.topbar-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:1px}
-.topbar-actions{display:flex;align-items:center;gap:10px}
-.btn{
-  border:none;border-radius:8px;padding:8px 16px;font-family:'Barlow Condensed',sans-serif;
-  font-size:13px;font-weight:800;letter-spacing:.5px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.18s;
-}
-.btn-primary{background:linear-gradient(135deg,var(--sky2),#1a3a5c);color:#fff}
-.btn-primary:hover{background:linear-gradient(135deg,var(--sky),var(--sky2))}
-.btn-gold{background:var(--gold);color:#0c1a2e}
-.btn-red{background:rgba(231,76,60,0.15);color:var(--red);border:1px solid rgba(231,76,60,0.3)}
-.btn-red:hover{background:rgba(231,76,60,0.25)}
-.btn-sm{padding:5px 11px;font-size:11px}
-.content{flex:1;overflow-y:auto;padding:24px}
-.content::-webkit-scrollbar{width:5px}
-.content::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:4px}
+    /* ── LAYOUT ── */
+    #app {
+      display: flex;
+      height: 100vh;
+      overflow: hidden
+    }
 
-/* ── TABS ── */
-.tab-pane{display:none}
-.tab-pane.active{display:block}
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--nav);
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-/* ── STATS ROW ── */
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
-.stat-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;
-  position:relative;overflow:hidden;
-}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--sky),var(--gold))}
-.stat-card-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--sky);line-height:1}
-.stat-card-label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-top:4px}
-.stat-card-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:32px;opacity:.25}
+    .sidebar-logo {
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 3px;
+      color: var(--sky);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-/* ── CARDS / TABLES ── */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
-.card-header{
-  padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;
-  justify-content:space-between;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;letter-spacing:.5px;
-}
-.card-body{padding:18px}
-table{width:100%;border-collapse:collapse}
-th{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
-td{padding:12px 14px;border-bottom:1px solid rgba(116,172,223,0.07);font-size:13px;vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(116,172,223,0.04)}
-.flag-thumb{width:32px;height:32px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border)}
-.flag-thumb-svg{width:32px;height:32px;border-radius:50%;overflow:hidden;border:1.5px solid var(--border);background:var(--surface2);display:inline-flex;align-items:center;justify-content:center}
-.badge{display:inline-block;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;letter-spacing:.3px}
-.badge-sky{background:rgba(116,172,223,0.15);color:var(--sky)}
-.badge-gold{background:rgba(246,196,0,0.15);color:var(--gold)}
-.badge-red{background:rgba(231,76,60,0.15);color:var(--red)}
-.badge-green{background:rgba(39,174,96,0.15);color:var(--green)}
-.badge-orange{background:rgba(243,156,18,0.15);color:#f39c12}
-.badge-purple{background:rgba(155,89,182,0.15);color:#9b59b6}
+    .sidebar-logo span {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 2px;
+      display: block;
+      margin-top: 2px;
+      font-family: 'Barlow Condensed', sans-serif
+    }
 
-/* ── TOGGLE SWITCH ── */
-.toggle-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
-.toggle-switch input{opacity:0;width:0;height:0}
-.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--surface3);border:1px solid var(--border);border-radius:999px;transition:.25s}
-.toggle-slider::before{content:'';position:absolute;height:18px;width:18px;left:2px;bottom:2px;background:var(--muted);border-radius:50%;transition:.25s}
-.toggle-switch input:checked+.toggle-slider{background:rgba(39,174,96,0.25);border-color:var(--green)}
-.toggle-switch input:checked+.toggle-slider::before{transform:translateX(20px);background:var(--green)}
+    .nav-section {
+      padding: 12px 12px 4px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase
+    }
 
-/* ── PAGE SETTINGS GRID ── */
-.pages-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.page-card{
-  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;
-  display:flex;align-items:center;gap:14px;transition:.18s;
-}
-.page-card:hover{border-color:var(--sky);background:rgba(116,172,223,0.04)}
-.page-card-icon{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;font-size:20px;flex-shrink:0}
-.page-card-info{flex:1;min-width:0}
-.page-card-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;letter-spacing:.5px}
-.page-card-url{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.page-card-status{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-top:2px}
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      margin: 2px 8px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      transition: .18s;
+      border: 1px solid transparent;
+    }
 
-/* ── USER AVATAR ── */
-.user-avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0}
+    .nav-item:hover {
+      background: var(--surface2);
+      color: var(--text)
+    }
 
-/* ── ORDER STATUS DOTS ── */
-.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
-.status-dot.pending{background:#f39c12}
-.status-dot.confirmed{background:var(--sky)}
-.status-dot.shipped{background:#9b59b6}
-.status-dot.delivered{background:var(--green)}
-.status-dot.cancelled{background:var(--red)}
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(116, 172, 223, 0.18), rgba(116, 172, 223, 0.06));
+      color: var(--sky);
+      border-color: rgba(116, 172, 223, 0.25)
+    }
 
-/* ── INDEX MEDIA GRID ── */
-.index-media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
-.index-media-card{
-  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
-  transition:.18s;position:relative;
-}
-.index-media-card:hover{border-color:var(--sky)}
-.index-media-card img{width:100%;height:140px;object-fit:cover;display:block}
-.index-media-card-body{padding:12px}
-.index-media-card-label{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px}
-.index-media-card-section{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+    .nav-item svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0
+    }
 
-/* ── FORMS / MODAL ── */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
-  z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.2s;
-}
-.modal-overlay.open{opacity:1;pointer-events:all}
-.modal{
-  background:var(--surface);border:1px solid var(--border);border-radius:20px;
-  width:min(540px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.6);
-  transform:translateY(20px);transition:.25s;
-}
-.modal-overlay.open .modal{transform:translateY(0)}
-.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:.5px}
-.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:22px;line-height:1;padding:2px 6px;border-radius:6px;transition:.15s}
-.modal-close:hover{background:var(--surface2);color:var(--text)}
-.modal-body{padding:20px 24px 24px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.form-group{margin-bottom:14px}
-.form-group.full{grid-column:1/-1}
-label{display:block;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
-input[type=text],input[type=email],input[type=url],select,textarea{
-  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;
-  padding:10px 13px;color:var(--text);font-size:13px;outline:none;transition:.18s;font-family:'Barlow',sans-serif;
-}
-input:focus,select:focus,textarea:focus{border-color:var(--sky)}
-textarea{resize:vertical;min-height:80px}
-select option{background:var(--surface2)}
+    .nav-badge {
+      margin-left: auto;
+      background: var(--sky2);
+      color: #fff;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 1px 7px
+    }
 
-/* ── UPLOAD ── */
-.upload-zone{
-  border:2px dashed var(--border);border-radius:12px;padding:28px;text-align:center;
-  cursor:pointer;transition:.2s;background:var(--surface2);position:relative;
-}
-.upload-zone:hover,.upload-zone.dragover{border-color:var(--sky);background:rgba(116,172,223,0.06)}
-.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
-.upload-icon{font-size:28px;margin-bottom:8px}
-.upload-text{font-size:12px;color:var(--muted);line-height:1.5}
-.upload-preview{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
-.preview-item{
-  width:70px;height:70px;border-radius:10px;overflow:hidden;position:relative;
-  border:1px solid var(--border);background:var(--surface3);
-}
-.preview-item img{width:100%;height:100%;object-fit:cover}
-.preview-remove{
-  position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;
-  background:var(--red);color:#fff;border:none;cursor:pointer;font-size:10px;display:grid;place-items:center;
-}
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px;
+      border-top: 1px solid var(--border)
+    }
 
-/* ── PROGRESS ── */
-.progress-bar-wrap{background:var(--surface3);border-radius:999px;height:6px;overflow:hidden;margin-top:8px}
-.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--sky),var(--gold));border-radius:999px;transition:width .3s}
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 10px;
+      border-radius: 8px;
+      transition: .18s;
+      width: 100%;
+      background: none;
+      border: none;
+    }
 
-/* ── MEDIA GRID ── */
-.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
-.media-item{
-  background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;
-  position:relative;cursor:pointer;transition:.18s;
-}
-.media-item:hover{border-color:var(--sky)}
-.media-item img{width:100%;height:110px;object-fit:cover;display:block}
-.media-item-info{padding:8px 10px}
-.media-item-name{font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.media-item-size{font-size:10px;color:var(--muted)}
-.media-item-actions{position:absolute;top:6px;right:6px;display:flex;gap:4px;opacity:0;transition:.15s}
-.media-item:hover .media-item-actions{opacity:1}
-.media-action-btn{
-  width:26px;height:26px;border-radius:6px;border:none;cursor:pointer;display:grid;place-items:center;
-  font-size:11px;backdrop-filter:blur(6px);
-}
-.ma-copy{background:rgba(116,172,223,0.8);color:#fff}
-.ma-del{background:rgba(231,76,60,0.8);color:#fff}
+    .logout-btn:hover {
+      color: var(--red);
+      background: rgba(231, 76, 60, 0.1)
+    }
 
-/* ── COLOR SWATCH ── */
-.color-pair{display:flex;gap:10px}
-.color-swatch{width:36px;height:36px;border-radius:8px;border:2px solid var(--border);cursor:pointer;overflow:hidden;position:relative}
-.color-swatch input[type=color]{position:absolute;inset:-4px;opacity:0;cursor:pointer;width:150%;height:150%}
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
 
-/* ── SVG PREVIEW ── */
-.svg-preview-box{
-  background:var(--surface3);border:1px solid var(--border);border-radius:10px;
-  padding:14px;display:flex;align-items:center;justify-content:center;min-height:80px;
-}
-.svg-preview-box svg,.svg-preview-box img{max-width:60px;max-height:60px}
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
 
-/* ── TOAST ── */
-.toast-container{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px}
-.toast{
-  background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;
-  font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;min-width:240px;
-  box-shadow:0 8px 24px rgba(0,0,0,.4);animation:toastIn .25s ease;
-}
-.toast.success{border-color:rgba(39,174,96,.4);color:var(--green)}
-.toast.error{border-color:rgba(231,76,60,.4);color:var(--red)}
-.toast.info{border-color:var(--border);color:var(--sky)}
-@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+    .topbar-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 1px
+    }
 
-/* ── SEARCH ── */
-.search-bar{
-  background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px 13px;
-  color:var(--text);font-size:13px;outline:none;width:240px;transition:.18s;
-}
-.search-bar:focus{border-color:var(--sky);width:280px}
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
 
-/* ── LIVE SYNC INDICATOR ── */
-.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse-dot 2s ease infinite;display:inline-block;margin-right:6px}
-@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
-.sync-label{font-size:11px;color:var(--muted);font-weight:600}
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: .18s;
+    }
 
-/* ── RESPONSIVE ── */
-@media(max-width:768px){
-  .sidebar{display:none}
-  .stats-row{grid-template-columns:1fr 1fr}
-  .form-row{grid-template-columns:1fr}
-  .pages-grid{grid-template-columns:1fr}
-  .index-media-grid{grid-template-columns:1fr 1fr}
-}
-</style>
+    .btn-primary {
+      background: linear-gradient(135deg, var(--sky2), #1a3a5c);
+      color: #fff
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--sky), var(--sky2))
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #0c1a2e
+    }
+
+    .btn-red {
+      background: rgba(231, 76, 60, 0.15);
+      color: var(--red);
+      border: 1px solid rgba(231, 76, 60, 0.3)
+    }
+
+    .btn-red:hover {
+      background: rgba(231, 76, 60, 0.25)
+    }
+
+    .btn-sm {
+      padding: 5px 11px;
+      font-size: 11px
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px
+    }
+
+    .content::-webkit-scrollbar {
+      width: 5px
+    }
+
+    .content::-webkit-scrollbar-thumb {
+      background: var(--surface3);
+      border-radius: 4px
+    }
+
+    /* ── TABS ── */
+    .tab-pane {
+      display: none
+    }
+
+    .tab-pane.active {
+      display: block
+    }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--sky), var(--gold))
+    }
+
+    .stat-card-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      color: var(--sky);
+      line-height: 1
+    }
+
+    .stat-card-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-top: 4px
+    }
+
+    .stat-card-icon {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 32px;
+      opacity: .25
+    }
+
+    /* ── CARDS / TABLES ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 20px
+    }
+
+    .card-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: .5px;
+    }
+
+    .card-body {
+      padding: 18px
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    th {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border)
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(116, 172, 223, 0.07);
+      font-size: 13px;
+      vertical-align: middle
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    tr:hover td {
+      background: rgba(116, 172, 223, 0.04)
+    }
+
+    .flag-thumb {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--border)
+    }
+
+    .flag-thumb-svg {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1.5px solid var(--border);
+      background: var(--surface2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .3px
+    }
+
+    .badge-sky {
+      background: rgba(116, 172, 223, 0.15);
+      color: var(--sky)
+    }
+
+    .badge-gold {
+      background: rgba(246, 196, 0, 0.15);
+      color: var(--gold)
+    }
+
+    .badge-red {
+      background: rgba(231, 76, 60, 0.15);
+      color: var(--red)
+    }
+
+    .badge-green {
+      background: rgba(39, 174, 96, 0.15);
+      color: var(--green)
+    }
+
+    .badge-orange {
+      background: rgba(243, 156, 18, 0.15);
+      color: #f39c12
+    }
+
+    .badge-purple {
+      background: rgba(155, 89, 182, 0.15);
+      color: #9b59b6
+    }
+
+    /* ── TOGGLE SWITCH ── */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      transition: .25s
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      bottom: 2px;
+      background: var(--muted);
+      border-radius: 50%;
+      transition: .25s
+    }
+
+    .toggle-switch input:checked+.toggle-slider {
+      background: rgba(39, 174, 96, 0.25);
+      border-color: var(--green)
+    }
+
+    .toggle-switch input:checked+.toggle-slider::before {
+      transform: translateX(20px);
+      background: var(--green)
+    }
+
+    /* ── PAGE SETTINGS GRID ── */
+    .pages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px
+    }
+
+    .page-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: .18s;
+    }
+
+    .page-card:hover {
+      border-color: var(--sky);
+      background: rgba(116, 172, 223, 0.04)
+    }
+
+    .page-card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      flex-shrink: 0
+    }
+
+    .page-card-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .page-card-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .5px
+    }
+
+    .page-card-url {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .page-card-status {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-top: 2px
+    }
+
+    /* ── USER AVATAR ── */
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0
+    }
+
+    /* ── ORDER STATUS DOTS ── */
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px
+    }
+
+    .status-dot.pending {
+      background: #f39c12
+    }
+
+    .status-dot.confirmed {
+      background: var(--sky)
+    }
+
+    .status-dot.shipped {
+      background: #9b59b6
+    }
+
+    .status-dot.delivered {
+      background: var(--green)
+    }
+
+    .status-dot.cancelled {
+      background: var(--red)
+    }
+
+    /* ── INDEX MEDIA GRID ── */
+    .index-media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px
+    }
+
+    .index-media-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: .18s;
+      position: relative;
+    }
+
+    .index-media-card:hover {
+      border-color: var(--sky)
+    }
+
+    .index-media-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block
+    }
+
+    .index-media-card-body {
+      padding: 12px
+    }
+
+    .index-media-card-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px
+    }
+
+    .index-media-card-section {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+
+    /* ── FORMS / MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: min(540px, 95vw);
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, .6);
+      transform: translateY(20px);
+      transition: .25s;
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0)
+    }
+
+    .modal-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .modal-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .5px
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: .15s
+    }
+
+    .modal-close:hover {
+      background: var(--surface2);
+      color: var(--text)
+    }
+
+    .modal-body {
+      padding: 20px 24px 24px
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    .form-group {
+      margin-bottom: 14px
+    }
+
+    .form-group.full {
+      grid-column: 1/-1
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 6px
+    }
+
+    input[type=text],
+    input[type=email],
+    input[type=url],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 13px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: .18s;
+      font-family: 'Barlow', sans-serif;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--sky)
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px
+    }
+
+    select option {
+      background: var(--surface2)
+    }
+
+    /* ── UPLOAD ── */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      text-align: center;
+      cursor: pointer;
+      transition: .2s;
+      background: var(--surface2);
+      position: relative;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--sky);
+      background: rgba(116, 172, 223, 0.06)
+    }
+
+    .upload-zone input[type=file] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer
+    }
+
+    .upload-icon {
+      font-size: 28px;
+      margin-bottom: 8px
+    }
+
+    .upload-text {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5
+    }
+
+    .upload-preview {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .preview-item {
+      width: 70px;
+      height: 70px;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border);
+      background: var(--surface3);
+    }
+
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .preview-remove {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 10px;
+      display: grid;
+      place-items: center;
+    }
+
+    /* ── PROGRESS ── */
+    .progress-bar-wrap {
+      background: var(--surface3);
+      border-radius: 999px;
+      height: 6px;
+      overflow: hidden;
+      margin-top: 8px
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--sky), var(--gold));
+      border-radius: 999px;
+      transition: width .3s
+    }
+
+    /* ── MEDIA GRID ── */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px
+    }
+
+    .media-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: .18s;
+    }
+
+    .media-item:hover {
+      border-color: var(--sky)
+    }
+
+    .media-item img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      display: block
+    }
+
+    .media-item-info {
+      padding: 8px 10px
+    }
+
+    .media-item-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .media-item-size {
+      font-size: 10px;
+      color: var(--muted)
+    }
+
+    .media-item-actions {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+      transition: .15s
+    }
+
+    .media-item:hover .media-item-actions {
+      opacity: 1
+    }
+
+    .media-action-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      backdrop-filter: blur(6px);
+    }
+
+    .ma-copy {
+      background: rgba(116, 172, 223, 0.8);
+      color: #fff
+    }
+
+    .ma-del {
+      background: rgba(231, 76, 60, 0.8);
+      color: #fff
+    }
+
+    /* ── COLOR SWATCH ── */
+    .color-pair {
+      display: flex;
+      gap: 10px
+    }
+
+    .color-swatch {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      overflow: hidden;
+      position: relative
+    }
+
+    .color-swatch input[type=color] {
+      position: absolute;
+      inset: -4px;
+      opacity: 0;
+      cursor: pointer;
+      width: 150%;
+      height: 150%
+    }
+
+    /* ── SVG PREVIEW ── */
+    .svg-preview-box {
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 80px;
+    }
+
+    .svg-preview-box svg,
+    .svg-preview-box img {
+      max-width: 60px;
+      max-height: 60px
+    }
+
+    /* ── TOAST ── */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 240px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+      animation: toastIn .25s ease;
+    }
+
+    .toast.success {
+      border-color: rgba(39, 174, 96, .4);
+      color: var(--green)
+    }
+
+    .toast.error {
+      border-color: rgba(231, 76, 60, .4);
+      color: var(--red)
+    }
+
+    .toast.info {
+      border-color: var(--border);
+      color: var(--sky)
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
+
+    /* ── SEARCH ── */
+    .search-bar {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 8px 13px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      width: 240px;
+      transition: .18s;
+    }
+
+    .search-bar:focus {
+      border-color: var(--sky);
+      width: 280px
+    }
+
+    /* ── LIVE SYNC INDICATOR ── */
+    .sync-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse-dot 2s ease infinite;
+      display: inline-block;
+      margin-right: 6px
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .5;
+        transform: scale(1.4)
+      }
+    }
+
+    .sync-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600
+    }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px) {
+      .sidebar {
+        display: none
+      }
+
+      .stats-row {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .form-row {
+        grid-template-columns: 1fr
+      }
+
+      .pages-grid {
+        grid-template-columns: 1fr
+      }
+
+      .index-media-grid {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- ══ APP ══ -->
-<div id="app">
+  <!-- ══ APP ══ -->
+  <div id="app">
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="8" fill="#74ACDF" opacity=".2"/><path d="M7 8l-3.5 4 3.5 1.5v9h14v-9L25 12l-3.5-4c-1 -.8-2.5-1.5-3.5-2-.5-.3-1-.5-4-.5s-3.5.2-4 .5c-1 .5-2.5 1.2-3.5 2z" fill="#74ACDF"/></svg>
-      <div><div>JERSIFY</div><span>ADMIN v2.0</span></div>
-    </div>
-
-    <div class="nav-section">Content</div>
-    <div class="nav-item" onclick="switchTab('hero',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-      Hero Banners
-    </div>
-    <div class="nav-item" onclick="switchTab('products',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-      Products
-    </div>
-    <div class="nav-item" onclick="switchTab('players',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20v-2a8 8 0 0 1 16 0v2"/></svg>
-      Players
-    </div>
-
-    <div class="nav-section">Management</div>
-    <div class="nav-item" onclick="switchTab('orders',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><path d="M12 4v16"/></svg>
-      Orders <span class="nav-badge" id="orderBadgeNav">0</span>
-    </div>
-    <div class="nav-item" onclick="switchTab('users',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-      Users <span class="nav-badge" id="userBadgeNav">0</span>
-    </div>
-
-    <div class="nav-section">Settings</div>
-    <div class="nav-item" onclick="switchTab('pages',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-      Page Settings
-    </div>
-    <div class="nav-item" onclick="switchTab('indexmedia',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-      Index Media
-    </div>
-
-    <div class="nav-section">Assets</div>
-    <div class="nav-item" onclick="switchTab('media',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-      Media Library
-    </div>
-    <div class="nav-item" onclick="switchTab('timeline',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Timeline
-    </div>
-
-    <div class="sidebar-footer">
-      <div style="display:flex;align-items:center;margin-bottom:10px;">
-        <span class="sync-dot"></span><span class="sync-label">Live Sync Active</span>
-      </div>
-      <button class="logout-btn" onclick="doLogout()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Sign Out
-      </button>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <div class="main">
-    <div class="topbar">
-      <div class="topbar-title" id="pageTitle">Dashboard</div>
-      <div class="topbar-actions">
-        <input class="search-bar" id="globalSearch" placeholder="Search..." oninput="globalSearchFn()"/>
-        <div id="topbarBtn"></div>
-      </div>
-    </div>
-
-    <div class="content" id="mainContent">
-
-      <!-- ═══ DASHBOARD ═══ -->
-      <div class="tab-pane active" id="tab-dashboard">
-        <div class="stats-row">
-          <div class="stat-card"><div class="stat-card-val" id="statProducts">—</div><div class="stat-card-label">Products</div><div class="stat-card-icon">👕</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statOrders">—</div><div class="stat-card-label">Orders</div><div class="stat-card-icon">📦</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statUsers">—</div><div class="stat-card-label">Users</div><div class="stat-card-icon">👤</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statMedia">—</div><div class="stat-card-label">Media Files</div><div class="stat-card-icon">🖼️</div></div>
-        </div>
-        <div class="card">
-          <div class="card-header">Quick Actions</div>
-          <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn btn-primary" onclick="switchTab('products',null);openProductModal()">+ Add Product</button>
-            <button class="btn btn-gold" onclick="switchTab('media',null)">📁 Media Library</button>
-          </div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="8" fill="#74ACDF" opacity=".2" />
+          <path
+            d="M7 8l-3.5 4 3.5 1.5v9h14v-9L25 12l-3.5-4c-1 -.8-2.5-1.5-3.5-2-.5-.3-1-.5-4-.5s-3.5.2-4 .5c-1 .5-2.5 1.2-3.5 2z"
+            fill="#74ACDF" />
+        </svg>
+        <div>
+          <div>JERSIFY</div><span>ADMIN v2.0</span>
         </div>
       </div>
 
+      <div class="nav-section">Content</div>
+      <div class="nav-item" onclick="switchTab('hero',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M3 9h18M9 21V9" />
+        </svg>
+        Hero Banners
+      </div>
+      <div class="nav-item" onclick="switchTab('products',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
+        </svg>
+        Products
+      </div>
+      <div class="nav-item" onclick="switchTab('players',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20v-2a8 8 0 0 1 16 0v2" />
+        </svg>
+        Players
+      </div>
 
-      <!-- ═══ HERO BANNERS ═══ -->
-      <div class="tab-pane" id="tab-hero">
-        <div class="card">
-          <div class="card-header">
-            Hero Banners
-            <button class="btn btn-primary btn-sm" onclick="openHeroModal()">+ Add Banner</button>
-          </div>
-          <table>
-            <thead><tr><th>Page</th><th>Title</th><th>Subtitle</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="heroTable"><tr><td colspan="5" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
-          </table>
+      <div class="nav-section">Management</div>
+      <div class="nav-item" onclick="switchTab('orders',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <path d="M2 10h20" />
+          <path d="M12 4v16" />
+        </svg>
+        Orders <span class="nav-badge" id="orderBadgeNav">0</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('users',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <line x1="19" y1="8" x2="19" y2="14" />
+          <line x1="22" y1="11" x2="16" y2="11" />
+        </svg>
+        Users <span class="nav-badge" id="userBadgeNav">0</span>
+      </div>
+
+      <div class="nav-section">Settings</div>
+      <div class="nav-item" onclick="switchTab('pages',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+        </svg>
+        Page Settings
+      </div>
+      <div class="nav-item" onclick="switchTab('indexmedia',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M3 9h18" />
+          <path d="M9 21V9" />
+        </svg>
+        Index Media
+      </div>
+
+      <div class="nav-section">Assets</div>
+      <div class="nav-item" onclick="switchTab('media',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <polyline points="21 15 16 10 5 21" />
+        </svg>
+        Media Library
+      </div>
+      <div class="nav-item" onclick="switchTab('timeline',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="2" x2="12" y2="22" />
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+        Timeline
+      </div>
+
+      <div class="sidebar-footer">
+        <div style="display:flex;align-items:center;margin-bottom:10px;">
+          <span class="sync-dot"></span><span class="sync-label">Live Sync Active</span>
+        </div>
+        <button class="logout-btn" onclick="doLogout()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-title" id="pageTitle">Dashboard</div>
+        <div class="topbar-actions">
+          <input class="search-bar" id="globalSearch" placeholder="Search..." oninput="globalSearchFn()" />
+          <div id="topbarBtn"></div>
         </div>
       </div>
 
-      <!-- ═══ PRODUCTS ═══ -->
-      <div class="tab-pane" id="tab-products">
-        <div class="card">
-          <div class="card-header">
-            Products / Kits
-            <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ Add Product</button>
-          </div>
-          <table>
-            <thead><tr><th>Name</th><th>Country/Club</th><th>Type</th><th>Price (₹)</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="productsTable"><tr><td colspan="6" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
+      <div class="content" id="mainContent">
 
-      <!-- ═══ PLAYERS ═══ -->
-      <div class="tab-pane" id="tab-players">
-        <div class="card">
-          <div class="card-header">
-            Players
-            <button class="btn btn-primary btn-sm" onclick="openPlayerModal()">+ Add Player</button>
-          </div>
-          <table>
-            <thead><tr><th>#</th><th>Name</th><th>Team</th><th>Position</th><th>Goals</th><th>Caps</th><th>Actions</th></tr></thead>
-            <tbody id="playersTable"><tr><td colspan="7" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ═══ MEDIA ═══ -->
-      <div class="tab-pane" id="tab-media">
-        <div class="card">
-          <div class="card-header">
-            Upload Files
-            <div style="font-size:11px;color:var(--muted);font-weight:400">SVG, PNG, JPG, WEBP — max 5MB</div>
-          </div>
-          <div class="card-body">
-            <div class="upload-zone" id="uploadZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-              <input type="file" id="mediaFileInput" multiple accept="image/*,.svg" onchange="handleFileSelect(event)"/>
-              <div class="upload-icon">☁️</div>
-              <div class="upload-text"><strong style="color:var(--sky)">Click to browse</strong> or drag & drop files here<br>Stored in Firebase Storage · URL auto-copied</div>
+        <!-- ═══ DASHBOARD ═══ -->
+        <div class="tab-pane active" id="tab-dashboard">
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-card-val" id="statProducts">—</div>
+              <div class="stat-card-label">Products</div>
+              <div class="stat-card-icon">👕</div>
             </div>
-            <div id="uploadQueue" class="upload-preview" style="margin-top:14px"></div>
+            <div class="stat-card">
+              <div class="stat-card-val" id="statOrders">—</div>
+              <div class="stat-card-label">Orders</div>
+              <div class="stat-card-icon">📦</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-val" id="statUsers">—</div>
+              <div class="stat-card-label">Users</div>
+              <div class="stat-card-icon">👤</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-val" id="statMedia">—</div>
+              <div class="stat-card-label">Media Files</div>
+              <div class="stat-card-icon">🖼️</div>
+            </div>
           </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            Media Library
-            <select id="mediaFilter" onchange="filterMedia()" style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:4px 10px;color:var(--text);font-size:12px;outline:none">
-              <option value="">All Files</option>
-              <option value="countries">Countries</option>
-              <option value="clubs">Clubs</option>
-              <option value="products">Products</option>
-              <option value="media">General</option>
-            </select>
-          </div>
-          <div class="card-body">
-            <div class="media-grid" id="mediaGrid">
-              <div style="color:var(--muted);font-size:13px">Loading…</div>
+          <div class="card">
+            <div class="card-header">Quick Actions</div>
+            <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="switchTab('products',null);openProductModal()">+ Add
+                Product</button>
+              <button class="btn btn-gold" onclick="switchTab('media',null)">📁 Media Library</button>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- ═══ ORDERS ═══ -->
-      <div class="tab-pane" id="tab-orders">
-        <div class="stats-row" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
-          <div class="stat-card"><div class="stat-card-val" id="statOrdersPending">—</div><div class="stat-card-label">Pending</div><div class="stat-card-icon" style="color:#f39c12">⏳</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statOrdersConfirmed">—</div><div class="stat-card-label">Confirmed</div><div class="stat-card-icon" style="color:var(--sky)">✓</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statOrdersShipped">—</div><div class="stat-card-label">Shipped</div><div class="stat-card-icon" style="color:#9b59b6">🚚</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statOrdersDelivered">—</div><div class="stat-card-label">Delivered</div><div class="stat-card-icon" style="color:var(--green)">✅</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statOrdersRevenue">—</div><div class="stat-card-label">Total Revenue</div><div class="stat-card-icon">💰</div></div>
+
+        <!-- ═══ HERO BANNERS ═══ -->
+        <div class="tab-pane" id="tab-hero">
+          <div class="card">
+            <div class="card-header">
+              Hero Banners
+              <button class="btn btn-primary btn-sm" onclick="openHeroModal()">+ Add Banner</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Page</th>
+                  <th>Title</th>
+                  <th>Subtitle</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="heroTable">
+                <tr>
+                  <td colspan="5" style="color:var(--muted);text-align:center;padding:30px">Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="card">
-          <div class="card-header">
-            All Orders
-            <div style="display:flex;gap:8px;align-items:center">
-              <select id="orderStatusFilter" onchange="filterOrders()" style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:4px 10px;color:var(--text);font-size:12px;outline:none">
-                <option value="">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="shipped">Shipped</option>
-                <option value="delivered">Delivered</option>
-                <option value="cancelled">Cancelled</option>
+
+        <!-- ═══ PRODUCTS ═══ -->
+        <div class="tab-pane" id="tab-products">
+          <div class="card">
+            <div class="card-header">
+              Products / Kits
+              <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ Add Product</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Country/Club</th>
+                  <th>Type</th>
+                  <th>Price (₹)</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productsTable">
+                <tr>
+                  <td colspan="6" style="color:var(--muted);text-align:center;padding:30px">Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ═══ PLAYERS ═══ -->
+        <div class="tab-pane" id="tab-players">
+          <div class="card">
+            <div class="card-header">
+              Players
+              <button class="btn btn-primary btn-sm" onclick="openPlayerModal()">+ Add Player</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Team</th>
+                  <th>Position</th>
+                  <th>Goals</th>
+                  <th>Caps</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="playersTable">
+                <tr>
+                  <td colspan="7" style="color:var(--muted);text-align:center;padding:30px">Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ═══ MEDIA ═══ -->
+        <div class="tab-pane" id="tab-media">
+          <div class="card">
+            <div class="card-header">
+              Upload Files
+              <div style="font-size:11px;color:var(--muted);font-weight:400">SVG, PNG, JPG, WEBP — max 5MB</div>
+            </div>
+            <div class="card-body">
+              <div class="upload-zone" id="uploadZone" ondragover="handleDragOver(event)"
+                ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                <input type="file" id="mediaFileInput" multiple accept="image/*,.svg"
+                  onchange="handleFileSelect(event)" />
+                <div class="upload-icon">☁️</div>
+                <div class="upload-text"><strong style="color:var(--sky)">Click to browse</strong> or drag & drop files
+                  here<br>Stored in Firebase Storage · URL auto-copied</div>
+              </div>
+              <div id="uploadQueue" class="upload-preview" style="margin-top:14px"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              Media Library
+              <select id="mediaFilter" onchange="filterMedia()"
+                style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:4px 10px;color:var(--text);font-size:12px;outline:none">
+                <option value="">All Files</option>
+                <option value="countries">Countries</option>
+                <option value="clubs">Clubs</option>
+                <option value="products">Products</option>
+                <option value="media">General</option>
               </select>
             </div>
-          </div>
-          <div style="overflow-x:auto">
-          <table>
-            <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
-            <tbody id="ordersTable"><tr><td colspan="8" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
-          </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ USERS ═══ -->
-      <div class="tab-pane" id="tab-users">
-        <div class="card">
-          <div class="card-header">
-            Registered Users
-            <div style="font-size:11px;color:var(--muted);font-weight:400">View all registered users</div>
-          </div>
-          <div style="overflow-x:auto">
-          <table>
-            <thead><tr><th>Avatar</th><th>Name</th><th>Email</th><th>Phone</th><th>Orders</th><th>Joined</th><th>Status</th></tr></thead>
-            <tbody id="usersTable"><tr><td colspan="7" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
-          </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ PAGE SETTINGS ═══ -->
-      <div class="tab-pane" id="tab-pages">
-        <div class="card">
-          <div class="card-header">
-            Page Visibility Settings
-            <div style="font-size:11px;color:var(--muted);font-weight:400">Toggle pages active or inactive on the site</div>
-          </div>
-          <div class="card-body">
-            <div class="pages-grid" id="pagesGrid">
-              <div style="color:var(--muted);font-size:13px">Loading page settings…</div>
+            <div class="card-body">
+              <div class="media-grid" id="mediaGrid">
+                <div style="color:var(--muted);font-size:13px">Loading…</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- ═══ INDEX MEDIA ═══ -->
-      <div class="tab-pane" id="tab-indexmedia">
-        <div class="card">
-          <div class="card-header">
-            Index Page Media
-            <button class="btn btn-primary btn-sm" onclick="openIndexMediaModal()">+ Add Media</button>
+        <!-- ═══ ORDERS ═══ -->
+        <div class="tab-pane" id="tab-orders">
+          <div class="stats-row" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
+            <div class="stat-card">
+              <div class="stat-card-val" id="statOrdersPending">—</div>
+              <div class="stat-card-label">Pending</div>
+              <div class="stat-card-icon" style="color:#f39c12">⏳</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-val" id="statOrdersConfirmed">—</div>
+              <div class="stat-card-label">Confirmed</div>
+              <div class="stat-card-icon" style="color:var(--sky)">✓</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-val" id="statOrdersShipped">—</div>
+              <div class="stat-card-label">Shipped</div>
+              <div class="stat-card-icon" style="color:#9b59b6">🚚</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-val" id="statOrdersDelivered">—</div>
+              <div class="stat-card-label">Delivered</div>
+              <div class="stat-card-icon" style="color:var(--green)">✅</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-val" id="statOrdersRevenue">—</div>
+              <div class="stat-card-label">Total Revenue</div>
+              <div class="stat-card-icon">💰</div>
+            </div>
           </div>
-          <div class="card-body">
-            <div style="color:var(--muted);font-size:12px;margin-bottom:14px">Manage hero banners, featured images, and promotional media displayed on the homepage.</div>
-            <div class="index-media-grid" id="indexMediaGrid">
-              <div style="color:var(--muted);font-size:13px">Loading…</div>
+          <div class="card">
+            <div class="card-header">
+              All Orders
+              <div style="display:flex;gap:8px;align-items:center">
+                <select id="orderStatusFilter" onchange="filterOrders()"
+                  style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:4px 10px;color:var(--text);font-size:12px;outline:none">
+                  <option value="">All Statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+            </div>
+            <div style="overflow-x:auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTable">
+                  <tr>
+                    <td colspan="8" style="color:var(--muted);text-align:center;padding:30px">Loading…</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- ═══ TIMELINE ═══ -->
-      <div class="tab-pane" id="tab-timeline">
-        <div class="card">
-          <div class="card-header">
-            History Timeline
-            <button class="btn btn-primary btn-sm" onclick="openTimelineModal()">+ Add Entry</button>
+        <!-- ═══ USERS ═══ -->
+        <div class="tab-pane" id="tab-users">
+          <div class="card">
+            <div class="card-header">
+              Registered Users
+              <div style="font-size:11px;color:var(--muted);font-weight:400">View all registered users</div>
+            </div>
+            <div style="overflow-x:auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Avatar</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Orders</th>
+                    <th>Joined</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTable">
+                  <tr>
+                    <td colspan="7" style="color:var(--muted);text-align:center;padding:30px">Loading…</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-          <table>
-            <thead><tr><th>Year</th><th>Event</th><th>Detail</th><th>Team</th><th>Actions</th></tr></thead>
-          <tbody id="timelineTable"><tr><td colspan="5" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
-          </table>
         </div>
-      </div>
 
-    </div><!-- /content -->
-  </div><!-- /main -->
-</div><!-- /app -->
+        <!-- ═══ PAGE SETTINGS ═══ -->
+        <div class="tab-pane" id="tab-pages">
+          <div class="card">
+            <div class="card-header">
+              Page Visibility Settings
+              <div style="font-size:11px;color:var(--muted);font-weight:400">Toggle pages active or inactive on the site
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="pages-grid" id="pagesGrid">
+                <div style="color:var(--muted);font-size:13px">Loading page settings…</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-<!-- ══ MODALS ══ -->
+        <!-- ═══ INDEX MEDIA ═══ -->
+        <div class="tab-pane" id="tab-indexmedia">
+          <div class="card">
+            <div class="card-header">
+              Index Page Media
+              <button class="btn btn-primary btn-sm" onclick="openIndexMediaModal()">+ Add Media</button>
+            </div>
+            <div class="card-body">
+              <div style="color:var(--muted);font-size:12px;margin-bottom:14px">Manage hero banners, featured images,
+                and promotional media displayed on the homepage.</div>
+              <div class="index-media-grid" id="indexMediaGrid">
+                <div style="color:var(--muted);font-size:13px">Loading…</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ TIMELINE ═══ -->
+        <div class="tab-pane" id="tab-timeline">
+          <div class="card">
+            <div class="card-header">
+              History Timeline
+              <button class="btn btn-primary btn-sm" onclick="openTimelineModal()">+ Add Entry</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Year</th>
+                  <th>Event</th>
+                  <th>Detail</th>
+                  <th>Team</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="timelineTable">
+                <tr>
+                  <td colspan="5" style="color:var(--muted);text-align:center;padding:30px">Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /content -->
+    </div><!-- /main -->
+  </div><!-- /app -->
+
+  <!-- ══ MODALS ══ -->
 
 
-<!-- Product Modal -->
-<div class="modal-overlay" id="productModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Add / Edit Product</div>
-      <button class="modal-close" onclick="closeModal('productModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Product Name*</label>
-          <input type="text" id="p_name" placeholder="Home Kit 2025"/>
-        </div>
-        <div class="form-group">
-          <label>Team / Country</label>
-          <select id="p_team">
-            <optgroup label="Countries">
-              <option value="Argentina">Argentina</option>
-              <option value="Brazil">Brazil</option>
-              <option value="France">France</option>
-              <option value="Germany">Germany</option>
-              <option value="Spain">Spain</option>
-              <option value="Portugal">Portugal</option>
-            </optgroup>
-            <optgroup label="Clubs">
-              <option value="Barcelona">Barcelona</option>
-              <option value="Real Madrid">Real Madrid</option>
-              <option value="Chelsea">Chelsea</option>
-              <option value="Man City">Man City</option>
-              <option value="Man Utd">Man Utd</option>
-              <option value="PSG">PSG</option>
-            </optgroup>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Type</label>
-          <select id="p_type">
-            <option>Home Kit</option><option>Away Kit</option><option>Third Kit</option>
-            <option>Special Edition</option><option>Fan Kit</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Price (₹)*</label>
-          <input type="text" id="p_price" placeholder="1499"/>
-        </div>
-        <div class="form-group">
-          <label>Badge Label</label>
-          <input type="text" id="p_badge" placeholder="NEW 2025"/>
-        </div>
-        <div class="form-group">
-          <label>Status</label>
-          <select id="p_status"><option value="active">Active</option><option value="inactive">Inactive</option></select>
-        </div>
+  <!-- Product Modal -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add / Edit Product</div>
+        <button class="modal-close" onclick="closeModal('productModal')">×</button>
       </div>
-      <div class="form-group full" style="display:flex;gap:10px;">
-        <div style="flex:1;"><label>Size XS</label><input type="number" id="p_size_xs" value="0" min="0"/></div>
-        <div style="flex:1;"><label>Size S</label><input type="number" id="p_size_s" value="0" min="0"/></div>
-        <div style="flex:1;"><label>Size M</label><input type="number" id="p_size_m" value="0" min="0"/></div>
-        <div style="flex:1;"><label>Size L</label><input type="number" id="p_size_l" value="0" min="0"/></div>
-        <div style="flex:1;"><label>Size XL</label><input type="number" id="p_size_xl" value="0" min="0"/></div>
-      </div>
-      <div class="form-group full">
-        <label>Product Image</label>
-        <div class="upload-zone" style="padding:16px">
-          <input type="file" id="p_img_file" accept="image/*" onchange="previewLogo(event,'p_img_preview','p_img_url')"/>
-          <div class="upload-text">Click to upload product image</div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Product Name*</label>
+            <input type="text" id="p_name" placeholder="Home Kit 2025" />
+          </div>
+          <div class="form-group">
+            <label>Team / Country</label>
+            <select id="p_team">
+              <optgroup label="Countries">
+                <option value="Argentina">Argentina</option>
+                <option value="Brazil">Brazil</option>
+                <option value="France">France</option>
+                <option value="Germany">Germany</option>
+                <option value="Spain">Spain</option>
+                <option value="Portugal">Portugal</option>
+              </optgroup>
+              <optgroup label="Clubs">
+                <option value="Barcelona">Barcelona</option>
+                <option value="Real Madrid">Real Madrid</option>
+                <option value="Chelsea">Chelsea</option>
+                <option value="Man City">Man City</option>
+                <option value="Man Utd">Man Utd</option>
+                <option value="PSG">PSG</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select id="p_type">
+              <option>Home Kit</option>
+              <option>Away Kit</option>
+              <option>Third Kit</option>
+              <option>Special Edition</option>
+              <option>Fan Kit</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Price (₹)*</label>
+            <input type="text" id="p_price" placeholder="1499" />
+          </div>
+          <div class="form-group">
+            <label>Badge Label</label>
+            <input type="text" id="p_badge" placeholder="NEW 2025" />
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="p_status">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
         </div>
-        <div class="svg-preview-box" id="p_img_preview" style="margin-top:8px;display:none"></div>
-        <input type="text" id="p_img_url" placeholder="or paste image URL" style="margin-top:8px"/>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-primary" style="flex:1" onclick="saveProduct()">💾 Save Product</button>
-        <button class="btn" style="background:var(--surface2)" onclick="closeModal('productModal')">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Player Modal -->
-<div class="modal-overlay" id="playerModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Add / Edit Player</div>
-      <button class="modal-close" onclick="closeModal('playerModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Full Name*</label>
-          <input type="text" id="pl_name" placeholder="Lionel Messi"/>
-        </div>
-        <div class="form-group">
-          <label>Jersey Number</label>
-          <input type="text" id="pl_num" placeholder="10"/>
-        </div>
-        <div class="form-group">
-          <label>Position</label>
-          <select id="pl_pos">
-            <option>Forward</option><option>Midfielder</option><option>Defender</option><option>Goalkeeper</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Team</label>
-          <input type="text" id="pl_team" placeholder="Argentina"/>
-        </div>
-        <div class="form-group">
-          <label>Goals</label>
-          <input type="text" id="pl_goals" placeholder="108"/>
-        </div>
-        <div class="form-group">
-          <label>Assists</label>
-          <input type="text" id="pl_assists" placeholder="56"/>
-        </div>
-        <div class="form-group">
-          <label>Caps</label>
-          <input type="text" id="pl_caps" placeholder="180"/>
-        </div>
-        <div class="form-group">
-          <label>Club</label>
-          <input type="text" id="pl_club" placeholder="Inter Miami CF"/>
-        </div>
-      </div>
-      <div class="form-group full">
-        <label>Role / Description</label>
-        <textarea id="pl_desc" placeholder="Captain · Forward · GOAT"></textarea>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-primary" style="flex:1" onclick="savePlayer()">💾 Save Player</button>
-        <button class="btn" style="background:var(--surface2)" onclick="closeModal('playerModal')">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Hero Banner Modal -->
-<div class="modal-overlay" id="heroModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Add / Edit Hero Banner</div>
-      <button class="modal-close" onclick="closeModal('heroModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Page (Country/Club slug)</label>
-          <input type="text" id="h_page" placeholder="argentina"/>
-        </div>
-        <div class="form-group">
-          <label>Title*</label>
-          <input type="text" id="h_title" placeholder="ARGENTINA"/>
+        <div class="form-group full" style="display:flex;gap:10px;">
+          <div style="flex:1;"><label>Size XS</label><input type="number" id="p_size_xs" value="0" min="0" /></div>
+          <div style="flex:1;"><label>Size S</label><input type="number" id="p_size_s" value="0" min="0" /></div>
+          <div style="flex:1;"><label>Size M</label><input type="number" id="p_size_m" value="0" min="0" /></div>
+          <div style="flex:1;"><label>Size L</label><input type="number" id="p_size_l" value="0" min="0" /></div>
+          <div style="flex:1;"><label>Size XL</label><input type="number" id="p_size_xl" value="0" min="0" /></div>
         </div>
         <div class="form-group full">
-          <label>Subtitle</label>
-          <input type="text" id="h_sub" placeholder="National Team · AFA"/>
+          <label>Product Image</label>
+          <div class="upload-zone" style="padding:16px">
+            <input type="file" id="p_img_file" accept="image/*"
+              onchange="previewLogo(event,'p_img_preview','p_img_url')" />
+            <div class="upload-text">Click to upload product image</div>
+          </div>
+          <div class="svg-preview-box" id="p_img_preview" style="margin-top:8px;display:none"></div>
+          <input type="text" id="p_img_url" placeholder="or paste image URL" style="margin-top:8px" />
         </div>
-        <div class="form-group">
-          <label>Stat Pills (comma-separated)</label>
-          <input type="text" id="h_pills" placeholder="FIFA #1, 3× World Champs"/>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn btn-primary" style="flex:1" onclick="saveProduct()">💾 Save Product</button>
+          <button class="btn" style="background:var(--surface2)" onclick="closeModal('productModal')">Cancel</button>
         </div>
-        <div class="form-group">
-          <label>Primary Color</label>
-          <input type="text" id="h_color" placeholder="#74ACDF"/>
-        </div>
-      </div>
-      <div class="form-group full">
-        <label>Background Image</label>
-        <div class="upload-zone" style="padding:14px">
-          <input type="file" id="h_img_file" accept="image/*" onchange="previewLogo(event,'h_img_preview','h_img_url')"/>
-          <div class="upload-text">Upload hero background</div>
-        </div>
-        <div class="svg-preview-box" id="h_img_preview" style="margin-top:8px;display:none"></div>
-        <input type="text" id="h_img_url" placeholder="or paste image URL" style="margin-top:8px"/>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-primary" style="flex:1" onclick="saveHero()">💾 Save Banner</button>
-        <button class="btn" style="background:var(--surface2)" onclick="closeModal('heroModal')">Cancel</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Timeline Modal -->
-<div class="modal-overlay" id="timelineModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Add Timeline Entry</div>
-      <button class="modal-close" onclick="closeModal('timelineModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Year</label>
-          <input type="text" id="tl_year" placeholder="2022"/>
-        </div>
-        <div class="form-group">
-          <label>Location</label>
-          <input type="text" id="tl_loc" placeholder="Qatar"/>
+  <!-- Player Modal -->
+  <div class="modal-overlay" id="playerModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add / Edit Player</div>
+        <button class="modal-close" onclick="closeModal('playerModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name*</label>
+            <input type="text" id="pl_name" placeholder="Lionel Messi" />
+          </div>
+          <div class="form-group">
+            <label>Jersey Number</label>
+            <input type="text" id="pl_num" placeholder="10" />
+          </div>
+          <div class="form-group">
+            <label>Position</label>
+            <select id="pl_pos">
+              <option>Forward</option>
+              <option>Midfielder</option>
+              <option>Defender</option>
+              <option>Goalkeeper</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Team</label>
+            <input type="text" id="pl_team" placeholder="Argentina" />
+          </div>
+          <div class="form-group">
+            <label>Goals</label>
+            <input type="text" id="pl_goals" placeholder="108" />
+          </div>
+          <div class="form-group">
+            <label>Assists</label>
+            <input type="text" id="pl_assists" placeholder="56" />
+          </div>
+          <div class="form-group">
+            <label>Caps</label>
+            <input type="text" id="pl_caps" placeholder="180" />
+          </div>
+          <div class="form-group">
+            <label>Club</label>
+            <input type="text" id="pl_club" placeholder="Inter Miami CF" />
+          </div>
         </div>
         <div class="form-group full">
-          <label>Event Title*</label>
-          <input type="text" id="tl_event" placeholder="World Cup Champions"/>
+          <label>Role / Description</label>
+          <textarea id="pl_desc" placeholder="Captain · Forward · GOAT"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn btn-primary" style="flex:1" onclick="savePlayer()">💾 Save Player</button>
+          <button class="btn" style="background:var(--surface2)" onclick="closeModal('playerModal')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Banner Modal -->
+  <div class="modal-overlay" id="heroModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add / Edit Hero Banner</div>
+        <button class="modal-close" onclick="closeModal('heroModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Page (Country/Club slug)</label>
+            <input type="text" id="h_page" placeholder="argentina" />
+          </div>
+          <div class="form-group">
+            <label>Title*</label>
+            <input type="text" id="h_title" placeholder="ARGENTINA" />
+          </div>
+          <div class="form-group full">
+            <label>Subtitle</label>
+            <input type="text" id="h_sub" placeholder="National Team · AFA" />
+          </div>
+          <div class="form-group">
+            <label>Stat Pills (comma-separated)</label>
+            <input type="text" id="h_pills" placeholder="FIFA #1, 3× World Champs" />
+          </div>
+          <div class="form-group">
+            <label>Primary Color</label>
+            <input type="text" id="h_color" placeholder="#74ACDF" />
+          </div>
         </div>
         <div class="form-group full">
-          <label>Detail</label>
-          <textarea id="tl_detail" placeholder="Description of the event…"></textarea>
+          <label>Background Image</label>
+          <div class="upload-zone" style="padding:14px">
+            <input type="file" id="h_img_file" accept="image/*"
+              onchange="previewLogo(event,'h_img_preview','h_img_url')" />
+            <div class="upload-text">Upload hero background</div>
+          </div>
+          <div class="svg-preview-box" id="h_img_preview" style="margin-top:8px;display:none"></div>
+          <input type="text" id="h_img_url" placeholder="or paste image URL" style="margin-top:8px" />
         </div>
-        <div class="form-group">
-          <label>Icon (emoji)</label>
-          <input type="text" id="tl_icon" placeholder="🏆"/>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn btn-primary" style="flex:1" onclick="saveHero()">💾 Save Banner</button>
+          <button class="btn" style="background:var(--surface2)" onclick="closeModal('heroModal')">Cancel</button>
         </div>
-        <div class="form-group">
-          <label>Team</label>
-          <input type="text" id="tl_team" placeholder="argentina"/>
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-primary" style="flex:1" onclick="saveTimeline()">💾 Save Entry</button>
-        <button class="btn" style="background:var(--surface2)" onclick="closeModal('timelineModal')">Cancel</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Order Detail / Update Modal -->
-<div class="modal-overlay" id="orderModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Order Details</div>
-      <button class="modal-close" onclick="closeModal('orderModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div id="orderDetailContent" style="margin-bottom:16px">
-        <div style="color:var(--muted)">Loading…</div>
+  <!-- Timeline Modal -->
+  <div class="modal-overlay" id="timelineModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add Timeline Entry</div>
+        <button class="modal-close" onclick="closeModal('timelineModal')">×</button>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Update Status</label>
-          <select id="o_status">
-            <option value="pending">Pending</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="shipped">Shipped</option>
-            <option value="delivered">Delivered</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Year</label>
+            <input type="text" id="tl_year" placeholder="2022" />
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="tl_loc" placeholder="Qatar" />
+          </div>
+          <div class="form-group full">
+            <label>Event Title*</label>
+            <input type="text" id="tl_event" placeholder="World Cup Champions" />
+          </div>
+          <div class="form-group full">
+            <label>Detail</label>
+            <textarea id="tl_detail" placeholder="Description of the event…"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Icon (emoji)</label>
+            <input type="text" id="tl_icon" placeholder="🏆" />
+          </div>
+          <div class="form-group">
+            <label>Team</label>
+            <input type="text" id="tl_team" placeholder="argentina" />
+          </div>
         </div>
-        <div class="form-group">
-          <label>Tracking Number</label>
-          <input type="text" id="o_tracking" placeholder="Enter tracking number"/>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn btn-primary" style="flex:1" onclick="saveTimeline()">💾 Save Entry</button>
+          <button class="btn" style="background:var(--surface2)" onclick="closeModal('timelineModal')">Cancel</button>
         </div>
-      </div>
-      <div class="form-group full">
-        <label>Admin Notes</label>
-        <textarea id="o_notes" placeholder="Add internal notes about this order…"></textarea>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-primary" style="flex:1" onclick="updateOrder()">💾 Update Order</button>
-        <button class="btn" style="background:var(--surface2)" onclick="closeModal('orderModal')">Cancel</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Index Media Modal -->
-<div class="modal-overlay" id="indexMediaModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Add Index Media</div>
-      <button class="modal-close" onclick="closeModal('indexMediaModal')">×</button>
+  <!-- Order Detail / Update Modal -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Order Details</div>
+        <button class="modal-close" onclick="closeModal('orderModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="orderDetailContent" style="margin-bottom:16px">
+          <div style="color:var(--muted)">Loading…</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Update Status</label>
+            <select id="o_status">
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tracking Number</label>
+            <input type="text" id="o_tracking" placeholder="Enter tracking number" />
+          </div>
+        </div>
+        <div class="form-group full">
+          <label>Admin Notes</label>
+          <textarea id="o_notes" placeholder="Add internal notes about this order…"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn btn-primary" style="flex:1" onclick="updateOrder()">💾 Update Order</button>
+          <button class="btn" style="background:var(--surface2)" onclick="closeModal('orderModal')">Cancel</button>
+        </div>
+      </div>
     </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Section*</label>
-          <select id="im_section">
-            <option value="hero">Hero Banner</option>
-            <option value="featured">Featured</option>
-            <option value="promo">Promotional</option>
-            <option value="gallery">Gallery</option>
+  </div>
+
+  <!-- Index Media Modal -->
+  <div class="modal-overlay" id="indexMediaModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add Index Media</div>
+        <button class="modal-close" onclick="closeModal('indexMediaModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Section*</label>
+            <select id="im_section">
+              <option value="hero">Hero Banner</option>
+              <option value="featured">Featured</option>
+              <option value="promo">Promotional</option>
+              <option value="gallery">Gallery</option>
               <option value="reels">Reels</option>
-          </select>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Label / Title*</label>
+            <input type="text" id="im_label" placeholder="e.g. Summer Collection" />
+          </div>
+          <div class="form-group">
+            <label>Link URL</label>
+            <input type="text" id="im_link" placeholder="e.g. argentina.html" />
+          </div>
+          <div class="form-group">
+            <label>Sort Order</label>
+            <input type="text" id="im_order" placeholder="1" />
+          </div>
         </div>
-        <div class="form-group">
-          <label>Label / Title*</label>
-          <input type="text" id="im_label" placeholder="e.g. Summer Collection"/>
+        <div class="form-group full">
+          <label>Image</label>
+          <div class="upload-zone" style="padding:14px">
+            <input type="file" id="im_img_file" accept="image/*"
+              onchange="previewLogo(event,'im_img_preview','im_img_url')" />
+            <div class="upload-text">Click to upload image</div>
+          </div>
+          <div class="svg-preview-box" id="im_img_preview" style="margin-top:8px;display:none"></div>
+          <input type="text" id="im_img_url" placeholder="or paste image URL" style="margin-top:8px" />
         </div>
-        <div class="form-group">
-          <label>Link URL</label>
-          <input type="text" id="im_link" placeholder="e.g. argentina.html"/>
+        <div class="form-group full">
+          <label>Description</label>
+          <textarea id="im_desc" placeholder="Short description for alt text / tooltip…"></textarea>
         </div>
-        <div class="form-group">
-          <label>Sort Order</label>
-          <input type="text" id="im_order" placeholder="1"/>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn btn-primary" style="flex:1" onclick="saveIndexMedia()">💾 Save Media</button>
+          <button class="btn" style="background:var(--surface2)" onclick="closeModal('indexMediaModal')">Cancel</button>
         </div>
-      </div>
-      <div class="form-group full">
-        <label>Image</label>
-        <div class="upload-zone" style="padding:14px">
-          <input type="file" id="im_img_file" accept="image/*" onchange="previewLogo(event,'im_img_preview','im_img_url')"/>
-          <div class="upload-text">Click to upload image</div>
-        </div>
-        <div class="svg-preview-box" id="im_img_preview" style="margin-top:8px;display:none"></div>
-        <input type="text" id="im_img_url" placeholder="or paste image URL" style="margin-top:8px"/>
-      </div>
-      <div class="form-group full">
-        <label>Description</label>
-        <textarea id="im_desc" placeholder="Short description for alt text / tooltip…"></textarea>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-primary" style="flex:1" onclick="saveIndexMedia()">💾 Save Media</button>
-        <button class="btn" style="background:var(--surface2)" onclick="closeModal('indexMediaModal')">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Confirm Delete Modal -->
-<div class="modal-overlay" id="confirmModal">
-  <div class="modal" style="width:380px">
-    <div class="modal-header">
-      <div class="modal-title">Confirm Delete</div>
-      <button class="modal-close" onclick="closeModal('confirmModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div style="color:var(--muted);margin-bottom:20px;font-size:14px" id="confirmMsg">Are you sure you want to delete this item? This action cannot be undone.</div>
-      <div style="display:flex;gap:10px">
-        <button class="btn btn-red" style="flex:1" id="confirmOkBtn">Delete</button>
-        <button class="btn" style="background:var(--surface2);flex:1" onclick="closeModal('confirmModal')">Cancel</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
+  <!-- Confirm Delete Modal -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal" style="width:380px">
+      <div class="modal-header">
+        <div class="modal-title">Confirm Delete</div>
+        <button class="modal-close" onclick="closeModal('confirmModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="color:var(--muted);margin-bottom:20px;font-size:14px" id="confirmMsg">Are you sure you want to
+          delete this item? This action cannot be undone.</div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-red" style="flex:1" id="confirmOkBtn">Delete</button>
+          <button class="btn" style="background:var(--surface2);flex:1"
+            onclick="closeModal('confirmModal')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<script>
-// ═══════════════════════════════════════════════════════
-//  GLOBALS
-// ═══════════════════════════════════════════════════════
-let _editId = null;
-let _editCollection = null;
-let _allMedia = [];
-let _allOrders = [];
-let _allUsers = [];
-let _unsubscribers = [];
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
 
-function waitFb(){ return new Promise(r=>{ const t=setInterval(()=>{ if(window._fb){clearInterval(t);r(window._fb)} },50) }) }
+  <script>
+    // ═══════════════════════════════════════════════════════
+    //  GLOBALS
+    // ═══════════════════════════════════════════════════════
+    let _editId = null;
+    let _editCollection = null;
+    let _allMedia = [];
+    let _allOrders = [];
+    let _allUsers = [];
+    let _unsubscribers = [];
 
-// ═══════════════════════════════════════════════════════
-//  LOGOUT (sign out and redirect to login page)
-// ═══════════════════════════════════════════════════════
-async function doLogout(){
-  const {auth, signOut} = await waitFb();
-  try {
-    await signOut(auth);
-  } catch(e) {
-    // ignore errors on sign out
-  }
-  window.location.href = 'admin-login.html';
-}
+    function waitFb() { return new Promise(r => { const t = setInterval(() => { if (window._fb) { clearInterval(t); r(window._fb) } }, 50) }) }
 
-// ═══════════════════════════════════════════════════════
-//  INIT — load data directly, no auth check
-// ═══════════════════════════════════════════════════════
-async function initApp(){
-  listenCollection('countries', renderCountries);
-  listenCollection('clubs',     renderClubs);
-  listenCollection('products',  renderProducts);
-  listenCollection('players',   renderPlayers);
-  listenCollection('heroes',    renderHeroes);
-  listenCollection('timeline',  renderTimeline);
-  listenCollection('media',     renderMedia);
-  listenCollection('orders',    renderOrders);
-  listenCollection('users',     renderUsers);
-  listenCollection('indexMedia', renderIndexMedia);
-  initPageSettings();
-}
+    // ═══════════════════════════════════════════════════════
+    //  LOGOUT (sign out and redirect to login page)
+    // ═══════════════════════════════════════════════════════
+    async function doLogout() {
+      const { auth, signOut } = await waitFb();
+      try {
+        await signOut(auth);
+      } catch (e) {
+        // ignore errors on sign out
+      }
+      window.location.href = 'admin-login.html';
+    }
 
-// ═══════════════════════════════════════════════════════
-//  FIRESTORE REAL-TIME LISTENER
-// ═══════════════════════════════════════════════════════
-async function listenCollection(col, callback){
-  const {db, collection, onSnapshot} = await waitFb();
-  const unsub = onSnapshot(collection(db, col), (snap) => {
-    const data = snap.docs.map(d => ({id: d.id, ...d.data()}));
-    callback(data);
-    updateBadges(col, data.length);
-  });
-  _unsubscribers.push(unsub);
-}
+    // ═══════════════════════════════════════════════════════
+    //  INIT — load data directly, no auth check
+    // ═══════════════════════════════════════════════════════
+    async function initApp() {
+      listenCollection('countries', renderCountries);
+      listenCollection('clubs', renderClubs);
+      listenCollection('products', renderProducts);
+      listenCollection('players', renderPlayers);
+      listenCollection('heroes', renderHeroes);
+      listenCollection('timeline', renderTimeline);
+      listenCollection('media', renderMedia);
+      listenCollection('orders', renderOrders);
+      listenCollection('users', renderUsers);
+      listenCollection('indexMedia', renderIndexMedia);
+      initPageSettings();
+    }
 
-function updateBadges(col, count){
-  if(col==='countries'){ setEl('countBadgeNav',count); setEl('statCountries',count) }
-  if(col==='clubs'){ setEl('clubBadgeNav',count); setEl('statClubs',count) }
-  if(col==='products') setEl('statProducts',count);
-  if(col==='media') setEl('statMedia',count);
-  if(col==='orders'){ setEl('orderBadgeNav',count); setEl('statOrders',count) }
-  if(col==='users'){ setEl('userBadgeNav',count); setEl('statUsers',count) }
-}
+    // ═══════════════════════════════════════════════════════
+    //  FIRESTORE REAL-TIME LISTENER
+    // ═══════════════════════════════════════════════════════
+    async function listenCollection(col, callback) {
+      const { db, collection, onSnapshot } = await waitFb();
+      const unsub = onSnapshot(collection(db, col), (snap) => {
+        const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        callback(data);
+        updateBadges(col, data.length);
+      });
+      _unsubscribers.push(unsub);
+    }
 
-// ═══════════════════════════════════════════════════════
-//  RENDERERS
-// ═══════════════════════════════════════════════════════
-function renderCountries(data){
-  const tbody=document.getElementById('countriesTable');
-  if(!data.length){ tbody.innerHTML=emptyRow(6,'No countries yet'); return }
-  tbody.innerHTML=data.map(c=>`
+    function updateBadges(col, count) {
+      if (col === 'countries') { setEl('countBadgeNav', count); setEl('statCountries', count) }
+      if (col === 'clubs') { setEl('clubBadgeNav', count); setEl('statClubs', count) }
+      if (col === 'products') setEl('statProducts', count);
+      if (col === 'media') setEl('statMedia', count);
+      if (col === 'orders') { setEl('orderBadgeNav', count); setEl('statOrders', count) }
+      if (col === 'users') { setEl('userBadgeNav', count); setEl('statUsers', count) }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  RENDERERS
+    // ═══════════════════════════════════════════════════════
+    function renderCountries(data) {
+      const tbody = document.getElementById('countriesTable');
+      if (!data.length) { tbody.innerHTML = emptyRow(6, 'No countries yet'); return }
+      tbody.innerHTML = data.map(c => `
     <tr>
-      <td>${logoThumb(c.logoUrl,c.name)}</td>
-      <td><strong>${c.name||'—'}</strong></td>
-      <td><span class="badge badge-sky">${c.code||'—'}</span></td>
-      <td>${c.confederation||'—'}</td>
-      <td><span class="badge ${c.status==='active'?'badge-green':'badge-red'}">${c.status||'active'}</span></td>
-      <td>${actionBtns('countries',c.id)}</td>
+      <td>${logoThumb(c.logoUrl, c.name)}</td>
+      <td><strong>${c.name || '—'}</strong></td>
+      <td><span class="badge badge-sky">${c.code || '—'}</span></td>
+      <td>${c.confederation || '—'}</td>
+      <td><span class="badge ${c.status === 'active' ? 'badge-green' : 'badge-red'}">${c.status || 'active'}</span></td>
+      <td>${actionBtns('countries', c.id)}</td>
     </tr>`).join('');
 
-  const rc=document.getElementById('recentCountries');
-  if(rc) rc.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:10px">${data.slice(0,8).map(c=>`
+      const rc = document.getElementById('recentCountries');
+      if (rc) rc.innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:10px">${data.slice(0, 8).map(c => `
     <div style="display:flex;align-items:center;gap:8px;background:var(--surface2);border-radius:10px;padding:8px 12px;border:1px solid var(--border)">
-      ${logoThumb(c.logoUrl,c.name)}
+      ${logoThumb(c.logoUrl, c.name)}
       <span style="font-weight:700;font-size:13px">${c.name}</span>
-      <span class="badge badge-sky">${c.code||''}</span>
+      <span class="badge badge-sky">${c.code || ''}</span>
     </div>`).join('')}</div>`;
-}
+    }
 
-function renderClubs(data){
-  const tbody=document.getElementById('clubsTable');
-  if(!data.length){ tbody.innerHTML=emptyRow(6,'No clubs yet'); return }
-  tbody.innerHTML=data.map(c=>`
+    function renderClubs(data) {
+      const tbody = document.getElementById('clubsTable');
+      if (!data.length) { tbody.innerHTML = emptyRow(6, 'No clubs yet'); return }
+      tbody.innerHTML = data.map(c => `
     <tr>
-      <td>${logoThumb(c.logoUrl,c.name)}</td>
-      <td><strong>${c.name||'—'}</strong></td>
-      <td>${c.league||'—'}</td>
-      <td>${c.country||'—'}</td>
-      <td><span class="badge ${c.status==='active'?'badge-green':'badge-red'}">${c.status||'active'}</span></td>
-      <td>${actionBtns('clubs',c.id)}</td>
+      <td>${logoThumb(c.logoUrl, c.name)}</td>
+      <td><strong>${c.name || '—'}</strong></td>
+      <td>${c.league || '—'}</td>
+      <td>${c.country || '—'}</td>
+      <td><span class="badge ${c.status === 'active' ? 'badge-green' : 'badge-red'}">${c.status || 'active'}</span></td>
+      <td>${actionBtns('clubs', c.id)}</td>
     </tr>`).join('');
-}
+    }
 
-function renderProducts(data){
-  const tbody=document.getElementById('productsTable');
-  if(!data.length){ tbody.innerHTML=emptyRow(6,'No products yet'); return }
-  tbody.innerHTML=data.map(p=>`
+    function renderProducts(data) {
+      const tbody = document.getElementById('productsTable');
+      if (!data.length) { tbody.innerHTML = emptyRow(6, 'No products yet'); return }
+      tbody.innerHTML = data.map(p => `
     <tr>
-      <td><strong>${p.name||'—'}</strong>${p.badge?`<span class="badge badge-gold" style="margin-left:6px">${p.badge}</span>`:''}</td>
-      <td>${p.team||'—'}</td>
-      <td>${p.type||'—'}</td>
-      <td>₹${p.price||'—'}</td>
-      <td><span class="badge ${p.status==='active'?'badge-green':'badge-red'}">${p.status||'active'}</span></td>
-      <td>${actionBtns('products',p.id)}</td>
+      <td><strong>${p.name || '—'}</strong>${p.badge ? `<span class="badge badge-gold" style="margin-left:6px">${p.badge}</span>` : ''}</td>
+      <td>${p.team || '—'}</td>
+      <td>${p.type || '—'}</td>
+      <td>₹${p.price || '—'}</td>
+      <td><span class="badge ${p.status === 'active' ? 'badge-green' : 'badge-red'}">${p.status || 'active'}</span></td>
+      <td>${actionBtns('products', p.id)}</td>
     </tr>`).join('');
-}
+    }
 
-function renderPlayers(data){
-  const tbody=document.getElementById('playersTable');
-  if(!data.length){ tbody.innerHTML=emptyRow(7,'No players yet'); return }
-  tbody.innerHTML=data.map(p=>`
+    function renderPlayers(data) {
+      const tbody = document.getElementById('playersTable');
+      if (!data.length) { tbody.innerHTML = emptyRow(7, 'No players yet'); return }
+      tbody.innerHTML = data.map(p => `
     <tr>
-      <td><span class="badge badge-sky">${p.number||'—'}</span></td>
-      <td><strong>${p.name||'—'}</strong></td>
-      <td>${p.team||'—'}</td>
-      <td>${p.position||'—'}</td>
-      <td>${p.goals||0}</td>
-      <td>${p.caps||0}</td>
-      <td>${actionBtns('players',p.id)}</td>
+      <td><span class="badge badge-sky">${p.number || '—'}</span></td>
+      <td><strong>${p.name || '—'}</strong></td>
+      <td>${p.team || '—'}</td>
+      <td>${p.position || '—'}</td>
+      <td>${p.goals || 0}</td>
+      <td>${p.caps || 0}</td>
+      <td>${actionBtns('players', p.id)}</td>
     </tr>`).join('');
-}
+    }
 
-function renderHeroes(data){
-  const tbody=document.getElementById('heroTable');
-  if(!data.length){ tbody.innerHTML=emptyRow(5,'No banners yet'); return }
-  tbody.innerHTML=data.map(h=>`
+    function renderHeroes(data) {
+      const tbody = document.getElementById('heroTable');
+      if (!data.length) { tbody.innerHTML = emptyRow(5, 'No banners yet'); return }
+      tbody.innerHTML = data.map(h => `
     <tr>
-      <td><span class="badge badge-sky">${h.page||'—'}</span></td>
-      <td><strong>${h.title||'—'}</strong></td>
-      <td>${h.subtitle||'—'}</td>
+      <td><span class="badge badge-sky">${h.page || '—'}</span></td>
+      <td><strong>${h.title || '—'}</strong></td>
+      <td>${h.subtitle || '—'}</td>
       <td><span class="badge badge-green">active</span></td>
-      <td>${actionBtns('heroes',h.id)}</td>
+      <td>${actionBtns('heroes', h.id)}</td>
     </tr>`).join('');
-}
+    }
 
-function renderTimeline(data){
-  const tbody=document.getElementById('timelineTable');
-  if(!data.length){ tbody.innerHTML=emptyRow(5,'No entries yet'); return }
-  const sorted=[...data].sort((a,b)=>(b.year||0)-(a.year||0));
-  tbody.innerHTML=sorted.map(t=>`
+    function renderTimeline(data) {
+      const tbody = document.getElementById('timelineTable');
+      if (!data.length) { tbody.innerHTML = emptyRow(5, 'No entries yet'); return }
+      const sorted = [...data].sort((a, b) => (b.year || 0) - (a.year || 0));
+      tbody.innerHTML = sorted.map(t => `
     <tr>
-      <td><strong>${t.year||'—'}</strong> ${t.location?`<span class="badge badge-sky">${t.location}</span>`:''}</td>
-      <td>${t.icon||'📅'} ${t.event||'—'}</td>
-      <td style="color:var(--muted);max-width:200px">${t.detail||'—'}</td>
-      <td>${t.team||'—'}</td>
-      <td>${actionBtns('timeline',t.id)}</td>
+      <td><strong>${t.year || '—'}</strong> ${t.location ? `<span class="badge badge-sky">${t.location}</span>` : ''}</td>
+      <td>${t.icon || '📅'} ${t.event || '—'}</td>
+      <td style="color:var(--muted);max-width:200px">${t.detail || '—'}</td>
+      <td>${t.team || '—'}</td>
+      <td>${actionBtns('timeline', t.id)}</td>
     </tr>`).join('');
-}
+    }
 
-function renderMedia(data){
-  _allMedia=data;
-  filterMedia();
-}
+    function renderMedia(data) {
+      _allMedia = data;
+      filterMedia();
+    }
 
-function filterMedia(){
-  const filter=document.getElementById('mediaFilter').value;
-  const data=filter?_allMedia.filter(m=>m.folder===filter):_allMedia;
-  const grid=document.getElementById('mediaGrid');
-  if(!data.length){ grid.innerHTML=`<div style="color:var(--muted);font-size:13px;grid-column:1/-1">No media files yet — upload some above!</div>`; return }
-  grid.innerHTML=data.map(m=>`
+    function filterMedia() {
+      const filter = document.getElementById('mediaFilter').value;
+      const data = filter ? _allMedia.filter(m => m.folder === filter) : _allMedia;
+      const grid = document.getElementById('mediaGrid');
+      if (!data.length) { grid.innerHTML = `<div style="color:var(--muted);font-size:13px;grid-column:1/-1">No media files yet — upload some above!</div>`; return }
+      grid.innerHTML = data.map(m => `
     <div class="media-item">
-      ${m.url?`<img src="${m.url}" alt="${m.name||''}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'140\\' height=\\'110\\'><rect fill=\\'%231a2338\\' width=\\'140\\' height=\\'110\\'/><text y=\\'60\\' x=\\'70\\' text-anchor=\\'middle\\' fill=\\'%2374ACDF\\' font-size=\\'28\\'>📷</text></svg>'"/>`:`<div style="height:110px;display:grid;place-items:center;font-size:32px">📄</div>`}
+      ${m.url ? `<img src="${m.url}" alt="${m.name || ''}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'140\\' height=\\'110\\'><rect fill=\\'%231a2338\\' width=\\'140\\' height=\\'110\\'/><text y=\\'60\\' x=\\'70\\' text-anchor=\\'middle\\' fill=\\'%2374ACDF\\' font-size=\\'28\\'>📷</text></svg>'"/>` : `<div style="height:110px;display:grid;place-items:center;font-size:32px">📄</div>`}
       <div class="media-item-actions">
-        <button class="media-action-btn ma-copy" onclick="copyUrl('${m.url||''}',event)" title="Copy URL">⎘</button>
-        <button class="media-action-btn ma-del" onclick="deleteMedia('${m.id}','${m.storagePath||''}',event)" title="Delete">✕</button>
+        <button class="media-action-btn ma-copy" onclick="copyUrl('${m.url || ''}',event)" title="Copy URL">⎘</button>
+        <button class="media-action-btn ma-del" onclick="deleteMedia('${m.id}','${m.storagePath || ''}',event)" title="Delete">✕</button>
       </div>
       <div class="media-item-info">
-        <div class="media-item-name">${m.name||'file'}</div>
-        <div class="media-item-size">${m.folder||'media'}</div>
+        <div class="media-item-name">${m.name || 'file'}</div>
+        <div class="media-item-size">${m.folder || 'media'}</div>
       </div>
     </div>`).join('');
-}
+    }
 
-// ═══════════════════════════════════════════════════════
-//  ORDERS RENDERER
-// ═══════════════════════════════════════════════════════
-function renderOrders(data){
-  _allOrders=data;
-  // Update order stats
-  const pending=data.filter(o=>(o.status||'pending')==='pending').length;
-  const confirmed=data.filter(o=>o.status==='confirmed').length;
-  const shipped=data.filter(o=>o.status==='shipped').length;
-  const delivered=data.filter(o=>o.status==='delivered').length;
-  const revenue=data.reduce((sum,o)=>sum+(parseFloat(o.total)||0),0);
-  setEl('statOrdersPending',pending);
-  setEl('statOrdersConfirmed',confirmed);
-  setEl('statOrdersShipped',shipped);
-  setEl('statOrdersDelivered',delivered);
-  setEl('statOrdersRevenue','₹'+revenue.toLocaleString('en-IN'));
-  filterOrders();
-}
+    // ═══════════════════════════════════════════════════════
+    //  ORDERS RENDERER
+    // ═══════════════════════════════════════════════════════
+    function renderOrders(data) {
+      _allOrders = data;
+      // Update order stats
+      const pending = data.filter(o => (o.status || 'pending') === 'pending').length;
+      const confirmed = data.filter(o => o.status === 'confirmed').length;
+      const shipped = data.filter(o => o.status === 'shipped').length;
+      const delivered = data.filter(o => o.status === 'delivered').length;
+      const revenue = data.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
+      setEl('statOrdersPending', pending);
+      setEl('statOrdersConfirmed', confirmed);
+      setEl('statOrdersShipped', shipped);
+      setEl('statOrdersDelivered', delivered);
+      setEl('statOrdersRevenue', '₹' + revenue.toLocaleString('en-IN'));
+      filterOrders();
+    }
 
-function filterOrders(){
-  const filter=document.getElementById('orderStatusFilter').value;
-  const data=filter?_allOrders.filter(o=>(o.status||'pending')===filter):_allOrders;
-  const tbody=document.getElementById('ordersTable');
-  if(!data.length){ tbody.innerHTML=emptyRow(8,'No orders found'); return }
-  const sorted=[...data].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  tbody.innerHTML=sorted.map(o=>{
-    const st=o.status||'pending';
-    const badgeCls=st==='pending'?'badge-orange':st==='confirmed'?'badge-sky':st==='shipped'?'badge-purple':st==='delivered'?'badge-green':'badge-red';
-    const items=(o.items||[]).map(i=>`${i.name||'Item'} x${i.qty||1}`).join(', ')||o.productName||'—';
-    const date=o.createdAt?new Date(o.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
-    const payMethod=o.paymentMethod==='cod'?'<span class="badge badge-gold">COD</span>':'<span class="badge badge-sky">Online</span>';
-    return `<tr>
-      <td><span style="font-family:monospace;font-size:11px;color:var(--sky)">${(o.orderId||o.id||'').slice(0,10)}…</span></td>
-      <td><strong>${o.customerName||o.name||'—'}</strong><br><span style="font-size:11px;color:var(--muted)">${o.email||o.phone||''}</span></td>
+    function filterOrders() {
+      const filter = document.getElementById('orderStatusFilter').value;
+      const data = filter ? _allOrders.filter(o => (o.status || 'pending') === filter) : _allOrders;
+      const tbody = document.getElementById('ordersTable');
+      if (!data.length) { tbody.innerHTML = emptyRow(8, 'No orders found'); return }
+      const sorted = [...data].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      tbody.innerHTML = sorted.map(o => {
+        const st = o.status || 'pending';
+        const badgeCls = st === 'pending' ? 'badge-orange' : st === 'confirmed' ? 'badge-sky' : st === 'shipped' ? 'badge-purple' : st === 'delivered' ? 'badge-green' : 'badge-red';
+        const items = (o.items || []).map(i => `${i.name || 'Item'} x${i.qty || 1}`).join(', ') || o.productName || '—';
+        const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+        const payMethod = o.paymentMethod === 'cod' ? '<span class="badge badge-gold">COD</span>' : '<span class="badge badge-sky">Online</span>';
+        return `<tr>
+      <td><span style="font-family:monospace;font-size:11px;color:var(--sky)">${(o.orderId || o.id || '').slice(0, 10)}…</span></td>
+      <td><strong>${o.customerName || o.name || '—'}</strong><br><span style="font-size:11px;color:var(--muted)">${o.email || o.phone || ''}</span></td>
       <td style="max-width:180px;font-size:12px;color:var(--muted)">${items}</td>
-      <td><strong>₹${o.total||'0'}</strong></td>
+      <td><strong>₹${o.total || '0'}</strong></td>
       <td>${payMethod}</td>
       <td><span class="status-dot ${st}"></span><span class="badge ${badgeCls}">${st}</span></td>
       <td style="font-size:12px;color:var(--muted)">${date}</td>
       <td><button class="btn btn-sm btn-primary" onclick="viewOrder('${o.id}')">View</button></td>
     </tr>`;
-  }).join('');
-}
+      }).join('');
+    }
 
-async function viewOrder(id){
-  const order=_allOrders.find(o=>o.id===id);
-  if(!order){ toast('Order not found','error'); return }
-  _editId=id; _editCollection='orders';
-  const det=document.getElementById('orderDetailContent');
-  const items=(order.items||[]).map(i=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
-    <span>${i.name||'Item'} <span class="badge badge-sky">x${i.qty||1}</span> ${i.size?'<span class="badge badge-gold">'+i.size+'</span>':''}</span>
-    <span>₹${i.price||'0'}</span>
-  </div>`).join('')||`<div style="color:var(--muted)">Product: ${order.productName||'—'}</div>`;
-  det.innerHTML=`
+    async function viewOrder(id) {
+      const order = _allOrders.find(o => o.id === id);
+      if (!order) { toast('Order not found', 'error'); return }
+      _editId = id; _editCollection = 'orders';
+      const det = document.getElementById('orderDetailContent');
+      const items = (order.items || []).map(i => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+    <span>${i.name || 'Item'} <span class="badge badge-sky">x${i.qty || 1}</span> ${i.size ? '<span class="badge badge-gold">' + i.size + '</span>' : ''}</span>
+    <span>₹${i.price || '0'}</span>
+  </div>`).join('') || `<div style="color:var(--muted)">Product: ${order.productName || '—'}</div>`;
+      det.innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Order ID</span><br><strong style="font-family:monospace;color:var(--sky)">${order.orderId||order.id}</strong></div>
-      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Date</span><br><strong>${order.createdAt?new Date(order.createdAt).toLocaleString('en-IN'):'—'}</strong></div>
-      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Customer</span><br><strong>${order.customerName||order.name||'—'}</strong></div>
-      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Contact</span><br><strong>${order.email||'—'}</strong><br><span style="font-size:12px;color:var(--muted)">${order.phone||''}</span></div>
+      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Order ID</span><br><strong style="font-family:monospace;color:var(--sky)">${order.orderId || order.id}</strong></div>
+      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Date</span><br><strong>${order.createdAt ? new Date(order.createdAt).toLocaleString('en-IN') : '—'}</strong></div>
+      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Customer</span><br><strong>${order.customerName || order.name || '—'}</strong></div>
+      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Contact</span><br><strong>${order.email || '—'}</strong><br><span style="font-size:12px;color:var(--muted)">${order.phone || ''}</span></div>
     </div>
     <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border);margin-bottom:12px">
       <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Items</div>
       ${items}
       <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:800;font-size:15px;border-top:2px solid var(--border);margin-top:8px">
-        <span>Total</span><span style="color:var(--gold)">₹${order.total||'0'}</span>
+        <span>Total</span><span style="color:var(--gold)">₹${order.total || '0'}</span>
       </div>
     </div>
     <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
       <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Shipping Address</div>
-      <div style="font-size:13px;line-height:1.5">${order.address||'—'}<br>${order.city||''} ${order.state||''} ${order.pincode||''}</div>
+      <div style="font-size:13px;line-height:1.5">${order.address || '—'}<br>${order.city || ''} ${order.state || ''} ${order.pincode || ''}</div>
     </div>`;
-  s('o_status',order.status||'pending');
-  s('o_tracking',order.trackingNumber||'');
-  s('o_notes',order.adminNotes||'');
-  openModal('orderModal');
-}
+      s('o_status', order.status || 'pending');
+      s('o_tracking', order.trackingNumber || '');
+      s('o_notes', order.adminNotes || '');
+      openModal('orderModal');
+    }
 
-async function updateOrder(){
-  if(!_editId){ toast('No order selected','error'); return }
-  const data={status:g('o_status'),trackingNumber:g('o_tracking'),adminNotes:g('o_notes'),updatedAt:Date.now()};
-  await saveDoc('orders',data,_editId);
-  closeModal('orderModal'); toast('Order updated! 📦','success');
-  _editId=null;
-}
+    async function updateOrder() {
+      if (!_editId) { toast('No order selected', 'error'); return }
+      const data = { status: g('o_status'), trackingNumber: g('o_tracking'), adminNotes: g('o_notes'), updatedAt: Date.now() };
+      await saveDoc('orders', data, _editId);
+      closeModal('orderModal'); toast('Order updated! 📦', 'success');
+      _editId = null;
+    }
 
-// ═══════════════════════════════════════════════════════
-//  USERS RENDERER
-// ═══════════════════════════════════════════════════════
-function renderUsers(data){
-  _allUsers=data;
-  const tbody=document.getElementById('usersTable');
-  if(!data.length){ tbody.innerHTML=emptyRow(7,'No users registered yet'); return }
-  const sorted=[...data].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  tbody.innerHTML=sorted.map(u=>{
-    const name=u.displayName||u.name||u.email?.split('@')[0]||'User';
-    const initials=name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    const colors=['#e74c3c','#3498db','#9b59b6','#27ae60','#f39c12','#1abc9c','#e67e22'];
-    const color=colors[name.charCodeAt(0)%colors.length];
-    const orderCount=_allOrders.filter(o=>(o.email||'')===(u.email||'__none')||(o.userId||'')===(u.id||'__none')).length;
-    const joined=u.createdAt?new Date(u.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
-    return `<tr>
+    // ═══════════════════════════════════════════════════════
+    //  USERS RENDERER
+    // ═══════════════════════════════════════════════════════
+    function renderUsers(data) {
+      _allUsers = data;
+      const tbody = document.getElementById('usersTable');
+      if (!data.length) { tbody.innerHTML = emptyRow(7, 'No users registered yet'); return }
+      const sorted = [...data].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      tbody.innerHTML = sorted.map(u => {
+        const name = u.displayName || u.name || u.email?.split('@')[0] || 'User';
+        const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        const colors = ['#e74c3c', '#3498db', '#9b59b6', '#27ae60', '#f39c12', '#1abc9c', '#e67e22'];
+        const color = colors[name.charCodeAt(0) % colors.length];
+        const orderCount = _allOrders.filter(o => (o.email || '') === (u.email || '__none') || (o.userId || '') === (u.id || '__none')).length;
+        const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+        return `<tr>
       <td><div class="user-avatar" style="background:${color}">${initials}</div></td>
       <td><strong>${name}</strong></td>
-      <td style="font-size:12px;color:var(--muted)">${u.email||'—'}</td>
-      <td style="font-size:12px">${u.phone||'—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${u.email || '—'}</td>
+      <td style="font-size:12px">${u.phone || '—'}</td>
       <td><span class="badge badge-sky">${orderCount}</span></td>
       <td style="font-size:12px;color:var(--muted)">${joined}</td>
-      <td><span class="badge ${u.status==='blocked'?'badge-red':'badge-green'}">${u.status||'active'}</span></td>
+      <td><span class="badge ${u.status === 'blocked' ? 'badge-red' : 'badge-green'}">${u.status || 'active'}</span></td>
     </tr>`;
-  }).join('');
-}
+      }).join('');
+    }
 
-// ═══════════════════════════════════════════════════════
-//  PAGE SETTINGS
-// ═══════════════════════════════════════════════════════
-const SITE_PAGES = [
-  {id:'argentina',label:'Argentina',file:'argentina.html',icon:'🇦🇷',bg:'linear-gradient(135deg,#74ACDF 0%,#1a3a5c 100%)'},
-  {id:'brazil',label:'Brazil',file:'brazil.html',icon:'🇧🇷',bg:'linear-gradient(135deg,#009c3b 0%,#ffdf00 100%)'},
-  {id:'france',label:'France',file:'france.html',icon:'🇫🇷',bg:'linear-gradient(135deg,#002395 0%,#ED2939 100%)'},
-  {id:'germany',label:'Germany',file:'germany.html',icon:'🇩🇪',bg:'linear-gradient(135deg,#000 0%,#DD0000 50%,#FFCC00 100%)'},
-  {id:'spain',label:'Spain',file:'spain.html',icon:'🇪🇸',bg:'linear-gradient(135deg,#AA151B 0%,#F1BF00 100%)'},
-  {id:'portugal',label:'Portugal',file:'portugal.html',icon:'🇵🇹',bg:'linear-gradient(135deg,#006600 0%,#FF0000 100%)'},
-  {id:'barcelona',label:'FC Barcelona',file:'barcelona.html',icon:'🔵',bg:'linear-gradient(135deg,#a50044 0%,#004d98 100%)'},
-  {id:'real-madrid',label:'Real Madrid',file:'real-madrid.html',icon:'⚪',bg:'linear-gradient(135deg,#febe10 0%,#00529f 100%)'},
-  {id:'chelsea',label:'Chelsea FC',file:'chelsea.html',icon:'🔷',bg:'linear-gradient(135deg,#034694 0%,#1b1b1b 100%)'},
-  {id:'man-utd',label:'Man United',file:'man-utd.html',icon:'🔴',bg:'linear-gradient(135deg,#DA291C 0%,#1a1a1a 100%)'},
-  {id:'man-city',label:'Man City',file:'man-city.html',icon:'🩵',bg:'linear-gradient(135deg,#6CABDD 0%,#1C2C5B 100%)'},
-  {id:'psg',label:'PSG',file:'psg.html',icon:'🔵',bg:'linear-gradient(135deg,#004170 0%,#DA291C 100%)'},
-];
+    // ═══════════════════════════════════════════════════════
+    //  PAGE SETTINGS
+    // ═══════════════════════════════════════════════════════
+    const SITE_PAGES = [
+      { id: 'argentina', label: 'Argentina', file: 'argentina.html', icon: '🇦🇷', bg: 'linear-gradient(135deg,#74ACDF 0%,#1a3a5c 100%)' },
+      { id: 'brazil', label: 'Brazil', file: 'brazil.html', icon: '🇧🇷', bg: 'linear-gradient(135deg,#009c3b 0%,#ffdf00 100%)' },
+      { id: 'france', label: 'France', file: 'france.html', icon: '🇫🇷', bg: 'linear-gradient(135deg,#002395 0%,#ED2939 100%)' },
+      { id: 'germany', label: 'Germany', file: 'germany.html', icon: '🇩🇪', bg: 'linear-gradient(135deg,#000 0%,#DD0000 50%,#FFCC00 100%)' },
+      { id: 'spain', label: 'Spain', file: 'spain.html', icon: '🇪🇸', bg: 'linear-gradient(135deg,#AA151B 0%,#F1BF00 100%)' },
+      { id: 'portugal', label: 'Portugal', file: 'portugal.html', icon: '🇵🇹', bg: 'linear-gradient(135deg,#006600 0%,#FF0000 100%)' },
+      { id: 'barcelona', label: 'FC Barcelona', file: 'barcelona.html', icon: '🔵', bg: 'linear-gradient(135deg,#a50044 0%,#004d98 100%)' },
+      { id: 'real-madrid', label: 'Real Madrid', file: 'real-madrid.html', icon: '⚪', bg: 'linear-gradient(135deg,#febe10 0%,#00529f 100%)' },
+      { id: 'chelsea', label: 'Chelsea FC', file: 'chelsea.html', icon: '🔷', bg: 'linear-gradient(135deg,#034694 0%,#1b1b1b 100%)' },
+      { id: 'man-utd', label: 'Man United', file: 'man-utd.html', icon: '🔴', bg: 'linear-gradient(135deg,#DA291C 0%,#1a1a1a 100%)' },
+      { id: 'man-city', label: 'Man City', file: 'man-city.html', icon: '🩵', bg: 'linear-gradient(135deg,#6CABDD 0%,#1C2C5B 100%)' },
+      { id: 'psg', label: 'PSG', file: 'psg.html', icon: '🔵', bg: 'linear-gradient(135deg,#004170 0%,#DA291C 100%)' },
+    ];
 
-let _pageSettings = {};
+    let _pageSettings = {};
 
-async function initPageSettings(){
-  const {db,doc,onSnapshot,setDoc} = await waitFb();
-  onSnapshot(doc(db,'settings','pages'), (snap) => {
-    _pageSettings = snap.exists() ? snap.data() : {};
-    renderPageSettings();
-  });
-}
+    async function initPageSettings() {
+      const { db, doc, onSnapshot, setDoc } = await waitFb();
+      onSnapshot(doc(db, 'settings', 'pages'), (snap) => {
+        _pageSettings = snap.exists() ? snap.data() : {};
+        renderPageSettings();
+      });
+    }
 
-function renderPageSettings(){
-  const grid=document.getElementById('pagesGrid');
-  grid.innerHTML=SITE_PAGES.map(p=>{
-    const isActive=_pageSettings[p.id]!==false;
-    return `<div class="page-card">
+    function renderPageSettings() {
+      const grid = document.getElementById('pagesGrid');
+      grid.innerHTML = SITE_PAGES.map(p => {
+        const isActive = _pageSettings[p.id] !== false;
+        return `<div class="page-card">
       <div class="page-card-icon" style="background:${p.bg}">${p.icon}</div>
       <div class="page-card-info">
         <div class="page-card-name">${p.label}</div>
         <div class="page-card-url">${p.file}</div>
-        <div class="page-card-status" style="color:${isActive?'var(--green)':'var(--red)'}">${isActive?'● Active':'○ Inactive'}</div>
+        <div class="page-card-status" style="color:${isActive ? 'var(--green)' : 'var(--red)'}">${isActive ? '● Active' : '○ Inactive'}</div>
       </div>
       <label class="toggle-switch">
-        <input type="checkbox" ${isActive?'checked':''} onchange="togglePage('${p.id}',this.checked)"/>
+        <input type="checkbox" ${isActive ? 'checked' : ''} onchange="togglePage('${p.id}',this.checked)"/>
         <span class="toggle-slider"></span>
       </label>
     </div>`;
-  }).join('');
-}
-
-async function togglePage(pageId,active){
-  const {db,doc,setDoc}=await waitFb();
-  const update={..._pageSettings,[pageId]:active};
-  await setDoc(doc(db,'settings','pages'),update,{merge:true});
-  toast(`${pageId} is now ${active?'active':'inactive'}`,'success');
-}
-
-// ═══════════════════════════════════════════════════════
-//  INDEX MEDIA RENDERER
-// ══════════(id){
-  const item=_indexMedia.find(m=>m.id===id);
-  if(!item){ toast('Item not found','error'); return }
-  _editId=id; _editCollection='indexMedia';
-  s('im_section',item.section); s('im_label',item.label); s('im_link',item.link); s('im_order',item.order); s('im_img_url',item.imgUrl); s('im_desc',item.description);
-  openModal('indexMediaModal');
-}
-
-async function saveIndexMedia(){
-  const label=g('im_label'); if(!label){ toast('Label is required','error'); return }
-  let imgUrl=g('im_img_url');
-  const file=document.getElementById('im_img_file').files[0];
-  if(file) imgUrl=await uploadFile(file,`indexMedia/${Date.now()}_${file.name}`,null);
-  const data={section:g('im_section'),label,link:g('im_link'),order:parseInt(g('im_order'))||0,imgUrl,description:g('im_desc'),updatedAt:Date.now()};
-  await saveDoc('indexMedia',data,_editId);
-  closeModal('indexMediaModal'); toast('Index media saved! 🖼️','success');
-  resetForm(['im_label','im_link','im_order','im_img_url','im_desc']);
-  _editId=null;
-}
-
-// ═══════════════════════════════════════════════════════
-//  SAVE HELPERS
-// ═══════════════════════════════════════════════════════
-async function saveCountry(){
-  const name=g('c_name');const code=g('c_code').toUpperCase();
-  if(!name||!code){ toast('Name and Code are required','error'); return }
-  let logoUrl=g('c_logo_url');
-  const file=document.getElementById('c_logo_file').files[0];
-  if(file) logoUrl=await uploadFile(file,`countries/${code}_${Date.now()}`,showProgress('c_progress','c_progress_fill','c_progress_label'));
-  const data={name,code,confederation:g('c_conf'),rank:g('c_rank'),logoUrl,worldCupTitles:g('c_wc'),cups:g('c_cups'),olympic:g('c_olympic'),status:g('c_status'),updatedAt:Date.now()};
-  await saveDoc('countries',data,_editId);
-  closeModal('countryModal'); toast('Country saved! 🌍','success'); resetForm(['c_name','c_code','c_rank','c_logo_url','c_wc','c_cups','c_olympic']);
-}
-
-async function saveClub(){
-  const name=g('cl_name');if(!name){ toast('Club name required','error'); return }
-  let logoUrl=g('cl_logo_url');
-  const file=document.getElementById('cl_logo_file').files[0];
-  if(file) logoUrl=await uploadFile(file,`clubs/${name.replace(/\s/g,'_')}_${Date.now()}`,showProgress('cl_progress','cl_progress_fill',null));
-  const data={name,code:g('cl_code').toUpperCase(),league:g('cl_league'),country:g('cl_country'),logoUrl,primaryColor:g('cl_color1'),status:g('cl_status'),updatedAt:Date.now()};
-  await saveDoc('clubs',data,_editId);
-  closeModal('clubModal'); toast('Club saved! 🏟️','success'); resetForm(['cl_name','cl_code','cl_league','cl_country','cl_logo_url']);
-}
-
-async function saveProduct(){
-  const name=g('p_name');if(!name){ toast('Product name required','error'); return }
-  let imgUrl=g('p_img_url');
-  const file=document.getElementById('p_img_file').files[0];
-  if(file) imgUrl=await uploadFile(file,`products/${Date.now()}_${file.name}`,null);
-  const data={
-    name,team:g('p_team'),type:g('p_type'),price:g('p_price'),badge:g('p_badge'),imgUrl,status:g('p_status'),
-    sizes: {
-      xs: parseInt(g('p_size_xs'))||0,
-      s: parseInt(g('p_size_s'))||0,
-      m: parseInt(g('p_size_m'))||0,
-      l: parseInt(g('p_size_l'))||0,
-      xl: parseInt(g('p_size_xl'))||0
-    },
-    updatedAt:Date.now()
-  };
-  await saveDoc('products',data,_editId);
-  closeModal('productModal'); toast('Product saved! 👕','success');
-}
-
-async function savePlayer(){
-  const name=g('pl_name');if(!name){ toast('Player name required','error'); return }
-  const data={name,number:g('pl_num'),position:g('pl_pos'),team:g('pl_team'),goals:g('pl_goals'),assists:g('pl_assists'),caps:g('pl_caps'),club:g('pl_club'),description:g('pl_desc'),updatedAt:Date.now()};
-  await saveDoc('players',data,_editId);
-  closeModal('playerModal'); toast('Player saved! ⚽','success');
-}
-
-async function saveHero(){
-  const page=g('h_page');const title=g('h_title');if(!page||!title){ toast('Page and Title required','error'); return }
-  let bgUrl=g('h_img_url');
-  const file=document.getElementById('h_img_file').files[0];
-  if(file) bgUrl=await uploadFile(file,`heroes/${page}_${Date.now()}`,null);
-  const data={page,title,subtitle:g('h_sub'),pills:g('h_pills').split(',').map(s=>s.trim()).filter(Boolean),primaryColor:g('h_color'),bgUrl,updatedAt:Date.now()};
-  await saveDoc('heroes',data,_editId);
-  closeModal('heroModal'); toast('Hero banner saved!','success');
-}
-
-async function saveTimeline(){
-  const event=g('tl_event');if(!event){ toast('Event title required','error'); return }
-  const data={year:parseInt(g('tl_year'))||0,location:g('tl_loc'),event,detail:g('tl_detail'),icon:g('tl_icon')||'📅',team:g('tl_team'),updatedAt:Date.now()};
-  await saveDoc('timeline',data,_editId);
-  closeModal('timelineModal'); toast('Timeline entry saved!','success');
-}
-
-// ═══════════════════════════════════════════════════════
-//  FIRESTORE CRUD
-// ═══════════════════════════════════════════════════════
-async function saveDoc(col,data,id){
-  const {db,collection,addDoc,doc,updateDoc,setDoc}=await waitFb();
-  if(id) await updateDoc(doc(db,col,id),data);
-  else await addDoc(collection(db,col),data);
-}
-
-async function deleteDocById(col,id){
-  const {db,doc,deleteDoc}=await waitFb();
-  await deleteDoc(doc(db,col,id));
-}
-
-// ═══════════════════════════════════════════════════════
-//  FIREBASE STORAGE UPLOAD
-// ═══════════════════════════════════════════════════════
-async function uploadFile(file,path,progressCb){
-  const {storage,ref,uploadBytesResumable,getDownloadURL}=await waitFb();
-  return new Promise((resolve,reject)=>{
-    const storageRef=ref(storage,path);
-    const task=uploadBytesResumable(storageRef,file);
-    task.on('state_changed',(snap)=>{
-      const pct=Math.round(snap.bytesTransferred/snap.totalBytes*100);
-      if(progressCb) progressCb(pct);
-    },reject,async()=>{
-      const url=await getDownloadURL(task.snapshot.ref);
-      await saveDoc('media',{name:file.name,url,storagePath:path,folder:path.split('/')[0],size:file.size,createdAt:Date.now()},null);
-      resolve(url);
-    });
-  });
-}
-
-function showProgress(wrapId,fillId,labelId){
-  const wrap=document.getElementById(wrapId);
-  if(wrap) wrap.style.display='block';
-  return (pct)=>{
-    const fill=document.getElementById(fillId);
-    if(fill) fill.style.width=pct+'%';
-    if(labelId){ const lbl=document.getElementById(labelId); if(lbl) lbl.textContent=`Uploading… ${pct}%` }
-    if(pct===100){ setTimeout(()=>{ if(wrap) wrap.style.display='none' },1200) }
-  };
-}
-
-async function handleFileSelect(e){ await uploadFilesFromInput(Array.from(e.target.files)) }
-function handleDragOver(e){ e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover') }
-function handleDragLeave(){ document.getElementById('uploadZone').classList.remove('dragover') }
-async function handleDrop(e){ e.preventDefault(); document.getElementById('uploadZone').classList.remove('dragover'); await uploadFilesFromInput(Array.from(e.dataTransfer.files)) }
-
-async function uploadFilesFromInput(files){
-  for(const file of files){
-    if(file.size>5*1024*1024){ toast(`${file.name} exceeds 5MB`,'error'); continue }
-    const queue=document.getElementById('uploadQueue');
-    const item=document.createElement('div');
-    item.style.cssText='width:140px;background:var(--surface2);border-radius:10px;padding:10px;border:1px solid var(--border)';
-    item.innerHTML=`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${file.name}</div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%"></div></div>`;
-    queue.appendChild(item);
-    try{
-      await uploadFile(file,`media/${Date.now()}_${file.name}`,(pct)=>{
-        const el=item.querySelector('.progress-bar-fill');
-        if(el) el.style.width=pct+'%';
-      });
-      item.innerHTML+=`<div style="font-size:10px;color:var(--green);margin-top:4px">✓ Done</div>`;
-      toast(`${file.name} uploaded!`,'success');
-    }catch(err){
-      item.innerHTML+=`<div style="font-size:10px;color:var(--red);margin-top:4px">✗ Failed</div>`;
-      toast(`Upload failed: ${file.name}`,'error');
+      }).join('');
     }
-  }
-}
 
-async function deleteMedia(id,storagePath,e){
-  e&&e.stopPropagation();
-  confirmAction('Delete this media file?',async()=>{
-    try{
-      if(storagePath){
-        const {storage,ref,deleteObject}=await waitFb();
-        await deleteObject(ref(storage,storagePath));
+    async function togglePage(pageId, active) {
+      const { db, doc, setDoc } = await waitFb();
+      const update = { ..._pageSettings, [pageId]: active };
+      await setDoc(doc(db, 'settings', 'pages'), update, { merge: true });
+      toast(`${pageId} is now ${active ? 'active' : 'inactive'}`, 'success');
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  INDEX MEDIA RENDERER
+    // ═══════════════════════════════════════════════════════
+    let _indexMedia = [];
+
+    function renderIndexMedia(data) {
+      _indexMedia = data;
+      const grid = document.getElementById('indexMediaGrid');
+      if (!data.length) { grid.innerHTML = '<div style="color:var(--muted);font-size:13px">No index media yet — add some above!</div>'; return }
+      const sorted = [...data].sort((a, b) => (a.order || 0) - (b.order || 0));
+      grid.innerHTML = sorted.map(m => `
+    <div class="index-media-card">
+      ${m.imgUrl ? `<img src="${m.imgUrl}" alt="${m.label || ''}" onerror="this.style.display='none'"/>` : `<div style="height:140px;display:grid;place-items:center;font-size:32px;background:var(--surface3)">🖼️</div>`}
+      <div class="index-media-card-body">
+        <div class="index-media-card-label">${m.label || '—'}</div>
+        <div class="index-media-card-section">${m.section || '—'} · Order: ${m.order || 0}</div>
+        <div style="margin-top:8px;display:flex;gap:6px">
+          <button class="btn btn-sm btn-primary" onclick="editIndexMedia('${m.id}')">Edit</button>
+          <button class="btn btn-sm btn-red" onclick="deleteItem('indexMedia','${m.id}')">Delete</button>
+        </div>
+      </div>
+    </div>`).join('');
+    }
+
+    function openIndexMediaModal() { _editId = null; _editCollection = 'indexMedia'; openModal('indexMediaModal') }
+
+    function editIndexMedia(id) {
+      const item = _indexMedia.find(m => m.id === id);
+      if (!item) { toast('Item not found', 'error'); return }
+      _editId = id; _editCollection = 'indexMedia';
+      s('im_section', item.section); s('im_label', item.label); s('im_link', item.link); s('im_order', item.order); s('im_img_url', item.imgUrl); s('im_desc', item.description);
+      openModal('indexMediaModal');
+    }
+
+    async function saveIndexMedia() {
+      const label = g('im_label'); if (!label) { toast('Label is required', 'error'); return }
+      let imgUrl = g('im_img_url');
+      const file = document.getElementById('im_img_file').files[0];
+      if (file) imgUrl = await uploadFile(file, `indexMedia/${Date.now()}_${file.name}`, null);
+      const data = { section: g('im_section'), label, link: g('im_link'), order: parseInt(g('im_order')) || 0, imgUrl, description: g('im_desc'), updatedAt: Date.now() };
+      await saveDoc('indexMedia', data, _editId);
+      closeModal('indexMediaModal'); toast('Index media saved! 🖼️', 'success');
+      resetForm(['im_label', 'im_link', 'im_order', 'im_img_url', 'im_desc']);
+      _editId = null;
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  SAVE HELPERS
+    // ═══════════════════════════════════════════════════════
+    async function saveCountry() {
+      const name = g('c_name'); const code = g('c_code').toUpperCase();
+      if (!name || !code) { toast('Name and Code are required', 'error'); return }
+      let logoUrl = g('c_logo_url');
+      const file = document.getElementById('c_logo_file').files[0];
+      if (file) logoUrl = await uploadFile(file, `countries/${code}_${Date.now()}`, showProgress('c_progress', 'c_progress_fill', 'c_progress_label'));
+      const data = { name, code, confederation: g('c_conf'), rank: g('c_rank'), logoUrl, worldCupTitles: g('c_wc'), cups: g('c_cups'), olympic: g('c_olympic'), status: g('c_status'), updatedAt: Date.now() };
+      await saveDoc('countries', data, _editId);
+      closeModal('countryModal'); toast('Country saved! 🌍', 'success'); resetForm(['c_name', 'c_code', 'c_rank', 'c_logo_url', 'c_wc', 'c_cups', 'c_olympic']);
+    }
+
+    async function saveClub() {
+      const name = g('cl_name'); if (!name) { toast('Club name required', 'error'); return }
+      let logoUrl = g('cl_logo_url');
+      const file = document.getElementById('cl_logo_file').files[0];
+      if (file) logoUrl = await uploadFile(file, `clubs/${name.replace(/\s/g, '_')}_${Date.now()}`, showProgress('cl_progress', 'cl_progress_fill', null));
+      const data = { name, code: g('cl_code').toUpperCase(), league: g('cl_league'), country: g('cl_country'), logoUrl, primaryColor: g('cl_color1'), status: g('cl_status'), updatedAt: Date.now() };
+      await saveDoc('clubs', data, _editId);
+      closeModal('clubModal'); toast('Club saved! 🏟️', 'success'); resetForm(['cl_name', 'cl_code', 'cl_league', 'cl_country', 'cl_logo_url']);
+    }
+
+    async function saveProduct() {
+      const name = g('p_name'); if (!name) { toast('Product name required', 'error'); return }
+      let imgUrl = g('p_img_url');
+      const file = document.getElementById('p_img_file').files[0];
+      if (file) imgUrl = await uploadFile(file, `products/${Date.now()}_${file.name}`, null);
+      const data = {
+        name, team: g('p_team'), type: g('p_type'), price: g('p_price'), badge: g('p_badge'), imgUrl, status: g('p_status'),
+        sizes: {
+          xs: parseInt(g('p_size_xs')) || 0,
+          s: parseInt(g('p_size_s')) || 0,
+          m: parseInt(g('p_size_m')) || 0,
+          l: parseInt(g('p_size_l')) || 0,
+          xl: parseInt(g('p_size_xl')) || 0
+        },
+        updatedAt: Date.now()
+      };
+      await saveDoc('products', data, _editId);
+      closeModal('productModal'); toast('Product saved! 👕', 'success');
+    }
+
+    async function savePlayer() {
+      const name = g('pl_name'); if (!name) { toast('Player name required', 'error'); return }
+      const data = { name, number: g('pl_num'), position: g('pl_pos'), team: g('pl_team'), goals: g('pl_goals'), assists: g('pl_assists'), caps: g('pl_caps'), club: g('pl_club'), description: g('pl_desc'), updatedAt: Date.now() };
+      await saveDoc('players', data, _editId);
+      closeModal('playerModal'); toast('Player saved! ⚽', 'success');
+    }
+
+    async function saveHero() {
+      const page = g('h_page'); const title = g('h_title'); if (!page || !title) { toast('Page and Title required', 'error'); return }
+      let bgUrl = g('h_img_url');
+      const file = document.getElementById('h_img_file').files[0];
+      if (file) bgUrl = await uploadFile(file, `heroes/${page}_${Date.now()}`, null);
+      const data = { page, title, subtitle: g('h_sub'), pills: g('h_pills').split(',').map(s => s.trim()).filter(Boolean), primaryColor: g('h_color'), bgUrl, updatedAt: Date.now() };
+      await saveDoc('heroes', data, _editId);
+      closeModal('heroModal'); toast('Hero banner saved!', 'success');
+    }
+
+    async function saveTimeline() {
+      const event = g('tl_event'); if (!event) { toast('Event title required', 'error'); return }
+      const data = { year: parseInt(g('tl_year')) || 0, location: g('tl_loc'), event, detail: g('tl_detail'), icon: g('tl_icon') || '📅', team: g('tl_team'), updatedAt: Date.now() };
+      await saveDoc('timeline', data, _editId);
+      closeModal('timelineModal'); toast('Timeline entry saved!', 'success');
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  FIRESTORE CRUD
+    // ═══════════════════════════════════════════════════════
+    async function saveDoc(col, data, id) {
+      const { db, collection, addDoc, doc, updateDoc, setDoc } = await waitFb();
+      if (id) await updateDoc(doc(db, col, id), data);
+      else await addDoc(collection(db, col), data);
+    }
+
+    async function deleteDocById(col, id) {
+      const { db, doc, deleteDoc } = await waitFb();
+      await deleteDoc(doc(db, col, id));
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  FIREBASE STORAGE UPLOAD
+    // ═══════════════════════════════════════════════════════
+    async function uploadFile(file, path, progressCb) {
+      const { storage, ref, uploadBytesResumable, getDownloadURL } = await waitFb();
+      return new Promise((resolve, reject) => {
+        const storageRef = ref(storage, path);
+        const task = uploadBytesResumable(storageRef, file);
+        task.on('state_changed', (snap) => {
+          const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+          if (progressCb) progressCb(pct);
+        }, reject, async () => {
+          const url = await getDownloadURL(task.snapshot.ref);
+          await saveDoc('media', { name: file.name, url, storagePath: path, folder: path.split('/')[0], size: file.size, createdAt: Date.now() }, null);
+          resolve(url);
+        });
+      });
+    }
+
+    function showProgress(wrapId, fillId, labelId) {
+      const wrap = document.getElementById(wrapId);
+      if (wrap) wrap.style.display = 'block';
+      return (pct) => {
+        const fill = document.getElementById(fillId);
+        if (fill) fill.style.width = pct + '%';
+        if (labelId) { const lbl = document.getElementById(labelId); if (lbl) lbl.textContent = `Uploading… ${pct}%` }
+        if (pct === 100) { setTimeout(() => { if (wrap) wrap.style.display = 'none' }, 1200) }
+      };
+    }
+
+    async function handleFileSelect(e) { await uploadFilesFromInput(Array.from(e.target.files)) }
+    function handleDragOver(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover') }
+    function handleDragLeave() { document.getElementById('uploadZone').classList.remove('dragover') }
+    async function handleDrop(e) { e.preventDefault(); document.getElementById('uploadZone').classList.remove('dragover'); await uploadFilesFromInput(Array.from(e.dataTransfer.files)) }
+
+    async function uploadFilesFromInput(files) {
+      for (const file of files) {
+        if (file.size > 5 * 1024 * 1024) { toast(`${file.name} exceeds 5MB`, 'error'); continue }
+        const queue = document.getElementById('uploadQueue');
+        const item = document.createElement('div');
+        item.style.cssText = 'width:140px;background:var(--surface2);border-radius:10px;padding:10px;border:1px solid var(--border)';
+        item.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${file.name}</div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%"></div></div>`;
+        queue.appendChild(item);
+        try {
+          await uploadFile(file, `media/${Date.now()}_${file.name}`, (pct) => {
+            const el = item.querySelector('.progress-bar-fill');
+            if (el) el.style.width = pct + '%';
+          });
+          item.innerHTML += `<div style="font-size:10px;color:var(--green);margin-top:4px">✓ Done</div>`;
+          toast(`${file.name} uploaded!`, 'success');
+        } catch (err) {
+          item.innerHTML += `<div style="font-size:10px;color:var(--red);margin-top:4px">✗ Failed</div>`;
+          toast(`Upload failed: ${file.name}`, 'error');
+        }
       }
-      await deleteDocById('media',id);
-      toast('Media deleted','info');
-    }catch(err){ toast('Error: '+err.message,'error') }
-  });
-}
+    }
 
-function copyUrl(url,e){
-  e&&e.stopPropagation();
-  navigator.clipboard.writeText(url).then(()=>toast('URL copied!','success'));
-}
+    async function deleteMedia(id, storagePath, e) {
+      e && e.stopPropagation();
+      confirmAction('Delete this media file?', async () => {
+        try {
+          if (storagePath) {
+            const { storage, ref, deleteObject } = await waitFb();
+            await deleteObject(ref(storage, storagePath));
+          }
+          await deleteDocById('media', id);
+          toast('Media deleted', 'info');
+        } catch (err) { toast('Error: ' + err.message, 'error') }
+      });
+    }
 
-// ═══════════════════════════════════════════════════════
-//  ACTIONS (EDIT / DELETE)
-// ═══════════════════════════════════════════════════════
-function actionBtns(col,id){
-  return `<div style="display:flex;gap:6px">
+    function copyUrl(url, e) {
+      e && e.stopPropagation();
+      navigator.clipboard.writeText(url).then(() => toast('URL copied!', 'success'));
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  ACTIONS (EDIT / DELETE)
+    // ═══════════════════════════════════════════════════════
+    function actionBtns(col, id) {
+      return `<div style="display:flex;gap:6px">
     <button class="btn btn-sm btn-primary" onclick="editItem('${col}','${id}')">Edit</button>
     <button class="btn btn-sm btn-red" onclick="deleteItem('${col}','${id}')">Delete</button>
   </div>`;
-}
+    }
 
-async function editItem(col,id){
-  const {db,collection,getDocs}=await waitFb();
-  const snap=await getDocs(collection(db,col));
-  const docData=snap.docs.find(d=>d.id===id);
-  if(!docData){ toast('Item not found','error'); return }
-  const data=docData.data();
-  _editId=id; _editCollection=col;
+    async function editItem(col, id) {
+      const { db, collection, getDocs } = await waitFb();
+      const snap = await getDocs(collection(db, col));
+      const docData = snap.docs.find(d => d.id === id);
+      if (!docData) { toast('Item not found', 'error'); return }
+      const data = docData.data();
+      _editId = id; _editCollection = col;
 
-  if(col==='products'){
-    switchTab('products'); openProductModal();
-    s('p_name',data.name);s('p_team',data.team);s('p_type',data.type);s('p_price',data.price);s('p_badge',data.badge);s('p_img_url',data.imgUrl);s('p_status',data.status||'active');
-    const sz = data.sizes || {};
-    s('p_size_xs', sz.xs||0); s('p_size_s', sz.s||0); s('p_size_m', sz.m||0); s('p_size_l', sz.l||0); s('p_size_xl', sz.xl||0);
-  } else if(col==='players'){
-    switchTab('players'); openPlayerModal();
-    s('pl_name',data.name);s('pl_num',data.number);s('pl_pos',data.position);s('pl_team',data.team);
-    s('pl_goals',data.goals);s('pl_assists',data.assists);s('pl_caps',data.caps);s('pl_club',data.club);s('pl_desc',data.description);
-  } else if(col==='heroes'){
-    switchTab('hero'); openHeroModal();
-    s('h_page',data.page);s('h_title',data.title);s('h_sub',data.subtitle);s('h_pills',(data.pills||[]).join(', '));s('h_color',data.primaryColor);s('h_img_url',data.bgUrl);
-  } else if(col==='timeline'){
-    switchTab('timeline'); openTimelineModal();
-    s('tl_year',data.year);s('tl_loc',data.location);s('tl_event',data.event);s('tl_detail',data.detail);s('tl_icon',data.icon);s('tl_team',data.team);
-  }
-}
+      if (col === 'products') {
+        switchTab('products'); openProductModal();
+        s('p_name', data.name); s('p_team', data.team); s('p_type', data.type); s('p_price', data.price); s('p_badge', data.badge); s('p_img_url', data.imgUrl); s('p_status', data.status || 'active');
+        const sz = data.sizes || {};
+        s('p_size_xs', sz.xs || 0); s('p_size_s', sz.s || 0); s('p_size_m', sz.m || 0); s('p_size_l', sz.l || 0); s('p_size_xl', sz.xl || 0);
+      } else if (col === 'players') {
+        switchTab('players'); openPlayerModal();
+        s('pl_name', data.name); s('pl_num', data.number); s('pl_pos', data.position); s('pl_team', data.team);
+        s('pl_goals', data.goals); s('pl_assists', data.assists); s('pl_caps', data.caps); s('pl_club', data.club); s('pl_desc', data.description);
+      } else if (col === 'heroes') {
+        switchTab('hero'); openHeroModal();
+        s('h_page', data.page); s('h_title', data.title); s('h_sub', data.subtitle); s('h_pills', (data.pills || []).join(', ')); s('h_color', data.primaryColor); s('h_img_url', data.bgUrl);
+      } else if (col === 'timeline') {
+        switchTab('timeline'); openTimelineModal();
+        s('tl_year', data.year); s('tl_loc', data.location); s('tl_event', data.event); s('tl_detail', data.detail); s('tl_icon', data.icon); s('tl_team', data.team);
+      }
+    }
 
-function deleteItem(col,id){
-  confirmAction(`Delete this item from "${col}"?`,async()=>{
-    try{ await deleteDocById(col,id); toast('Deleted successfully','info') }
-    catch(e){ toast('Error: '+e.message,'error') }
-  });
-}
+    function deleteItem(col, id) {
+      confirmAction(`Delete this item from "${col}"?`, async () => {
+        try { await deleteDocById(col, id); toast('Deleted successfully', 'info') }
+        catch (e) { toast('Error: ' + e.message, 'error') }
+      });
+    }
 
-function confirmAction(msg,cb){
-  document.getElementById('confirmMsg').textContent=msg;
-  document.getElementById('confirmOkBtn').onclick=()=>{ closeModal('confirmModal'); cb() };
-  openModal('confirmModal');
-}
+    function confirmAction(msg, cb) {
+      document.getElementById('confirmMsg').textContent = msg;
+      document.getElementById('confirmOkBtn').onclick = () => { closeModal('confirmModal'); cb() };
+      openModal('confirmModal');
+    }
 
-// ═══════════════════════════════════════════════════════
-//  MODAL CONTROLS
-// ═══════════════════════════════════════════════════════
-function openCountryModal(){ _editId=null; document.getElementById('countryModalTitle').textContent='Add Country'; openModal('countryModal') }
-function openClubModal(){ _editId=null; document.getElementById('clubModalTitle').textContent='Add Club'; openModal('clubModal') }
-function openProductModal(){ _editId=null; openModal('productModal') }
-function openPlayerModal(){ _editId=null; openModal('playerModal') }
-function openHeroModal(){ _editId=null; openModal('heroModal') }
-function openTimelineModal(){ _editId=null; openModal('timelineModal') }
-function openModal(id){ document.getElementById(id).classList.add('open') }
-function closeModal(id){ document.getElementById(id).classList.remove('open') }
-document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open') }));
+    // ═══════════════════════════════════════════════════════
+    //  MODAL CONTROLS
+    // ═══════════════════════════════════════════════════════
+    function openCountryModal() { _editId = null; document.getElementById('countryModalTitle').textContent = 'Add Country'; openModal('countryModal') }
+    function openClubModal() { _editId = null; document.getElementById('clubModalTitle').textContent = 'Add Club'; openModal('clubModal') }
+    function openProductModal() { _editId = null; openModal('productModal') }
+    function openPlayerModal() { _editId = null; openModal('playerModal') }
+    function openHeroModal() { _editId = null; openModal('heroModal') }
+    function openTimelineModal() { _editId = null; openModal('timelineModal') }
+    function openModal(id) { document.getElementById(id).classList.add('open') }
+    function closeModal(id) { document.getElementById(id).classList.remove('open') }
+    document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open') }));
 
-// ═══════════════════════════════════════════════════════
-//  TAB SWITCHING
-// ═══════════════════════════════════════════════════════
-const tabTitles={dashboard:'Dashboard',countries:'Countries',clubs:'Clubs',hero:'Hero Banners',products:'Products / Kits',players:'Players',media:'Media Library',timeline:'Timeline',orders:'Orders',users:'Users',pages:'Page Settings',indexmedia:'Index Media'};
-function switchTab(name,el){
-  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  document.getElementById('pageTitle').textContent=tabTitles[name]||name;
-  if(el){ document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); el.classList.add('active') }
-  else { document.querySelectorAll('.nav-item').forEach(i=>{ if(i.textContent.toLowerCase().includes(name.toLowerCase().split(' ')[0])) i.classList.add('active') }) }
-}
+    // ═══════════════════════════════════════════════════════
+    //  TAB SWITCHING
+    // ═══════════════════════════════════════════════════════
+    const tabTitles = { dashboard: 'Dashboard', countries: 'Countries', clubs: 'Clubs', hero: 'Hero Banners', products: 'Products / Kits', players: 'Players', media: 'Media Library', timeline: 'Timeline', orders: 'Orders', users: 'Users', pages: 'Page Settings', indexmedia: 'Index Media' };
+    function switchTab(name, el) {
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      document.getElementById('pageTitle').textContent = tabTitles[name] || name;
+      if (el) { document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); el.classList.add('active') }
+      else { document.querySelectorAll('.nav-item').forEach(i => { if (i.textContent.toLowerCase().includes(name.toLowerCase().split(' ')[0])) i.classList.add('active') }) }
+    }
 
-// ═══════════════════════════════════════════════════════
-//  LOGO PREVIEW
-// ═══════════════════════════════════════════════════════
-function previewLogo(event,previewId,urlId){
-  const file=event.target.files[0]; if(!file) return;
-  const preview=document.getElementById(previewId);
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const isSvg=file.name.endsWith('.svg')||file.type==='image/svg+xml';
-    preview.style.display='flex';
-    if(isSvg) preview.innerHTML=e.target.result;
-    else preview.innerHTML=`<img src="${e.target.result}" style="max-width:80px;max-height:60px;border-radius:6px"/>`;
-    document.getElementById(urlId).value='[file selected — will upload on save]';
-  };
-  if(file.name.endsWith('.svg')) reader.readAsText(file);
-  else reader.readAsDataURL(file);
-}
+    // ═══════════════════════════════════════════════════════
+    //  LOGO PREVIEW
+    // ═══════════════════════════════════════════════════════
+    function previewLogo(event, previewId, urlId) {
+      const file = event.target.files[0]; if (!file) return;
+      const preview = document.getElementById(previewId);
+      const reader = new FileReader();
+      reader.onload = e => {
+        const isSvg = file.name.endsWith('.svg') || file.type === 'image/svg+xml';
+        preview.style.display = 'flex';
+        if (isSvg) preview.innerHTML = e.target.result;
+        else preview.innerHTML = `<img src="${e.target.result}" style="max-width:80px;max-height:60px;border-radius:6px"/>`;
+        document.getElementById(urlId).value = '[file selected — will upload on save]';
+      };
+      if (file.name.endsWith('.svg')) reader.readAsText(file);
+      else reader.readAsDataURL(file);
+    }
 
-// ═══════════════════════════════════════════════════════
-//  TOAST
-// ═══════════════════════════════════════════════════════
-function toast(msg,type='info'){
-  const c=document.getElementById('toastContainer');
-  const el=document.createElement('div');
-  el.className=`toast ${type}`;
-  el.innerHTML=`<span>${type==='success'?'✓':type==='error'?'✗':'ℹ'}</span>${msg}`;
-  c.appendChild(el);
-  setTimeout(()=>el.remove(),3200);
-}
+    // ═══════════════════════════════════════════════════════
+    //  TOAST
+    // ═══════════════════════════════════════════════════════
+    function toast(msg, type = 'info') {
+      const c = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      el.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'}</span>${msg}`;
+      c.appendChild(el);
+      setTimeout(() => el.remove(), 3200);
+    }
 
-// ═══════════════════════════════════════════════════════
-//  SEARCH
-// ═══════════════════════════════════════════════════════
-function globalSearchFn(){
-  const q=document.getElementById('globalSearch').value.toLowerCase();
-  document.querySelectorAll('table tbody tr').forEach(row=>{
-    row.style.display=row.textContent.toLowerCase().includes(q)?'':'none';
-  });
-}
+    // ═══════════════════════════════════════════════════════
+    //  SEARCH
+    // ═══════════════════════════════════════════════════════
+    function globalSearchFn() {
+      const q = document.getElementById('globalSearch').value.toLowerCase();
+      document.querySelectorAll('table tbody tr').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    }
 
-// ═══════════════════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════════════════
-function g(id){ const el=document.getElementById(id); return el?el.value.trim():'' }
-function s(id,val){ const el=document.getElementById(id); if(el&&val!==undefined) el.value=val||'' }
-function setEl(id,val){ const el=document.getElementById(id); if(el) el.textContent=val }
-function emptyRow(cols,msg){ return `<tr><td colspan="${cols}" style="color:var(--muted);text-align:center;padding:30px">${msg}</td></tr>` }
-function resetForm(ids){ ids.forEach(id=>s(id,'')) }
+    // ═══════════════════════════════════════════════════════
+    //  HELPERS
+    // ═══════════════════════════════════════════════════════
+    function g(id) { const el = document.getElementById(id); return el ? el.value.trim() : '' }
+    function s(id, val) { const el = document.getElementById(id); if (el && val !== undefined) el.value = val || '' }
+    function setEl(id, val) { const el = document.getElementById(id); if (el) el.textContent = val }
+    function emptyRow(cols, msg) { return `<tr><td colspan="${cols}" style="color:var(--muted);text-align:center;padding:30px">${msg}</td></tr>` }
+    function resetForm(ids) { ids.forEach(id => s(id, '')) }
 
-function logoThumb(url,name){
-  if(!url) return `<div class="flag-thumb-svg" title="${name||''}"><span style="font-size:14px">🏳</span></div>`;
-  const isSvg=url.trim().startsWith('<svg')||url.trim().startsWith('<SVG');
-  if(isSvg) return `<div class="flag-thumb-svg">${url}</div>`;
-  return `<img class="flag-thumb" src="${url}" alt="${name||''}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'32\\' height=\\'32\\'><rect fill=\\'%231a2338\\' width=\\'32\\' height=\\'32\\' rx=\\'16\\'/><text y=\\'22\\' x=\\'16\\' text-anchor=\\'middle\\' fill=\\'%2374ACDF\\' font-size=\\'16\\'>🏳</text></svg>'"/>`;
-}
+    function logoThumb(url, name) {
+      if (!url) return `<div class="flag-thumb-svg" title="${name || ''}"><span style="font-size:14px">🏳</span></div>`;
+      const isSvg = url.trim().startsWith('<svg') || url.trim().startsWith('<SVG');
+      if (isSvg) return `<div class="flag-thumb-svg">${url}</div>`;
+      return `<img class="flag-thumb" src="${url}" alt="${name || ''}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'32\\' height=\\'32\\'><rect fill=\\'%231a2338\\' width=\\'32\\' height=\\'32\\' rx=\\'16\\'/><text y=\\'22\\' x=\\'16\\' text-anchor=\\'middle\\' fill=\\'%2374ACDF\\' font-size=\\'16\\'>🏳</text></svg>'"/>`;
+    }
 
-// ── START — load data immediately, no auth gate ──
-initApp();
-</script>
+    // ── START — load data immediately, no auth gate ──
+    initApp();
+  </script>
 </body>
+
 </html>
