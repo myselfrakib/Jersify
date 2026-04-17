@@ -479,8 +479,13 @@
       height: 18px;
     }
 
+    .loop-viewport::-webkit-scrollbar { display: none; }
     .loop-viewport {
-      overflow: hidden;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+
       width: 100%;
       padding: 2px 0 6px;
       touch-action: pan-y;
@@ -490,13 +495,12 @@
       display: flex;
       gap: 12px;
       width: max-content;
-      will-change: transform;
-      transition: transform .45s ease;
-      padding-left: 16px;
+      padding: 0 16px;
     }
 
     .loop-card {
       flex: 0 0 170px;
+      scroll-snap-align: center;
       border-radius: 22px;
       background: #fff;
       border: 1px solid var(--line);
@@ -791,21 +795,29 @@
       padding: 0 16px 18px;
     }
 
-    .grid {
+        .grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
+      grid-auto-rows: minmax(100px, auto);
     }
-
+    
     .grid-item {
-      aspect-ratio: 1/1;
       border-radius: 18px;
       overflow: hidden;
       background: #ddd;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, .05);
+      box-shadow: var(--shadow-soft);
       position: relative;
     }
-
+    
+    .grid-item.sq {
+      aspect-ratio: 1/1;
+    }
+    
+    .grid-item.tall {
+      grid-row: span 2;
+      height: 100%;
+    }
     .grid-item img {
       width: 100%;
       height: 100%;
@@ -1364,161 +1376,30 @@
       <div class="chip-row" id="clubRow"></div>
     </section>
 
-    <section class="reels section">
+    <section class="reels section" style="display:none;" id="reelsSection">
       <h3>Reels</h3>
-      <div class="reels-row">
-        <div class="reel-card">
-          <div class="thumb"></div>
-          <div class="play">
-            <div>
-              Match Day Reel<br><span style="font-size:10px;color:rgba(255,255,255,.72)">Best seller</span>
-            </div>
-            <div class="play-badge">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div class="reel-card">
-          <div class="thumb"></div>
-          <div class="play">
-            <div>
-              Jersey Drop<br><span style="font-size:10px;color:rgba(255,255,255,.72)">New arrival</span>
-            </div>
-            <div class="play-badge">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div class="reel-card">
-          <div class="thumb"></div>
-          <div class="play">
-            <div>
-              Fan Edit<br><span style="font-size:10px;color:rgba(255,255,255,.72)">Trending</span>
-            </div>
-            <div class="play-badge">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
+      <div class="reels-row" id="reelsRow" style="display:flex; overflow-x:auto; scroll-snap-type: x mandatory; scrollbar-width:none; gap:14px; padding-bottom:6px;">
       </div>
     </section>
+    <style>.reels-row::-webkit-scrollbar { display: none; } .reel-card { scroll-snap-align: center; }</style>
 
-    <section class="gallery">
+    <section class="gallery" id="gallerySection" style="display:none;">
       <h3>Photo Gallery</h3>
-      <div class="grid">
-        <div class="grid-item"><img
-            src="https://images.unsplash.com/photo-1529900748604-07564a03e7a6?auto=format&fit=crop&w=900&q=80"
-            alt="Gallery 1"></div>
-        <div class="grid-item"><img
-            src="https://images.unsplash.com/photo-1511886929837-354d3d0a0d47?auto=format&fit=crop&w=900&q=80"
-            alt="Gallery 2"></div>
-        <div class="grid-item"><img
-            src="https://images.unsplash.com/photo-1528289163511-5d4c0e8f1ecf?auto=format&fit=crop&w=900&q=80"
-            alt="Gallery 3"></div>
-        <div class="grid-item"><img
-            src="https://images.unsplash.com/photo-1511450254187-fd8f500b0f7b?auto=format&fit=crop&w=900&q=80"
-            alt="Gallery 4"></div>
-        <div class="grid-item"><img
-            src="https://images.unsplash.com/photo-1508084680786-a84f91d1153c?auto=format&fit=crop&w=900&q=80"
-            alt="Gallery 5"></div>
-        <div class="grid-item"><img
-            src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=900&q=80"
-            alt="Gallery 6"></div>
-      </div>
+      <div class="grid" id="galleryGrid"></div>
     </section>
 
-    <section class="products">
-      <h3>Products</h3>
-      <div class="products-viewport" id="productsViewport">
-        <div class="product-row" id="productTrack">
-          <article class="product">
-            <div class="img">
-              <div class="jersey-card dark">
-                <div>
-                  <strong>07</strong>
-                  <small>STRIPE KIT</small>
-                </div>
-              </div>
-            </div>
-            <div class="product-info">
-              <div class="title">Striped Fan Jersey</div>
-              <div class="desc">A bold black and red club-inspired jersey built for match-day style.</div>
-              <div class="bottom">
-                <div class="price">₹1,299</div>
-                <button class="btn">Add to Cart</button>
-              </div>
-            </div>
-          </article>
-
-          <article class="product">
-            <div class="img">
-              <div class="jersey-card white">
-                <div>
-                  <strong>10</strong>
-                  <small>HOME KIT</small>
-                </div>
-              </div>
-            </div>
-            <div class="product-info">
-              <div class="title">White Home Jersey</div>
-              <div class="desc">Clean, premium, and comfortable. Great for fans who like a sharp look.</div>
-              <div class="bottom">
-                <div class="price">₹1,499</div>
-                <button class="btn">Add to Cart</button>
-              </div>
-            </div>
-          </article>
-
-          <article class="product">
-            <div class="img">
-              <div class="jersey-card blue">
-                <div>
-                  <strong>11</strong>
-                  <small>AWAY KIT</small>
-                </div>
-              </div>
-            </div>
-            <div class="product-info">
-              <div class="title">Sky Blue Away Jersey</div>
-              <div class="desc">Lightweight fabric with a clean away-kit finish and a modern fit.</div>
-              <div class="bottom">
-                <div class="price">₹1,399</div>
-                <button class="btn">Add to Cart</button>
-              </div>
-            </div>
-          </article>
-
-          <article class="product">
-            <div class="img">
-              <div class="jersey-card gold">
-                <div>
-                  <strong>08</strong>
-                  <small>SPECIAL KIT</small>
-                </div>
-              </div>
-            </div>
-            <div class="product-info">
-              <div class="title">Gold Special Jersey</div>
-              <div class="desc">Limited-edition premium jersey with a standout look for true fans.</div>
-              <div class="bottom">
-                <div class="price">₹1,799</div>
-                <button class="btn">Add to Cart</button>
-              </div>
-            </div>
-          </article>
+    <section class="products" id="productsSection">
+      <h3>All Products</h3>
+      <div class="products-viewport" id="allProductsViewport" style="overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none;">
+        <div class="product-row" id="allProductsTrack" style="display: flex; gap: 14px; padding: 0 16px 8px;">
+          <div style="color:var(--muted); font-size: 13px; text-align:center; padding: 20px;">Loading Products...</div>
         </div>
       </div>
-
-      <div class="viewall-wrap">
-        <button class="viewall">View All</button>
+      <div class="viewall-wrap" style="margin-top: 14px;">
+        <button class="viewall" onclick="window.location.href='shop.html'">View Shop</button>
       </div>
     </section>
+
 
     <footer class="footer">
       <h4>JERSIFY</h4>
@@ -1573,7 +1454,9 @@
   </nav>
 
   <script>
-    /* HERO SLIDER */
+    /* ═══════════════════════════════════════════════════════
+       HERO SLIDER — auto-play + manual swipe + dot navigation
+       ═══════════════════════════════════════════════════════ */
     const slides = document.getElementById("slides");
     const dots = Array.from(document.querySelectorAll(".dot"));
     let heroIndex = 0;
@@ -1602,108 +1485,70 @@
       heroTimer = setInterval(nextHeroSlide, 3500);
     }
 
+    // Touch swipe for hero
+    let hStartX = 0;
+    slides.addEventListener("touchstart", e => hStartX = e.touches[0].clientX, { passive: true });
+    slides.addEventListener("touchend", e => {
+      const diff = hStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) {
+        if (diff > 0) heroIndex = (heroIndex + 1) % 3;
+        else heroIndex = (heroIndex - 1 + 3) % 3;
+        showHeroSlide(heroIndex);
+        restartHero();
+      }
+    }, { passive: true });
+
     showHeroSlide(0);
     restartHero();
 
+    /* ═══════════════════════════════════════════════════════
+       SHOP BUTTON — redirect to shop page
+       ═══════════════════════════════════════════════════════ */
     document.querySelector(".shop-btn").addEventListener("click", () => {
-      document.querySelector(".products").scrollIntoView({ behavior: "smooth" });
+      window.location.href = 'shop.html';
     });
 
-    document.querySelectorAll(".nav-item").forEach(item => {
-      item.addEventListener("click", () => {
-        document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
-        item.classList.add("active");
-      });
-    });
+    /* ═══════════════════════════════════════════════════════
+       WOW PICKS — prev/next manual scrolling
+       ═══════════════════════════════════════════════════════ */
+    const loopViewport = document.getElementById("loopViewport");
+    const prevProductBtn = document.getElementById("prevProduct");
+    const nextProductBtn = document.getElementById("nextProduct");
+    if (prevProductBtn && loopViewport) {
+      prevProductBtn.addEventListener("click", () => loopViewport.scrollBy({ left: -184, behavior: "smooth" }));
+    }
+    if (nextProductBtn && loopViewport) {
+      nextProductBtn.addEventListener("click", () => loopViewport.scrollBy({ left: 184, behavior: "smooth" }));
+    }
 
-    /* COUNTRY IMAGES */
+    /* ═══════════════════════════════════════════════════════
+       COUNTRY CHIP IMAGES (static SVG flags)
+       ═══════════════════════════════════════════════════════ */
     const countryRow = document.getElementById("countryRow");
     const countries = [
       {
-        name: "Argentina",
-        sub: "National team",
-        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-            <defs>
-              <clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath>
-            </defs>
-            <g clip-path="url(#c)">
-              <rect width="120" height="120" fill="#fff"/>
-              <rect width="120" height="40" y="0" fill="#74acdf"/>
-              <rect width="120" height="40" y="80" fill="#74acdf"/>
-              <circle cx="60" cy="60" r="10" fill="#f6c400"/>
-            </g>
-          </svg>
-        `)
+        name: "Argentina", sub: "National team",
+        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>`)
       },
       {
-        name: "Brazil",
-        sub: "National team",
-        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-            <defs><clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath></defs>
-            <g clip-path="url(#c)">
-              <rect width="120" height="120" fill="#1f8f3a"/>
-              <polygon points="60,18 98,60 60,102 22,60" fill="#f6d44a"/>
-              <circle cx="60" cy="60" r="18" fill="#2a4c9b"/>
-            </g>
-          </svg>
-        `)
+        name: "Brazil", sub: "National team",
+        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cb"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cb)"><rect width="120" height="120" fill="#1f8f3a"/><polygon points="60,18 98,60 60,102 22,60" fill="#f6d44a"/><circle cx="60" cy="60" r="18" fill="#2a4c9b"/></g></svg>`)
       },
       {
-        name: "France",
-        sub: "National team",
-        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-            <defs><clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath></defs>
-            <g clip-path="url(#c)">
-              <rect width="40" height="120" x="0" fill="#244aa5"/>
-              <rect width="40" height="120" x="40" fill="#fff"/>
-              <rect width="40" height="120" x="80" fill="#d81e2e"/>
-            </g>
-          </svg>
-        `)
+        name: "France", sub: "National team",
+        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cc"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cc)"><rect width="40" height="120" x="0" fill="#244aa5"/><rect width="40" height="120" x="40" fill="#fff"/><rect width="40" height="120" x="80" fill="#d81e2e"/></g></svg>`)
       },
       {
-        name: "Germany",
-        sub: "National team",
-        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-            <defs><clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath></defs>
-            <g clip-path="url(#c)">
-              <rect width="120" height="40" y="0" fill="#111"/>
-              <rect width="120" height="40" y="40" fill="#d81e2e"/>
-              <rect width="120" height="40" y="80" fill="#f3c400"/>
-            </g>
-          </svg>
-        `)
+        name: "Germany", sub: "National team",
+        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cd"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cd)"><rect width="120" height="40" y="0" fill="#111"/><rect width="120" height="40" y="40" fill="#d81e2e"/><rect width="120" height="40" y="80" fill="#f3c400"/></g></svg>`)
       },
       {
-        name: "Spain",
-        sub: "National team",
-        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-            <defs><clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath></defs>
-            <g clip-path="url(#c)">
-              <rect width="120" height="120" fill="#c9152e"/>
-              <rect width="120" height="52" y="34" fill="#ffcc29"/>
-            </g>
-          </svg>
-        `)
+        name: "Spain", sub: "National team",
+        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>`)
       },
       {
-        name: "Portugal",
-        sub: "National team",
-        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-            <defs><clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath></defs>
-            <g clip-path="url(#c)">
-              <rect width="48" height="120" fill="#1d8f45"/>
-              <rect x="48" width="72" height="120" fill="#d3212c"/>
-              <circle cx="52" cy="60" r="12" fill="#f6d44a"/>
-            </g>
-          </svg>
-        `)
+        name: "Portugal", sub: "National team",
+        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>`)
       }
     ];
 
@@ -1715,7 +1560,9 @@
       </a>
     `).join("");
 
-    /* CLUB IMAGES */
+    /* ═══════════════════════════════════════════════════════
+       CLUB CHIP IMAGES (generated SVG badges)
+       ═══════════════════════════════════════════════════════ */
     const clubRow = document.getElementById("clubRow");
     const clubs = [
       { name: "Barcelona", sub: "Club crest", bg: "#a51d2d", fg: "#f2c94c", label: "B" },
@@ -1729,10 +1576,8 @@
     function clubBadgeSvg(bg, fg, label, name) {
       return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-          <defs>
-            <clipPath id="c"><circle cx="60" cy="60" r="60"/></clipPath>
-          </defs>
-          <g clip-path="url(#c)">
+          <defs><clipPath id="cl${label}"><circle cx="60" cy="60" r="60"/></clipPath></defs>
+          <g clip-path="url(#cl${label})">
             <rect width="120" height="120" fill="${bg}"/>
             <circle cx="60" cy="56" r="30" fill="rgba(255,255,255,.18)"/>
             <path d="M28 92c10-20 54-20 64 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
@@ -1751,102 +1596,9 @@
       </a>
     `).join("");
 
-    /* MEDIA SPACE */
-    const mediaSpace = document.getElementById("mediaSpace");
-    // Example:
-    // mediaSpace.innerHTML = '<img src="YOUR_IMAGE_URL" alt="Promo image">';
-    // or:
-    // mediaSpace.innerHTML = '<video src="YOUR_VIDEO_URL" autoplay muted loop playsinline></video>';
-
-    /* LOOPING PRODUCT SLIDER - MANUAL CONTROL */
-    const loopViewport = document.getElementById("loopViewport");
-    const loopTrack = document.getElementById("loopTrack");
-    const prevProductBtn = document.getElementById("prevProduct");
-    const nextProductBtn = document.getElementById("nextProduct");
-
-    const originalCards = Array.from(loopTrack.children);
-    const realCount = originalCards.length;
-
-    // clone last and first for seamless infinite loop
-    const firstClone = originalCards[0].cloneNode(true);
-    const lastClone = originalCards[realCount - 1].cloneNode(true);
-    firstClone.classList.add("clone");
-    lastClone.classList.add("clone");
-    loopTrack.insertBefore(lastClone, originalCards[0]);
-    loopTrack.appendChild(firstClone);
-
-    let productIndex = 0; // index in the real cards
-    let cardWidth = 0;
-    let isAnimating = false;
-    const gap = 12;
-
-    function measureCardWidth() {
-      const card = loopTrack.querySelector(".loop-card");
-      if (!card) return;
-      cardWidth = card.getBoundingClientRect().width;
-    }
-
-    function setProductPosition(animate = true) {
-      const shift = (cardWidth + gap) * (productIndex + 1);
-      loopTrack.style.transition = animate ? "transform .45s ease" : "none";
-      loopTrack.style.transform = `translateX(-${shift}px)`;
-    }
-
-    function nextProduct() {
-      if (isAnimating) return;
-      isAnimating = true;
-      productIndex += 1;
-      setProductPosition(true);
-    }
-
-    function prevProduct() {
-      if (isAnimating) return;
-      isAnimating = true;
-      productIndex -= 1;
-      setProductPosition(true);
-    }
-
-    loopTrack.addEventListener("transitionend", () => {
-      if (productIndex >= realCount) {
-        productIndex = 0;
-        setProductPosition(false);
-      }
-      if (productIndex < 0) {
-        productIndex = realCount - 1;
-        setProductPosition(false);
-      }
-      isAnimating = false;
-    });
-
-    prevProductBtn.addEventListener("click", prevProduct);
-    nextProductBtn.addEventListener("click", nextProduct);
-
-    // swipe support
-    let startX = 0;
-    let endX = 0;
-
-    loopViewport.addEventListener("touchstart", e => {
-      startX = e.touches[0].clientX;
-    }, { passive: true });
-
-    loopViewport.addEventListener("touchend", e => {
-      endX = e.changedTouches[0].clientX;
-      const diff = startX - endX;
-      if (Math.abs(diff) > 40) {
-        if (diff > 0) nextProduct();
-        else prevProduct();
-      }
-    }, { passive: true });
-
-    window.addEventListener("resize", () => {
-      measureCardWidth();
-      setProductPosition(false);
-    });
-
-    measureCardWidth();
-    setProductPosition(false);
-
-    /* bottom nav active state */
+    /* ═══════════════════════════════════════════════════════
+       BOTTOM NAV — active state toggle
+       ═══════════════════════════════════════════════════════ */
     document.querySelectorAll(".nav-item").forEach(item => {
       item.addEventListener("click", () => {
         document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
@@ -1855,9 +1607,10 @@
     });
   </script>
 
+  <!-- ═══ FIREBASE MODULE — Loads Products, Reels & Gallery from Firestore ═══ -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
@@ -1871,40 +1624,111 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    window.addEventListener('DOMContentLoaded', async () => {
-      const snap = await getDocs(collection(db, "products"));
-      const container = document.getElementById('productTrack');
-      if (!container) return;
-
-      let html = '';
-      snap.forEach(d => {
-        const p = d.data();
-        html += `
-          <article class="product">
-            <div class="img">
-              \${p.imgUrl ? \`<img src="\${p.imgUrl}" style="width:100%;height:100%;object-fit:cover;"/>\` : 
-              \`<div class="jersey-card dark">
-                <div>
-                  <strong>10</strong>
-                  <small>\${p.type || 'KIT'}</small>
+    // Run after DOM is ready
+    async function loadFirebaseContent() {
+      try {
+        /* ── PRODUCTS ── */
+        const pSnap = await getDocs(collection(db, "products"));
+        const pTrack = document.getElementById('allProductsTrack');
+        if (pTrack) {
+          let pHtml = '';
+          pSnap.forEach(d => {
+            const p = d.data();
+            if (p.status && p.status !== 'active') return;
+            pHtml += `
+              <article class="product" style="flex: 0 0 220px; scroll-snap-align: center; border-radius: 22px; background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow); overflow: hidden;">
+                <div class="img" style="height:200px; background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent), linear-gradient(180deg, #131313, #262626); display:flex; align-items:center; justify-content:center; position:relative;">
+                  ${p.imgUrl ? `<img src="${p.imgUrl}" style="width:100%;height:100%;object-fit:cover;" alt="${p.name || 'Jersey'}"/>` :
+                  `<div class="jersey-card dark" style="width:130px;height:160px;border-radius:24px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(135deg,#9a1f2b,#191919);display:flex;align-items:flex-end;justify-content:center;padding-bottom:14px;color:#fff;font-weight:900;">
+                    <div style="text-align:center;"><strong style="font-size:28px;">10</strong><small style="display:block;font-size:9px;">${p.type || 'KIT'}</small></div>
+                  </div>`}
                 </div>
-              </div>\`}
-            </div>
-            <div class="product-info">
-              <div class="title">\${p.name || 'Jersify Kit'}</div>
-              <div class="desc">\${p.team ? Array.isArray(p.team) ? p.team.join(' ') : p.team : 'Premium football jersey built for match-day style.'}</div>
-              <div class="bottom">
-                <div class="price">₹\${p.price || '1499'}</div>
-                <button class="btn" onclick="window.location.href='checkout.html?id=\${d.id}'">Buy Now</button>
-              </div>
-            </div>
-          </article>
-        `;
-      });
-      if (html) container.innerHTML = html;
-    });
+                <div class="product-info" style="padding:14px;">
+                  <div class="title" style="font-size:14px;font-weight:900;margin-bottom:4px;">${p.name || 'Jersify Kit'}</div>
+                  <div class="desc" style="font-size:11px;color:var(--muted);margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.team ? (Array.isArray(p.team) ? p.team.join(' ') : p.team) : 'Premium jersey.'}</div>
+                  <div class="bottom" style="display:flex;justify-content:space-between;align-items:center;">
+                    <div class="price" style="font-weight:900;font-size:14px;">₹${p.price || '1499'}</div>
+                    <button class="btn" style="border:none;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;padding:8px 12px;border-radius:99px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.location.href='shop.html'">View</button>
+                  </div>
+                </div>
+              </article>`;
+          });
+          if (pHtml) pTrack.innerHTML = pHtml;
+          else pTrack.innerHTML = '<div style="color:var(--muted);width:100%;text-align:center;padding:20px;">No products available.</div>';
+        }
+
+        /* ── INDEX MEDIA (Reels + Gallery) ── */
+        const imSnap = await getDocs(query(collection(db, "indexMedia"), orderBy("order")));
+        const reelsRow = document.getElementById('reelsRow');
+        const galleryGrid = document.getElementById('galleryGrid');
+        const mediaSpace = document.getElementById('mediaSpace');
+        let rHtml = '';
+        let gImages = [];
+        let featuredImg = null;
+
+        imSnap.forEach(d => {
+          const m = d.data();
+          if (m.section === 'reels') {
+            rHtml += `
+              <div class="reel-card" style="flex:0 0 150px;height:240px;border-radius:22px;background:#111;position:relative;overflow:hidden;border:1px solid rgba(0,0,0,.05);cursor:pointer;scroll-snap-align:center;" onclick="window.location.href='${m.link || '#'}'">
+                <div class="thumb" style="position:absolute;inset:0;background:url('${m.imgUrl || ''}') center/cover;filter:saturate(1.15);"></div>
+                <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%, rgba(0,0,0,.8));"></div>
+                <div class="play" style="position:absolute;bottom:12px;left:12px;right:12px;color:#fff;font-size:12px;font-weight:800;display:flex;justify-content:space-between;align-items:center;">
+                  <div style="line-height:1.2;">
+                    ${m.label || 'Reel'}<br><span style="font-size:9px;color:rgba(255,255,255,.7)">${m.description || 'Watch now'}</span>
+                  </div>
+                  <div class="play-badge" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;backdrop-filter:blur(4px);">
+                    <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M8 5v14l11-7z"/></svg>
+                  </div>
+                </div>
+              </div>`;
+          } else if (m.section === 'gallery') {
+            gImages.push(m);
+          } else if ((m.section === 'featured' || m.section === 'promo') && !featuredImg) {
+            featuredImg = m;
+          }
+        });
+
+        // Populate Media Space with first featured/promo image
+        if (featuredImg && mediaSpace) {
+          mediaSpace.innerHTML = `<img src="${featuredImg.imgUrl}" alt="${featuredImg.label || 'Promo'}" style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;" onclick="window.location.href='${featuredImg.link || 'shop.html'}'"/>`;
+        }
+
+        // Populate Reels
+        if (rHtml && reelsRow) {
+          reelsRow.innerHTML = rHtml;
+          document.getElementById('reelsSection').style.display = 'block';
+        }
+
+        // Populate Gallery
+        if (gImages.length > 0 && galleryGrid) {
+          let gHtml = '';
+          gImages.forEach((img, idx) => {
+            const i = idx + 1;
+            // Layout: positions 3,6,9,12... are tall (1:2), rest are square (1:1)
+            const isTall = (i % 3 === 0);
+            const typeClass = isTall ? 'tall' : 'sq';
+            gHtml += `
+              <div class="grid-item ${typeClass}" style="cursor:pointer;" onclick="window.location.href='${img.link || '#'}'">
+                <img src="${img.imgUrl || ''}" alt="${img.label || 'Gallery Image'}" onerror="this.parentElement.style.display='none'"/>
+              </div>`;
+          });
+          galleryGrid.innerHTML = gHtml;
+          document.getElementById('gallerySection').style.display = 'block';
+        }
+
+      } catch (err) {
+        console.error('Error loading Firebase content:', err);
+      }
+    }
+
+    // Use both strategies to ensure the content loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadFirebaseContent);
+    } else {
+      loadFirebaseContent();
+    }
   </script>
-  \n
 </body>
 
 </html>
