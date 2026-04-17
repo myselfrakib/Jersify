@@ -11,26 +11,30 @@
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
   import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-  import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
+  import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
   import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+  import { getDatabase, ref as rtdbRef, set as rtdbSet, remove as rtdbRemove } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
   // ── CONFIGURE YOUR FIREBASE PROJECT HERE ──
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
+    authDomain: "jersify-f9b5e.firebaseapp.com",
+    projectId: "jersify-f9b5e",
+    storageBucket: "jersify-f9b5e.firebasestorage.app",
+    messagingSenderId: "461181023878",
+    appId: "1:461181023878:web:6ebfbae603baf4a873c307",
+    measurementId: "G-V5E7D09PJ0",
+    databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
   };
 
   const app = initializeApp(firebaseConfig);
   const db  = getFirestore(app);
   const storage = getStorage(app);
   const auth = getAuth(app);
+  const rtdb = getDatabase(app);
 
   // Expose to window for use outside module
-  window._fb = { db, storage, auth, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc, ref, uploadBytesResumable, getDownloadURL, deleteObject, signOut, onAuthStateChanged };
+  window._fb = { db, storage, auth, rtdb, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc, storageRef, uploadBytesResumable, getDownloadURL, deleteObject, signOut, onAuthStateChanged, rtdbRef, rtdbSet, rtdbRemove };
 </script>
 
 <style>
@@ -111,7 +115,7 @@ html,body{height:100%;font-family:'Barlow',sans-serif;background:var(--bg);color
 .tab-pane.active{display:block}
 
 /* ── STATS ROW ── */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
 .stat-card{
   background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;
   position:relative;overflow:hidden;
@@ -140,6 +144,52 @@ tr:hover td{background:rgba(116,172,223,0.04)}
 .badge-gold{background:rgba(246,196,0,0.15);color:var(--gold)}
 .badge-red{background:rgba(231,76,60,0.15);color:var(--red)}
 .badge-green{background:rgba(39,174,96,0.15);color:var(--green)}
+.badge-orange{background:rgba(243,156,18,0.15);color:#f39c12}
+.badge-purple{background:rgba(155,89,182,0.15);color:#9b59b6}
+
+/* ── TOGGLE SWITCH ── */
+.toggle-switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--surface3);border:1px solid var(--border);border-radius:999px;transition:.25s}
+.toggle-slider::before{content:'';position:absolute;height:18px;width:18px;left:2px;bottom:2px;background:var(--muted);border-radius:50%;transition:.25s}
+.toggle-switch input:checked+.toggle-slider{background:rgba(39,174,96,0.25);border-color:var(--green)}
+.toggle-switch input:checked+.toggle-slider::before{transform:translateX(20px);background:var(--green)}
+
+/* ── PAGE SETTINGS GRID ── */
+.pages-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.page-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;
+  display:flex;align-items:center;gap:14px;transition:.18s;
+}
+.page-card:hover{border-color:var(--sky);background:rgba(116,172,223,0.04)}
+.page-card-icon{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;font-size:20px;flex-shrink:0}
+.page-card-info{flex:1;min-width:0}
+.page-card-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;letter-spacing:.5px}
+.page-card-url{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.page-card-status{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-top:2px}
+
+/* ── USER AVATAR ── */
+.user-avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0}
+
+/* ── ORDER STATUS DOTS ── */
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.status-dot.pending{background:#f39c12}
+.status-dot.confirmed{background:var(--sky)}
+.status-dot.shipped{background:#9b59b6}
+.status-dot.delivered{background:var(--green)}
+.status-dot.cancelled{background:var(--red)}
+
+/* ── INDEX MEDIA GRID ── */
+.index-media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.index-media-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+  transition:.18s;position:relative;
+}
+.index-media-card:hover{border-color:var(--sky)}
+.index-media-card img{width:100%;height:140px;object-fit:cover;display:block}
+.index-media-card-body{padding:12px}
+.index-media-card-label{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px}
+.index-media-card-section{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 
 /* ── FORMS / MODAL ── */
 .modal-overlay{
@@ -255,6 +305,8 @@ select option{background:var(--surface2)}
   .sidebar{display:none}
   .stats-row{grid-template-columns:1fr 1fr}
   .form-row{grid-template-columns:1fr}
+  .pages-grid{grid-template-columns:1fr}
+  .index-media-grid{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
@@ -298,6 +350,26 @@ select option{background:var(--surface2)}
       Players
     </div>
 
+    <div class="nav-section">Management</div>
+    <div class="nav-item" onclick="switchTab('orders',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><path d="M12 4v16"/></svg>
+      Orders <span class="nav-badge" id="orderBadgeNav">0</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('users',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      Users <span class="nav-badge" id="userBadgeNav">0</span>
+    </div>
+
+    <div class="nav-section">Settings</div>
+    <div class="nav-item" onclick="switchTab('pages',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Page Settings
+    </div>
+    <div class="nav-item" onclick="switchTab('indexmedia',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+      Index Media
+    </div>
+
     <div class="nav-section">Assets</div>
     <div class="nav-item" onclick="switchTab('media',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -337,6 +409,8 @@ select option{background:var(--surface2)}
           <div class="stat-card"><div class="stat-card-val" id="statCountries">—</div><div class="stat-card-label">Countries</div><div class="stat-card-icon">🌍</div></div>
           <div class="stat-card"><div class="stat-card-val" id="statClubs">—</div><div class="stat-card-label">Clubs</div><div class="stat-card-icon">🏟️</div></div>
           <div class="stat-card"><div class="stat-card-val" id="statProducts">—</div><div class="stat-card-label">Products</div><div class="stat-card-icon">👕</div></div>
+          <div class="stat-card"><div class="stat-card-val" id="statOrders">—</div><div class="stat-card-label">Orders</div><div class="stat-card-icon">📦</div></div>
+          <div class="stat-card"><div class="stat-card-val" id="statUsers">—</div><div class="stat-card-label">Users</div><div class="stat-card-icon">👤</div></div>
           <div class="stat-card"><div class="stat-card-val" id="statMedia">—</div><div class="stat-card-label">Media Files</div><div class="stat-card-icon">🖼️</div></div>
         </div>
         <div class="card">
@@ -455,6 +529,85 @@ select option{background:var(--surface2)}
           </div>
           <div class="card-body">
             <div class="media-grid" id="mediaGrid">
+              <div style="color:var(--muted);font-size:13px">Loading…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ORDERS ═══ -->
+      <div class="tab-pane" id="tab-orders">
+        <div class="stats-row" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
+          <div class="stat-card"><div class="stat-card-val" id="statOrdersPending">—</div><div class="stat-card-label">Pending</div><div class="stat-card-icon" style="color:#f39c12">⏳</div></div>
+          <div class="stat-card"><div class="stat-card-val" id="statOrdersConfirmed">—</div><div class="stat-card-label">Confirmed</div><div class="stat-card-icon" style="color:var(--sky)">✓</div></div>
+          <div class="stat-card"><div class="stat-card-val" id="statOrdersShipped">—</div><div class="stat-card-label">Shipped</div><div class="stat-card-icon" style="color:#9b59b6">🚚</div></div>
+          <div class="stat-card"><div class="stat-card-val" id="statOrdersDelivered">—</div><div class="stat-card-label">Delivered</div><div class="stat-card-icon" style="color:var(--green)">✅</div></div>
+          <div class="stat-card"><div class="stat-card-val" id="statOrdersRevenue">—</div><div class="stat-card-label">Total Revenue</div><div class="stat-card-icon">💰</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            All Orders
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="orderStatusFilter" onchange="filterOrders()" style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:4px 10px;color:var(--text);font-size:12px;outline:none">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="ordersTable"><tr><td colspan="8" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ USERS ═══ -->
+      <div class="tab-pane" id="tab-users">
+        <div class="card">
+          <div class="card-header">
+            Registered Users
+            <div style="font-size:11px;color:var(--muted);font-weight:400">View all registered users</div>
+          </div>
+          <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Avatar</th><th>Name</th><th>Email</th><th>Phone</th><th>Orders</th><th>Joined</th><th>Status</th></tr></thead>
+            <tbody id="usersTable"><tr><td colspan="7" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr></tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PAGE SETTINGS ═══ -->
+      <div class="tab-pane" id="tab-pages">
+        <div class="card">
+          <div class="card-header">
+            Page Visibility Settings
+            <div style="font-size:11px;color:var(--muted);font-weight:400">Toggle pages active or inactive on the site</div>
+          </div>
+          <div class="card-body">
+            <div class="pages-grid" id="pagesGrid">
+              <div style="color:var(--muted);font-size:13px">Loading page settings…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ INDEX MEDIA ═══ -->
+      <div class="tab-pane" id="tab-indexmedia">
+        <div class="card">
+          <div class="card-header">
+            Index Page Media
+            <button class="btn btn-primary btn-sm" onclick="openIndexMediaModal()">+ Add Media</button>
+          </div>
+          <div class="card-body">
+            <div style="color:var(--muted);font-size:12px;margin-bottom:14px">Manage hero banners, featured images, and promotional media displayed on the homepage.</div>
+            <div class="index-media-grid" id="indexMediaGrid">
               <div style="color:var(--muted);font-size:13px">Loading…</div>
             </div>
           </div>
@@ -807,6 +960,97 @@ select option{background:var(--surface2)}
   </div>
 </div>
 
+<!-- Order Detail / Update Modal -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Order Details</div>
+      <button class="modal-close" onclick="closeModal('orderModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="orderDetailContent" style="margin-bottom:16px">
+        <div style="color:var(--muted)">Loading…</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Update Status</label>
+          <select id="o_status">
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tracking Number</label>
+          <input type="text" id="o_tracking" placeholder="Enter tracking number"/>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>Admin Notes</label>
+        <textarea id="o_notes" placeholder="Add internal notes about this order…"></textarea>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-primary" style="flex:1" onclick="updateOrder()">💾 Update Order</button>
+        <button class="btn" style="background:var(--surface2)" onclick="closeModal('orderModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Index Media Modal -->
+<div class="modal-overlay" id="indexMediaModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Index Media</div>
+      <button class="modal-close" onclick="closeModal('indexMediaModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Section*</label>
+          <select id="im_section">
+            <option value="hero">Hero Banner</option>
+            <option value="featured">Featured</option>
+            <option value="promo">Promotional</option>
+            <option value="gallery">Gallery</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Label / Title*</label>
+          <input type="text" id="im_label" placeholder="e.g. Summer Collection"/>
+        </div>
+        <div class="form-group">
+          <label>Link URL</label>
+          <input type="text" id="im_link" placeholder="e.g. argentina.html"/>
+        </div>
+        <div class="form-group">
+          <label>Sort Order</label>
+          <input type="text" id="im_order" placeholder="1"/>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>Image</label>
+        <div class="upload-zone" style="padding:14px">
+          <input type="file" id="im_img_file" accept="image/*" onchange="previewLogo(event,'im_img_preview','im_img_url')"/>
+          <div class="upload-text">Click to upload image</div>
+        </div>
+        <div class="svg-preview-box" id="im_img_preview" style="margin-top:8px;display:none"></div>
+        <input type="text" id="im_img_url" placeholder="or paste image URL" style="margin-top:8px"/>
+      </div>
+      <div class="form-group full">
+        <label>Description</label>
+        <textarea id="im_desc" placeholder="Short description for alt text / tooltip…"></textarea>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-primary" style="flex:1" onclick="saveIndexMedia()">💾 Save Media</button>
+        <button class="btn" style="background:var(--surface2)" onclick="closeModal('indexMediaModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Confirm Delete Modal -->
 <div class="modal-overlay" id="confirmModal">
   <div class="modal" style="width:380px">
@@ -834,6 +1078,8 @@ select option{background:var(--surface2)}
 let _editId = null;
 let _editCollection = null;
 let _allMedia = [];
+let _allOrders = [];
+let _allUsers = [];
 let _unsubscribers = [];
 
 function waitFb(){ return new Promise(r=>{ const t=setInterval(()=>{ if(window._fb){clearInterval(t);r(window._fb)} },50) }) }
@@ -862,6 +1108,10 @@ async function initApp(){
   listenCollection('heroes',    renderHeroes);
   listenCollection('timeline',  renderTimeline);
   listenCollection('media',     renderMedia);
+  listenCollection('orders',    renderOrders);
+  listenCollection('users',     renderUsers);
+  listenCollection('indexMedia', renderIndexMedia);
+  initPageSettings();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -882,6 +1132,8 @@ function updateBadges(col, count){
   if(col==='clubs'){ setEl('clubBadgeNav',count); setEl('statClubs',count) }
   if(col==='products') setEl('statProducts',count);
   if(col==='media') setEl('statMedia',count);
+  if(col==='orders'){ setEl('orderBadgeNav',count); setEl('statOrders',count) }
+  if(col==='users'){ setEl('userBadgeNav',count); setEl('statUsers',count) }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1001,6 +1253,221 @@ function filterMedia(){
         <div class="media-item-size">${m.folder||'media'}</div>
       </div>
     </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  ORDERS RENDERER
+// ═══════════════════════════════════════════════════════
+function renderOrders(data){
+  _allOrders=data;
+  // Update order stats
+  const pending=data.filter(o=>(o.status||'pending')==='pending').length;
+  const confirmed=data.filter(o=>o.status==='confirmed').length;
+  const shipped=data.filter(o=>o.status==='shipped').length;
+  const delivered=data.filter(o=>o.status==='delivered').length;
+  const revenue=data.reduce((sum,o)=>sum+(parseFloat(o.total)||0),0);
+  setEl('statOrdersPending',pending);
+  setEl('statOrdersConfirmed',confirmed);
+  setEl('statOrdersShipped',shipped);
+  setEl('statOrdersDelivered',delivered);
+  setEl('statOrdersRevenue','₹'+revenue.toLocaleString('en-IN'));
+  filterOrders();
+}
+
+function filterOrders(){
+  const filter=document.getElementById('orderStatusFilter').value;
+  const data=filter?_allOrders.filter(o=>(o.status||'pending')===filter):_allOrders;
+  const tbody=document.getElementById('ordersTable');
+  if(!data.length){ tbody.innerHTML=emptyRow(8,'No orders found'); return }
+  const sorted=[...data].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  tbody.innerHTML=sorted.map(o=>{
+    const st=o.status||'pending';
+    const badgeCls=st==='pending'?'badge-orange':st==='confirmed'?'badge-sky':st==='shipped'?'badge-purple':st==='delivered'?'badge-green':'badge-red';
+    const items=(o.items||[]).map(i=>`${i.name||'Item'} x${i.qty||1}`).join(', ')||o.productName||'—';
+    const date=o.createdAt?new Date(o.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
+    const payMethod=o.paymentMethod==='cod'?'<span class="badge badge-gold">COD</span>':'<span class="badge badge-sky">Online</span>';
+    return `<tr>
+      <td><span style="font-family:monospace;font-size:11px;color:var(--sky)">${(o.orderId||o.id||'').slice(0,10)}…</span></td>
+      <td><strong>${o.customerName||o.name||'—'}</strong><br><span style="font-size:11px;color:var(--muted)">${o.email||o.phone||''}</span></td>
+      <td style="max-width:180px;font-size:12px;color:var(--muted)">${items}</td>
+      <td><strong>₹${o.total||'0'}</strong></td>
+      <td>${payMethod}</td>
+      <td><span class="status-dot ${st}"></span><span class="badge ${badgeCls}">${st}</span></td>
+      <td style="font-size:12px;color:var(--muted)">${date}</td>
+      <td><button class="btn btn-sm btn-primary" onclick="viewOrder('${o.id}')">View</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function viewOrder(id){
+  const order=_allOrders.find(o=>o.id===id);
+  if(!order){ toast('Order not found','error'); return }
+  _editId=id; _editCollection='orders';
+  const det=document.getElementById('orderDetailContent');
+  const items=(order.items||[]).map(i=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+    <span>${i.name||'Item'} <span class="badge badge-sky">x${i.qty||1}</span> ${i.size?'<span class="badge badge-gold">'+i.size+'</span>':''}</span>
+    <span>₹${i.price||'0'}</span>
+  </div>`).join('')||`<div style="color:var(--muted)">Product: ${order.productName||'—'}</div>`;
+  det.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Order ID</span><br><strong style="font-family:monospace;color:var(--sky)">${order.orderId||order.id}</strong></div>
+      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Date</span><br><strong>${order.createdAt?new Date(order.createdAt).toLocaleString('en-IN'):'—'}</strong></div>
+      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Customer</span><br><strong>${order.customerName||order.name||'—'}</strong></div>
+      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Contact</span><br><strong>${order.email||'—'}</strong><br><span style="font-size:12px;color:var(--muted)">${order.phone||''}</span></div>
+    </div>
+    <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border);margin-bottom:12px">
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Items</div>
+      ${items}
+      <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:800;font-size:15px;border-top:2px solid var(--border);margin-top:8px">
+        <span>Total</span><span style="color:var(--gold)">₹${order.total||'0'}</span>
+      </div>
+    </div>
+    <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Shipping Address</div>
+      <div style="font-size:13px;line-height:1.5">${order.address||'—'}<br>${order.city||''} ${order.state||''} ${order.pincode||''}</div>
+    </div>`;
+  s('o_status',order.status||'pending');
+  s('o_tracking',order.trackingNumber||'');
+  s('o_notes',order.adminNotes||'');
+  openModal('orderModal');
+}
+
+async function updateOrder(){
+  if(!_editId){ toast('No order selected','error'); return }
+  const data={status:g('o_status'),trackingNumber:g('o_tracking'),adminNotes:g('o_notes'),updatedAt:Date.now()};
+  await saveDoc('orders',data,_editId);
+  closeModal('orderModal'); toast('Order updated! 📦','success');
+  _editId=null;
+}
+
+// ═══════════════════════════════════════════════════════
+//  USERS RENDERER
+// ═══════════════════════════════════════════════════════
+function renderUsers(data){
+  _allUsers=data;
+  const tbody=document.getElementById('usersTable');
+  if(!data.length){ tbody.innerHTML=emptyRow(7,'No users registered yet'); return }
+  const sorted=[...data].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  tbody.innerHTML=sorted.map(u=>{
+    const name=u.displayName||u.name||u.email?.split('@')[0]||'User';
+    const initials=name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const colors=['#e74c3c','#3498db','#9b59b6','#27ae60','#f39c12','#1abc9c','#e67e22'];
+    const color=colors[name.charCodeAt(0)%colors.length];
+    const orderCount=_allOrders.filter(o=>(o.email||'')===(u.email||'__none')||(o.userId||'')===(u.id||'__none')).length;
+    const joined=u.createdAt?new Date(u.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
+    return `<tr>
+      <td><div class="user-avatar" style="background:${color}">${initials}</div></td>
+      <td><strong>${name}</strong></td>
+      <td style="font-size:12px;color:var(--muted)">${u.email||'—'}</td>
+      <td style="font-size:12px">${u.phone||'—'}</td>
+      <td><span class="badge badge-sky">${orderCount}</span></td>
+      <td style="font-size:12px;color:var(--muted)">${joined}</td>
+      <td><span class="badge ${u.status==='blocked'?'badge-red':'badge-green'}">${u.status||'active'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  PAGE SETTINGS
+// ═══════════════════════════════════════════════════════
+const SITE_PAGES = [
+  {id:'argentina',label:'Argentina',file:'argentina.html',icon:'🇦🇷',bg:'linear-gradient(135deg,#74ACDF 0%,#1a3a5c 100%)'},
+  {id:'brazil',label:'Brazil',file:'brazil.html',icon:'🇧🇷',bg:'linear-gradient(135deg,#009c3b 0%,#ffdf00 100%)'},
+  {id:'france',label:'France',file:'france.html',icon:'🇫🇷',bg:'linear-gradient(135deg,#002395 0%,#ED2939 100%)'},
+  {id:'germany',label:'Germany',file:'germany.html',icon:'🇩🇪',bg:'linear-gradient(135deg,#000 0%,#DD0000 50%,#FFCC00 100%)'},
+  {id:'spain',label:'Spain',file:'spain.html',icon:'🇪🇸',bg:'linear-gradient(135deg,#AA151B 0%,#F1BF00 100%)'},
+  {id:'portugal',label:'Portugal',file:'portugal.html',icon:'🇵🇹',bg:'linear-gradient(135deg,#006600 0%,#FF0000 100%)'},
+  {id:'barcelona',label:'FC Barcelona',file:'barcelona.html',icon:'🔵',bg:'linear-gradient(135deg,#a50044 0%,#004d98 100%)'},
+  {id:'real-madrid',label:'Real Madrid',file:'real-madrid.html',icon:'⚪',bg:'linear-gradient(135deg,#febe10 0%,#00529f 100%)'},
+  {id:'chelsea',label:'Chelsea FC',file:'chelsea.html',icon:'🔷',bg:'linear-gradient(135deg,#034694 0%,#1b1b1b 100%)'},
+  {id:'man-utd',label:'Man United',file:'man-utd.html',icon:'🔴',bg:'linear-gradient(135deg,#DA291C 0%,#1a1a1a 100%)'},
+  {id:'man-city',label:'Man City',file:'man-city.html',icon:'🩵',bg:'linear-gradient(135deg,#6CABDD 0%,#1C2C5B 100%)'},
+  {id:'psg',label:'PSG',file:'psg.html',icon:'🔵',bg:'linear-gradient(135deg,#004170 0%,#DA291C 100%)'},
+];
+
+let _pageSettings = {};
+
+async function initPageSettings(){
+  const {db,doc,onSnapshot,setDoc} = await waitFb();
+  onSnapshot(doc(db,'settings','pages'), (snap) => {
+    _pageSettings = snap.exists() ? snap.data() : {};
+    renderPageSettings();
+  });
+}
+
+function renderPageSettings(){
+  const grid=document.getElementById('pagesGrid');
+  grid.innerHTML=SITE_PAGES.map(p=>{
+    const isActive=_pageSettings[p.id]!==false;
+    return `<div class="page-card">
+      <div class="page-card-icon" style="background:${p.bg}">${p.icon}</div>
+      <div class="page-card-info">
+        <div class="page-card-name">${p.label}</div>
+        <div class="page-card-url">${p.file}</div>
+        <div class="page-card-status" style="color:${isActive?'var(--green)':'var(--red)'}">${isActive?'● Active':'○ Inactive'}</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" ${isActive?'checked':''} onchange="togglePage('${p.id}',this.checked)"/>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>`;
+  }).join('');
+}
+
+async function togglePage(pageId,active){
+  const {db,doc,setDoc}=await waitFb();
+  const update={..._pageSettings,[pageId]:active};
+  await setDoc(doc(db,'settings','pages'),update,{merge:true});
+  toast(`${pageId} is now ${active?'active':'inactive'}`,'success');
+}
+
+// ═══════════════════════════════════════════════════════
+//  INDEX MEDIA RENDERER
+// ═══════════════════════════════════════════════════════
+let _indexMedia = [];
+
+function renderIndexMedia(data){
+  _indexMedia=data;
+  const grid=document.getElementById('indexMediaGrid');
+  if(!data.length){
+    grid.innerHTML=`<div style="color:var(--muted);font-size:13px;grid-column:1/-1">No index media yet — add some above!</div>`;
+    return;
+  }
+  const sorted=[...data].sort((a,b)=>(a.order||99)-(b.order||99));
+  grid.innerHTML=sorted.map(m=>`
+    <div class="index-media-card">
+      ${m.imgUrl?`<img src="${m.imgUrl}" alt="${m.label||''}" onerror="this.style.display='none'"/>`:`<div style="height:140px;display:grid;place-items:center;font-size:36px;background:var(--surface3)">🖼️</div>`}
+      <div class="index-media-card-body">
+        <div class="index-media-card-label">${m.label||'Untitled'}</div>
+        <div class="index-media-card-section">${m.section||'general'} ${m.link?'· <a href="'+m.link+'" style="color:var(--sky)">'+m.link+'</a>':''}</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="btn btn-sm btn-primary" onclick="editIndexMedia('${m.id}')">Edit</button>
+          <button class="btn btn-sm btn-red" onclick="deleteItem('indexMedia','${m.id}')">Delete</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function openIndexMediaModal(){ _editId=null; openModal('indexMediaModal') }
+
+async function editIndexMedia(id){
+  const item=_indexMedia.find(m=>m.id===id);
+  if(!item){ toast('Item not found','error'); return }
+  _editId=id; _editCollection='indexMedia';
+  s('im_section',item.section); s('im_label',item.label); s('im_link',item.link); s('im_order',item.order); s('im_img_url',item.imgUrl); s('im_desc',item.description);
+  openModal('indexMediaModal');
+}
+
+async function saveIndexMedia(){
+  const label=g('im_label'); if(!label){ toast('Label is required','error'); return }
+  let imgUrl=g('im_img_url');
+  const file=document.getElementById('im_img_file').files[0];
+  if(file) imgUrl=await uploadFile(file,`indexMedia/${Date.now()}_${file.name}`,null);
+  const data={section:g('im_section'),label,link:g('im_link'),order:parseInt(g('im_order'))||0,imgUrl,description:g('im_desc'),updatedAt:Date.now()};
+  await saveDoc('indexMedia',data,_editId);
+  closeModal('indexMediaModal'); toast('Index media saved! 🖼️','success');
+  resetForm(['im_label','im_link','im_order','im_img_url','im_desc']);
+  _editId=null;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1223,7 +1690,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click
 // ═══════════════════════════════════════════════════════
 //  TAB SWITCHING
 // ═══════════════════════════════════════════════════════
-const tabTitles={dashboard:'Dashboard',countries:'Countries',clubs:'Clubs',hero:'Hero Banners',products:'Products / Kits',players:'Players',media:'Media Library',timeline:'Timeline'};
+const tabTitles={dashboard:'Dashboard',countries:'Countries',clubs:'Clubs',hero:'Hero Banners',products:'Products / Kits',players:'Players',media:'Media Library',timeline:'Timeline',orders:'Orders',users:'Users',pages:'Page Settings',indexmedia:'Index Media'};
 function switchTab(name,el){
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
