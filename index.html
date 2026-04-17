@@ -6,8 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JERSIFY</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
-    @import url('https://fonts.cdnfonts.com/css/adriana');
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
     :root {
       --bg: #ffffff;
@@ -63,9 +62,8 @@
       border-bottom: 1px solid rgba(0,0,0,.04);
     }
 
-    /* ── ADRIANA FONT applied to logo ── */
     .logo {
-      font-family: 'italics', 'Bebas Neue', sans-serif;
+      font-family: 'Bebas Neue', sans-serif;
       font-size: 44px;
       letter-spacing: 2.5px;
       line-height: 1;
@@ -226,6 +224,7 @@
       overflow: hidden;
     }
 
+    /* Dynamic slide background from Firebase color field */
     .slide-bg {
       position: absolute;
       inset: 0;
@@ -315,6 +314,7 @@
       backdrop-filter: blur(4px);
     }
 
+    /* Fallback jersey visual when no image */
     .slide-visual {
       width: 46%;
       height: 88%;
@@ -453,12 +453,10 @@
 
     .loop-track { display: flex; gap: 12px; width: max-content; padding: 0 16px; }
 
-    /* ── SHARED loop-card style — used by BOTH WOW Picks AND All Products ── */
     .loop-card {
       flex: 0 0 170px; scroll-snap-align: center;
       border-radius: 22px; background: #fff;
       border: 1px solid var(--line); box-shadow: var(--shadow-soft); overflow: hidden;
-      cursor: pointer;
     }
 
     .loop-card .pic {
@@ -612,28 +610,94 @@
     /* GALLERY */
     .gallery { padding: 0 16px 18px; }
 
+    /* 96px ≈ 1 inch at ~96dpi */
     .grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 8px; grid-auto-rows: minmax(100px, auto);
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
     }
 
-    .grid-item { border-radius: 18px; overflow: hidden; background: #ddd; box-shadow: var(--shadow-soft); position: relative; }
-    .grid-item.sq { aspect-ratio: 1/1; }
-    .grid-item.tall { grid-row: span 2; height: 100%; }
-    .grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    /* First: 2in x 2in */
+    .grid-item-a {
+      width: 192px;
+      height: 192px;
+      flex: 0 0 192px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #ddd;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      cursor: pointer;
+    }
 
-    /* ALL PRODUCTS — now uses loop-card style, same viewport/track as WOW Picks */
+    /* Second: 1in x 2in */
+    .grid-item-b {
+      width: 96px;
+      height: 192px;
+      flex: 0 0 96px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #ddd;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .grid-item-a img,
+    .grid-item-b img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* PRODUCTS */
     .products { padding: 0 16px 18px; }
-    .products > h3 { font-size: 18px; font-weight: 900; margin: 0 0 12px; letter-spacing: .2px; }
-
-    .products-viewport {
-      overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
-      scrollbar-width: none; touch-action: pan-y;
-    }
+    .products-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; touch-action: pan-y; }
     .products-viewport::-webkit-scrollbar { display: none; }
 
-    /* product-row reuses loop-track layout */
-    .product-row { display: flex; gap: 12px; padding: 2px 0 6px; width: max-content; }
+    .product-row { display: flex; gap: 14px; padding: 0 0 8px; }
+
+    .product {
+      flex: 0 0 74%; border-radius: 22px; overflow: hidden;
+      background: #fff; box-shadow: var(--shadow); border: 1px solid var(--line);
+      scroll-snap-align: center;
+    }
+
+    .product .img {
+      height: 220px;
+      background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%);
+      position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+
+    .product .img::after {
+      content: ""; position: absolute; inset: 18px; border-radius: 22px;
+      background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,0));
+      border: 1px solid rgba(255,255,255,.08); pointer-events: none;
+    }
+
+    .product .img img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; }
+
+    .jersey-card {
+      width: 150px; height: 180px; border-radius: 28px; position: relative; z-index: 1;
+      box-shadow: 0 16px 30px rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.18);
+      overflow: hidden; display: flex; align-items: flex-end; justify-content: center;
+      padding-bottom: 18px; text-align: center;
+    }
+
+    .jersey-card.dark { background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)), linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%); }
+    .jersey-card.white { background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)), linear-gradient(135deg, #ffffff 0%, #efefef 25%, #fff 25% 50%, #c61f2f 50% 58%, #fff 58% 100%); color: #111; }
+    .jersey-card.blue { background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)), linear-gradient(135deg, #fff 0%, #e9f4ff 20%, #fff 20% 48%, #1b76d1 48% 58%, #fff 58% 100%); color: #111; }
+    .jersey-card.gold { background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)), linear-gradient(135deg, #f8df8a 0%, #fff5ca 25%, #f8df8a 45%, #1f1f1f 45% 60%, #f8df8a 100%); color: #111; }
+    .jersey-card strong { font-size: 32px; line-height: 1; display: block; }
+    .jersey-card small { font-size: 10px; font-weight: 700; letter-spacing: 1px; opacity: .9; }
+
+    .product-info { padding: 14px; }
+    .title { font-size: 15px; font-weight: 900; margin-bottom: 6px; }
+    .desc { color: var(--muted); font-size: 12px; line-height: 1.5; margin-bottom: 12px; min-height: 36px; }
+    .bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .price { font-size: 16px; font-weight: 900; color: #111; }
+
+    .btn {
+      border: none; background: linear-gradient(180deg, var(--accent), var(--accent2));
+      color: #fff; border-radius: 999px; padding: 10px 14px; font-size: 12px; font-weight: 800;
+      cursor: pointer; box-shadow: 0 10px 22px rgba(198,31,47,.22);
+    }
 
     .viewall-wrap { display: flex; justify-content: center; margin-top: 10px; }
 
@@ -686,10 +750,11 @@
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
     @media (max-width:380px) {
-      .logo { font-size: 38px }
+      .logo { font-size: 40px }
+      .product { flex-basis: 80% }
       .slide-text h2 { font-size: 24px }
       .slide-text { max-width: 55% }
-      .loop-card { flex-basis: 158px }
+      .loop-card { flex-basis: 160px }
     }
   </style>
 </head>
@@ -706,6 +771,7 @@
       <div class="header-actions">
         <button class="shop-btn" id="shopBtn" onclick="window.location.href='shop.html'">Shop</button>
 
+        <!-- Cart button with dynamic badge -->
         <button class="icon-btn" id="cartBtn" aria-label="Cart" onclick="window.location.href='checkout.html'">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="20" r="1"></circle>
@@ -715,6 +781,7 @@
           <span class="cart-badge" id="cartBadge"></span>
         </button>
 
+        <!-- Profile button — replaced by photo/initials on auth -->
         <button class="icon-btn profile-btn" id="profileBtn" aria-label="Profile" onclick="window.location.href='profile.html'">
           <svg id="profileIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="8" r="4"></circle>
@@ -745,7 +812,8 @@
     <section class="hero">
       <div class="slider" id="heroSlider">
         <div class="slides" id="slides">
-          <!-- Static fallback slides (replaced by Firebase heroes) -->
+          <!-- Dynamically populated by Firebase heroes collection -->
+          <!-- Fallback static slides shown until Firebase loads -->
           <div class="slide">
             <div class="slide-bg"></div>
             <div class="slide-content">
@@ -831,10 +899,12 @@
           </button>
         </div>
       </div>
-      <!-- ── WOW Picks track: starts empty, populated by Firebase ── -->
       <div class="loop-viewport" id="loopViewport">
         <div class="loop-track" id="loopTrack">
-          <div style="color:var(--muted);font-size:13px;padding:20px;">Loading picks…</div>
+          <!-- Skeleton placeholders while loading -->
+          <div class="loop-card"><div class="pic skeleton"></div><div class="loop-info"><div class="skeleton" style="height:12px;width:80%;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;"></div></div></div>
+          <div class="loop-card"><div class="pic skeleton"></div><div class="loop-info"><div class="skeleton" style="height:12px;width:80%;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;"></div></div></div>
+          <div class="loop-card"><div class="pic skeleton"></div><div class="loop-info"><div class="skeleton" style="height:12px;width:80%;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;"></div></div></div>
         </div>
       </div>
     </section>
@@ -851,6 +921,7 @@
       <div class="media-space" id="mediaSpace">
         <div class="placeholder skeleton" style="width:100%;height:100%;"></div>
       </div>
+      <!-- Promo banners strip — populated if promo items exist -->
       <div id="promoBannersWrap" style="display:none;">
         <div style="font-size:13px;font-weight:800;margin:12px 0 8px;letter-spacing:.2px;">Promotions</div>
         <div class="promo-strip" id="promoStrip"></div>
@@ -876,13 +947,12 @@
       <div class="grid" id="galleryGrid"></div>
     </section>
 
-    <!-- ══════════════ ALL PRODUCTS (compact loop-card size) ══════════════ -->
+    <!-- ══════════════ ALL PRODUCTS ══════════════ -->
     <section class="products" id="productsSection">
       <h3>All Products</h3>
-      <!-- Shares the same loop-card/loop-track style as WOW Picks -->
       <div class="products-viewport" id="allProductsViewport">
         <div class="product-row" id="allProductsTrack">
-          <div style="color:var(--muted);font-size:13px;padding:20px;">Loading Products…</div>
+          <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px;">Loading Products...</div>
         </div>
       </div>
       <div class="viewall-wrap" style="margin-top:14px;">
@@ -927,10 +997,10 @@
 
   <!-- ══════════════ NON-FIREBASE JS ══════════════ -->
   <script>
-    /* ─── HERO SLIDER ─── */
+    /* ─── HERO SLIDER — unified controller (works with static & dynamic slides) ─── */
     let heroIndex = 0;
     let heroTimer;
-    let heroTotal = 3;
+    let heroTotal = 3; // updated after Firebase loads
 
     function buildDots(count) {
       const dotsEl = document.getElementById("dots");
@@ -972,6 +1042,7 @@
       }
     }, { passive: true });
 
+    // Initialize default slider
     buildDots(3);
     showHeroSlide(0);
     restartHero();
@@ -981,9 +1052,10 @@
     document.getElementById("prevProduct").addEventListener("click", () => loopViewport.scrollBy({ left: -184, behavior: "smooth" }));
     document.getElementById("nextProduct").addEventListener("click", () => loopViewport.scrollBy({ left: 184, behavior: "smooth" }));
 
-    /* ─── SEARCH ─── */
+    /* ─── SEARCH — redirect to shop with query ─── */
     const searchInput = document.getElementById("searchInput");
     let searchTimeout;
+
     searchInput.addEventListener("input", () => {
       clearTimeout(searchTimeout);
       const q = searchInput.value.trim();
@@ -993,6 +1065,7 @@
         }, 600);
       }
     });
+
     searchInput.addEventListener("keydown", e => {
       if (e.key === "Enter") {
         const q = searchInput.value.trim();
@@ -1003,16 +1076,16 @@
     /* ─── COUNTRY CHIPS ─── */
     const countryRow = document.getElementById("countryRow");
     const countries = [
-      { name: "Argentina", sub: "National team", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>`) },
-      { name: "Brazil", sub: "National team", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cb"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cb)"><rect width="120" height="120" fill="#1f8f3a"/><polygon points="60,18 98,60 60,102 22,60" fill="#f6d44a"/><circle cx="60" cy="60" r="18" fill="#2a4c9b"/></g></svg>`) },
-      { name: "France", sub: "National team", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cc"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cc)"><rect width="40" height="120" x="0" fill="#244aa5"/><rect width="40" height="120" x="40" fill="#fff"/><rect width="40" height="120" x="80" fill="#d81e2e"/></g></svg>`) },
-      { name: "Germany", sub: "National team", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cd"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cd)"><rect width="120" height="40" y="0" fill="#111"/><rect width="120" height="40" y="40" fill="#d81e2e"/><rect width="120" height="40" y="80" fill="#f3c400"/></g></svg>`) },
-      { name: "Spain", sub: "National team", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>`) },
-      { name: "Portugal", sub: "National team", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>`) }
+      { name: "Argentina", sub: "National team", page: "argentina.html", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>`) },
+      { name: "Brazil", sub: "National team", page: "brazil.html", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cb"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cb)"><rect width="120" height="120" fill="#1f8f3a"/><polygon points="60,18 98,60 60,102 22,60" fill="#f6d44a"/><circle cx="60" cy="60" r="18" fill="#2a4c9b"/></g></svg>`) },
+      { name: "France", sub: "National team", page: "france.html", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cc"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cc)"><rect width="40" height="120" x="0" fill="#244aa5"/><rect width="40" height="120" x="40" fill="#fff"/><rect width="40" height="120" x="80" fill="#d81e2e"/></g></svg>`) },
+      { name: "Germany", sub: "National team", page: "germany.html", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cd"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cd)"><rect width="120" height="40" y="0" fill="#111"/><rect width="120" height="40" y="40" fill="#d81e2e"/><rect width="120" height="40" y="80" fill="#f3c400"/></g></svg>`) },
+      { name: "Spain", sub: "National team", page: "spain.html", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>`) },
+      { name: "Portugal", sub: "National team", page: "portugal.html", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>`) }
     ];
 
     countryRow.innerHTML = countries.map(c => `
-      <a href="shop.html?country=${encodeURIComponent(c.name.toLowerCase())}" class="card-chip" style="display:block;">
+      <a href="${c.page}" class="card-chip" style="display:block;">
         <div class="chip-img"><img src="${c.img}" alt="${c.name} flag"></div>
         <div class="chip-name">${c.name}</div>
         <div class="chip-sub">${c.sub}</div>
@@ -1022,12 +1095,12 @@
     /* ─── CLUB CHIPS ─── */
     const clubRow = document.getElementById("clubRow");
     const clubs = [
-      { name: "Barcelona", sub: "Club crest", bg: "#a51d2d", fg: "#f2c94c", label: "B" },
-      { name: "Real Madrid", sub: "Club crest", bg: "#e8d7a2", fg: "#0f5bd6", label: "R" },
-      { name: "Chelsea", sub: "Club crest", bg: "#1a4da1", fg: "#fff", label: "C" },
-      { name: "Man City", sub: "Club crest", bg: "#9ed7ff", fg: "#0f4ea2", label: "M" },
-      { name: "Man Utd", sub: "Club crest", bg: "#c61f2f", fg: "#111", label: "U" },
-      { name: "PSG", sub: "Club crest", bg: "#12284c", fg: "#c61f2f", label: "P" }
+      { name: "Barcelona", sub: "Club crest", page: "barcelona.html", bg: "#a51d2d", fg: "#f2c94c", label: "B" },
+      { name: "Real Madrid", sub: "Club crest", page: "real-madrid.html", bg: "#e8d7a2", fg: "#0f5bd6", label: "R" },
+      { name: "Chelsea", sub: "Club crest", page: "chelsea.html", bg: "#1a4da1", fg: "#fff", label: "C" },
+      { name: "Man City", sub: "Club crest", page: "man-city.html", bg: "#9ed7ff", fg: "#0f4ea2", label: "M" },
+      { name: "Man Utd", sub: "Club crest", page: "man-utd.html", bg: "#c61f2f", fg: "#111", label: "U" },
+      { name: "PSG", sub: "Club crest", page: "psg.html", bg: "#12284c", fg: "#c61f2f", label: "P" }
     ];
 
     function clubBadgeSvg(bg, fg, label, name) {
@@ -1046,7 +1119,7 @@
     }
 
     clubRow.innerHTML = clubs.map(c => `
-      <a href="shop.html?club=${encodeURIComponent(c.name.toLowerCase())}" class="card-chip" style="display:block;">
+      <a href="${c.page}" class="card-chip" style="display:block;">
         <div class="chip-img"><img src="${clubBadgeSvg(c.bg, c.fg, c.label, c.name)}" alt="${c.name} badge"></div>
         <div class="chip-name">${c.name}</div>
         <div class="chip-sub">${c.sub}</div>
@@ -1075,7 +1148,7 @@
     const auth = getAuth(app);
 
     /* ════════════════════════════════════════════
-       1. AUTH STATE
+       1. AUTH STATE — Profile button + cart badge
        ════════════════════════════════════════════ */
     onAuthStateChanged(auth, async (user) => {
       const profileBtn = document.getElementById("profileBtn");
@@ -1083,6 +1156,7 @@
       const cartBadge = document.getElementById("cartBadge");
 
       if (user) {
+        // Replace icon with photo or initials
         if (user.photoURL) {
           profileIcon.style.display = "none";
           const img = document.createElement("img");
@@ -1099,12 +1173,14 @@
           profileBtn.appendChild(span);
         }
 
+        // Cart item count from Firebase or localStorage
         try {
           const cartSnap = await get(ref(rtdb, `users/${user.uid}/cart`));
           let cartCount = 0;
           if (cartSnap.exists()) {
             cartSnap.forEach(() => cartCount++);
           } else {
+            // Fallback to localStorage
             const localCart = JSON.parse(localStorage.getItem("jersify_cart") || "[]");
             cartCount = localCart.length;
           }
@@ -1113,6 +1189,7 @@
             cartBadge.classList.add("show");
           }
         } catch (e) {
+          // localStorage fallback
           const localCart = JSON.parse(localStorage.getItem("jersify_cart") || "[]");
           if (localCart.length > 0) {
             cartBadge.textContent = localCart.length > 9 ? "9+" : localCart.length;
@@ -1120,6 +1197,7 @@
           }
         }
       } else {
+        // Not logged in — check localStorage cart
         const localCart = JSON.parse(localStorage.getItem("jersify_cart") || "[]");
         if (localCart.length > 0) {
           cartBadge.textContent = localCart.length > 9 ? "9+" : localCart.length;
@@ -1129,7 +1207,7 @@
     });
 
     /* ════════════════════════════════════════════
-       2. HERO SLIDER
+       2. HERO SLIDER — from heroes collection
        ════════════════════════════════════════════ */
     async function loadHeroes() {
       try {
@@ -1139,10 +1217,15 @@
         let heroes = [];
         snap.forEach(d => {
           const h = d.val();
-          if (!h.page || h.page === "index" || h.page === "general") heroes.push(h);
+          // Show heroes tagged for "index" page OR untagged/general
+          if (!h.page || h.page === "index" || h.page === "general") {
+            heroes.push(h);
+          }
         });
 
         if (heroes.length === 0) return;
+
+        // Sort by order if present
         heroes.sort((a, b) => (a.order || 0) - (b.order || 0));
 
         const slidesEl = document.getElementById("slides");
@@ -1169,7 +1252,9 @@
           `;
         }).join("");
 
+        // Update slider state
         window.heroTotal = heroes.length;
+        // Access the global heroTotal used in the non-module script
         if (typeof buildDots === 'function') buildDots(heroes.length);
         if (typeof showHeroSlide === 'function') showHeroSlide(0);
         if (typeof restartHero === 'function') restartHero();
@@ -1179,8 +1264,7 @@
     }
 
     /* ════════════════════════════════════════════
-       3. WOW PICKS + ALL PRODUCTS
-          Both sections now use loop-card sizing
+       3. WOW PICKS + ALL PRODUCTS — from products
        ════════════════════════════════════════════ */
     async function loadProducts() {
       try {
@@ -1203,47 +1287,68 @@
           if (!p.status || p.status === "active") allProducts.push(p);
         });
 
+        // Update count badge
         const total = allProducts.length;
         countLabel.innerHTML = `<span style="color:var(--accent);font-weight:800;">${total}+</span> jerseys available`;
 
+        // ── WOW PICKS (first 8) ──
+        const wowPicks = allProducts.slice(0, 8);
         const colorClasses = ["red", "white", "blue", "dark", "gold"];
 
-        // ── Shared card builder (same for WOW Picks & All Products) ──
-        function buildLoopCard(p, idx) {
-          const colorClass = colorClasses[idx % colorClasses.length];
-          const teamText = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
-          return `
-            <article class="loop-card" onclick="window.location.href='shop.html?id=${p._id}'">
-              <div class="pic">
-                ${p.imgUrl
-                  ? `<img src="${p.imgUrl}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
-                  : `<div class="mini-jersey ${colorClass}"><div><span>${10 - (idx % 4)}</span><small>${p.type || 'KIT'}</small></div></div>`
-                }
-              </div>
-              <div class="loop-info">
-                ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ''}
-                <h4>${p.name || 'Jersify Kit'}</h4>
-                <p>${teamText || (p.type || 'Premium jersey')}</p>
-                <div class="price-row">
-                  <div class="price">₹${p.price || '1499'}</div>
-                  <button class="small-btn" onclick="event.stopPropagation();window.location.href='shop.html?id=${p._id}'">Shop Now</button>
+        if (wowPicks.length > 0) {
+          loopTrack.innerHTML = wowPicks.map((p, idx) => {
+            const colorClass = colorClasses[idx % colorClasses.length];
+            const teamText = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
+            return `
+              <article class="loop-card" onclick="window.location.href='shop.html?id=${p._id}'" style="cursor:pointer;">
+                <div class="pic">
+                  ${p.imgUrl
+                    ? `<img src="${p.imgUrl}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
+                    : `<div class="mini-jersey ${colorClass}"><div><span>${10 - (idx % 4)}</span><small>${p.type || 'KIT'}</small></div></div>`
+                  }
                 </div>
-              </div>
-            </article>
-          `;
+                <div class="loop-info">
+                  ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ''}
+                  <h4>${p.name || 'Jersify Kit'}</h4>
+                  <p>${teamText || (p.type || 'Premium jersey')}</p>
+                  <div class="price-row">
+                    <div class="price">₹${p.price || '1499'}</div>
+                    <button class="small-btn" onclick="event.stopPropagation();window.location.href='shop.html?id=${p._id}'">Shop Now</button>
+                  </div>
+                </div>
+              </article>
+            `;
+          }).join("");
+        } else {
+          loopTrack.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
         }
 
-        // WOW Picks — first 8
-        const wowPicks = allProducts.slice(0, 8);
-        loopTrack.innerHTML = wowPicks.length > 0
-          ? wowPicks.map((p, i) => buildLoopCard(p, i)).join("")
-          : '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
-
-        // All Products — full list, same card size
-        allProductsTrack.innerHTML = allProducts.length > 0
-          ? allProducts.map((p, i) => buildLoopCard(p, i)).join("")
-          : '<div style="color:var(--muted);padding:20px;font-size:13px;width:100%;text-align:center;">No products available.</div>';
-
+        // ── ALL PRODUCTS ──
+        if (allProducts.length > 0) {
+          allProductsTrack.innerHTML = allProducts.map(p => {
+            const teamText = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
+            return `
+              <article class="product" onclick="window.location.href='shop.html?id=${p._id}'" style="cursor:pointer;">
+                <div class="img">
+                  ${p.imgUrl
+                    ? `<img src="${p.imgUrl}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
+                    : `<div class="jersey-card dark"><strong>10</strong><small>${p.type || 'KIT'}</small></div>`
+                  }
+                </div>
+                <div class="product-info">
+                  <div class="title">${p.name || 'Jersify Kit'}</div>
+                  <div class="desc">${teamText || (p.type || 'Premium jersey.')}</div>
+                  <div class="bottom">
+                    <div class="price">₹${p.price || '1499'}</div>
+                    <button class="btn" onclick="event.stopPropagation();window.location.href='shop.html?id=${p._id}'">View</button>
+                  </div>
+                </div>
+              </article>
+            `;
+          }).join("");
+        } else {
+          allProductsTrack.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;width:100%;text-align:center;">No products available.</div>';
+        }
       } catch (err) {
         console.error("Products load failed:", err);
         document.getElementById("loopTrack").innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">Could not load products.</div>';
@@ -1251,7 +1356,7 @@
     }
 
     /* ════════════════════════════════════════════
-       4. INDEX MEDIA
+       4. INDEX MEDIA — Reels, Gallery, Featured, Promo (all items, sorted)
        ════════════════════════════════════════════ */
     async function loadIndexMedia() {
       try {
@@ -1262,11 +1367,12 @@
         snap.forEach(d => items.push(d.val()));
         items.sort((a, b) => (a.order || 0) - (b.order || 0));
 
-        const reelItems     = items.filter(m => m.section === "reels");
-        const galleryItems  = items.filter(m => m.section === "gallery");
+        const reelItems = items.filter(m => m.section === "reels");
+        const galleryItems = items.filter(m => m.section === "gallery");
         const featuredItems = items.filter(m => m.section === "featured");
-        const promoItems    = items.filter(m => m.section === "promo");
+        const promoItems = items.filter(m => m.section === "promo");
 
+        // ── Media Space: first featured item ──
         const mediaSpace = document.getElementById("mediaSpace");
         const firstFeatured = featuredItems[0] || promoItems[0];
         if (firstFeatured) {
@@ -1280,8 +1386,10 @@
           mediaSpace.innerHTML = `<div class="placeholder" style="font-size:13px;font-weight:700;text-align:center;padding:0 14px;color:#999;">No featured media</div>`;
         }
 
+        // ── Promo Strip: all promo items (and remaining featured after first) ──
         const promoStrip = document.getElementById("promoStrip");
         const promoBannersWrap = document.getElementById("promoBannersWrap");
+
         const allPromos = [...(featuredItems.slice(1)), ...promoItems];
         if (allPromos.length > 0) {
           promoStrip.innerHTML = allPromos.map(m => `
@@ -1297,6 +1405,7 @@
           promoBannersWrap.style.display = "block";
         }
 
+        // ── Reels ──
         const reelsRow = document.getElementById("reelsRow");
         const reelsSection = document.getElementById("reelsSection");
         if (reelItems.length > 0) {
@@ -1317,17 +1426,26 @@
           reelsSection.style.display = "block";
         }
 
+        // ── Gallery ──
         const galleryGrid = document.getElementById("galleryGrid");
         const gallerySection = document.getElementById("gallerySection");
         if (galleryItems.length > 0) {
-          galleryGrid.innerHTML = galleryItems.map((img, idx) => {
-            const isTall = ((idx + 1) % 3 === 0);
-            return `
-              <div class="grid-item ${isTall ? 'tall' : 'sq'}" style="cursor:pointer;" onclick="window.location.href='${img.link || '#'}'">
-                <img src="${img.imgUrl || ''}" alt="${img.label || 'Gallery'}" loading="lazy" onerror="this.parentElement.style.display='none'"/>
-              </div>
-            `;
-          }).join("");
+          // Always show exactly 2 items: first is 2x2in, second is 1x2in
+          const [imgA, imgB] = galleryItems;
+          let html = "";
+          if (imgA) {
+            html += `
+              <div class="grid-item-a" onclick="window.location.href='${imgA.link || '#'}'">
+                <img src="${imgA.imgUrl || ''}" alt="${imgA.label || 'Gallery'}" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>
+              </div>`;
+          }
+          if (imgB) {
+            html += `
+              <div class="grid-item-b" onclick="window.location.href='${imgB.link || '#'}'">
+                <img src="${imgB.imgUrl || ''}" alt="${imgB.label || 'Gallery'}" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>
+              </div>`;
+          }
+          galleryGrid.innerHTML = html;
           gallerySection.style.display = "block";
         }
       } catch (err) {
@@ -1335,14 +1453,22 @@
       }
     }
 
-    /* ── INIT ── */
+    /* ════════════════════════════════════════════
+       INIT — load everything
+       ════════════════════════════════════════════ */
     async function init() {
-      await Promise.allSettled([loadHeroes(), loadProducts(), loadIndexMedia()]);
+      await Promise.allSettled([
+        loadHeroes(),
+        loadProducts(),
+        loadIndexMedia()
+      ]);
     }
 
-    document.readyState === "loading"
-      ? document.addEventListener("DOMContentLoaded", init)
-      : init();
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
   </script>
 </body>
 
