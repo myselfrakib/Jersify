@@ -13,10 +13,9 @@
   <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-    import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
     import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
     import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-    import { getDatabase, ref as rtdbRef, set as rtdbSet, remove as rtdbRemove } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+    import { getDatabase, ref as rtdbRef, set as rtdbSet, remove as rtdbRemove, onValue, push, update, get } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
     // ── CONFIGURE YOUR FIREBASE PROJECT HERE ──
     const firebaseConfig = {
@@ -31,13 +30,26 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
     const storage = getStorage(app);
     const auth = getAuth(app);
     const rtdb = getDatabase(app);
 
-    // Expose to window for use outside module
-    window._fb = { db, storage, auth, rtdb, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, setDoc, storageRef, uploadBytesResumable, getDownloadURL, deleteObject, signOut, onAuthStateChanged, rtdbRef, rtdbSet, rtdbRemove };
+    // Auth guard — verify admin session before loading data
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'admin-login.html'; return; }
+      try {
+        const snap = await get(rtdbRef(rtdb, `admins/${user.uid}`));
+        if (!snap.exists() || snap.val().status !== true) {
+          await signOut(auth);
+          window.location.href = 'admin-login.html';
+          return;
+        }
+      } catch(e) { window.location.href = 'admin-login.html'; return; }
+      initApp();
+    });
+
+    // ── EXPOSE to window ──
+    window._fb = { storage, auth, rtdb, storageRef, uploadBytesResumable, getDownloadURL, deleteObject, signOut, onAuthStateChanged, rtdbRef, rtdbSet, rtdbRemove, onValue, push, update, get };
   </script>
 
   <style>
@@ -1944,8 +1956,6 @@
     //  INIT — load data directly, no auth check
     // ═══════════════════════════════════════════════════════
     async function initApp() {
-      listenCollection('countries', renderCountries);
-      listenCollection('clubs', renderClubs);
       listenCollection('products', renderProducts);
       listenCollection('players', renderPlayers);
       listenCollection('heroes', renderHeroes);
@@ -1961,9 +1971,12 @@
     //  FIRESTORE REAL-TIME LISTENER
     // ═══════════════════════════════════════════════════════
     async function listenCollection(col, callback) {
-      const { db, collection, onSnapshot } = await waitFb();
-      const unsub = onSnapshot(collection(db, col), (snap) => {
-        const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const { rtdb, rtdbRef, onValue } = await waitFb();
+      const unsub = onValue(rtdbRef(rtdb, col), (snap) => {
+        const data = [];
+        if (snap.exists()) {
+          snap.forEach(d => { data.push({ id: d.key, ...d.val() }); });
+        }
         callback(data);
         updateBadges(col, data.length);
       });
@@ -2231,9 +2244,9 @@
     let _pageSettings = {};
 
     async function initPageSettings() {
-      const { db, doc, onSnapshot, setDoc } = await waitFb();
-      onSnapshot(doc(db, 'settings', 'pages'), (snap) => {
-        _pageSettings = snap.exists() ? snap.data() : {};
+      const { rtdb, rtdbRef, onValue } = await waitFb();
+      onValue(rtdbRef(rtdb, 'settings/pages'), (snap) => {
+        _pageSettings = snap.exists() ? snap.val() : {};
         renderPageSettings();
       });
     }
@@ -2258,9 +2271,9 @@
     }
 
     async function togglePage(pageId, active) {
-      const { db, doc, setDoc } = await waitFb();
-      const update = { ..._pageSettings, [pageId]: active };
-      await setDoc(doc(db, 'settings', 'pages'), update, { merge: true });
+      const { rtdb, rtdbRef, update } = await waitFb();
+      await update(rtdbRef(rtdb, 'settings/pages'), { [pageId]: active });
+      _pageSettings[pageId] = active;
       toast(`${pageId} is now ${active ? 'active' : 'inactive'}`, 'success');
     }
 
@@ -2382,24 +2395,28 @@
     //  FIRESTORE CRUD
     // ═══════════════════════════════════════════════════════
     async function saveDoc(col, data, id) {
-      const { db, collection, addDoc, doc, updateDoc, setDoc } = await waitFb();
-      if (id) await updateDoc(doc(db, col, id), data);
-      else await addDoc(collection(db, col), data);
+      const { rtdb, rtdbRef, update, push, rtdbSet } = await waitFb();
+      if (id) {
+        await update(rtdbRef(rtdb, `${col}/${id}`), data);
+      } else {
+        const newRef = push(rtdbRef(rtdb, col));
+        await rtdbSet(newRef, data);
+      }
     }
 
     async function deleteDocById(col, id) {
-      const { db, doc, deleteDoc } = await waitFb();
-      await deleteDoc(doc(db, col, id));
+      const { rtdb, rtdbRef, rtdbRemove } = await waitFb();
+      await rtdbRemove(rtdbRef(rtdb, `${col}/${id}`));
     }
 
     // ═══════════════════════════════════════════════════════
     //  FIREBASE STORAGE UPLOAD
     // ═══════════════════════════════════════════════════════
     async function uploadFile(file, path, progressCb) {
-      const { storage, ref, uploadBytesResumable, getDownloadURL } = await waitFb();
+      const { storage, storageRef, uploadBytesResumable, getDownloadURL } = await waitFb();
       return new Promise((resolve, reject) => {
-        const storageRef = ref(storage, path);
-        const task = uploadBytesResumable(storageRef, file);
+        const fileRef = storageRef(storage, path);
+        const task = uploadBytesResumable(fileRef, file);
         task.on('state_changed', (snap) => {
           const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
           if (progressCb) progressCb(pct);
@@ -2454,8 +2471,8 @@
       confirmAction('Delete this media file?', async () => {
         try {
           if (storagePath) {
-            const { storage, ref, deleteObject } = await waitFb();
-            await deleteObject(ref(storage, storagePath));
+            const { storage, storageRef, deleteObject } = await waitFb();
+            await deleteObject(storageRef(storage, storagePath));
           }
           await deleteDocById('media', id);
           toast('Media deleted', 'info');
@@ -2479,11 +2496,10 @@
     }
 
     async function editItem(col, id) {
-      const { db, collection, getDocs } = await waitFb();
-      const snap = await getDocs(collection(db, col));
-      const docData = snap.docs.find(d => d.id === id);
-      if (!docData) { toast('Item not found', 'error'); return }
-      const data = docData.data();
+      const { rtdb, rtdbRef, get } = await waitFb();
+      const snap = await get(rtdbRef(rtdb, `${col}/${id}`));
+      if (!snap.exists()) { toast('Item not found', 'error'); return }
+      const data = snap.val();
       _editId = id; _editCollection = col;
 
       if (col === 'products') {
@@ -2598,8 +2614,7 @@
       return `<img class="flag-thumb" src="${url}" alt="${name || ''}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'32\\' height=\\'32\\'><rect fill=\\'%231a2338\\' width=\\'32\\' height=\\'32\\' rx=\\'16\\'/><text y=\\'22\\' x=\\'16\\' text-anchor=\\'middle\\' fill=\\'%2374ACDF\\' font-size=\\'16\\'>🏳</text></svg>'"/>`;
     }
 
-    // ── START — load data immediately, no auth gate ──
-    initApp();
+    // ── START — called from auth guard above ──
   </script>
 </body>
 
