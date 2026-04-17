@@ -22,16 +22,8 @@
       --maxw: 430px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0
-    }
-
-    html,
-    body {
-      height: 100%
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0 }
+    html, body { height: 100% }
 
     body {
       font-family: 'Poppins', Arial, sans-serif;
@@ -40,15 +32,8 @@
       min-height: 100vh;
     }
 
-    a {
-      text-decoration: none;
-      color: inherit
-    }
-
-    button,
-    input {
-      font: inherit
-    }
+    a { text-decoration: none; color: inherit }
+    button, input { font: inherit }
 
     .page {
       width: min(100%, var(--maxw));
@@ -57,8 +42,8 @@
       background: #fff;
       position: relative;
       overflow: hidden;
-      border-left: 1px solid rgba(0, 0, 0, .04);
-      border-right: 1px solid rgba(0, 0, 0, .04);
+      border-left: 1px solid rgba(0,0,0,.04);
+      border-right: 1px solid rgba(0,0,0,.04);
       padding-bottom: 110px;
     }
 
@@ -71,10 +56,10 @@
       padding: 16px 16px 10px;
       position: sticky;
       top: 0;
-      background: rgba(255, 255, 255, .98);
+      background: rgba(255,255,255,.98);
       backdrop-filter: blur(8px);
       z-index: 30;
-      border-bottom: 1px solid rgba(0, 0, 0, .04);
+      border-bottom: 1px solid rgba(0,0,0,.04);
     }
 
     .logo {
@@ -85,7 +70,16 @@
       color: #111;
       text-transform: uppercase;
       white-space: nowrap;
-      text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+      text-shadow: 0 1px 0 rgba(255,255,255,.8);
+    }
+
+    .logo-sub {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .5px;
+      margin-top: -2px;
+      font-family: 'Poppins', sans-serif;
     }
 
     .header-actions {
@@ -121,53 +115,73 @@
       cursor: pointer;
       flex: 0 0 auto;
       transition: transform .2s ease;
+      position: relative;
     }
 
-    .icon-btn:hover {
-      transform: translateY(-2px)
-    }
-
-    .icon-btn svg {
-      width: 19px;
-      height: 19px
-    }
+    .icon-btn:hover { transform: translateY(-2px) }
+    .icon-btn svg { width: 19px; height: 19px }
 
     .profile-btn {
-      width: 32px;
-      height: 32px;
+      width: 38px;
+      height: 38px;
       border: 2px solid #fff;
       background: linear-gradient(135deg, #f4d8de, #f7f7f7);
       color: #111;
+      overflow: hidden;
     }
 
-    .profile-btn svg {
-      width: 16px;
-      height: 16px
+    .profile-btn svg { width: 19px; height: 19px }
+    .profile-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+    .profile-initials {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--accent);
+      font-family: 'Poppins', sans-serif;
     }
+
+    /* Cart badge */
+    .cart-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 900;
+      display: none;
+      place-items: center;
+      border: 2px solid #fff;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .cart-badge.show { display: grid; }
 
     /* SEARCH */
-    .search-wrap {
-      padding: 0 16px 14px;
-    }
+    .search-wrap { padding: 0 16px 14px; }
 
     .search {
       display: flex;
       align-items: center;
       gap: 10px;
       width: 100%;
-      border: 1.5px solid rgba(17, 17, 17, .16);
+      border: 1.5px solid rgba(17,17,17,.16);
       background: #fff;
       border-radius: 999px;
       padding: 11px 14px;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, .04);
+      box-shadow: 0 4px 18px rgba(0,0,0,.04);
+      transition: border-color .2s;
     }
 
-    .search svg {
-      width: 18px;
-      height: 18px;
-      opacity: .65;
-      flex: 0 0 auto
+    .search:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 4px 18px rgba(198,31,47,.1);
     }
+
+    .search svg { width: 18px; height: 18px; opacity: .65; flex: 0 0 auto }
 
     .search input {
       border: none;
@@ -177,36 +191,15 @@
       font-size: 14px;
     }
 
-    .mic {
-      width: 18px;
-      height: 18px;
-      opacity: .7;
-      flex: 0 0 auto;
-    }
+    .mic { width: 18px; height: 18px; opacity: .7; flex: 0 0 auto; cursor: pointer; }
 
     /* SECTION */
-    .section {
-      padding: 0 16px 16px;
-    }
-
-    .section h3 {
-      font-size: 18px;
-      font-weight: 900;
-      margin: 0 0 12px;
-      letter-spacing: .2px;
-    }
-
-    .section-sub {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: -6px;
-      margin-bottom: 12px;
-    }
+    .section { padding: 0 16px 16px; }
+    .section h3 { font-size: 18px; font-weight: 900; margin: 0 0 12px; letter-spacing: .2px; }
+    .section-sub { font-size: 12px; color: var(--muted); margin-top: -6px; margin-bottom: 12px; }
 
     /* HERO SLIDER */
-    .hero {
-      padding: 0 16px 14px;
-    }
+    .hero { padding: 0 16px 14px; }
 
     .slider {
       position: relative;
@@ -219,7 +212,6 @@
 
     .slides {
       display: flex;
-      width: 300%;
       height: 100%;
       transition: transform .5s ease;
     }
@@ -230,21 +222,30 @@
       position: relative;
       flex: 0 0 100%;
       overflow: hidden;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, .12), transparent 18%),
-        linear-gradient(135deg, #111 0%, #1c1c1c 45%, #2a0009 100%);
     }
 
-    .slide:nth-child(2) {
-      background:
-        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, .12), transparent 18%),
-        linear-gradient(135deg, #151515 0%, #1f1f1f 48%, #4a0a12 100%);
+    /* Dynamic slide background from Firebase color field */
+    .slide-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #111 0%, #1c1c1c 45%, #2a0009 100%);
+      z-index: 0;
     }
 
-    .slide:nth-child(3) {
-      background:
-        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, .12), transparent 18%),
-        linear-gradient(135deg, #0f0f0f 0%, #252525 48%, #240012 100%);
+    .slide-bg-img {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .slide-bg-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(0,0,0,.75) 0%, rgba(0,0,0,.3) 55%, transparent 100%);
+      z-index: 2;
     }
 
     .slide-content {
@@ -254,38 +255,68 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
+      z-index: 3;
     }
 
     .slide-text {
-      max-width: 45%;
+      max-width: 55%;
       color: #fff;
-      z-index: 2;
     }
 
     .slide-text .kicker {
-      color: #ff5d68;
-      font-size: 14px;
+      font-size: 11px;
       font-weight: 900;
       letter-spacing: 1px;
       margin-bottom: 6px;
       text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 999px;
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      backdrop-filter: blur(4px);
+      color: #fff;
     }
 
+    .slide-text .kicker.pill-red { background: rgba(198,31,47,.7); }
+    .slide-text .kicker.pill-gold { background: rgba(200,160,20,.7); }
+    .slide-text .kicker.pill-blue { background: rgba(27,118,209,.7); }
+    .slide-text .kicker.pill-green { background: rgba(30,143,69,.7); }
+
     .slide-text h2 {
-      font-size: 30px;
-      line-height: .92;
-      margin-bottom: 10px;
+      font-size: 28px;
+      line-height: .95;
+      margin-bottom: 8px;
       text-transform: uppercase;
+      font-weight: 900;
     }
 
     .slide-text p {
-      font-size: 12px;
-      color: rgba(255, 255, 255, .85);
+      font-size: 11px;
+      color: rgba(255,255,255,.85);
       line-height: 1.45;
     }
 
-    .player {
-      width: 52%;
+    .slide-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 8px;
+    }
+
+    .slide-pill {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.15);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.25);
+      backdrop-filter: blur(4px);
+    }
+
+    /* Fallback jersey visual when no image */
+    .slide-visual {
+      width: 46%;
       height: 88%;
       position: relative;
       display: flex;
@@ -293,818 +324,440 @@
       justify-content: center;
     }
 
-    .player::before {
+    .slide-visual::before {
       content: "";
       position: absolute;
       width: 100%;
       height: 100%;
       border-radius: 18px;
-      background:
-        linear-gradient(150deg, rgba(198, 31, 47, .85) 0 18%, transparent 18% 40%, rgba(198, 31, 47, .8) 40% 56%, transparent 56% 100%);
+      background: linear-gradient(150deg, rgba(198,31,47,.85) 0 18%, transparent 18% 40%, rgba(198,31,47,.8) 40% 56%, transparent 56% 100%);
       clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%, 0 18%);
       opacity: .9;
       z-index: 0;
     }
 
-    .player .jersey {
+    .slide-visual .jersey {
       position: absolute;
       inset: auto 10% 10% auto;
       width: 120px;
       height: 140px;
       border-radius: 18px;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .02)),
-        linear-gradient(135deg, #c61f2f 0%, #111 40%, #c61f2f 100%);
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.02)), linear-gradient(135deg, #c61f2f 0%, #111 40%, #c61f2f 100%);
       transform: rotate(-8deg);
-      box-shadow: 0 12px 25px rgba(0, 0, 0, .4);
+      box-shadow: 0 12px 25px rgba(0,0,0,.4);
       display: grid;
       place-items: center;
       color: #fff;
       font-weight: 900;
       text-align: center;
-      border: 1px solid rgba(255, 255, 255, .14);
+      border: 1px solid rgba(255,255,255,.14);
       z-index: 1;
     }
 
-    .player .jersey span {
-      display: block;
-      font-size: 28px;
-      line-height: 1;
-    }
-
-    .player .jersey small {
-      font-size: 10px;
-      letter-spacing: 1px;
-      opacity: .85;
-      margin-top: 4px;
-    }
-
-    .player .ball {
-      position: absolute;
-      left: 8px;
-      bottom: 8px;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 30% 30%, #fff 0 12%, #d9d9d9 12% 24%, #111 24% 26%, transparent 26%),
-        radial-gradient(circle at center, #fff 0 38%, #ccc 38% 39%, transparent 39%);
-      opacity: .18;
-      z-index: 0;
+    .slide-visual .jersey span { display: block; font-size: 28px; line-height: 1; }
+    .slide-visual .jersey small { font-size: 10px; letter-spacing: 1px; opacity: .85; margin-top: 4px; }
+    .slide-visual .ball {
+      position: absolute; left: 8px; bottom: 8px;
+      width: 80px; height: 80px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff 0 12%, #d9d9d9 12% 24%, #111 24% 26%, transparent 26%), radial-gradient(circle at center, #fff 0 38%, #ccc 38% 39%, transparent 39%);
+      opacity: .18; z-index: 0;
     }
 
     .dots {
       position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 10px;
-      display: flex;
-      gap: 6px;
-      justify-content: center;
-      z-index: 3;
+      left: 0; right: 0; bottom: 10px;
+      display: flex; gap: 6px; justify-content: center; z-index: 10;
     }
 
     .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(255, 255, 255, .55);
-      cursor: pointer;
-      transition: .2s;
+      width: 8px; height: 8px;
+      border-radius: 50%; border: none;
+      background: rgba(255,255,255,.55);
+      cursor: pointer; transition: .2s;
     }
 
-    .dot.active {
-      background: #fff;
-      transform: scale(1.2)
-    }
+    .dot.active { background: #fff; transform: scale(1.2) }
 
     /* FEATURES */
     .features {
       margin: 0 16px 16px;
       background: #fff;
       border-radius: 16px;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, .05);
+      box-shadow: 0 8px 18px rgba(0,0,0,.05);
       overflow: hidden;
       border: 1px solid var(--line);
     }
 
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 4px;
-      padding: 10px 8px 8px;
-      text-align: center;
-    }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 10px 8px 8px; text-align: center; }
 
-    .feature {
-      padding: 6px 2px;
-    }
+    .feature { padding: 6px 2px; }
+    .icon { width: 22px; height: 22px; margin: 0 auto 4px; display: grid; place-items: center; color: #222; }
+    .icon svg { width: 22px; height: 22px }
+    .feature h4 { font-size: 10px; font-weight: 800; margin-bottom: 2px; line-height: 1.1; }
+    .feature p { font-size: 9px; color: var(--muted); line-height: 1.1; }
+    .feature-bar { height: 6px; background: linear-gradient(90deg, #f1f1f1 0%, #ca2534 100%); }
 
-    .icon {
-      width: 22px;
-      height: 22px;
-      margin: 0 auto 4px;
-      display: grid;
-      place-items: center;
-      color: #222;
-    }
-
-    .icon svg {
-      width: 22px;
-      height: 22px
-    }
-
-    .feature h4 {
+    /* PRODUCT COUNT BADGE */
+    .product-count-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(135deg, #111, #1c1c1c);
+      color: #fff;
+      border-radius: 999px;
+      padding: 4px 10px;
       font-size: 10px;
-      font-weight: 800;
-      margin-bottom: 2px;
-      line-height: 1.1;
+      font-weight: 700;
+      margin: 0 16px 14px;
     }
 
-    .feature p {
-      font-size: 9px;
-      color: var(--muted);
-      line-height: 1.1;
+    .product-count-badge .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #4caf50;
+      animation: pulse-green 1.5s infinite;
     }
 
-    .feature-bar {
-      height: 6px;
-      background: linear-gradient(90deg, #f1f1f1 0%, #ca2534 100%);
+    @keyframes pulse-green {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .6; transform: scale(.85); }
     }
 
-    /* WOW INFINITE LOOP PRODUCTS */
-    .loop-section {
-      padding: 0 0 12px;
-    }
+    /* WOW PICKS */
+    .loop-section { padding: 0 0 12px; }
 
     .loop-header {
       padding: 0 16px 10px;
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 10px;
+      display: flex; align-items: end; justify-content: space-between; gap: 10px;
     }
 
-    .loop-header h3 {
-      margin: 0;
-    }
+    .loop-header h3 { margin: 0; }
+    .loop-header span { font-size: 11px; color: var(--muted); white-space: nowrap; }
 
-    .loop-header span {
-      font-size: 11px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .loop-controls {
-      display: flex;
-      gap: 8px;
-    }
+    .loop-controls { display: flex; gap: 8px; }
 
     .loop-control {
-      border: none;
-      background: #111;
-      color: #fff;
-      border-radius: 999px;
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      box-shadow: var(--shadow-soft);
+      border: none; background: #111; color: #fff;
+      border-radius: 999px; width: 34px; height: 34px;
+      display: grid; place-items: center;
+      cursor: pointer; box-shadow: var(--shadow-soft);
     }
 
-    .loop-control svg {
-      width: 18px;
-      height: 18px;
-    }
+    .loop-control svg { width: 18px; height: 18px; }
 
     .loop-viewport::-webkit-scrollbar { display: none; }
+
     .loop-viewport {
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scroll-behavior: smooth;
-      scrollbar-width: none;
-
-      width: 100%;
-      padding: 2px 0 6px;
-      touch-action: pan-y;
+      overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
+      scrollbar-width: none; width: 100%; padding: 2px 0 6px; touch-action: pan-y;
     }
 
-    .loop-track {
-      display: flex;
-      gap: 12px;
-      width: max-content;
-      padding: 0 16px;
-    }
+    .loop-track { display: flex; gap: 12px; width: max-content; padding: 0 16px; }
 
     .loop-card {
-      flex: 0 0 170px;
-      scroll-snap-align: center;
-      border-radius: 22px;
-      background: #fff;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
+      flex: 0 0 170px; scroll-snap-align: center;
+      border-radius: 22px; background: #fff;
+      border: 1px solid var(--line); box-shadow: var(--shadow-soft); overflow: hidden;
     }
 
     .loop-card .pic {
       height: 150px;
-      background:
-        radial-gradient(circle at top left, rgba(198, 31, 47, .18), transparent 25%),
-        linear-gradient(180deg, #131313 0%, #262626 100%);
-      display: grid;
-      place-items: center;
-      position: relative;
+      background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%);
+      display: grid; place-items: center; position: relative; overflow: hidden;
     }
 
     .loop-card .pic::after {
-      content: "";
-      position: absolute;
-      inset: 14px;
-      border-radius: 18px;
-      border: 1px solid rgba(255, 255, 255, .08);
-      background: linear-gradient(135deg, rgba(255, 255, 255, .05), transparent);
+      content: ""; position: absolute; inset: 14px; border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.08); background: linear-gradient(135deg, rgba(255,255,255,.05), transparent);
+      pointer-events: none;
     }
+
+    .loop-card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; }
 
     .mini-jersey {
-      width: 86px;
-      height: 104px;
-      border-radius: 22px;
-      position: relative;
-      z-index: 1;
-      box-shadow: 0 14px 24px rgba(0, 0, 0, .32);
-      border: 1px solid rgba(255, 255, 255, .16);
-      display: grid;
-      place-items: center;
-      color: #fff;
-      font-weight: 900;
-      text-align: center;
-      overflow: hidden;
+      width: 86px; height: 104px; border-radius: 22px; position: relative; z-index: 1;
+      box-shadow: 0 14px 24px rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.16);
+      display: grid; place-items: center; color: #fff; font-weight: 900; text-align: center; overflow: hidden;
     }
 
-    .mini-jersey.red {
-      background: linear-gradient(135deg, #c61f2f 0%, #101010 45%, #c61f2f 100%);
+    .mini-jersey.red { background: linear-gradient(135deg, #c61f2f 0%, #101010 45%, #c61f2f 100%); }
+    .mini-jersey.white { background: linear-gradient(135deg, #ffffff 0%, #f1f1f1 45%, #ffffff 100%); color: #111; }
+    .mini-jersey.blue { background: linear-gradient(135deg, #ffffff 0%, #dff0ff 45%, #1b76d1 100%); color: #111; }
+    .mini-jersey.dark { background: linear-gradient(135deg, #111 0%, #3b3b3b 45%, #111 100%); }
+    .mini-jersey.gold { background: linear-gradient(135deg, #f8df8a 0%, #fff5ca 45%, #c79b16 100%); color: #111; }
+    .mini-jersey span { font-size: 24px; line-height: 1; display: block; }
+    .mini-jersey small { font-size: 9px; letter-spacing: 1px; margin-top: 4px; display: block; }
+
+    .loop-info { padding: 10px 12px 12px; }
+    .loop-info h4 { font-size: 12px; font-weight: 900; margin-bottom: 4px; }
+    .loop-info p { font-size: 10px; color: var(--muted); line-height: 1.35; min-height: 28px; }
+
+    .loop-badge {
+      display: inline-block;
+      font-size: 8px; font-weight: 800; text-transform: uppercase;
+      padding: 2px 6px; border-radius: 999px;
+      background: var(--accent); color: #fff;
+      margin-bottom: 4px; letter-spacing: .5px;
     }
 
-    .mini-jersey.white {
-      background: linear-gradient(135deg, #ffffff 0%, #f1f1f1 45%, #ffffff 100%);
-      color: #111;
-    }
-
-    .mini-jersey.blue {
-      background: linear-gradient(135deg, #ffffff 0%, #dff0ff 45%, #1b76d1 100%);
-      color: #111;
-    }
-
-    .mini-jersey.dark {
-      background: linear-gradient(135deg, #111 0%, #3b3b3b 45%, #111 100%);
-    }
-
-    .mini-jersey.gold {
-      background: linear-gradient(135deg, #f8df8a 0%, #fff5ca 45%, #c79b16 100%);
-      color: #111;
-    }
-
-    .mini-jersey span {
-      font-size: 24px;
-      line-height: 1;
-      display: block;
-    }
-
-    .mini-jersey small {
-      font-size: 9px;
-      letter-spacing: 1px;
-      margin-top: 4px;
-      display: block;
-    }
-
-    .loop-info {
-      padding: 10px 12px 12px;
-    }
-
-    .loop-info h4 {
-      font-size: 12px;
-      font-weight: 900;
-      margin-bottom: 4px;
-    }
-
-    .loop-info p {
-      font-size: 10px;
-      color: var(--muted);
-      line-height: 1.35;
-      min-height: 28px;
-    }
-
-    .loop-info .price-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .loop-info .price {
-      font-size: 13px;
-      font-weight: 900;
-    }
+    .loop-info .price-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+    .loop-info .price { font-size: 13px; font-weight: 900; }
 
     .small-btn {
-      border: none;
-      background: linear-gradient(180deg, var(--accent), var(--accent2));
-      color: #fff;
-      border-radius: 999px;
-      padding: 7px 11px;
-      font-size: 10px;
-      font-weight: 800;
-      box-shadow: 0 8px 18px rgba(198, 31, 47, .22);
+      border: none; background: linear-gradient(180deg, var(--accent), var(--accent2));
+      color: #fff; border-radius: 999px; padding: 7px 11px;
+      font-size: 10px; font-weight: 800; box-shadow: 0 8px 18px rgba(198,31,47,.22); cursor: pointer;
     }
 
-    /* COUNTRY / CLUB / MEDIA SPACE */
-    .chip-row {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      scrollbar-width: none;
-    }
-
-    .chip-row::-webkit-scrollbar {
-      display: none
-    }
+    /* COUNTRY / CLUB / CHIPS */
+    .chip-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+    .chip-row::-webkit-scrollbar { display: none }
 
     .card-chip {
-      flex: 0 0 auto;
-      width: 96px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: var(--shadow-soft);
-      padding: 8px 8px 10px;
-      text-align: center;
+      flex: 0 0 auto; width: 96px; background: #fff;
+      border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-soft);
+      padding: 8px 8px 10px; text-align: center;
     }
 
     .card-chip .chip-img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      overflow: hidden;
-      margin: 0 auto 8px;
-      border: 2px solid #f1f1f1;
-      background: #f8f8f8;
-      display: grid;
-      place-items: center;
+      width: 60px; height: 60px; border-radius: 50%; overflow: hidden;
+      margin: 0 auto 8px; border: 2px solid #f1f1f1; background: #f8f8f8;
+      display: grid; place-items: center;
     }
 
-    .card-chip .chip-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .card-chip .chip-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-chip .chip-name { font-size: 11px; font-weight: 800; line-height: 1.15; }
+    .card-chip .chip-sub { font-size: 9px; color: var(--muted); margin-top: 2px; line-height: 1.1; }
 
-    .card-chip .chip-name {
-      font-size: 11px;
-      font-weight: 800;
-      line-height: 1.15;
-    }
-
-    .card-chip .chip-sub {
-      font-size: 9px;
-      color: var(--muted);
-      margin-top: 2px;
-      line-height: 1.1;
-    }
-
+    /* MEDIA SPACE */
     .media-space {
-      margin-top: 12px;
-      width: 100%;
-      aspect-ratio: 3/1;
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1px dashed rgba(17, 17, 17, .18);
-      background: #fff;
-      display: grid;
-      place-items: center;
-      color: #666;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, .04);
-      position: relative;
+      width: 100%; aspect-ratio: 3/1; border-radius: 18px; overflow: hidden;
+      border: 1px dashed rgba(17,17,17,.18); background: #fff;
+      display: grid; place-items: center; color: #666;
+      box-shadow: 0 8px 18px rgba(0,0,0,.04); position: relative;
     }
 
-    .media-space img,
-    .media-space video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    .media-space img, .media-space video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .media-space .placeholder { font-size: 13px; font-weight: 700; text-align: center; padding: 0 14px; }
+
+    /* PROMO BANNERS STRIP */
+    .promo-strip {
+      display: flex; gap: 10px; overflow-x: auto;
+      padding-bottom: 8px; scrollbar-width: none; margin-top: 14px;
     }
 
-    .media-space .placeholder {
-      font-size: 13px;
-      font-weight: 700;
-      text-align: center;
-      padding: 0 14px;
+    .promo-strip::-webkit-scrollbar { display: none; }
+
+    .promo-card {
+      flex: 0 0 220px; height: 100px; border-radius: 16px; overflow: hidden;
+      position: relative; cursor: pointer; background: #111;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .promo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .promo-card .promo-label {
+      position: absolute; bottom: 8px; left: 10px; right: 10px;
+      color: #fff; font-size: 11px; font-weight: 800;
+      text-shadow: 0 1px 4px rgba(0,0,0,.6);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .promo-card .promo-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(transparent 40%, rgba(0,0,0,.65));
     }
 
     /* REELS */
-    .reels {
-      padding: 0 16px 18px;
-    }
+    .reels { padding: 0 16px 18px; }
 
     .reels-row {
-      display: flex;
-      gap: 14px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      padding-bottom: 6px;
+      display: flex; gap: 14px; overflow-x: auto;
+      scrollbar-width: none; padding-bottom: 6px;
+      scroll-snap-type: x mandatory;
     }
 
-    .reels-row::-webkit-scrollbar {
-      display: none
-    }
+    .reels-row::-webkit-scrollbar { display: none }
 
     .reel-card {
-      flex: 0 0 150px;
-      height: 240px;
-      border-radius: 22px;
-      overflow: hidden;
-      background: #111;
-      box-shadow: var(--shadow);
-      position: relative;
-      border: 1px solid rgba(0, 0, 0, .05);
-    }
-
-    .reel-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, .15), transparent 20%),
-        linear-gradient(180deg, rgba(198, 31, 47, .15), rgba(0, 0, 0, .3));
-      z-index: 1;
+      flex: 0 0 150px; height: 240px; border-radius: 22px; overflow: hidden;
+      background: #111; box-shadow: var(--shadow); position: relative;
+      border: 1px solid rgba(0,0,0,.05); scroll-snap-align: center; cursor: pointer;
     }
 
     .reel-card .thumb {
-      position: absolute;
-      inset: 0;
-      background:
-        url('https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=800&q=80') center/cover;
-      filter: saturate(1.15);
+      position: absolute; inset: 0; background: center/cover; filter: saturate(1.15);
     }
 
-    .reel-card:nth-child(2) .thumb {
-      background-image: url('https://images.unsplash.com/photo-1521412644187-c49fa049e84d?auto=format&fit=crop&w=800&q=80');
-    }
-
-    .reel-card:nth-child(3) .thumb {
-      background-image: url('https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=800&q=80');
+    .reel-card::before {
+      content: ""; position: absolute; inset: 0; z-index: 1;
+      background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.15), transparent 20%), linear-gradient(180deg, rgba(198,31,47,.15), rgba(0,0,0,.3));
     }
 
     .reel-card .play {
-      position: absolute;
-      inset: auto 12px 12px 12px;
-      z-index: 2;
-      color: #fff;
-      font-size: 12px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+      position: absolute; inset: auto 12px 12px 12px; z-index: 2;
+      color: #fff; font-size: 12px; font-weight: 800;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
     }
 
     .play-badge {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, .18);
-      display: grid;
-      place-items: center;
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, .22);
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,.18); display: grid; place-items: center;
+      backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.22); flex-shrink: 0;
     }
 
-    .play-badge svg {
-      width: 18px;
-      height: 18px;
-      color: #fff
-    }
+    .play-badge svg { width: 18px; height: 18px; color: #fff }
 
     /* GALLERY */
-    .gallery {
-      padding: 0 16px 18px;
+    .gallery { padding: 0 16px 18px; }
+
+    .grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; grid-auto-rows: minmax(100px, auto);
     }
 
-        .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      grid-auto-rows: minmax(100px, auto);
-    }
-    
-    .grid-item {
-      border-radius: 18px;
-      overflow: hidden;
-      background: #ddd;
-      box-shadow: var(--shadow-soft);
-      position: relative;
-    }
-    
-    .grid-item.sq {
-      aspect-ratio: 1/1;
-    }
-    
-    .grid-item.tall {
-      grid-row: span 2;
-      height: 100%;
-    }
-    .grid-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .grid-item { border-radius: 18px; overflow: hidden; background: #ddd; box-shadow: var(--shadow-soft); position: relative; }
+    .grid-item.sq { aspect-ratio: 1/1; }
+    .grid-item.tall { grid-row: span 2; height: 100%; }
+    .grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
     /* PRODUCTS */
-    .products {
-      padding: 0 16px 18px;
-    }
+    .products { padding: 0 16px 18px; }
+    .products-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; touch-action: pan-y; }
+    .products-viewport::-webkit-scrollbar { display: none; }
 
-    .products-viewport {
-      overflow: hidden;
-      border-radius: 22px;
-      touch-action: pan-y;
-    }
-
-    .product-row {
-      display: flex;
-      gap: 14px;
-      will-change: transform;
-      transition: transform .45s ease;
-      padding-bottom: 8px;
-    }
+    .product-row { display: flex; gap: 14px; padding: 0 0 8px; }
 
     .product {
-      flex: 0 0 74%;
-      background: #fff;
-      border-radius: 22px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--line);
+      flex: 0 0 74%; border-radius: 22px; overflow: hidden;
+      background: #fff; box-shadow: var(--shadow); border: 1px solid var(--line);
+      scroll-snap-align: center;
     }
 
     .product .img {
       height: 220px;
-      background:
-        radial-gradient(circle at top left, rgba(198, 31, 47, .18), transparent 25%),
-        linear-gradient(180deg, #131313 0%, #262626 100%);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%);
+      position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;
     }
 
     .product .img::after {
-      content: "";
-      position: absolute;
-      inset: 18px;
-      border-radius: 22px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, 0));
-      border: 1px solid rgba(255, 255, 255, .08);
+      content: ""; position: absolute; inset: 18px; border-radius: 22px;
+      background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,0));
+      border: 1px solid rgba(255,255,255,.08); pointer-events: none;
     }
+
+    .product .img img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; }
 
     .jersey-card {
-      width: 150px;
-      height: 180px;
-      border-radius: 28px;
-      position: relative;
-      z-index: 1;
-      box-shadow: 0 16px 30px rgba(0, 0, 0, .35);
-      border: 1px solid rgba(255, 255, 255, .18);
-      overflow: hidden;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding-bottom: 18px;
-      text-align: center;
+      width: 150px; height: 180px; border-radius: 28px; position: relative; z-index: 1;
+      box-shadow: 0 16px 30px rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.18);
+      overflow: hidden; display: flex; align-items: flex-end; justify-content: center;
+      padding-bottom: 18px; text-align: center;
     }
 
-    .jersey-card.dark {
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, 0)),
-        linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%);
-    }
+    .jersey-card.dark { background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)), linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%); }
+    .jersey-card.white { background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)), linear-gradient(135deg, #ffffff 0%, #efefef 25%, #fff 25% 50%, #c61f2f 50% 58%, #fff 58% 100%); color: #111; }
+    .jersey-card.blue { background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)), linear-gradient(135deg, #fff 0%, #e9f4ff 20%, #fff 20% 48%, #1b76d1 48% 58%, #fff 58% 100%); color: #111; }
+    .jersey-card.gold { background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)), linear-gradient(135deg, #f8df8a 0%, #fff5ca 25%, #f8df8a 45%, #1f1f1f 45% 60%, #f8df8a 100%); color: #111; }
+    .jersey-card strong { font-size: 32px; line-height: 1; display: block; }
+    .jersey-card small { font-size: 10px; font-weight: 700; letter-spacing: 1px; opacity: .9; }
 
-    .jersey-card.white {
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, 0)),
-        linear-gradient(135deg, #ffffff 0%, #efefef 25%, #fff 25% 50%, #c61f2f 50% 58%, #fff 58% 100%);
-      color: #111;
-    }
-
-    .jersey-card.blue {
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, 0)),
-        linear-gradient(135deg, #fff 0%, #e9f4ff 20%, #fff 20% 48%, #1b76d1 48% 58%, #fff 58% 100%);
-      color: #111;
-    }
-
-    .jersey-card.gold {
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, 0)),
-        linear-gradient(135deg, #f8df8a 0%, #fff5ca 25%, #f8df8a 45%, #1f1f1f 45% 60%, #f8df8a 100%);
-      color: #111;
-    }
-
-    .jersey-card strong {
-      font-size: 32px;
-      line-height: 1;
-      display: block;
-    }
-
-    .jersey-card small {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      opacity: .9;
-    }
-
-    .product-info {
-      padding: 14px;
-    }
-
-    .title {
-      font-size: 15px;
-      font-weight: 900;
-      margin-bottom: 6px;
-    }
-
-    .desc {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-      margin-bottom: 12px;
-      min-height: 36px;
-    }
-
-    .bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .price {
-      font-size: 16px;
-      font-weight: 900;
-      color: #111;
-    }
+    .product-info { padding: 14px; }
+    .title { font-size: 15px; font-weight: 900; margin-bottom: 6px; }
+    .desc { color: var(--muted); font-size: 12px; line-height: 1.5; margin-bottom: 12px; min-height: 36px; }
+    .bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .price { font-size: 16px; font-weight: 900; color: #111; }
 
     .btn {
-      border: none;
-      background: linear-gradient(180deg, var(--accent), var(--accent2));
-      color: #fff;
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 10px 22px rgba(198, 31, 47, .22);
+      border: none; background: linear-gradient(180deg, var(--accent), var(--accent2));
+      color: #fff; border-radius: 999px; padding: 10px 14px; font-size: 12px; font-weight: 800;
+      cursor: pointer; box-shadow: 0 10px 22px rgba(198,31,47,.22);
     }
 
-    .viewall-wrap {
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-    }
+    .viewall-wrap { display: flex; justify-content: center; margin-top: 10px; }
 
     .viewall {
-      min-width: 110px;
-      padding: 8px 18px;
-      border: 1.5px solid #222;
-      border-radius: 4px;
-      background: #fff;
-      font-weight: 700;
-      cursor: pointer;
+      min-width: 110px; padding: 8px 18px; border: 1.5px solid #222;
+      border-radius: 4px; background: #fff; font-weight: 700; cursor: pointer;
     }
 
     /* FOOTER */
     .footer {
-      margin-top: 6px;
-      background: linear-gradient(180deg, #111, #1a1a1a);
-      color: #fff;
-      padding: 22px 16px 24px;
-      border-radius: 24px 24px 0 0;
+      margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a);
+      color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0;
     }
 
-    .footer h4 {
-      font-size: 18px;
-      margin-bottom: 8px;
-      font-weight: 900;
-    }
+    .footer h4 { font-size: 18px; margin-bottom: 8px; font-weight: 900; }
+    .footer p { font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: 12px; }
 
-    .footer p {
-      font-size: 12px;
-      color: rgba(255, 255, 255, .75);
-      line-height: 1.6;
-      margin-bottom: 12px;
-    }
-
-    .footer-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 14px;
-      font-size: 12px;
-      color: rgba(255, 255, 255, .9);
-      margin-bottom: 14px;
-    }
-
-    .copy {
-      font-size: 11px;
-      color: rgba(255, 255, 255, .55);
-      border-top: 1px solid rgba(255, 255, 255, .1);
-      padding-top: 12px;
-    }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 10px 14px; font-size: 12px; color: rgba(255,255,255,.9); margin-bottom: 14px; }
+    .footer-links a { color: rgba(255,255,255,.9); }
+    .footer-links a:hover { color: #fff; }
+    .copy { font-size: 11px; color: rgba(255,255,255,.55); border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; }
 
     /* BOTTOM NAV */
     .bottom-nav {
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 12px;
+      position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px;
       width: min(100%, calc(var(--maxw) - 16px));
-      background: rgba(255, 255, 255, .96);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 0, 0, .06);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 8px;
-      z-index: 50;
+      background: rgba(255,255,255,.96); backdrop-filter: blur(10px);
+      border: 1px solid rgba(0,0,0,.06); border-radius: 22px;
+      box-shadow: var(--shadow); display: flex; justify-content: space-around;
+      padding: 10px 8px; z-index: 50;
     }
 
     .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      font-size: 10px;
-      color: #555;
-      min-width: 56px;
-      cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      font-size: 10px; color: #555; min-width: 56px; cursor: pointer;
+      text-decoration: none;
     }
 
-    .nav-item svg {
-      width: 19px;
-      height: 19px
+    .nav-item svg { width: 19px; height: 19px }
+    .nav-item.active { color: var(--accent); font-weight: 800; }
+
+    /* SKELETON LOADERS */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 12px;
     }
 
-    .nav-item.active {
-      color: var(--accent);
-      font-weight: 800;
-    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
     @media (max-width:380px) {
-      .logo {
-        font-size: 40px
-      }
-
-      .product {
-        flex-basis: 80%
-      }
-
-      .slide-text h2 {
-        font-size: 26px
-      }
-
-      .slide-text {
-        max-width: 52%
-      }
-
-      .loop-card {
-        flex-basis: 160px
-      }
+      .logo { font-size: 40px }
+      .product { flex-basis: 80% }
+      .slide-text h2 { font-size: 24px }
+      .slide-text { max-width: 55% }
+      .loop-card { flex-basis: 160px }
     }
   </style>
 </head>
 
 <body>
   <div class="page">
+
+    <!-- ══════════════ HEADER ══════════════ -->
     <header class="topbar">
-      <div class="logo">Jersify</div>
+      <div>
+        <div class="logo">Jersify</div>
+        <div class="logo-sub" id="productCountLabel">Loading...</div>
+      </div>
       <div class="header-actions">
-        <button class="shop-btn" id="shopBtn">Shop</button>
-        <button class="icon-btn" aria-label="Cart">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
+        <button class="shop-btn" id="shopBtn" onclick="window.location.href='shop.html'">Shop</button>
+
+        <!-- Cart button with dynamic badge -->
+        <button class="icon-btn" id="cartBtn" aria-label="Cart" onclick="window.location.href='checkout.html'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="20" r="1"></circle>
             <circle cx="17" cy="20" r="1"></circle>
             <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path>
           </svg>
+          <span class="cart-badge" id="cartBadge"></span>
         </button>
-        <button class="icon-btn profile-btn" aria-label="Profile">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+        <!-- Profile button — replaced by photo/initials on auth -->
+        <button class="icon-btn profile-btn" id="profileBtn" aria-label="Profile" onclick="window.location.href='profile.html'">
+          <svg id="profileIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="8" r="4"></circle>
             <path d="M4 21a8 8 0 0 1 16 0"></path>
           </svg>
@@ -1112,13 +765,14 @@
       </div>
     </header>
 
+    <!-- ══════════════ SEARCH ══════════════ -->
     <div class="search-wrap">
       <div class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="7"></circle>
           <path d="M21 21l-4.3-4.3"></path>
         </svg>
-        <input type="text" placeholder="Search jerseys, clubs, countries..." />
+        <input type="text" id="searchInput" placeholder="Search jerseys, clubs, countries..." />
         <svg class="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 1a3 3 0 0 0-3 3v7a3 3 0 1 0 6 0V4a3 3 0 0 0-3-3z"></path>
           <path d="M5 11a7 7 0 0 0 14 0"></path>
@@ -1128,441 +782,291 @@
       </div>
     </div>
 
+    <!-- ══════════════ HERO SLIDER ══════════════ -->
     <section class="hero">
-      <div class="slider">
+      <div class="slider" id="heroSlider">
         <div class="slides" id="slides">
+          <!-- Dynamically populated by Firebase heroes collection -->
+          <!-- Fallback static slides shown until Firebase loads -->
           <div class="slide">
+            <div class="slide-bg"></div>
             <div class="slide-content">
               <div class="slide-text">
                 <div class="kicker">New Drop</div>
                 <h2>Are You Ready?</h2>
                 <p>Premium football jerseys with a bold streetwear look.</p>
               </div>
-              <div class="player">
+              <div class="slide-visual">
                 <div class="ball"></div>
-                <div class="jersey">
-                  <div>
-                    <span>10</span>
-                    <small>HOME KIT</small>
-                  </div>
-                </div>
+                <div class="jersey"><div><span>10</span><small>HOME KIT</small></div></div>
               </div>
             </div>
           </div>
-
           <div class="slide">
+            <div class="slide-bg" style="background:linear-gradient(135deg,#151515 0%,#1f1f1f 48%,#4a0a12 100%)"></div>
             <div class="slide-content">
               <div class="slide-text">
                 <div class="kicker">Top Seller</div>
                 <h2>Club Edition</h2>
                 <p>Wear the badge. Match-day style made simple.</p>
               </div>
-              <div class="player">
+              <div class="slide-visual">
                 <div class="ball"></div>
-                <div class="jersey dark">
-                  <div>
-                    <span>07</span>
-                    <small>AWAY KIT</small>
-                  </div>
-                </div>
+                <div class="jersey dark"><div><span>07</span><small>AWAY KIT</small></div></div>
               </div>
             </div>
           </div>
-
           <div class="slide">
+            <div class="slide-bg" style="background:linear-gradient(135deg,#0f0f0f 0%,#252525 48%,#240012 100%)"></div>
             <div class="slide-content">
               <div class="slide-text">
                 <div class="kicker">Fast Delivery</div>
                 <h2>Fresh Styles</h2>
                 <p>Find your club jersey and get it delivered fast.</p>
               </div>
-              <div class="player">
+              <div class="slide-visual">
                 <div class="ball"></div>
-                <div class="jersey blue">
-                  <div>
-                    <span>11</span>
-                    <small>FAN KIT</small>
-                  </div>
-                </div>
+                <div class="jersey blue"><div><span>11</span><small>FAN KIT</small></div></div>
               </div>
             </div>
           </div>
         </div>
-
         <div class="dots" id="dots">
-          <button class="dot active" aria-label="Slide 1"></button>
-          <button class="dot" aria-label="Slide 2"></button>
-          <button class="dot" aria-label="Slide 3"></button>
+          <button class="dot active"></button>
+          <button class="dot"></button>
+          <button class="dot"></button>
         </div>
       </div>
     </section>
 
+    <!-- ══════════════ FEATURES BAR ══════════════ -->
     <section class="features">
       <div class="feature-grid">
         <div class="feature">
-          <div class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M2 22h20"></path>
-              <path d="M6 20V8l6-5 6 5v12"></path>
-              <path d="M10 22v-7h4v7"></path>
-            </svg>
-          </div>
-          <h4>Imported</h4>
-          <p>Premium quality</p>
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 22h20"/><path d="M6 20V8l6-5 6 5v12"/><path d="M10 22v-7h4v7"/></svg></div>
+          <h4>Imported</h4><p>Premium quality</p>
         </div>
         <div class="feature">
-          <div class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 4h16v16H4z"></path>
-              <path d="M4 9h16"></path>
-              <path d="M9 4v16"></path>
-            </svg>
-          </div>
-          <h4>Good Fabric</h4>
-          <p>Comfort fit</p>
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 9h16"/><path d="M9 4v16"/></svg></div>
+          <h4>Good Fabric</h4><p>Comfort fit</p>
         </div>
         <div class="feature">
-          <div class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M16 3h5v5"></path>
-              <path d="M21 3l-8 8"></path>
-              <path d="M3 7h10l4 10H5a2 2 0 0 1-2-2V7z"></path>
-              <circle cx="9" cy="20" r="1"></circle>
-              <circle cx="18" cy="20" r="1"></circle>
-            </svg>
-          </div>
-          <h4>Express Delivery</h4>
-          <p>Fast dispatch</p>
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5"/><path d="M21 3l-8 8"/><path d="M3 7h10l4 10H5a2 2 0 0 1-2-2V7z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg></div>
+          <h4>Express Delivery</h4><p>Fast dispatch</p>
         </div>
       </div>
       <div class="feature-bar"></div>
     </section>
 
+    <!-- ══════════════ WOW PICKS ══════════════ -->
     <section class="section loop-section">
       <div class="loop-header">
-        <h3>WOW Picks</h3>
+        <div>
+          <h3>WOW Picks ✦</h3>
+        </div>
         <div class="loop-controls">
-          <button class="loop-control" id="prevProduct" aria-label="Previous product">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M15 18l-6-6 6-6"></path>
-            </svg>
+          <button class="loop-control" id="prevProduct" aria-label="Previous">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
-          <button class="loop-control" id="nextProduct" aria-label="Next product">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M9 18l6-6-6-6"></path>
-            </svg>
+          <button class="loop-control" id="nextProduct" aria-label="Next">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
       </div>
       <div class="loop-viewport" id="loopViewport">
         <div class="loop-track" id="loopTrack">
-          <article class="loop-card">
-            <div class="pic">
-              <div class="mini-jersey red">
-                <div>
-                  <span>10</span>
-                  <small>HOME KIT</small>
-                </div>
-              </div>
-            </div>
-            <div class="loop-info">
-              <h4>Red Home Jersey</h4>
-              <p>Bold match-day look with premium finish.</p>
-              <div class="price-row">
-                <div class="price">₹1,299</div>
-                <button class="small-btn">Shop Now</button>
-              </div>
-            </div>
-          </article>
-
-          <article class="loop-card">
-            <div class="pic">
-              <div class="mini-jersey white">
-                <div>
-                  <span>07</span>
-                  <small>CLASSIC</small>
-                </div>
-              </div>
-            </div>
-            <div class="loop-info">
-              <h4>White Classic Jersey</h4>
-              <p>Clean, sharp, and easy to wear anywhere.</p>
-              <div class="price-row">
-                <div class="price">₹1,499</div>
-                <button class="small-btn">Shop Now</button>
-              </div>
-            </div>
-          </article>
-
-          <article class="loop-card">
-            <div class="pic">
-              <div class="mini-jersey blue">
-                <div>
-                  <span>11</span>
-                  <small>AWAY KIT</small>
-                </div>
-              </div>
-            </div>
-            <div class="loop-info">
-              <h4>Blue Away Jersey</h4>
-              <p>Lightweight fabric with modern sporty styling.</p>
-              <div class="price-row">
-                <div class="price">₹1,399</div>
-                <button class="small-btn">Shop Now</button>
-              </div>
-            </div>
-          </article>
-
-          <article class="loop-card">
-            <div class="pic">
-              <div class="mini-jersey dark">
-                <div>
-                  <span>09</span>
-                  <small>LIMITED</small>
-                </div>
-              </div>
-            </div>
-            <div class="loop-info">
-              <h4>Dark Edition Jersey</h4>
-              <p>Streetwear-inspired football kit with attitude.</p>
-              <div class="price-row">
-                <div class="price">₹1,799</div>
-                <button class="small-btn">Shop Now</button>
-              </div>
-            </div>
-          </article>
-
-          <article class="loop-card">
-            <div class="pic">
-              <div class="mini-jersey gold">
-                <div>
-                  <span>08</span>
-                  <small>SPECIAL</small>
-                </div>
-              </div>
-            </div>
-            <div class="loop-info">
-              <h4>Gold Special Jersey</h4>
-              <p>Standout fan edition made to grab attention.</p>
-              <div class="price-row">
-                <div class="price">₹1,899</div>
-                <button class="small-btn">Shop Now</button>
-              </div>
-            </div>
-          </article>
+          <!-- Skeleton placeholders while loading -->
+          <div class="loop-card"><div class="pic skeleton"></div><div class="loop-info"><div class="skeleton" style="height:12px;width:80%;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;"></div></div></div>
+          <div class="loop-card"><div class="pic skeleton"></div><div class="loop-info"><div class="skeleton" style="height:12px;width:80%;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;"></div></div></div>
+          <div class="loop-card"><div class="pic skeleton"></div><div class="loop-info"><div class="skeleton" style="height:12px;width:80%;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;"></div></div></div>
         </div>
       </div>
     </section>
 
+    <!-- ══════════════ SHOP BY COUNTRY ══════════════ -->
     <section class="section">
       <h3>Shop by Country</h3>
       <p class="section-sub">Choose jerseys by nation</p>
       <div class="chip-row" id="countryRow"></div>
     </section>
 
+    <!-- ══════════════ MEDIA SPACE (Featured + Promo) ══════════════ -->
     <section class="section">
       <div class="media-space" id="mediaSpace">
-        <div class="placeholder">
-          3 inch × 1 inch image / video space
-        </div>
+        <div class="placeholder skeleton" style="width:100%;height:100%;"></div>
+      </div>
+      <!-- Promo banners strip — populated if promo items exist -->
+      <div id="promoBannersWrap" style="display:none;">
+        <div style="font-size:13px;font-weight:800;margin:12px 0 8px;letter-spacing:.2px;">Promotions</div>
+        <div class="promo-strip" id="promoStrip"></div>
       </div>
     </section>
 
+    <!-- ══════════════ SHOP BY CLUB ══════════════ -->
     <section class="section">
       <h3>Shop by Club</h3>
       <p class="section-sub">Choose jerseys by club</p>
       <div class="chip-row" id="clubRow"></div>
     </section>
 
+    <!-- ══════════════ REELS ══════════════ -->
     <section class="reels section" style="display:none;" id="reelsSection">
       <h3>Reels</h3>
-      <div class="reels-row" id="reelsRow" style="display:flex; overflow-x:auto; scroll-snap-type: x mandatory; scrollbar-width:none; gap:14px; padding-bottom:6px;">
-      </div>
+      <div class="reels-row" id="reelsRow"></div>
     </section>
-    <style>.reels-row::-webkit-scrollbar { display: none; } .reel-card { scroll-snap-align: center; }</style>
 
+    <!-- ══════════════ GALLERY ══════════════ -->
     <section class="gallery" id="gallerySection" style="display:none;">
       <h3>Photo Gallery</h3>
       <div class="grid" id="galleryGrid"></div>
     </section>
 
+    <!-- ══════════════ ALL PRODUCTS ══════════════ -->
     <section class="products" id="productsSection">
       <h3>All Products</h3>
-      <div class="products-viewport" id="allProductsViewport" style="overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none;">
-        <div class="product-row" id="allProductsTrack" style="display: flex; gap: 14px; padding: 0 16px 8px;">
-          <div style="color:var(--muted); font-size: 13px; text-align:center; padding: 20px;">Loading Products...</div>
+      <div class="products-viewport" id="allProductsViewport">
+        <div class="product-row" id="allProductsTrack">
+          <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px;">Loading Products...</div>
         </div>
       </div>
-      <div class="viewall-wrap" style="margin-top: 14px;">
-        <button class="viewall" onclick="window.location.href='shop.html'">View Shop</button>
+      <div class="viewall-wrap" style="margin-top:14px;">
+        <button class="viewall" onclick="window.location.href='shop.html'">View All in Shop</button>
       </div>
     </section>
-
 
     <footer class="footer">
       <h4>JERSIFY</h4>
       <p>Premium football jerseys, clubwear, and fan drops designed for people who want style on and off the pitch.</p>
       <div class="footer-links">
-        <span>Home</span>
-        <span>Shop</span>
-        <span>Countries</span>
-        <span>Clubs</span>
-        <span>Reels</span>
-        <span>Gallery</span>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="shop.html?filter=country">Countries</a>
+        <a href="shop.html?filter=club">Clubs</a>
+        <a href="checkout.html">Cart</a>
+        <a href="profile.html">Profile</a>
       </div>
       <div class="copy">© 2025 Jersify. All rights reserved.</div>
     </footer>
   </div>
 
+  <!-- ══════════════ BOTTOM NAV ══════════════ -->
   <nav class="bottom-nav">
-    <div class="nav-item active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 12l9-9 9 9"></path>
-        <path d="M5 10v10h14V10"></path>
-      </svg>
+    <a href="index.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
       <div>Home</div>
-    </div>
-
-    <div class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M4 10h16"></path>
-        <path d="M5 10l1-5h12l1 5"></path>
-        <path d="M4 10v8h16v-8"></path>
-        <path d="M9 18v-4h6v4"></path>
-      </svg>
+    </a>
+    <a href="shop.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16"/><path d="M5 10l1-5h12l1 5"/><path d="M4 10v8h16v-8"/><path d="M9 18v-4h6v4"/></svg>
       <div>Shop</div>
-    </div>
-
-    <div class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M6 6h15l-1.5 9h-12z"></path>
-        <circle cx="9" cy="20" r="1"></circle>
-        <circle cx="18" cy="20" r="1"></circle>
-      </svg>
+    </a>
+    <a href="checkout.html" class="nav-item" id="navCart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
       <div>Cart</div>
-    </div>
-
-    <div class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>
+    </a>
+    <a href="profile.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <div>Profile</div>
-    </div>
+    </a>
   </nav>
 
+  <!-- ══════════════ NON-FIREBASE JS ══════════════ -->
   <script>
-    /* ═══════════════════════════════════════════════════════
-       HERO SLIDER — auto-play + manual swipe + dot navigation
-       ═══════════════════════════════════════════════════════ */
-    const slides = document.getElementById("slides");
-    const dots = Array.from(document.querySelectorAll(".dot"));
+    /* ─── HERO SLIDER — unified controller (works with static & dynamic slides) ─── */
     let heroIndex = 0;
     let heroTimer;
+    let heroTotal = 3; // updated after Firebase loads
+
+    function buildDots(count) {
+      const dotsEl = document.getElementById("dots");
+      dotsEl.innerHTML = "";
+      for (let i = 0; i < count; i++) {
+        const btn = document.createElement("button");
+        btn.className = "dot" + (i === 0 ? " active" : "");
+        btn.addEventListener("click", () => { showHeroSlide(i); restartHero(); });
+        dotsEl.appendChild(btn);
+      }
+    }
 
     function showHeroSlide(i) {
       heroIndex = i;
-      slides.style.transform = `translateX(-${i * 33.333}%)`;
-      dots.forEach((dot, idx) => dot.classList.toggle("active", idx === i));
+      const slides = document.getElementById("slides");
+      slides.style.transform = `translateX(-${i * 100}%)`;
+      document.querySelectorAll(".dot").forEach((d, idx) => d.classList.toggle("active", idx === i));
     }
 
-    dots.forEach((dot, i) => {
-      dot.addEventListener("click", () => {
-        showHeroSlide(i);
-        restartHero();
-      });
-    });
-
     function nextHeroSlide() {
-      heroIndex = (heroIndex + 1) % 3;
+      heroIndex = (heroIndex + 1) % heroTotal;
       showHeroSlide(heroIndex);
     }
 
     function restartHero() {
       clearInterval(heroTimer);
-      heroTimer = setInterval(nextHeroSlide, 3500);
+      heroTimer = setInterval(nextHeroSlide, 3800);
     }
 
-    // Touch swipe for hero
+    const slidesEl = document.getElementById("slides");
     let hStartX = 0;
-    slides.addEventListener("touchstart", e => hStartX = e.touches[0].clientX, { passive: true });
-    slides.addEventListener("touchend", e => {
+    slidesEl.addEventListener("touchstart", e => hStartX = e.touches[0].clientX, { passive: true });
+    slidesEl.addEventListener("touchend", e => {
       const diff = hStartX - e.changedTouches[0].clientX;
       if (Math.abs(diff) > 40) {
-        if (diff > 0) heroIndex = (heroIndex + 1) % 3;
-        else heroIndex = (heroIndex - 1 + 3) % 3;
+        heroIndex = diff > 0 ? (heroIndex + 1) % heroTotal : (heroIndex - 1 + heroTotal) % heroTotal;
         showHeroSlide(heroIndex);
         restartHero();
       }
     }, { passive: true });
 
+    // Initialize default slider
+    buildDots(3);
     showHeroSlide(0);
     restartHero();
 
-    /* ═══════════════════════════════════════════════════════
-       SHOP BUTTON — redirect to shop page
-       ═══════════════════════════════════════════════════════ */
-    document.querySelector(".shop-btn").addEventListener("click", () => {
-      window.location.href = 'shop.html';
+    /* ─── WOW PICKS scroll controls ─── */
+    const loopViewport = document.getElementById("loopViewport");
+    document.getElementById("prevProduct").addEventListener("click", () => loopViewport.scrollBy({ left: -184, behavior: "smooth" }));
+    document.getElementById("nextProduct").addEventListener("click", () => loopViewport.scrollBy({ left: 184, behavior: "smooth" }));
+
+    /* ─── SEARCH — redirect to shop with query ─── */
+    const searchInput = document.getElementById("searchInput");
+    let searchTimeout;
+
+    searchInput.addEventListener("input", () => {
+      clearTimeout(searchTimeout);
+      const q = searchInput.value.trim();
+      if (q.length >= 2) {
+        searchTimeout = setTimeout(() => {
+          window.location.href = `shop.html?q=${encodeURIComponent(q)}`;
+        }, 600);
+      }
     });
 
-    /* ═══════════════════════════════════════════════════════
-       WOW PICKS — prev/next manual scrolling
-       ═══════════════════════════════════════════════════════ */
-    const loopViewport = document.getElementById("loopViewport");
-    const prevProductBtn = document.getElementById("prevProduct");
-    const nextProductBtn = document.getElementById("nextProduct");
-    if (prevProductBtn && loopViewport) {
-      prevProductBtn.addEventListener("click", () => loopViewport.scrollBy({ left: -184, behavior: "smooth" }));
-    }
-    if (nextProductBtn && loopViewport) {
-      nextProductBtn.addEventListener("click", () => loopViewport.scrollBy({ left: 184, behavior: "smooth" }));
-    }
+    searchInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const q = searchInput.value.trim();
+        if (q) window.location.href = `shop.html?q=${encodeURIComponent(q)}`;
+      }
+    });
 
-    /* ═══════════════════════════════════════════════════════
-       COUNTRY CHIP IMAGES (static SVG flags)
-       ═══════════════════════════════════════════════════════ */
+    /* ─── COUNTRY CHIPS ─── */
     const countryRow = document.getElementById("countryRow");
     const countries = [
-      {
-        name: "Argentina", sub: "National team",
-        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>`)
-      },
-      {
-        name: "Brazil", sub: "National team",
-        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cb"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cb)"><rect width="120" height="120" fill="#1f8f3a"/><polygon points="60,18 98,60 60,102 22,60" fill="#f6d44a"/><circle cx="60" cy="60" r="18" fill="#2a4c9b"/></g></svg>`)
-      },
-      {
-        name: "France", sub: "National team",
-        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cc"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cc)"><rect width="40" height="120" x="0" fill="#244aa5"/><rect width="40" height="120" x="40" fill="#fff"/><rect width="40" height="120" x="80" fill="#d81e2e"/></g></svg>`)
-      },
-      {
-        name: "Germany", sub: "National team",
-        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cd"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cd)"><rect width="120" height="40" y="0" fill="#111"/><rect width="120" height="40" y="40" fill="#d81e2e"/><rect width="120" height="40" y="80" fill="#f3c400"/></g></svg>`)
-      },
-      {
-        name: "Spain", sub: "National team",
-        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>`)
-      },
-      {
-        name: "Portugal", sub: "National team",
-        img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>`)
-      }
+      { name: "Argentina", sub: "National team", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>`) },
+      { name: "Brazil", sub: "National team", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cb"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cb)"><rect width="120" height="120" fill="#1f8f3a"/><polygon points="60,18 98,60 60,102 22,60" fill="#f6d44a"/><circle cx="60" cy="60" r="18" fill="#2a4c9b"/></g></svg>`) },
+      { name: "France", sub: "National team", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cc"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cc)"><rect width="40" height="120" x="0" fill="#244aa5"/><rect width="40" height="120" x="40" fill="#fff"/><rect width="40" height="120" x="80" fill="#d81e2e"/></g></svg>`) },
+      { name: "Germany", sub: "National team", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cd"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cd)"><rect width="120" height="40" y="0" fill="#111"/><rect width="120" height="40" y="40" fill="#d81e2e"/><rect width="120" height="40" y="80" fill="#f3c400"/></g></svg>`) },
+      { name: "Spain", sub: "National team", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>`) },
+      { name: "Portugal", sub: "National team", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>`) }
     ];
 
     countryRow.innerHTML = countries.map(c => `
-      <a href="${c.name.toLowerCase().replace(' ', '-')}.html" class="card-chip" style="display:block;text-decoration:none;color:inherit;">
+      <a href="shop.html?country=${encodeURIComponent(c.name.toLowerCase())}" class="card-chip" style="display:block;">
         <div class="chip-img"><img src="${c.img}" alt="${c.name} flag"></div>
         <div class="chip-name">${c.name}</div>
         <div class="chip-sub">${c.sub}</div>
       </a>
     `).join("");
 
-    /* ═══════════════════════════════════════════════════════
-       CLUB CHIP IMAGES (generated SVG badges)
-       ═══════════════════════════════════════════════════════ */
+    /* ─── CLUB CHIPS ─── */
     const clubRow = document.getElementById("clubRow");
     const clubs = [
       { name: "Barcelona", sub: "Club crest", bg: "#a51d2d", fg: "#f2c94c", label: "B" },
@@ -1589,28 +1093,19 @@
     }
 
     clubRow.innerHTML = clubs.map(c => `
-      <a href="${c.name.toLowerCase().replace(' ', '-')}.html" class="card-chip" style="display:block;text-decoration:none;color:inherit;">
+      <a href="shop.html?club=${encodeURIComponent(c.name.toLowerCase())}" class="card-chip" style="display:block;">
         <div class="chip-img"><img src="${clubBadgeSvg(c.bg, c.fg, c.label, c.name)}" alt="${c.name} badge"></div>
         <div class="chip-name">${c.name}</div>
         <div class="chip-sub">${c.sub}</div>
       </a>
     `).join("");
-
-    /* ═══════════════════════════════════════════════════════
-       BOTTOM NAV — active state toggle
-       ═══════════════════════════════════════════════════════ */
-    document.querySelectorAll(".nav-item").forEach(item => {
-      item.addEventListener("click", () => {
-        document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
-        item.classList.add("active");
-      });
-    });
   </script>
 
-  <!-- ═══ FIREBASE MODULE — Loads Products, Reels & Gallery from Firestore ═══ -->
+  <!-- ══════════════ FIREBASE MODULE ══════════════ -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
@@ -1618,115 +1113,327 @@
       projectId: "jersify-f9b5e",
       storageBucket: "jersify-f9b5e.firebasestorage.app",
       messagingSenderId: "461181023878",
-      appId: "1:461181023878:web:6ebfbae603baf4a873c307"
+      appId: "1:461181023878:web:6ebfbae603baf4a873c307",
+      databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const rtdb = getDatabase(app);
+    const auth = getAuth(app);
 
-    // Run after DOM is ready
-    async function loadFirebaseContent() {
-      try {
-        /* ── PRODUCTS ── */
-        const pSnap = await getDocs(collection(db, "products"));
-        const pTrack = document.getElementById('allProductsTrack');
-        if (pTrack) {
-          let pHtml = '';
-          pSnap.forEach(d => {
-            const p = d.data();
-            if (p.status && p.status !== 'active') return;
-            pHtml += `
-              <article class="product" style="flex: 0 0 220px; scroll-snap-align: center; border-radius: 22px; background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow); overflow: hidden;">
-                <div class="img" style="height:200px; background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent), linear-gradient(180deg, #131313, #262626); display:flex; align-items:center; justify-content:center; position:relative;">
-                  ${p.imgUrl ? `<img src="${p.imgUrl}" style="width:100%;height:100%;object-fit:cover;" alt="${p.name || 'Jersey'}"/>` :
-                  `<div class="jersey-card dark" style="width:130px;height:160px;border-radius:24px;border:1px solid rgba(255,255,255,.18);background:linear-gradient(135deg,#9a1f2b,#191919);display:flex;align-items:flex-end;justify-content:center;padding-bottom:14px;color:#fff;font-weight:900;">
-                    <div style="text-align:center;"><strong style="font-size:28px;">10</strong><small style="display:block;font-size:9px;">${p.type || 'KIT'}</small></div>
-                  </div>`}
-                </div>
-                <div class="product-info" style="padding:14px;">
-                  <div class="title" style="font-size:14px;font-weight:900;margin-bottom:4px;">${p.name || 'Jersify Kit'}</div>
-                  <div class="desc" style="font-size:11px;color:var(--muted);margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.team ? (Array.isArray(p.team) ? p.team.join(' ') : p.team) : 'Premium jersey.'}</div>
-                  <div class="bottom" style="display:flex;justify-content:space-between;align-items:center;">
-                    <div class="price" style="font-weight:900;font-size:14px;">₹${p.price || '1499'}</div>
-                    <button class="btn" style="border:none;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;padding:8px 12px;border-radius:99px;font-size:11px;font-weight:800;cursor:pointer;" onclick="window.location.href='shop.html'">View</button>
-                  </div>
-                </div>
-              </article>`;
-          });
-          if (pHtml) pTrack.innerHTML = pHtml;
-          else pTrack.innerHTML = '<div style="color:var(--muted);width:100%;text-align:center;padding:20px;">No products available.</div>';
+    /* ════════════════════════════════════════════
+       1. AUTH STATE — Profile button + cart badge
+       ════════════════════════════════════════════ */
+    onAuthStateChanged(auth, async (user) => {
+      const profileBtn = document.getElementById("profileBtn");
+      const profileIcon = document.getElementById("profileIcon");
+      const cartBadge = document.getElementById("cartBadge");
+
+      if (user) {
+        // Replace icon with photo or initials
+        if (user.photoURL) {
+          profileIcon.style.display = "none";
+          const img = document.createElement("img");
+          img.src = user.photoURL;
+          img.alt = user.displayName || "Profile";
+          profileBtn.appendChild(img);
+        } else {
+          const initials = (user.displayName || user.email || "U")
+            .split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
+          profileIcon.style.display = "none";
+          const span = document.createElement("span");
+          span.className = "profile-initials";
+          span.textContent = initials;
+          profileBtn.appendChild(span);
         }
 
-        /* ── INDEX MEDIA (Reels + Gallery) ── */
-        const imSnap = await getDocs(query(collection(db, "indexMedia"), orderBy("order")));
-        const reelsRow = document.getElementById('reelsRow');
-        const galleryGrid = document.getElementById('galleryGrid');
-        const mediaSpace = document.getElementById('mediaSpace');
-        let rHtml = '';
-        let gImages = [];
-        let featuredImg = null;
+        // Cart item count from Firebase or localStorage
+        try {
+          const cartSnap = await get(ref(rtdb, `users/${user.uid}/cart`));
+          let cartCount = 0;
+          if (cartSnap.exists()) {
+            cartSnap.forEach(() => cartCount++);
+          } else {
+            // Fallback to localStorage
+            const localCart = JSON.parse(localStorage.getItem("jersify_cart") || "[]");
+            cartCount = localCart.length;
+          }
+          if (cartCount > 0) {
+            cartBadge.textContent = cartCount > 9 ? "9+" : cartCount;
+            cartBadge.classList.add("show");
+          }
+        } catch (e) {
+          // localStorage fallback
+          const localCart = JSON.parse(localStorage.getItem("jersify_cart") || "[]");
+          if (localCart.length > 0) {
+            cartBadge.textContent = localCart.length > 9 ? "9+" : localCart.length;
+            cartBadge.classList.add("show");
+          }
+        }
+      } else {
+        // Not logged in — check localStorage cart
+        const localCart = JSON.parse(localStorage.getItem("jersify_cart") || "[]");
+        if (localCart.length > 0) {
+          cartBadge.textContent = localCart.length > 9 ? "9+" : localCart.length;
+          cartBadge.classList.add("show");
+        }
+      }
+    });
 
-        imSnap.forEach(d => {
-          const m = d.data();
-          if (m.section === 'reels') {
-            rHtml += `
-              <div class="reel-card" style="flex:0 0 150px;height:240px;border-radius:22px;background:#111;position:relative;overflow:hidden;border:1px solid rgba(0,0,0,.05);cursor:pointer;scroll-snap-align:center;" onclick="window.location.href='${m.link || '#'}'">
-                <div class="thumb" style="position:absolute;inset:0;background:url('${m.imgUrl || ''}') center/cover;filter:saturate(1.15);"></div>
-                <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%, rgba(0,0,0,.8));"></div>
-                <div class="play" style="position:absolute;bottom:12px;left:12px;right:12px;color:#fff;font-size:12px;font-weight:800;display:flex;justify-content:space-between;align-items:center;">
-                  <div style="line-height:1.2;">
-                    ${m.label || 'Reel'}<br><span style="font-size:9px;color:rgba(255,255,255,.7)">${m.description || 'Watch now'}</span>
-                  </div>
-                  <div class="play-badge" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;backdrop-filter:blur(4px);">
-                    <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M8 5v14l11-7z"/></svg>
-                  </div>
-                </div>
-              </div>`;
-          } else if (m.section === 'gallery') {
-            gImages.push(m);
-          } else if ((m.section === 'featured' || m.section === 'promo') && !featuredImg) {
-            featuredImg = m;
+    /* ════════════════════════════════════════════
+       2. HERO SLIDER — from heroes collection
+       ════════════════════════════════════════════ */
+    async function loadHeroes() {
+      try {
+        const snap = await get(ref(rtdb, "heroes"));
+        if (!snap.exists()) return;
+
+        let heroes = [];
+        snap.forEach(d => {
+          const h = d.val();
+          // Show heroes tagged for "index" page OR untagged/general
+          if (!h.page || h.page === "index" || h.page === "general") {
+            heroes.push(h);
           }
         });
 
-        // Populate Media Space with first featured/promo image
-        if (featuredImg && mediaSpace) {
-          mediaSpace.innerHTML = `<img src="${featuredImg.imgUrl}" alt="${featuredImg.label || 'Promo'}" style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;" onclick="window.location.href='${featuredImg.link || 'shop.html'}'"/>`;
-        }
+        if (heroes.length === 0) return;
 
-        // Populate Reels
-        if (rHtml && reelsRow) {
-          reelsRow.innerHTML = rHtml;
-          document.getElementById('reelsSection').style.display = 'block';
-        }
+        // Sort by order if present
+        heroes.sort((a, b) => (a.order || 0) - (b.order || 0));
 
-        // Populate Gallery
-        if (gImages.length > 0 && galleryGrid) {
-          let gHtml = '';
-          gImages.forEach((img, idx) => {
-            const i = idx + 1;
-            // Layout: positions 3,6,9,12... are tall (1:2), rest are square (1:1)
-            const isTall = (i % 3 === 0);
-            const typeClass = isTall ? 'tall' : 'sq';
-            gHtml += `
-              <div class="grid-item ${typeClass}" style="cursor:pointer;" onclick="window.location.href='${img.link || '#'}'">
-                <img src="${img.imgUrl || ''}" alt="${img.label || 'Gallery Image'}" onerror="this.parentElement.style.display='none'"/>
-              </div>`;
-          });
-          galleryGrid.innerHTML = gHtml;
-          document.getElementById('gallerySection').style.display = 'block';
-        }
+        const slidesEl = document.getElementById("slides");
+        slidesEl.innerHTML = heroes.map(h => {
+          const pills = Array.isArray(h.pills) ? h.pills : (h.pills ? String(h.pills).split(",").map(s => s.trim()) : []);
+          const bgStyle = h.color
+            ? `background: linear-gradient(135deg, ${h.color}22 0%, #111 60%, ${h.color}55 100%);`
+            : `background: linear-gradient(135deg, #111 0%, #1c1c1c 45%, #2a0009 100%);`;
 
+          return `
+            <div class="slide">
+              <div class="slide-bg" style="${bgStyle}"></div>
+              ${h.imgUrl ? `<div class="slide-bg-img" style="background-image:url('${h.imgUrl}')"></div>` : ''}
+              <div class="slide-bg-overlay"></div>
+              <div class="slide-content">
+                <div class="slide-text">
+                  ${pills.length > 0 ? `<div class="slide-pills">${pills.map(p => `<span class="slide-pill">${p}</span>`).join('')}</div>` : ''}
+                  <h2>${h.title || 'New Drop'}</h2>
+                  <p>${h.sub || ''}</p>
+                </div>
+                ${!h.imgUrl ? `<div class="slide-visual"><div class="ball"></div><div class="jersey"><div><span>10</span><small>KIT</small></div></div></div>` : ''}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        // Update slider state
+        window.heroTotal = heroes.length;
+        // Access the global heroTotal used in the non-module script
+        if (typeof buildDots === 'function') buildDots(heroes.length);
+        if (typeof showHeroSlide === 'function') showHeroSlide(0);
+        if (typeof restartHero === 'function') restartHero();
       } catch (err) {
-        console.error('Error loading Firebase content:', err);
+        console.warn("Heroes load failed, using static fallback:", err);
       }
     }
 
-    // Use both strategies to ensure the content loads
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadFirebaseContent);
+    /* ════════════════════════════════════════════
+       3. WOW PICKS + ALL PRODUCTS — from products
+       ════════════════════════════════════════════ */
+    async function loadProducts() {
+      try {
+        const snap = await get(ref(rtdb, "products"));
+        const loopTrack = document.getElementById("loopTrack");
+        const allProductsTrack = document.getElementById("allProductsTrack");
+        const countLabel = document.getElementById("productCountLabel");
+
+        if (!snap.exists()) {
+          loopTrack.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
+          allProductsTrack.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
+          countLabel.textContent = "Coming soon";
+          return;
+        }
+
+        let allProducts = [];
+        snap.forEach(d => {
+          const p = d.val();
+          p._id = d.key;
+          if (!p.status || p.status === "active") allProducts.push(p);
+        });
+
+        // Update count badge
+        const total = allProducts.length;
+        countLabel.innerHTML = `<span style="color:var(--accent);font-weight:800;">${total}+</span> jerseys available`;
+
+        // ── WOW PICKS (first 8) ──
+        const wowPicks = allProducts.slice(0, 8);
+        const colorClasses = ["red", "white", "blue", "dark", "gold"];
+
+        if (wowPicks.length > 0) {
+          loopTrack.innerHTML = wowPicks.map((p, idx) => {
+            const colorClass = colorClasses[idx % colorClasses.length];
+            const teamText = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
+            return `
+              <article class="loop-card" onclick="window.location.href='shop.html?id=${p._id}'" style="cursor:pointer;">
+                <div class="pic">
+                  ${p.imgUrl
+                    ? `<img src="${p.imgUrl}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
+                    : `<div class="mini-jersey ${colorClass}"><div><span>${10 - (idx % 4)}</span><small>${p.type || 'KIT'}</small></div></div>`
+                  }
+                </div>
+                <div class="loop-info">
+                  ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ''}
+                  <h4>${p.name || 'Jersify Kit'}</h4>
+                  <p>${teamText || (p.type || 'Premium jersey')}</p>
+                  <div class="price-row">
+                    <div class="price">₹${p.price || '1499'}</div>
+                    <button class="small-btn" onclick="event.stopPropagation();window.location.href='shop.html?id=${p._id}'">Shop Now</button>
+                  </div>
+                </div>
+              </article>
+            `;
+          }).join("");
+        } else {
+          loopTrack.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
+        }
+
+        // ── ALL PRODUCTS ──
+        if (allProducts.length > 0) {
+          allProductsTrack.innerHTML = allProducts.map(p => {
+            const teamText = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
+            return `
+              <article class="product" onclick="window.location.href='shop.html?id=${p._id}'" style="cursor:pointer;">
+                <div class="img">
+                  ${p.imgUrl
+                    ? `<img src="${p.imgUrl}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
+                    : `<div class="jersey-card dark"><strong>10</strong><small>${p.type || 'KIT'}</small></div>`
+                  }
+                </div>
+                <div class="product-info">
+                  <div class="title">${p.name || 'Jersify Kit'}</div>
+                  <div class="desc">${teamText || (p.type || 'Premium jersey.')}</div>
+                  <div class="bottom">
+                    <div class="price">₹${p.price || '1499'}</div>
+                    <button class="btn" onclick="event.stopPropagation();window.location.href='shop.html?id=${p._id}'">View</button>
+                  </div>
+                </div>
+              </article>
+            `;
+          }).join("");
+        } else {
+          allProductsTrack.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;width:100%;text-align:center;">No products available.</div>';
+        }
+      } catch (err) {
+        console.error("Products load failed:", err);
+        document.getElementById("loopTrack").innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">Could not load products.</div>';
+      }
+    }
+
+    /* ════════════════════════════════════════════
+       4. INDEX MEDIA — Reels, Gallery, Featured, Promo (all items, sorted)
+       ════════════════════════════════════════════ */
+    async function loadIndexMedia() {
+      try {
+        const snap = await get(ref(rtdb, "indexMedia"));
+        if (!snap.exists()) return;
+
+        let items = [];
+        snap.forEach(d => items.push(d.val()));
+        items.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+        const reelItems = items.filter(m => m.section === "reels");
+        const galleryItems = items.filter(m => m.section === "gallery");
+        const featuredItems = items.filter(m => m.section === "featured");
+        const promoItems = items.filter(m => m.section === "promo");
+
+        // ── Media Space: first featured item ──
+        const mediaSpace = document.getElementById("mediaSpace");
+        const firstFeatured = featuredItems[0] || promoItems[0];
+        if (firstFeatured) {
+          mediaSpace.innerHTML = `
+            <img src="${firstFeatured.imgUrl}" alt="${firstFeatured.label || 'Featured'}"
+              style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;"
+              onclick="window.location.href='${firstFeatured.link || 'shop.html'}'"
+              loading="lazy"/>
+          `;
+        } else {
+          mediaSpace.innerHTML = `<div class="placeholder" style="font-size:13px;font-weight:700;text-align:center;padding:0 14px;color:#999;">No featured media</div>`;
+        }
+
+        // ── Promo Strip: all promo items (and remaining featured after first) ──
+        const promoStrip = document.getElementById("promoStrip");
+        const promoBannersWrap = document.getElementById("promoBannersWrap");
+
+        const allPromos = [...(featuredItems.slice(1)), ...promoItems];
+        if (allPromos.length > 0) {
+          promoStrip.innerHTML = allPromos.map(m => `
+            <div class="promo-card" onclick="window.location.href='${m.link || 'shop.html'}'">
+              ${m.imgUrl
+                ? `<img src="${m.imgUrl}" alt="${m.label || 'Promo'}" loading="lazy"/>`
+                : `<div style="width:100%;height:100%;background:linear-gradient(135deg,#111,#c61f2f);"></div>`
+              }
+              <div class="promo-overlay"></div>
+              <div class="promo-label">${m.label || ''}</div>
+            </div>
+          `).join("");
+          promoBannersWrap.style.display = "block";
+        }
+
+        // ── Reels ──
+        const reelsRow = document.getElementById("reelsRow");
+        const reelsSection = document.getElementById("reelsSection");
+        if (reelItems.length > 0) {
+          reelsRow.innerHTML = reelItems.map(m => `
+            <div class="reel-card" onclick="window.location.href='${m.link || '#'}'">
+              <div class="thumb" style="background-image:url('${m.imgUrl || ''}')"></div>
+              <div class="play">
+                <div style="line-height:1.2;">
+                  ${m.label || 'Reel'}<br>
+                  <span style="font-size:9px;color:rgba(255,255,255,.7)">${m.description || 'Watch now'}</span>
+                </div>
+                <div class="play-badge">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
+            </div>
+          `).join("");
+          reelsSection.style.display = "block";
+        }
+
+        // ── Gallery ──
+        const galleryGrid = document.getElementById("galleryGrid");
+        const gallerySection = document.getElementById("gallerySection");
+        if (galleryItems.length > 0) {
+          galleryGrid.innerHTML = galleryItems.map((img, idx) => {
+            const isTall = ((idx + 1) % 3 === 0);
+            return `
+              <div class="grid-item ${isTall ? 'tall' : 'sq'}" style="cursor:pointer;" onclick="window.location.href='${img.link || '#'}'">
+                <img src="${img.imgUrl || ''}" alt="${img.label || 'Gallery'}" loading="lazy" onerror="this.parentElement.style.display='none'"/>
+              </div>
+            `;
+          }).join("");
+          gallerySection.style.display = "block";
+        }
+      } catch (err) {
+        console.error("Index media load failed:", err);
+      }
+    }
+
+    /* ════════════════════════════════════════════
+       INIT — load everything
+       ════════════════════════════════════════════ */
+    async function init() {
+      await Promise.allSettled([
+        loadHeroes(),
+        loadProducts(),
+        loadIndexMedia()
+      ]);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
     } else {
-      loadFirebaseContent();
+      init();
     }
   </script>
 </body>
