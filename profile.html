@@ -151,30 +151,51 @@
     }
 
     .avatar-ring img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .avatar-initials { font-size: 28px; font-weight: 900; color: var(--accent); }
 
-    .avatar-initials {
-      font-size: 28px; font-weight: 900;
-      color: var(--accent);
-    }
-
-    .avatar-edit-btn {
+    /* Camera overlay on hover */
+    .avatar-edit-overlay {
       position: absolute;
-      bottom: 0; right: 0;
-      width: 26px; height: 26px; border-radius: 50%;
-      background: var(--accent); border: 2px solid #fff;
-      display: grid; place-items: center;
+      inset: 0;
+      border-radius: 50%;
+      background: rgba(0,0,0,0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      transition: background .2s;
+      z-index: 2;
     }
-    .avatar-edit-btn svg { width: 13px; height: 13px; color: #fff; }
+    .avatar-edit-overlay:hover { background: rgba(0,0,0,.50); }
+    .avatar-edit-overlay svg {
+      width: 22px; height: 22px; color: #fff;
+      opacity: 0; transition: opacity .2s;
+      pointer-events: none;
+    }
+    .avatar-edit-overlay:hover svg { opacity: 1; }
+
+    /* Spinning upload ring */
+    .avatar-upload-ring {
+      position: absolute; inset: -3px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: var(--accent);
+      animation: spin .8s linear infinite;
+      display: none;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .avatar-ring.uploading .avatar-upload-ring { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #avatarFileInput { display: none; }
 
     .profile-name {
       font-size: 20px; font-weight: 900;
       margin: 12px 0 2px; letter-spacing: .2px;
     }
 
-    .profile-email {
-      font-size: 12px; color: var(--muted);
-    }
+    .profile-email { font-size: 12px; color: var(--muted); }
 
     .profile-badges {
       display: flex; gap: 8px; flex-wrap: wrap;
@@ -183,16 +204,15 @@
 
     .p-badge {
       font-size: 9px; font-weight: 800; text-transform: uppercase;
-      padding: 3px 9px; border-radius: 999px;
-      letter-spacing: .5px;
+      padding: 3px 9px; border-radius: 999px; letter-spacing: .5px;
     }
     .p-badge.red  { background: rgba(198,31,47,.1); color: var(--accent); border: 1px solid rgba(198,31,47,.2); }
     .p-badge.dark { background: #111; color: #fff; }
     .p-badge.line { background: #f5f5f5; color: #555; border: 1px solid var(--line); }
 
-    /* ── STATS ROW ── */
+    /* ── STATS ROW – 2 columns ── */
     .stats-row {
-      display: grid; grid-template-columns: repeat(3,1fr);
+      display: grid; grid-template-columns: repeat(2,1fr);
       gap: 0; margin: 20px 16px 0;
       background: #fff; border-radius: 20px;
       border: 1px solid var(--line);
@@ -200,9 +220,7 @@
       overflow: hidden;
     }
 
-    .stat {
-      padding: 14px 8px; text-align: center; position: relative;
-    }
+    .stat { padding: 14px 8px; text-align: center; position: relative; }
     .stat + .stat::before {
       content: ""; position: absolute; left: 0; top: 20%; bottom: 20%;
       width: 1px; background: var(--line);
@@ -288,34 +306,31 @@
       font-size: 9px; font-weight: 800; padding: 3px 9px;
       border-radius: 999px; text-transform: uppercase; letter-spacing: .5px;
     }
-    .order-status.delivered { background: rgba(34,197,94,.12); color: #15803d; }
-    .order-status.processing { background: rgba(234,179,8,.12); color: #a16207; }
-    .order-status.shipped { background: rgba(59,130,246,.12); color: #1d4ed8; }
-    .order-status.cancelled { background: rgba(239,68,68,.12); color: #b91c1c; }
+    .order-status.delivered  { background: rgba(34,197,94,.12);  color: #15803d; }
+    .order-status.processing { background: rgba(234,179,8,.12);  color: #a16207; }
+    .order-status.shipped    { background: rgba(59,130,246,.12); color: #1d4ed8; }
+    .order-status.cancelled  { background: rgba(239,68,68,.12);  color: #b91c1c; }
 
     .order-body { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
 
     .order-thumb {
       width: 56px; height: 64px; border-radius: 14px;
       background: linear-gradient(135deg, #111 0%, #c61f2f 100%);
-      display: grid; place-items: center; flex-shrink: 0;
-      overflow: hidden;
+      display: grid; place-items: center; flex-shrink: 0; overflow: hidden;
     }
     .order-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .order-thumb-placeholder {
-      color: #fff; font-size: 20px; font-weight: 900;
-    }
+    .order-thumb-placeholder { color: #fff; font-size: 20px; font-weight: 900; }
 
     .order-info { flex: 1; }
-    .order-name { font-size: 13px; font-weight: 800; }
-    .order-meta { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .order-name  { font-size: 13px; font-weight: 800; }
+    .order-meta  { font-size: 10px; color: var(--muted); margin-top: 2px; }
     .order-price { font-size: 14px; font-weight: 900; color: var(--accent); margin-top: 4px; }
 
     /* ── ADDRESSES ── */
     .address-card {
       background: #fff; border-radius: 20px;
       border: 1px solid var(--line); box-shadow: var(--shadow-soft);
-      padding: 14px; margin-bottom: 12px; position: relative;
+      padding: 14px; margin-bottom: 12px;
     }
 
     .address-tag {
@@ -325,11 +340,10 @@
     }
     .address-tag.default { background: var(--accent); }
 
-    .address-text { font-size: 12px; line-height: 1.6; color: #333; }
     .address-name { font-size: 13px; font-weight: 800; margin-bottom: 2px; }
-    .address-actions {
-      display: flex; gap: 8px; margin-top: 10px;
-    }
+    .address-text { font-size: 12px; line-height: 1.6; color: #333; }
+
+    .address-actions { display: flex; gap: 8px; margin-top: 10px; }
     .address-btn {
       flex: 1; border: 1.5px solid var(--line); border-radius: 10px;
       background: #fff; padding: 7px; font-size: 11px; font-weight: 700;
@@ -369,7 +383,7 @@
     }
     .danger-btn:hover { background: rgba(198,31,47,.1); }
 
-    /* ── EDIT MODAL ── */
+    /* ── MODALS ── */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 100;
       background: rgba(0,0,0,.45); backdrop-filter: blur(4px);
@@ -449,9 +463,6 @@
       font-size: 14px; font-weight: 700; cursor: pointer;
     }
 
-    /* ── AUTH MODAL ── */
-    .auth-form-field { margin-bottom: 14px; }
-
     /* ── BOTTOM NAV ── */
     .bottom-nav {
       position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px;
@@ -467,15 +478,6 @@
     }
     .nav-item svg { width: 19px; height: 19px; }
     .nav-item.active { color: var(--accent); font-weight: 800; }
-
-    /* ── SKELETON ── */
-    .skeleton {
-      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 12px;
-    }
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
     .hidden { display: none !important; }
   </style>
@@ -501,7 +503,7 @@
       </div>
     </header>
 
-    <!-- ═══ AUTH GATE (shown when not logged in) ═══ -->
+    <!-- AUTH GATE -->
     <div id="authGate" class="auth-gate hidden">
       <div class="auth-gate-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -516,16 +518,27 @@
       </div>
     </div>
 
-    <!-- ═══ PROFILE CONTENT (shown when logged in) ═══ -->
+    <!-- PROFILE CONTENT -->
     <div id="profileContent" class="hidden">
 
       <!-- HERO -->
       <div class="profile-hero">
         <div class="profile-hero-bg"></div>
         <div class="profile-avatar-wrap">
+
+          <!-- Avatar with upload overlay -->
           <div class="avatar-ring" id="avatarRing">
             <span class="avatar-initials" id="avatarInitials">??</span>
+            <div class="avatar-edit-overlay" id="avatarEditOverlay" title="Change photo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </div>
+            <div class="avatar-upload-ring" id="avatarUploadRing"></div>
           </div>
+          <input type="file" id="avatarFileInput" accept="image/*" />
+
           <div class="profile-name" id="profileName">Loading…</div>
           <div class="profile-email" id="profileEmail"></div>
           <div class="profile-badges">
@@ -536,7 +549,7 @@
         </div>
       </div>
 
-      <!-- STATS -->
+      <!-- STATS – 2 columns (Orders + Wishlist) -->
       <div class="stats-row">
         <div class="stat">
           <div class="stat-num" id="statOrders">–</div>
@@ -545,10 +558,6 @@
         <div class="stat">
           <div class="stat-num" id="statWishlist">–</div>
           <div class="stat-label">Wishlist</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num" id="statSpent">–</div>
-          <div class="stat-label">₹ Spent</div>
         </div>
       </div>
 
@@ -561,34 +570,22 @@
         <div class="info-card">
           <div class="info-row" onclick="openEditModal('name')">
             <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></div>
-            <div class="info-body">
-              <div class="info-label">Full Name</div>
-              <div class="info-val" id="infoName">–</div>
-            </div>
+            <div class="info-body"><div class="info-label">Full Name</div><div class="info-val" id="infoName">–</div></div>
             <div class="info-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
           </div>
           <div class="info-row" onclick="openEditModal('email')">
             <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-            <div class="info-body">
-              <div class="info-label">Email</div>
-              <div class="info-val" id="infoEmail">–</div>
-            </div>
+            <div class="info-body"><div class="info-label">Email</div><div class="info-val" id="infoEmail">–</div></div>
             <div class="info-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
           </div>
           <div class="info-row" onclick="openEditModal('phone')">
             <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.08 6.08l1.95-1.95a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-            <div class="info-body">
-              <div class="info-label">Phone</div>
-              <div class="info-val" id="infoPhone">Add phone number</div>
-            </div>
+            <div class="info-body"><div class="info-label">Phone</div><div class="info-val" id="infoPhone">Add phone number</div></div>
             <div class="info-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
           </div>
           <div class="info-row" onclick="openEditModal('dob')">
             <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-            <div class="info-body">
-              <div class="info-label">Date of Birth</div>
-              <div class="info-val" id="infoDob">Not set</div>
-            </div>
+            <div class="info-body"><div class="info-label">Date of Birth</div><div class="info-val" id="infoDob">Not set</div></div>
             <div class="info-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
           </div>
         </div>
@@ -603,26 +600,17 @@
         <div class="info-card">
           <div class="info-row">
             <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-            <div class="info-body">
-              <div class="info-label">Email Notifications</div>
-              <div class="info-val">Order updates & offers</div>
-            </div>
+            <div class="info-body"><div class="info-label">Email Notifications</div><div class="info-val">Order updates & offers</div></div>
             <button class="info-toggle on" id="toggleEmail" onclick="toggleSwitch(this)"></button>
           </div>
           <div class="info-row">
             <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.119.837.28 1.667.48 2.47a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.08 6.08l1.95-1.95a2 2 0 0 1 2.11-.45c.803.2 1.633.361 2.47.48A2 2 0 0 1 22 16.92z"/></svg></div>
-            <div class="info-body">
-              <div class="info-label">SMS Notifications</div>
-              <div class="info-val">Delivery alerts</div>
-            </div>
+            <div class="info-body"><div class="info-label">SMS Notifications</div><div class="info-val">Delivery alerts</div></div>
             <button class="info-toggle" id="toggleSms" onclick="toggleSwitch(this)"></button>
           </div>
           <div class="info-row">
             <div class="info-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
-            <div class="info-body">
-              <div class="info-label">Push Notifications</div>
-              <div class="info-val">New drops & flash sales</div>
-            </div>
+            <div class="info-body"><div class="info-label">Push Notifications</div><div class="info-val">New drops & flash sales</div></div>
             <button class="info-toggle on" id="togglePush" onclick="toggleSwitch(this)"></button>
           </div>
         </div>
@@ -638,7 +626,7 @@
           <div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">No orders yet</div>
         </div>
         <div style="display:flex;justify-content:center;margin-top:4px;margin-bottom:16px;">
-          <button class="viewall" onclick="window.location.href='shop.html'" style="min-width:140px;padding:10px 20px;border:1.5px solid #222;border-radius:4px;background:#fff;font-weight:700;cursor:pointer;">Shop Now</button>
+          <button onclick="window.location.href='shop.html'" style="min-width:140px;padding:10px 20px;border:1.5px solid #222;border-radius:4px;background:#fff;font-weight:700;cursor:pointer;">Shop Now</button>
         </div>
       </div>
 
@@ -670,7 +658,7 @@
 
   </div><!-- /page -->
 
-  <!-- ════ BOTTOM NAV ════ -->
+  <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <a href="index.html" class="nav-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
@@ -690,7 +678,7 @@
     </a>
   </nav>
 
-  <!-- ════ EDIT MODAL ════ -->
+  <!-- EDIT MODAL -->
   <div class="modal-overlay" id="editModal">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
@@ -700,26 +688,24 @@
     </div>
   </div>
 
-  <!-- ════ AUTH MODAL ════ -->
+  <!-- AUTH MODAL -->
   <div class="modal-overlay" id="authModal">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
       <div class="modal-title" id="authModalTitle">Sign In</div>
-      <div id="authModalBody">
-        <div class="form-field">
-          <label class="form-label">Email</label>
-          <input type="email" class="form-input" id="authEmail" placeholder="you@example.com" />
-        </div>
-        <div class="form-field" id="authNameField" style="display:none;">
-          <label class="form-label">Full Name</label>
-          <input type="text" class="form-input" id="authName" placeholder="Your full name" />
-        </div>
-        <div class="form-field">
-          <label class="form-label">Password</label>
-          <input type="password" class="form-input" id="authPassword" placeholder="••••••••" />
-        </div>
-        <div id="authError" style="color:var(--accent);font-size:12px;margin-bottom:8px;display:none;"></div>
+      <div class="form-field">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="authEmail" placeholder="you@example.com" />
       </div>
+      <div class="form-field" id="authNameField" style="display:none;">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" id="authName" placeholder="Your full name" />
+      </div>
+      <div class="form-field">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="authPassword" placeholder="••••••••" />
+      </div>
+      <div id="authError" style="color:var(--accent);font-size:12px;margin-bottom:8px;display:none;"></div>
       <button class="save-btn" id="authSubmitBtn">Sign In</button>
       <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--muted);">
         <span id="authToggleText">Don't have an account?</span>
@@ -728,177 +714,201 @@
     </div>
   </div>
 
-  <!-- ════ ADDRESS MODAL ════ -->
+  <!-- ADDRESS MODAL -->
   <div class="modal-overlay" id="addressModal">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
       <div class="modal-title">Add Address</div>
-      <div class="form-field">
-        <label class="form-label">Full Name</label>
-        <input type="text" class="form-input" id="addrName" placeholder="Recipient's name" />
-      </div>
-      <div class="form-field">
-        <label class="form-label">Phone</label>
-        <input type="tel" class="form-input" id="addrPhone" placeholder="+91 XXXXX XXXXX" />
-      </div>
-      <div class="form-field">
-        <label class="form-label">Street Address</label>
-        <input type="text" class="form-input" id="addrStreet" placeholder="House/Flat, Street, Area" />
-      </div>
+      <div class="form-field"><label class="form-label">Full Name</label><input type="text" class="form-input" id="addrName" placeholder="Recipient's name" /></div>
+      <div class="form-field"><label class="form-label">Phone</label><input type="tel" class="form-input" id="addrPhone" placeholder="+91 XXXXX XXXXX" /></div>
+      <div class="form-field"><label class="form-label">Street Address</label><input type="text" class="form-input" id="addrStreet" placeholder="House/Flat, Street, Area" /></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div class="form-field">
-          <label class="form-label">City</label>
-          <input type="text" class="form-input" id="addrCity" placeholder="City" />
-        </div>
-        <div class="form-field">
-          <label class="form-label">PIN Code</label>
-          <input type="text" class="form-input" id="addrPin" placeholder="700001" />
-        </div>
+        <div class="form-field"><label class="form-label">City</label><input type="text" class="form-input" id="addrCity" placeholder="City" /></div>
+        <div class="form-field"><label class="form-label">PIN Code</label><input type="text" class="form-input" id="addrPin" placeholder="700001" /></div>
       </div>
-      <div class="form-field">
-        <label class="form-label">State</label>
-        <input type="text" class="form-input" id="addrState" placeholder="West Bengal" />
-      </div>
+      <div class="form-field"><label class="form-label">State</label><input type="text" class="form-input" id="addrState" placeholder="West Bengal" /></div>
       <button class="save-btn" id="saveAddressBtn">Save Address</button>
     </div>
   </div>
 
-  <!-- ════ TOAST ════ -->
+  <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
-  <!-- ════ FIREBASE MODULE ════ -->
+  <!-- FIREBASE -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, get, set, update, push, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { initializeApp }        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref as dbRef, get, set, update, push, remove }
+                                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getStorage, ref as stRef, uploadBytesResumable, getDownloadURL }
+                                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+             createUserWithEmailAndPassword, signOut, updateProfile, deleteUser }
+                                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAnalytics }         from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
-      authDomain: "jersify-f9b5e.firebaseapp.com",
-      projectId: "jersify-f9b5e",
-      storageBucket: "jersify-f9b5e.firebasestorage.app",
+      apiKey:            "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
+      authDomain:        "jersify-f9b5e.firebaseapp.com",
+      databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com",
+      projectId:         "jersify-f9b5e",
+      storageBucket:     "jersify-f9b5e.firebasestorage.app",
       messagingSenderId: "461181023878",
-      appId: "1:461181023878:web:6ebfbae603baf4a873c307",
-      databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
+      appId:             "1:461181023878:web:6ebfbae603baf4a873c307",
+      measurementId:     "G-V5E7D09PJ0"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const rtdb = getDatabase(app);
-    const auth = getAuth(app);
+    const app     = initializeApp(firebaseConfig);
+    const rtdb    = getDatabase(app);
+    const auth    = getAuth(app);
+    const storage = getStorage(app);
+    try { getAnalytics(app); } catch(e) {}
 
     /* ── HELPERS ── */
-    function showToast(msg) {
-      const t = document.getElementById("toast");
-      t.textContent = msg; t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), 2600);
-    }
-
-    function openModal(id) {
-      document.getElementById(id).classList.add("open");
-    }
-    function closeModal(id) {
-      document.getElementById(id).classList.remove("open");
-    }
-
-    // Close modals on overlay click
-    ["editModal","authModal","addressModal"].forEach(id => {
+    const toast = (msg) => {
+      const el = document.getElementById("toast");
+      el.textContent = msg; el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2600);
+    };
+    const openModal  = id => document.getElementById(id).classList.add("open");
+    const closeModal = id => document.getElementById(id).classList.remove("open");
+    ["editModal","authModal","addressModal"].forEach(id =>
       document.getElementById(id).addEventListener("click", e => {
         if (e.target === document.getElementById(id)) closeModal(id);
-      });
-    });
+      })
+    );
 
-    /* ── TOGGLE SWITCH ── */
-    window.toggleSwitch = (btn) => btn.classList.toggle("on");
+    window.toggleSwitch = btn => btn.classList.toggle("on");
 
     /* ── CART BADGE ── */
-    function updateCartBadge(user) {
+    function updateCartBadge() {
       const badge = document.getElementById("cartBadge");
-      const localCart = JSON.parse(localStorage.getItem("jersify_cart") || "[]");
-      const count = localCart.length;
+      const count = JSON.parse(localStorage.getItem("jersify_cart") || "[]").length;
       if (count > 0) { badge.textContent = count > 9 ? "9+" : count; badge.classList.add("show"); }
     }
 
     /* ── AUTH STATE ── */
-    let currentUser = null;
-    let userData = {};
+    let currentUser = null, userData = {};
 
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, async user => {
       currentUser = user;
       if (user) {
         document.getElementById("authGate").classList.add("hidden");
         document.getElementById("profileContent").classList.remove("hidden");
         await loadUserProfile(user);
-        updateCartBadge(user);
       } else {
         document.getElementById("authGate").classList.remove("hidden");
         document.getElementById("profileContent").classList.add("hidden");
-        updateCartBadge(null);
       }
+      updateCartBadge();
     });
 
-    /* ── LOAD USER PROFILE ── */
-    async function loadUserProfile(user) {
-      // Display name & email
-      const displayName = user.displayName || "";
-      const email = user.email || "";
-      const initials = displayName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
-
-      document.getElementById("avatarInitials").textContent = initials;
-      document.getElementById("profileName").textContent = displayName;
-      document.getElementById("profileEmail").textContent = email;
-      document.getElementById("infoName").textContent = displayName;
-      document.getElementById("infoEmail").textContent = email;
-
-      if (user.photoURL) {
-        document.getElementById("avatarRing").innerHTML = `<img src="${user.photoURL}" alt="${displayName}"/>`;
+    /* ── AVATAR DISPLAY HELPER ── */
+    function setAvatarDisplay(photoURL, initials) {
+      const ring    = document.getElementById("avatarRing");
+      const overlay = document.getElementById("avatarEditOverlay");
+      const upRing  = document.getElementById("avatarUploadRing");
+      // Clear previous img/initials but keep overlay + upload ring
+      ring.querySelectorAll("img, .avatar-initials").forEach(n => n.remove());
+      if (photoURL) {
+        const img = Object.assign(document.createElement("img"), { src: photoURL, alt: "Avatar" });
+        ring.insertBefore(img, overlay);
+      } else {
+        const span = Object.assign(document.createElement("span"), { className: "avatar-initials", id: "avatarInitials", textContent: initials || "??" });
+        ring.insertBefore(span, overlay);
       }
+    }
 
-      // Member since
+    /* ── LOAD PROFILE ── */
+    async function loadUserProfile(user) {
+      const name     = user.displayName || "";
+      const email    = user.email || "";
+      const initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2) || "??";
+
+      document.getElementById("profileName").textContent  = name || "User";
+      document.getElementById("profileEmail").textContent = email;
+      document.getElementById("infoName").textContent     = name || "–";
+      document.getElementById("infoEmail").textContent    = email;
+      setAvatarDisplay(user.photoURL, initials);
+
       const created = user.metadata?.creationTime;
       if (created) {
-        const d = new Date(created);
-        document.getElementById("memberSince").textContent = `Since ${d.toLocaleString("en",{month:"short",year:"numeric"})}`;
+        document.getElementById("memberSince").textContent =
+          "Since " + new Date(created).toLocaleString("en",{month:"short",year:"numeric"});
       }
 
-      // Load from DB
+      // Extra DB data
       try {
-        const snap = await get(ref(rtdb, `users/${user.uid}`));
+        const snap = await get(dbRef(rtdb, `users/${user.uid}`));
         if (snap.exists()) {
           userData = snap.val();
           if (userData.phone) document.getElementById("infoPhone").textContent = userData.phone;
-          if (userData.dob) document.getElementById("infoDob").textContent = userData.dob;
+          if (userData.dob)   document.getElementById("infoDob").textContent   = userData.dob;
+          // If photo stored in DB and auth photoURL not set yet
+          if (!user.photoURL && userData.photoURL) setAvatarDisplay(userData.photoURL, initials);
         }
       } catch(e) {}
 
       // Orders
       try {
-        const ordSnap = await get(ref(rtdb, `users/${user.uid}/orders`));
+        const snap = await get(dbRef(rtdb, `users/${user.uid}/orders`));
         let orders = [];
-        if (ordSnap.exists()) {
-          ordSnap.forEach(d => { const o = d.val(); o._id = d.key; orders.push(o); });
-          orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-        }
+        if (snap.exists()) snap.forEach(d => { const o = d.val(); o._id = d.key; orders.push(o); });
+        orders.sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
         renderOrders(orders);
         document.getElementById("statOrders").textContent = orders.length;
-        const spent = orders.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
-        document.getElementById("statSpent").textContent = spent >= 1000 ? (spent/1000).toFixed(1)+"k" : spent;
-        document.getElementById("loyaltyBadge").textContent = `${orders.length} Order${orders.length !== 1 ? "s" : ""}`;
-      } catch(e) {
-        document.getElementById("statOrders").textContent = "0";
-        document.getElementById("statSpent").textContent = "0";
-      }
+        document.getElementById("loyaltyBadge").textContent = `${orders.length} Order${orders.length!==1?"s":""}`;
+      } catch(e) { document.getElementById("statOrders").textContent = "0"; }
 
-      // Wishlist count
+      // Wishlist
       try {
-        const wSnap = await get(ref(rtdb, `users/${user.uid}/wishlist`));
-        let wc = 0;
-        if (wSnap.exists()) wSnap.forEach(() => wc++);
+        const snap = await get(dbRef(rtdb, `users/${user.uid}/wishlist`));
+        let wc = 0; if (snap.exists()) snap.forEach(() => wc++);
         document.getElementById("statWishlist").textContent = wc;
       } catch(e) { document.getElementById("statWishlist").textContent = "0"; }
 
-      // Addresses
       loadAddresses(user.uid);
     }
+
+    /* ── AVATAR UPLOAD ── */
+    const fileInput = document.getElementById("avatarFileInput");
+    document.getElementById("avatarEditOverlay").addEventListener("click", () => {
+      if (currentUser) fileInput.click();
+    });
+
+    fileInput.addEventListener("change", async e => {
+      const file = e.target.files[0];
+      if (!file || !currentUser) return;
+      if (!file.type.startsWith("image/"))   { toast("Please select an image file"); return; }
+      if (file.size > 5 * 1024 * 1024)       { toast("Image must be under 5MB");     return; }
+
+      const ring = document.getElementById("avatarRing");
+      ring.classList.add("uploading");
+
+      try {
+        const ext      = file.name.split(".").pop() || "jpg";
+        const sRef     = stRef(storage, `users/${currentUser.uid}/profile.${ext}`);
+        const task     = uploadBytesResumable(sRef, file);
+
+        await new Promise((res, rej) => task.on("state_changed", null, rej, res));
+
+        const url = await getDownloadURL(task.snapshot.ref);
+
+        // Update Auth + RTDB
+        await updateProfile(currentUser, { photoURL: url });
+        await update(dbRef(rtdb, `users/${currentUser.uid}`), { photoURL: url });
+
+        const name     = currentUser.displayName || "";
+        const initials = name.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2) || "??";
+        setAvatarDisplay(url, initials);
+        toast("Profile photo updated ✓");
+      } catch(err) {
+        console.error(err);
+        toast("Upload failed – " + (err.message || "try again"));
+      } finally {
+        ring.classList.remove("uploading");
+        fileInput.value = "";
+      }
+    });
 
     /* ── RENDER ORDERS ── */
     function renderOrders(orders) {
@@ -907,205 +917,183 @@
         container.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">No orders yet</div>`;
         return;
       }
-      const statusLabels = { delivered:"Delivered", processing:"Processing", shipped:"Shipped", cancelled:"Cancelled", pending:"Processing" };
-      const displayOrders = orders.slice(0, 5);
-      container.innerHTML = displayOrders.map(o => {
-        const statusKey = (o.status || "processing").toLowerCase();
-        const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-IN", {day:"numeric",month:"short",year:"numeric"}) : "—";
-        const item = (o.items && o.items[0]) || {};
-        return `
-          <div class="order-card" onclick="window.location.href='checkout.html'">
-            <div class="order-header">
-              <div>
-                <div class="order-id">#${o._id?.slice(-6)?.toUpperCase() || "JRF000"}</div>
-                <div class="order-date">${date}</div>
-              </div>
-              <div class="order-status ${statusKey}">${statusLabels[statusKey] || statusKey}</div>
-            </div>
-            <div class="order-body">
-              <div class="order-thumb">
-                ${item.imgUrl ? `<img src="${item.imgUrl}" alt="${item.name}"/>` : `<div class="order-thumb-placeholder">${(item.name||"J")[0]}</div>`}
-              </div>
-              <div class="order-info">
-                <div class="order-name">${item.name || "Jersify Jersey"}</div>
-                <div class="order-meta">${o.items?.length || 1} item${(o.items?.length||1)>1?"s":""} · Size ${item.size || "M"}</div>
-                <div class="order-price">₹${o.total || item.price || "1499"}</div>
-              </div>
+      const labels = { delivered:"Delivered", processing:"Processing", shipped:"Shipped", cancelled:"Cancelled", pending:"Processing" };
+      container.innerHTML = orders.slice(0,5).map(o => {
+        const sk   = (o.status||"processing").toLowerCase();
+        const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}) : "—";
+        const item = (o.items&&o.items[0]) || {};
+        return `<div class="order-card" onclick="window.location.href='checkout.html'">
+          <div class="order-header">
+            <div><div class="order-id">#${o._id?.slice(-6)?.toUpperCase()||"JRF000"}</div><div class="order-date">${date}</div></div>
+            <div class="order-status ${sk}">${labels[sk]||sk}</div>
+          </div>
+          <div class="order-body">
+            <div class="order-thumb">${item.imgUrl?`<img src="${item.imgUrl}" alt="${item.name||""}"/>`:`<div class="order-thumb-placeholder">${(item.name||"J")[0]}</div>`}</div>
+            <div class="order-info">
+              <div class="order-name">${item.name||"Jersify Jersey"}</div>
+              <div class="order-meta">${o.items?.length||1} item${(o.items?.length||1)>1?"s":""} · Size ${item.size||"M"}</div>
+              <div class="order-price">₹${o.total||item.price||"1499"}</div>
             </div>
           </div>
-        `;
+        </div>`;
       }).join("");
     }
 
-    /* ── LOAD ADDRESSES ── */
+    /* ── ADDRESSES ── */
     async function loadAddresses(uid) {
       const container = document.getElementById("addressesContainer");
       try {
-        const snap = await get(ref(rtdb, `users/${uid}/addresses`));
+        const snap = await get(dbRef(rtdb, `users/${uid}/addresses`));
         if (!snap.exists()) { container.innerHTML = ""; return; }
         let addrs = [];
         snap.forEach(d => { const a = d.val(); a._key = d.key; addrs.push(a); });
-        container.innerHTML = addrs.map((a, i) => `
+        container.innerHTML = addrs.map((a,i) => `
           <div class="address-card">
-            <div class="address-tag ${i===0?'default':''}">${i===0?"Default":"Other"}</div>
-            <div class="address-name">${a.name || ""}</div>
-            <div class="address-text">${a.street || ""}, ${a.city || ""}, ${a.state || ""} – ${a.pin || ""}</div>
-            ${a.phone ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;">${a.phone}</div>` : ""}
+            <div class="address-tag ${i===0?"default":""}">${i===0?"Default":"Other"}</div>
+            <div class="address-name">${a.name||""}</div>
+            <div class="address-text">${a.street||""}, ${a.city||""}, ${a.state||""} – ${a.pin||""}</div>
+            ${a.phone?`<div style="font-size:11px;color:var(--muted);margin-top:4px;">${a.phone}</div>`:""}
             <div class="address-actions">
-              <button class="address-btn" onclick="deleteAddress('${uid}','${a._key}')">Remove</button>
+              <button class="address-btn red" onclick="deleteAddress('${uid}','${a._key}')">Remove</button>
             </div>
-          </div>
-        `).join("");
+          </div>`).join("");
       } catch(e) { container.innerHTML = ""; }
     }
 
-    /* ── DELETE ADDRESS ── */
     window.deleteAddress = async (uid, key) => {
-      try {
-        await remove(ref(rtdb, `users/${uid}/addresses/${key}`));
-        showToast("Address removed");
-        loadAddresses(uid);
-      } catch(e) { showToast("Could not remove address"); }
+      try { await remove(dbRef(rtdb,`users/${uid}/addresses/${key}`)); toast("Address removed"); loadAddresses(uid); }
+      catch(e) { toast("Could not remove address"); }
     };
 
     /* ── EDIT MODAL ── */
-    const editConfigs = {
-      name: { title: "Edit Name", fields: [{ id:"editName", label:"Full Name", type:"text", placeholder:"Your name" }] },
-      email: { title: "Edit Email", fields: [{ id:"editEmail", label:"Email Address", type:"email", placeholder:"you@example.com" }] },
-      phone: { title: "Edit Phone", fields: [{ id:"editPhone", label:"Phone Number", type:"tel", placeholder:"+91 XXXXX XXXXX" }] },
-      dob: { title: "Date of Birth", fields: [{ id:"editDob", label:"Date of Birth", type:"date", placeholder:"" }] },
+    const editCfg = {
+      name:  { title:"Edit Name",     fields:[{id:"editName", label:"Full Name",     type:"text",  ph:"Your name"}] },
+      email: { title:"Edit Email",    fields:[{id:"editEmail",label:"Email Address", type:"email", ph:"you@example.com"}] },
+      phone: { title:"Edit Phone",    fields:[{id:"editPhone",label:"Phone Number",  type:"tel",   ph:"+91 XXXXX XXXXX"}] },
+      dob:   { title:"Date of Birth", fields:[{id:"editDob",  label:"Date of Birth", type:"date",  ph:""}] },
     };
-
     let currentEditKey = "";
 
-    window.openEditModal = (key) => {
+    window.openEditModal = key => {
       if (!currentUser) return;
       currentEditKey = key;
-      const cfg = editConfigs[key];
+      const cfg = editCfg[key];
       document.getElementById("editModalTitle").textContent = cfg.title;
-      document.getElementById("editModalBody").innerHTML = cfg.fields.map(f => `
-        <div class="form-field">
-          <label class="form-label">${f.label}</label>
-          <input type="${f.type}" class="form-input" id="${f.id}" placeholder="${f.placeholder}" />
-        </div>
-      `).join("");
-      // Pre-fill
-      if (key === "name") document.getElementById("editName").value = currentUser.displayName || "";
-      if (key === "email") document.getElementById("editEmail").value = currentUser.email || "";
-      if (key === "phone") document.getElementById("editPhone").value = userData.phone || "";
-      if (key === "dob") document.getElementById("editDob").value = userData.dob || "";
+      document.getElementById("editModalBody").innerHTML = cfg.fields.map(f =>
+        `<div class="form-field"><label class="form-label">${f.label}</label><input type="${f.type}" class="form-input" id="${f.id}" placeholder="${f.ph}"/></div>`
+      ).join("");
+      if (key==="name")  document.getElementById("editName").value  = currentUser.displayName||"";
+      if (key==="email") document.getElementById("editEmail").value = currentUser.email||"";
+      if (key==="phone") document.getElementById("editPhone").value = userData.phone||"";
+      if (key==="dob")   document.getElementById("editDob").value   = userData.dob||"";
       openModal("editModal");
     };
 
     document.getElementById("saveEditBtn").addEventListener("click", async () => {
       if (!currentUser) return;
       try {
-        if (currentEditKey === "name") {
+        if (currentEditKey==="name") {
           const val = document.getElementById("editName").value.trim();
           if (!val) return;
           await updateProfile(currentUser, { displayName: val });
           document.getElementById("profileName").textContent = val;
-          document.getElementById("infoName").textContent = val;
-          const initials = val.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
-          if (!currentUser.photoURL) document.getElementById("avatarInitials").textContent = initials;
+          document.getElementById("infoName").textContent    = val;
+          if (!currentUser.photoURL) {
+            const initials = val.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2);
+            const el = document.getElementById("avatarInitials");
+            if (el) el.textContent = initials;
+          }
         }
-        if (currentEditKey === "phone") {
+        if (currentEditKey==="phone") {
           const val = document.getElementById("editPhone").value.trim();
-          await update(ref(rtdb, `users/${currentUser.uid}`), { phone: val });
+          await update(dbRef(rtdb,`users/${currentUser.uid}`), { phone: val });
           userData.phone = val;
-          document.getElementById("infoPhone").textContent = val || "Add phone number";
+          document.getElementById("infoPhone").textContent = val||"Add phone number";
         }
-        if (currentEditKey === "dob") {
+        if (currentEditKey==="dob") {
           const val = document.getElementById("editDob").value;
-          await update(ref(rtdb, `users/${currentUser.uid}`), { dob: val });
+          await update(dbRef(rtdb,`users/${currentUser.uid}`), { dob: val });
           userData.dob = val;
-          document.getElementById("infoDob").textContent = val || "Not set";
+          document.getElementById("infoDob").textContent = val||"Not set";
         }
-        closeModal("editModal");
-        showToast("Saved successfully ✓");
-      } catch(e) {
-        showToast("Could not save: " + (e.message || "error"));
-      }
+        closeModal("editModal"); toast("Saved successfully ✓");
+      } catch(e) { toast("Could not save: "+(e.message||"error")); }
     });
 
     /* ── ADDRESS MODAL ── */
-    window.openAddressModal = () => { if (currentUser) openModal("addressModal"); else openModal("authModal"); };
+    window.openAddressModal = () => currentUser ? openModal("addressModal") : openModal("authModal");
 
     document.getElementById("saveAddressBtn").addEventListener("click", async () => {
       if (!currentUser) return;
       const addr = {
-        name: document.getElementById("addrName").value.trim(),
-        phone: document.getElementById("addrPhone").value.trim(),
+        name:   document.getElementById("addrName").value.trim(),
+        phone:  document.getElementById("addrPhone").value.trim(),
         street: document.getElementById("addrStreet").value.trim(),
-        city: document.getElementById("addrCity").value.trim(),
-        pin: document.getElementById("addrPin").value.trim(),
-        state: document.getElementById("addrState").value.trim(),
+        city:   document.getElementById("addrCity").value.trim(),
+        pin:    document.getElementById("addrPin").value.trim(),
+        state:  document.getElementById("addrState").value.trim(),
       };
-      if (!addr.street || !addr.city) { showToast("Please fill required fields"); return; }
+      if (!addr.street||!addr.city) { toast("Please fill required fields"); return; }
       try {
-        await push(ref(rtdb, `users/${currentUser.uid}/addresses`), addr);
-        closeModal("addressModal");
-        showToast("Address saved ✓");
+        await push(dbRef(rtdb,`users/${currentUser.uid}/addresses`), addr);
+        closeModal("addressModal"); toast("Address saved ✓");
         loadAddresses(currentUser.uid);
-        ["addrName","addrPhone","addrStreet","addrCity","addrPin","addrState"].forEach(id => document.getElementById(id).value = "");
-      } catch(e) { showToast("Could not save address"); }
+        ["addrName","addrPhone","addrStreet","addrCity","addrPin","addrState"].forEach(id => document.getElementById(id).value="");
+      } catch(e) { toast("Could not save address"); }
     });
 
     /* ── AUTH MODAL ── */
     let isSignUp = false;
 
-    document.getElementById("showSignInBtn").addEventListener("click", () => { isSignUp = false; setupAuthModal(); openModal("authModal"); });
-    document.getElementById("showSignUpBtn").addEventListener("click", () => { isSignUp = true; setupAuthModal(); openModal("authModal"); });
-
     function setupAuthModal() {
-      document.getElementById("authModalTitle").textContent = isSignUp ? "Create Account" : "Sign In";
-      document.getElementById("authSubmitBtn").textContent = isSignUp ? "Create Account" : "Sign In";
+      document.getElementById("authModalTitle").textContent  = isSignUp ? "Create Account" : "Sign In";
+      document.getElementById("authSubmitBtn").textContent   = isSignUp ? "Create Account" : "Sign In";
       document.getElementById("authNameField").style.display = isSignUp ? "block" : "none";
-      document.getElementById("authToggleText").textContent = isSignUp ? "Already have an account?" : "Don't have an account?";
-      document.getElementById("authToggleBtn").textContent = isSignUp ? "Sign In" : "Sign Up";
-      document.getElementById("authError").style.display = "none";
+      document.getElementById("authToggleText").textContent  = isSignUp ? "Already have an account?" : "Don't have an account?";
+      document.getElementById("authToggleBtn").textContent   = isSignUp ? "Sign In" : "Sign Up";
+      document.getElementById("authError").style.display     = "none";
     }
 
-    document.getElementById("authToggleBtn").addEventListener("click", () => { isSignUp = !isSignUp; setupAuthModal(); });
+    document.getElementById("showSignInBtn").addEventListener("click", () => { isSignUp=false; setupAuthModal(); openModal("authModal"); });
+    document.getElementById("showSignUpBtn").addEventListener("click", () => { isSignUp=true;  setupAuthModal(); openModal("authModal"); });
+    document.getElementById("authToggleBtn").addEventListener("click", () => { isSignUp=!isSignUp; setupAuthModal(); });
 
     document.getElementById("authSubmitBtn").addEventListener("click", async () => {
-      const email = document.getElementById("authEmail").value.trim();
+      const email    = document.getElementById("authEmail").value.trim();
       const password = document.getElementById("authPassword").value;
-      const name = document.getElementById("authName").value.trim();
-      const errEl = document.getElementById("authError");
+      const name     = document.getElementById("authName").value.trim();
+      const errEl    = document.getElementById("authError");
       errEl.style.display = "none";
       try {
         if (isSignUp) {
           const cred = await createUserWithEmailAndPassword(auth, email, password);
           if (name) await updateProfile(cred.user, { displayName: name });
-          await set(ref(rtdb, `users/${cred.user.uid}/profile`), { email, name, createdAt: Date.now() });
+          await set(dbRef(rtdb,`users/${cred.user.uid}/profile`), { email, name, createdAt: Date.now() });
         } else {
           await signInWithEmailAndPassword(auth, email, password);
         }
         closeModal("authModal");
-        showToast(isSignUp ? "Account created! Welcome 🎉" : "Welcome back!");
+        toast(isSignUp ? "Account created! Welcome 🎉" : "Welcome back!");
       } catch(e) {
-        errEl.textContent = e.message?.replace("Firebase: ","") || "Authentication failed";
+        errEl.textContent   = e.message?.replace("Firebase: ","") || "Authentication failed";
         errEl.style.display = "block";
       }
     });
 
     /* ── LOGOUT ── */
     document.getElementById("logoutBtn").addEventListener("click", async () => {
-      try { await signOut(auth); showToast("Signed out"); } catch(e) {}
+      try { await signOut(auth); toast("Signed out"); } catch(e) {}
     });
 
     /* ── DELETE ACCOUNT ── */
     document.getElementById("deleteBtn").addEventListener("click", async () => {
       if (!currentUser) return;
-      if (!confirm("Are you sure you want to delete your account? This cannot be undone.")) return;
+      if (!confirm("Delete your account? This cannot be undone.")) return;
       try {
-        await remove(ref(rtdb, `users/${currentUser.uid}`));
+        await remove(dbRef(rtdb,`users/${currentUser.uid}`));
         await deleteUser(currentUser);
-        showToast("Account deleted");
-      } catch(e) {
-        showToast("Please sign out and sign back in before deleting");
-      }
+        toast("Account deleted");
+      } catch(e) { toast("Please sign out and sign back in before deleting"); }
     });
   </script>
 </body>
