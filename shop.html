@@ -358,52 +358,7 @@
       cursor: pointer;
     }
 
-    /* ── HORIZONTAL SLIDER ── */
-    .slider-section { padding: 0 0 18px; }
-    .slider-header {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      margin-bottom: 12px;
-    }
-    .slider-header h3 { font-size: 16px; font-weight: 900; }
-    .slider-header span { font-size: 11px; color: var(--muted); font-weight: 600; }
 
-    .slider-track {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding: 4px 16px 12px;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-    .slider-track::-webkit-scrollbar { display: none; }
-
-    .slider-card {
-      flex: 0 0 160px;
-      scroll-snap-align: start;
-      background: #fff;
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow-soft);
-      cursor: pointer;
-      transition: transform .2s ease;
-    }
-    .slider-card:hover { transform: translateY(-3px); }
-
-    .slider-card .s-img {
-      height: 130px;
-      background: linear-gradient(180deg, #131313 0%, #262626 100%);
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    .slider-card .s-img img { width: 100%; height: 100%; object-fit: cover; }
-    .slider-card .s-info { padding: 10px; }
-    .slider-card .s-name { font-size: 12px; font-weight: 800; margin-bottom: 4px; line-height: 1.3; }
-    .slider-card .s-team { font-size: 10px; color: var(--muted); margin-bottom: 8px; }
-    .slider-card .s-price { font-size: 14px; font-weight: 900; color: var(--accent); }
 
     /* ── PRODUCT DETAIL DRAWER ── */
     .overlay {
@@ -524,8 +479,9 @@
 
     .drawer-actions {
       display: flex; gap: 10px;
-      padding: 16px 20px 32px;
+      padding: 16px 20px 20px;
       background: #fff;
+      flex-shrink: 0;
     }
 
     .d-cart-btn {
@@ -557,6 +513,185 @@
       letter-spacing: .3px;
     }
     .d-buy-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(198,31,47,.38); }
+
+    /* ── BROWSE MORE (inside drawer) ── */
+    .browse-section {
+      padding: 0 20px 32px;
+      background: #fff;
+    }
+
+    .browse-divider {
+      height: 1px;
+      background: var(--line);
+      margin-bottom: 20px;
+    }
+
+    .browse-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .browse-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .browse-title {
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      color: var(--text);
+    }
+
+    .browse-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    .browse-count {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .browse-track {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    .browse-track::-webkit-scrollbar { display: none; }
+
+    @keyframes browseCardIn {
+      from { opacity: 0; transform: translateX(12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .browse-card {
+      flex: 0 0 130px;
+      scroll-snap-align: start;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+      animation: browseCardIn .35s ease both;
+    }
+    .browse-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(0,0,0,.10);
+      border-color: rgba(198,31,47,.25);
+    }
+
+    .browse-card-img {
+      height: 110px;
+      background: linear-gradient(180deg, #151515 0%, #252525 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .browse-card-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform .3s ease;
+    }
+    .browse-card:hover .browse-card-img img { transform: scale(1.06); }
+
+    .browse-mini-jersey {
+      width: 72px; height: 88px;
+      border-radius: 14px;
+      display: flex; align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 8px; text-align: center;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0)),
+        linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 8px 20px rgba(0,0,0,.3);
+    }
+    .browse-mini-jersey strong { font-size: 18px; line-height: 1; display: block; color: #fff; }
+    .browse-mini-jersey small { font-size: 7px; font-weight: 700; letter-spacing: .8px; opacity: .85; color: #fff; }
+
+    .browse-card-active-dot {
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #4caf50;
+      border: 1.5px solid #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+
+    .browse-card-info {
+      padding: 9px 10px 10px;
+    }
+
+    .browse-card-name {
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 2px;
+      line-height: 1.3;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .browse-card-team {
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .browse-card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .browse-card-price {
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--accent);
+    }
+
+    .browse-card-add {
+      width: 22px; height: 22px;
+      border: 1.5px solid var(--accent);
+      border-radius: 50%;
+      background: transparent;
+      color: var(--accent);
+      display: grid; place-items: center;
+      cursor: pointer;
+      transition: all .18s ease;
+      flex-shrink: 0;
+    }
+    .browse-card-add svg { width: 10px; height: 10px; }
+    .browse-card-add:hover { background: var(--accent); color: #fff; }
+
+    /* ── BROWSE EMPTY ── */
+    .browse-empty {
+      text-align: center;
+      padding: 20px 0;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
 
     /* ── TOAST ── */
     .toast {
@@ -764,15 +899,6 @@
       </div>
     </section>
 
-    <!-- ALL PRODUCTS HORIZONTAL SLIDER -->
-    <section class="slider-section" id="sliderSection" style="display:none;">
-      <div class="slider-header">
-        <h3>Browse All</h3>
-        <span id="sliderCount"></span>
-      </div>
-      <div class="slider-track" id="sliderTrack"></div>
-    </section>
-
     <!-- FOOTER -->
     <footer class="footer">
       <h4>JERSIFY</h4>
@@ -852,17 +978,35 @@
         <div class="drawer-section-label">Select Size</div>
         <div class="size-grid" id="drawerSizeGrid"></div>
       </div>
-    </div>
-    <div class="drawer-actions">
-      <button class="d-cart-btn" id="drawerCartBtn" onclick="addToCartFromDrawer()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle>
-          <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path>
-        </svg>
-        Add to Cart
-      </button>
-      <button class="d-buy-btn" id="drawerBuyBtn">Buy Now →</button>
-    </div>
+
+      <!-- ACTION BUTTONS (inside scroll so they scroll with content) -->
+      <div class="drawer-actions" id="drawerActionsInner">
+        <button class="d-cart-btn" id="drawerCartBtn" onclick="addToCartFromDrawer()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle>
+            <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path>
+          </svg>
+          Add to Cart
+        </button>
+        <button class="d-buy-btn" id="drawerBuyBtn">Buy Now →</button>
+      </div>
+
+      <!-- BROWSE MORE SECTION -->
+      <div class="browse-section" id="browseSection">
+        <div class="browse-divider"></div>
+        <div class="browse-header">
+          <div class="browse-header-left">
+            <span class="browse-dot"></span>
+            <span class="browse-title">Browse More</span>
+          </div>
+          <span class="browse-count" id="browseCount"></span>
+        </div>
+        <div class="browse-track" id="browseTrack">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+    </div><!-- /drawer-scroll -->
   </div>
 
   <!-- TOAST -->
@@ -927,6 +1071,109 @@
     let drawerProduct = null;
     let drawerSelectedSize = '';
 
+    // ── RENDER BROWSE SECTION ──
+    function renderBrowse(currentId) {
+      const others = allProducts.filter(p => p.id !== currentId);
+      const track = document.getElementById('browseTrack');
+      const countEl = document.getElementById('browseCount');
+
+      if (others.length === 0) {
+        track.innerHTML = `<div class="browse-empty">No other kits available right now.</div>`;
+        countEl.textContent = '';
+        return;
+      }
+
+      countEl.textContent = `${others.length} more kit${others.length !== 1 ? 's' : ''}`;
+
+      track.innerHTML = others.map(({ id, data: p }, i) => {
+        const teamLabel = Array.isArray(p.team) ? p.team.join(', ') : (p.team || '');
+        const shortTeam = teamLabel.length > 14 ? teamLabel.slice(0, 13) + '…' : teamLabel;
+        const shortName = (p.name || 'Jersify Kit').length > 14
+          ? (p.name || 'Jersify Kit').slice(0, 13) + '…'
+          : (p.name || 'Jersify Kit');
+
+        return `
+          <div class="browse-card" style="animation-delay:${i * 0.06}s" onclick="switchDrawer('${id}')">
+            <div class="browse-card-img">
+              <div class="browse-card-active-dot"></div>
+              ${p.imgUrl
+                ? `<img src="${p.imgUrl}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
+                : `<div class="browse-mini-jersey">
+                    <div>
+                      <strong>${p.number || '10'}</strong>
+                      <small>${(p.type || 'KIT').toUpperCase()}</small>
+                    </div>
+                   </div>`
+              }
+            </div>
+            <div class="browse-card-info">
+              <div class="browse-card-name">${shortName}</div>
+              <div class="browse-card-team">${shortTeam}</div>
+              <div class="browse-card-bottom">
+                <div class="browse-card-price">₹${Number(p.price || 1499).toLocaleString('en-IN')}</div>
+                <button class="browse-card-add" title="Quick add" onclick="event.stopPropagation(); quickAddToCart('${id}')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // Switch to another product inside the drawer (no close/reopen flicker)
+    window.switchDrawer = function(id) {
+      const found = allProducts.find(p => p.id === id);
+      if (!found) return;
+
+      // Scroll drawer back to top smoothly
+      const scroll = document.querySelector('.drawer-scroll');
+      scroll.scrollTo({ top: 0, behavior: 'smooth' });
+
+      drawerProduct = found;
+      drawerSelectedSize = '';
+
+      const { data: p } = found;
+      const teamLabel = Array.isArray(p.team) ? p.team.join(', ') : (p.team || 'Premium Kit');
+
+      document.getElementById('drawerName').textContent = p.name || 'Jersify Kit';
+      document.getElementById('drawerTeam').textContent = teamLabel;
+      document.getElementById('drawerPrice').textContent = '₹' + Number(p.price || 1499).toLocaleString('en-IN');
+      document.getElementById('drawerBadge').textContent = p.type || 'Kit';
+      document.getElementById('drawerNum').textContent = p.number || '10';
+      document.getElementById('drawerType').textContent = (p.type || 'KIT').toUpperCase();
+
+      const imgEl = document.getElementById('drawerImgEl');
+      const placeholder = document.getElementById('drawerImgPlaceholder');
+      if (p.imgUrl) {
+        imgEl.src = p.imgUrl;
+        imgEl.alt = p.name;
+        imgEl.style.display = 'block';
+        placeholder.style.display = 'none';
+      } else {
+        imgEl.style.display = 'none';
+        placeholder.style.display = 'flex';
+      }
+
+      // sizes
+      const sizes = ['xs','s','m','l','xl'];
+      const sizeGrid = document.getElementById('drawerSizeGrid');
+      sizeGrid.innerHTML = sizes.map(sz => {
+        const avail = p.sizes && p.sizes[sz] > 0;
+        return `<button class="size-pill${avail ? '' : ' oos'}" data-size="${sz}" onclick="selectSize('${sz}', ${avail})">${sz.toUpperCase()}</button>`;
+      }).join('');
+
+      document.getElementById('drawerBuyBtn').onclick = () => {
+        const sel = document.querySelector('.size-pill.selected');
+        if (!sel) { showToast('Please select a size'); return; }
+        window.location.href = `checkout.html?id=${id}&size=${sel.dataset.size}`;
+      };
+
+      // Refresh browse section
+      renderBrowse(id);
+    };
+
     window.openDrawer = function(id) {
       const found = allProducts.find(p => p.id === id);
       if (!found) return;
@@ -968,6 +1215,12 @@
         if (!sel) { showToast('Please select a size'); return; }
         window.location.href = `checkout.html?id=${id}&size=${sel.dataset.size}`;
       };
+
+      // Render the browse section excluding current product
+      renderBrowse(id);
+
+      // Reset scroll position
+      document.querySelector('.drawer-scroll').scrollTop = 0;
 
       document.getElementById('overlay').classList.add('open');
       document.getElementById('drawer').classList.add('open');
@@ -1099,42 +1352,9 @@
     window.quickAddToCart = function(id) {
       const found = allProducts.find(p => p.id === id);
       if (!found) return;
-      // Open drawer so user picks size
       openDrawer(id);
       showToast('Pick a size to add to cart');
     };
-
-    function renderSlider() {
-      const active = allProducts.filter(p => p.data.status === 'active');
-      if (active.length === 0) return;
-
-      const section = document.getElementById('sliderSection');
-      const track = document.getElementById('sliderTrack');
-      const countEl = document.getElementById('sliderCount');
-
-      section.style.display = 'block';
-      countEl.textContent = `${active.length} kits`;
-
-      track.innerHTML = active.map(({ id, data: p }) => {
-        const teamLabel = Array.isArray(p.team) ? p.team.join(', ') : (p.team || '');
-        return `
-          <div class="slider-card" onclick="openDrawer('${id}')">
-            <div class="s-img">
-              ${p.imgUrl
-                ? `<img src="${p.imgUrl}" alt="${p.name}" loading="lazy"/>`
-                : `<div class="jersey-card" style="width:90px;height:110px;border-radius:18px;">
-                    <div><strong style="font-size:22px">${p.number || '10'}</strong><small>${(p.type||'KIT').toUpperCase()}</small></div>
-                   </div>`
-              }
-            </div>
-            <div class="s-info">
-              <div class="s-name">${p.name || 'Jersify Kit'}</div>
-              <div class="s-team">${teamLabel}</div>
-              <div class="s-price">₹${Number(p.price || 1499).toLocaleString('en-IN')}</div>
-            </div>
-          </div>`;
-      }).join('');
-    }
 
     window.addEventListener('DOMContentLoaded', async () => {
       updateCartBadge();
@@ -1158,7 +1378,6 @@
         document.getElementById('viewAllBtn').addEventListener('click', () => { showAll = true; renderProducts(); });
 
         renderProducts();
-        renderSlider();
 
       } catch (err) {
         console.error('Firebase error:', err);
