@@ -251,12 +251,7 @@
       display: block;
     }
 
-    .slide-bg-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to right, rgba(0,0,0,.75) 0%, rgba(0,0,0,.3) 55%, transparent 100%);
-      z-index: 2;
-    }
+    /* REMOVED: .slide-bg-overlay — no gradient over hero media */
 
     .slide-content {
       position: absolute;
@@ -606,20 +601,6 @@
       background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.15), transparent 20%), linear-gradient(180deg, rgba(198,31,47,.15), rgba(0,0,0,.3));
     }
 
-    .reel-card .play {
-      position: absolute; inset: auto 12px 12px 12px; z-index: 2;
-      color: #fff; font-size: 12px; font-weight: 800;
-      display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    }
-
-    .play-badge {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: rgba(255,255,255,.18); display: grid; place-items: center;
-      backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.22); flex-shrink: 0;
-    }
-
-    .play-badge svg { width: 18px; height: 18px; color: #fff }
-
     /* GALLERY */
     .gallery { padding: 0 16px 18px; }
 
@@ -718,6 +699,47 @@
 
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
+    /* Ghost image placeholder for WOW Picks */
+    .pic-ghost {
+      height: 150px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #ececec 0%, #f5f5f5 50%, #ececec 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pic-ghost::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+
+    .pic-ghost-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 4px 12px rgba(0,0,0,.06);
+    }
+
+    .pic-ghost-icon svg {
+      width: 26px;
+      height: 26px;
+      color: #ccc;
+    }
+
     @media (max-width:380px) {
       .logo { font-size: 40px }
       .slide-text h2 { font-size: 24px }
@@ -778,55 +800,17 @@
     <section class="hero">
       <div class="slider" id="heroSlider">
         <div class="slides" id="slides">
-          <!-- Static fallback slides shown until Firebase loads -->
-          <div class="slide">
-            <div class="slide-bg"></div>
-            <div class="slide-content">
-              <div class="slide-text">
-                <div class="kicker">New Drop</div>
-                <h2>Are You Ready?</h2>
-                <p>Premium football jerseys with a bold streetwear look.</p>
-              </div>
-              <div class="slide-visual">
-                <div class="ball"></div>
-                <div class="jersey"><div><span>10</span><small>HOME KIT</small></div></div>
-              </div>
-            </div>
-          </div>
-          <div class="slide">
-            <div class="slide-bg" style="background:linear-gradient(135deg,#151515 0%,#1f1f1f 48%,#4a0a12 100%)"></div>
-            <div class="slide-content">
-              <div class="slide-text">
-                <div class="kicker">Top Seller</div>
-                <h2>Club Edition</h2>
-                <p>Wear the badge. Match-day style made simple.</p>
-              </div>
-              <div class="slide-visual">
-                <div class="ball"></div>
-                <div class="jersey dark"><div><span>07</span><small>AWAY KIT</small></div></div>
-              </div>
-            </div>
-          </div>
-          <div class="slide">
-            <div class="slide-bg" style="background:linear-gradient(135deg,#0f0f0f 0%,#252525 48%,#240012 100%)"></div>
-            <div class="slide-content">
-              <div class="slide-text">
-                <div class="kicker">Fast Delivery</div>
-                <h2>Fresh Styles</h2>
-                <p>Find your club jersey and get it delivered fast.</p>
-              </div>
-              <div class="slide-visual">
-                <div class="ball"></div>
-                <div class="jersey blue"><div><span>11</span><small>FAN KIT</small></div></div>
-              </div>
+          <!-- Ghost skeleton shown until Firebase injects real slides -->
+          <div class="slide" id="heroSkeleton" style="flex:0 0 100%;width:100%;height:100%;position:relative;overflow:hidden;">
+            <div style="position:absolute;inset:0;background:linear-gradient(90deg,#e8e8e8 25%,#f5f5f5 50%,#e8e8e8 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
+            <div style="position:absolute;bottom:18px;left:18px;right:18px;display:flex;flex-direction:column;gap:10px;">
+              <div style="width:64px;height:14px;border-radius:999px;background:rgba(255,255,255,.55);animation:shimmer 1.5s infinite;background-size:200% 100%;background-image:linear-gradient(90deg,rgba(255,255,255,.3) 25%,rgba(255,255,255,.6) 50%,rgba(255,255,255,.3) 75%);"></div>
+              <div style="width:55%;height:22px;border-radius:8px;background:rgba(255,255,255,.45);animation:shimmer 1.5s infinite;background-size:200% 100%;background-image:linear-gradient(90deg,rgba(255,255,255,.25) 25%,rgba(255,255,255,.55) 50%,rgba(255,255,255,.25) 75%);"></div>
+              <div style="width:40%;height:12px;border-radius:6px;background:rgba(255,255,255,.35);animation:shimmer 1.5s infinite;background-size:200% 100%;background-image:linear-gradient(90deg,rgba(255,255,255,.2) 25%,rgba(255,255,255,.45) 50%,rgba(255,255,255,.2) 75%);"></div>
             </div>
           </div>
         </div>
-        <div class="dots" id="dots">
-          <button class="dot active"></button>
-          <button class="dot"></button>
-          <button class="dot"></button>
-        </div>
+        <div class="dots" id="dots"></div>
       </div>
     </section>
 
@@ -866,9 +850,90 @@
       </div>
       <div class="loop-viewport" id="loopViewport">
         <div class="loop-track" id="loopTrack">
-          <div class="loop-card"><div class="pic skeleton"></div><div class="loop-info"><div class="skeleton" style="height:12px;width:80%;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;"></div></div></div>
-          <div class="loop-card"><div class="pic skeleton"></div><div class="loop-info"><div class="skeleton" style="height:12px;width:80%;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;"></div></div></div>
-          <div class="loop-card"><div class="pic skeleton"></div><div class="loop-info"><div class="skeleton" style="height:12px;width:80%;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;"></div></div></div>
+          <div class="loop-card" style="pointer-events:none;">
+            <div class="pic-ghost">
+              <div class="pic-ghost-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="3"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+              </div>
+            </div>
+            <div class="loop-info" style="padding:10px 12px 12px;">
+              <div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div>
+              <div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div>
+              <div class="skeleton" style="height:10px;width:65%;border-radius:6px;margin-bottom:4px;"></div>
+              <div class="skeleton" style="height:10px;width:50%;border-radius:6px;margin-bottom:12px;"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div class="skeleton" style="height:15px;width:38%;border-radius:6px;"></div>
+                <div class="skeleton" style="height:30px;width:72px;border-radius:999px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="loop-card" style="pointer-events:none;">
+            <div class="pic-ghost">
+              <div class="pic-ghost-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="3"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+              </div>
+            </div>
+            <div class="loop-info" style="padding:10px 12px 12px;">
+              <div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div>
+              <div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div>
+              <div class="skeleton" style="height:10px;width:65%;border-radius:6px;margin-bottom:4px;"></div>
+              <div class="skeleton" style="height:10px;width:50%;border-radius:6px;margin-bottom:12px;"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div class="skeleton" style="height:15px;width:38%;border-radius:6px;"></div>
+                <div class="skeleton" style="height:30px;width:72px;border-radius:999px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="loop-card" style="pointer-events:none;">
+            <div class="pic-ghost">
+              <div class="pic-ghost-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="3"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+              </div>
+            </div>
+            <div class="loop-info" style="padding:10px 12px 12px;">
+              <div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div>
+              <div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div>
+              <div class="skeleton" style="height:10px;width:65%;border-radius:6px;margin-bottom:4px;"></div>
+              <div class="skeleton" style="height:10px;width:50%;border-radius:6px;margin-bottom:12px;"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div class="skeleton" style="height:15px;width:38%;border-radius:6px;"></div>
+                <div class="skeleton" style="height:30px;width:72px;border-radius:999px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="loop-card" style="pointer-events:none;">
+            <div class="pic-ghost">
+              <div class="pic-ghost-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="3"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+              </div>
+            </div>
+            <div class="loop-info" style="padding:10px 12px 12px;">
+              <div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div>
+              <div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div>
+              <div class="skeleton" style="height:10px;width:65%;border-radius:6px;margin-bottom:4px;"></div>
+              <div class="skeleton" style="height:10px;width:50%;border-radius:6px;margin-bottom:12px;"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div class="skeleton" style="height:15px;width:38%;border-radius:6px;"></div>
+                <div class="skeleton" style="height:30px;width:72px;border-radius:999px;"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -963,7 +1028,7 @@
     /* ─── HERO SLIDER ─── */
     let heroIndex = 0;
     let heroTimer;
-    let heroTotal = 3;
+    let heroTotal = 0; // starts at 0 until Firebase populates slides
 
     function buildDots(count) {
       const dotsEl = document.getElementById("dots");
@@ -984,19 +1049,21 @@
     }
 
     function nextHeroSlide() {
+      if (heroTotal === 0) return;
       heroIndex = (heroIndex + 1) % heroTotal;
       showHeroSlide(heroIndex);
     }
 
     function restartHero() {
       clearInterval(heroTimer);
-      heroTimer = setInterval(nextHeroSlide, 3800);
+      if (heroTotal > 1) heroTimer = setInterval(nextHeroSlide, 3800);
     }
 
     const slidesEl = document.getElementById("slides");
     let hStartX = 0;
     slidesEl.addEventListener("touchstart", e => hStartX = e.touches[0].clientX, { passive: true });
     slidesEl.addEventListener("touchend", e => {
+      if (heroTotal === 0) return;
       const diff = hStartX - e.changedTouches[0].clientX;
       if (Math.abs(diff) > 40) {
         heroIndex = diff > 0 ? (heroIndex + 1) % heroTotal : (heroIndex - 1 + heroTotal) % heroTotal;
@@ -1004,10 +1071,6 @@
         restartHero();
       }
     }, { passive: true });
-
-    buildDots(3);
-    showHeroSlide(0);
-    restartHero();
 
     /* ─── WOW PICKS scroll controls ─── */
     const loopViewport = document.getElementById("loopViewport");
@@ -1177,8 +1240,8 @@
     /* ════════════════════════════════════════════
        2. HERO SLIDER
        Reads from indexMedia where section === "hero"
-       Keys: hero_1, hero_2, hero_3 (sorted by .order)
-       Supports both image and video media types.
+       Sorted by .order. Supports image and video.
+       No gradient overlay on media. No kicker/label text.
     ════════════════════════════════════════════ */
     async function loadHeroes() {
       try {
@@ -1191,7 +1254,6 @@
           if (item.section === "hero") heroes.push(item);
         });
 
-        // Filter to only hero_1/2/3 that have an actual URL
         heroes = heroes
           .filter(h => getUrl(h))
           .sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -1199,28 +1261,22 @@
         if (heroes.length === 0) return;
 
         const slidesEl = document.getElementById("slides");
+        // Remove ghost skeleton before injecting real slides
+        const heroSkeleton = document.getElementById("heroSkeleton");
+        if (heroSkeleton) heroSkeleton.remove();
         slidesEl.innerHTML = heroes.map(h => {
           const url = getUrl(h);
           const vid = isVideo(h);
           const link = h.link || "shop.html";
 
-          // Media element: full-cover video or image
+          // Full-cover media — no overlay, no text labels
           const mediaEl = vid
             ? `<video class="slide-media-cover" src="${url}" autoplay muted loop playsinline preload="metadata"></video>`
-            : `<div class="slide-bg-img" style="background-image:url('${url}')"></div>`;
+            : `<img class="slide-media-cover" src="${url}" alt="Hero banner" loading="lazy"/>`;
 
           return `
             <div class="slide" style="cursor:${link ? 'pointer' : 'default'}" onclick="${link ? `window.location.href='${link}'` : ''}">
-              <div class="slide-bg"></div>
               ${mediaEl}
-              <div class="slide-bg-overlay"></div>
-              <div class="slide-content" style="pointer-events:none;">
-                <div class="slide-text">
-                  ${h.label ? `<div class="kicker">${h.label}</div>` : ''}
-                  ${h.title ? `<h2>${h.title}</h2>` : ''}
-                  ${h.description ? `<p>${h.description}</p>` : ''}
-                </div>
-              </div>
             </div>
           `;
         }).join("");
@@ -1231,7 +1287,7 @@
         showHeroSlide(0);
         restartHero();
       } catch (err) {
-        console.warn("Hero slides load failed, using static fallback:", err);
+        console.warn("Hero slides load failed:", err);
       }
     }
 
@@ -1307,13 +1363,6 @@
 
     /* ════════════════════════════════════════════
        4. INDEX MEDIA — Featured, Promo, Reels, Gallery
-       All read from indexMedia collection.
-       Admin panel saves:
-         section: "featured"  → keys featured_1, featured_2, featured_3
-         section: "reels"     → keys reel_1 … reel_6  (usually video)
-         section: "gallery"   → keys gallery_photo_1, gallery_photo_2
-       mediaType field: "image" | "video"
-       mediaUrl (preferred) or imgUrl for the actual URL.
     ════════════════════════════════════════════ */
     async function loadIndexMedia() {
       try {
@@ -1363,7 +1412,7 @@
         /* ── Promo Strip: featured items 2+ ── */
         const promoStrip = document.getElementById("promoStrip");
         const promoBannersWrap = document.getElementById("promoBannersWrap");
-        const promoItems = featuredItems.slice(1); // featured_2, featured_3, etc.
+        const promoItems = featuredItems.slice(1);
 
         if (promoItems.length > 0) {
           promoStrip.innerHTML = promoItems.map(m => {
@@ -1381,7 +1430,7 @@
           promoBannersWrap.style.display = "block";
         }
 
-        /* ── Reels: render actual <video> tags (not background-image) ── */
+        /* ── Reels: no play button overlay ── */
         const reelsRow = document.getElementById("reelsRow");
         const reelsSection = document.getElementById("reelsSection");
 
@@ -1391,8 +1440,6 @@
             const link = m.link || "#";
             const vid  = isVideo(m);
 
-            // For video reels: use a <video> element that plays on hover
-            // For image reels: use a background-image div (legacy support)
             const mediaContent = vid
               ? `<video class="reel-vid" src="${url}" muted loop playsinline preload="metadata"></video>`
               : `<div class="thumb" style="background-image:url('${url}')"></div>`;
@@ -1405,17 +1452,12 @@
                 ontouchstart="const v=this.querySelector('video');if(v)v.play()"
               >
                 ${mediaContent}
-                <div class="play" style="justify-content:flex-end;">
-                  <div class="play-badge">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                  </div>
-                </div>
               </div>`;
           }).join("");
 
           reelsSection.style.display = "block";
 
-          // Auto-play first visible reel on mobile (IntersectionObserver)
+          // Auto-play visible reels on mobile via IntersectionObserver
           const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
               const vid = entry.target.querySelector("video");
@@ -1432,7 +1474,7 @@
           reelsRow.querySelectorAll(".reel-card").forEach(card => observer.observe(card));
         }
 
-        /* ── Gallery: show up to 2 items (first = wide 2×2, second = narrow 1×2) ── */
+        /* ── Gallery ── */
         const galleryGrid = document.getElementById("galleryGrid");
         const gallerySection = document.getElementById("gallerySection");
 
