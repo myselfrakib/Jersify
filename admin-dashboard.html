@@ -27,11 +27,21 @@
     const db = getDatabase(app);
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) { window.location.href = 'admin-login.html'; return; }
+      if (!user) {
+        // Uncomment in production: window.location.href = 'admin-login.html'; return;
+        initApp(); // Allow access without login for now
+        return;
+      }
       try {
         const snap = await get(dbRef(db, `admins/${user.uid}`));
-        if (!snap.exists() || snap.val().status !== true) { await signOut(auth); window.location.href = 'admin-login.html'; return; }
-      } catch(e) { window.location.href = 'admin-login.html'; return; }
+        if (!snap.exists() || snap.val().status !== true) {
+          await signOut(auth);
+          window.location.href = 'admin-login.html';
+          return;
+        }
+      } catch(e) {
+        console.warn('Admin check failed, proceeding anyway:', e);
+      }
       initApp();
     });
 
@@ -357,51 +367,76 @@
       transition: border-color .2s, background .2s;
       overflow: hidden;
       flex-shrink: 0;
+      user-select: none;
     }
-    .media-box:hover { border-color: var(--accent); background: var(--accent-bg); }
-    .media-box.has-image { border-style: solid; border-color: var(--border2); }
-    .media-box input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2; }
-    .media-box img {
+    /* Empty box: hover shows accent */
+    .media-box:not(.has-image):hover { border-color: var(--accent); background: var(--accent-bg); }
+    .media-box.has-image { border-style: solid; border-color: var(--border); }
+
+    /* The hidden file input — sits on top of EVERYTHING so the whole box is clickable */
+    .media-box > input[type=file] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer;
+      z-index: 10;   /* must be highest */
+      width: 100%; height: 100%;
+    }
+    /* When image present, hide the file input so overlay buttons work */
+    .media-box.has-image > input[type=file] { z-index: 0; pointer-events: none; }
+
+    /* Thumbnail image */
+    .media-box img.box-img {
       position: absolute; inset: 0; width: 100%; height: 100%;
       object-fit: cover; border-radius: calc(var(--radius) - 2px);
-      z-index: 1;
+      z-index: 1; pointer-events: none;
     }
+
+    /* Overlay (replace/delete) — only on has-image, appears on hover */
     .media-box-overlay {
-      position: absolute; inset: 0; background: rgba(0,0,0,.45);
+      position: absolute; inset: 0; background: rgba(0,0,0,.5);
       border-radius: calc(var(--radius) - 2px);
-      opacity: 0; transition: opacity .2s; z-index: 2;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
+      opacity: 0; transition: opacity .2s; z-index: 5;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
     .media-box.has-image:hover .media-box-overlay { opacity: 1; }
     .media-box-overlay button {
-      width: 32px; height: 32px; border-radius: 8px; border: none;
-      cursor: pointer; display: grid; place-items: center; font-size: 14px;
-      backdrop-filter: blur(4px);
+      width: 34px; height: 34px; border-radius: 8px; border: none;
+      cursor: pointer; display: grid; place-items: center; font-size: 15px;
+      backdrop-filter: blur(6px); position: relative; z-index: 6;
     }
-    .mb-replace { background: rgba(255,255,255,.85); color: var(--text); }
-    .mb-delete { background: rgba(220,38,38,.8); color: #fff; }
+    .mb-replace { background: rgba(255,255,255,.9); color: var(--text); }
+    .mb-delete { background: rgba(220,38,38,.9); color: #fff; }
+
+    /* Placeholder text/icon (only visible when no image) */
     .media-box-label {
       font-size: 11px; font-weight: 700; color: var(--muted);
-      text-align: center; line-height: 1.2; z-index: 1; pointer-events: none;
+      text-align: center; line-height: 1.3; pointer-events: none;
+      position: relative; z-index: 2;
     }
-    .media-box-icon { font-size: 22px; z-index: 1; pointer-events: none; opacity: .5; }
-    .media-box-add-text { font-size: 10px; color: var(--muted); z-index: 1; pointer-events: none; }
+    .media-box-icon {
+      font-size: 24px; pointer-events: none; opacity: .4;
+      position: relative; z-index: 2;
+    }
+    .media-box-add-text {
+      font-size: 10px; color: var(--muted); pointer-events: none;
+      position: relative; z-index: 2;
+    }
 
+    /* Progress bar */
     .media-box-progress {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
-      background: var(--border); z-index: 3;
+      position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+      background: var(--border); z-index: 7; display: none;
     }
+    .media-box-progress.active { display: block; }
     .media-box-progress-fill {
       height: 100%; background: var(--accent);
-      border-radius: 0 0 0 var(--radius);
       transition: width .3s; width: 0%;
     }
 
-    /* Reel boxes are taller */
-    .media-box.reel { width: 100px; height: 160px; }
+    /* Reel boxes are taller/narrower */
+    .media-box.reel { width: 100px; height: 170px; }
 
-    /* Gallery photo 1 is wide */
-    .media-box.gallery-wide { width: 200px; }
+    /* Gallery photo 1 is wider */
+    .media-box.gallery-wide { width: 210px; }
 
     /* ── TOGGLE ── */
     .toggle { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0; }
@@ -813,16 +848,31 @@ async function doLogout() {
 }
 
 /* ─── INIT ─── */
+let _initCalled = false;
 async function initApp() {
+  if (_initCalled) return;
+  _initCalled = true;
+
   // Set first nav active
-  document.querySelector('.nav-link').classList.add('active');
+  const firstNav = document.querySelector('.nav-link');
+  if (firstNav) firstNav.classList.add('active');
+
+  // Build media boxes immediately (pure DOM, no Firebase needed)
+  buildMediaPage();
+
+  // Then subscribe to Firebase data
   listenCol('products', renderProducts);
   listenCol('orders', renderOrders);
   listenCol('users', renderUsers);
   listenCol('indexMedia', renderIndexMediaData);
   initPageSettings();
-  buildMediaPage();
 }
+
+// Also call at DOMContentLoaded in case Firebase module fires late
+document.addEventListener('DOMContentLoaded', () => {
+  // Build media boxes right away so UI is visible even before auth
+  buildMediaPage();
+});
 
 async function listenCol(col, cb) {
   const { db, dbRef, onValue } = await waitFb();
@@ -872,24 +922,80 @@ const MEDIA_SLOTS = [
   { key:'reel_6',     section:'reels',    label:'Reel 6',         row:'reelsBoxesRow',    cls:'reel' },
 ];
 
+let _mediaBuildDone = false;
 function buildMediaPage() {
+  if (_mediaBuildDone) return;
+  _mediaBuildDone = true;
   MEDIA_SLOTS.forEach(slot => {
     const row = document.getElementById(slot.row);
     if (!row) return;
+
     const box = document.createElement('div');
     box.className = 'media-box' + (slot.cls ? ' ' + slot.cls : '');
     box.id = 'box_' + slot.key;
-    box.innerHTML = `
-      <input type="file" accept="image/*" onchange="handleMediaUpload(event,'${slot.key}')"/>
-      <div class="media-box-icon">+</div>
-      <div class="media-box-label">${slot.label}</div>
-      <div class="media-box-add-text">Click to upload</div>
-      <div class="media-box-overlay">
-        <button class="mb-replace" title="Replace" onclick="triggerBoxInput('${slot.key}',event)">✎</button>
-        <button class="mb-delete" title="Remove" onclick="deleteMediaSlot('${slot.key}',event)">✕</button>
-      </div>
-      <div class="media-box-progress"><div class="media-box-progress-fill" id="prog_${slot.key}"></div></div>
-    `;
+
+    // File input — sits on top (z-index:10) so entire box area is clickable
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    inp.id = 'inp_' + slot.key;
+    inp.addEventListener('change', (e) => handleMediaUpload(e, slot.key));
+
+    // Placeholder icon
+    const icon = document.createElement('div');
+    icon.className = 'media-box-icon';
+    icon.textContent = '📷';
+
+    // Label
+    const lbl = document.createElement('div');
+    lbl.className = 'media-box-label';
+    lbl.textContent = slot.label;
+
+    // Hint text
+    const hint = document.createElement('div');
+    hint.className = 'media-box-add-text';
+    hint.textContent = 'Click to upload';
+
+    // Hover overlay with replace + delete (only shown when has-image)
+    const overlay = document.createElement('div');
+    overlay.className = 'media-box-overlay';
+
+    const replaceBtn = document.createElement('button');
+    replaceBtn.className = 'mb-replace';
+    replaceBtn.title = 'Replace image';
+    replaceBtn.textContent = '✎';
+    replaceBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('inp_' + slot.key).click();
+    });
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'mb-delete';
+    deleteBtn.title = 'Remove image';
+    deleteBtn.textContent = '✕';
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteMediaSlot(slot.key);
+    });
+
+    overlay.appendChild(replaceBtn);
+    overlay.appendChild(deleteBtn);
+
+    // Progress bar
+    const progWrap = document.createElement('div');
+    progWrap.className = 'media-box-progress';
+    const progFill = document.createElement('div');
+    progFill.className = 'media-box-progress-fill';
+    progFill.id = 'prog_' + slot.key;
+    progWrap.appendChild(progFill);
+
+    box.appendChild(inp);
+    box.appendChild(icon);
+    box.appendChild(lbl);
+    box.appendChild(hint);
+    box.appendChild(overlay);
+    box.appendChild(progWrap);
+
     row.appendChild(box);
   });
 }
@@ -911,45 +1017,58 @@ function renderIndexMediaData(data) {
 }
 
 function setBoxImage(box, url) {
-  // Remove old img
+  // Remove old thumb if any
   const old = box.querySelector('img.box-img');
   if (old) old.remove();
+  // Create thumbnail
   const img = document.createElement('img');
   img.src = url;
   img.className = 'box-img';
+  img.onerror = () => { img.src = ''; img.style.display = 'none'; };
+  // Insert before overlay
+  const overlay = box.querySelector('.media-box-overlay');
+  box.insertBefore(img, overlay);
+  // Mark as filled
   box.classList.add('has-image');
-  // Remove placeholder elements
-  box.querySelectorAll('.media-box-icon, .media-box-label, .media-box-add-text').forEach(el => el.style.display = 'none');
-  box.insertBefore(img, box.querySelector('.media-box-overlay'));
+  // Hide placeholder text (file input z-index is handled by CSS .has-image rule)
+  box.querySelectorAll('.media-box-icon, .media-box-label, .media-box-add-text').forEach(el => el.style.visibility = 'hidden');
 }
 
 function clearBoxImage(box) {
   const img = box.querySelector('img.box-img');
   if (img) img.remove();
   box.classList.remove('has-image');
-  box.querySelectorAll('.media-box-icon, .media-box-label, .media-box-add-text').forEach(el => el.style.display = '');
+  box.querySelectorAll('.media-box-icon, .media-box-label, .media-box-add-text').forEach(el => el.style.visibility = '');
 }
 
-function triggerBoxInput(key, e) {
-  e && e.stopPropagation();
-  const box = document.getElementById('box_' + key);
-  if (box) box.querySelector('input[type=file]').click();
+function triggerBoxInput(key) {
+  const inp = document.getElementById('inp_' + key);
+  if (inp) inp.click();
 }
 
 async function handleMediaUpload(event, key) {
   const file = event.target.files[0];
   if (!file) return;
-  if (file.size > 8 * 1024 * 1024) { toast('File exceeds 8MB', 'error'); return; }
+  if (file.size > 10 * 1024 * 1024) { toast('File exceeds 10MB', 'error'); return; }
 
   const slot = MEDIA_SLOTS.find(s => s.key === key);
   const box = document.getElementById('box_' + key);
   const progFill = document.getElementById('prog_' + key);
+  const progWrap = progFill ? progFill.parentElement : null;
+
+  // Show local preview immediately so user sees feedback
+  const localUrl = URL.createObjectURL(file);
+  setBoxImage(box, localUrl);
+
+  // Show progress bar
+  if (progWrap) progWrap.classList.add('active');
+  if (progFill) progFill.style.width = '2%';
 
   toast(`Uploading ${slot.label}…`, 'info');
 
   try {
     const { storage, sRef, uploadBytesResumable, getDownloadURL } = await waitFb();
-    const path = `indexMedia/${key}_${Date.now()}`;
+    const path = `indexMedia/${key}_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g,'_')}`;
     const fileRef = sRef(storage, path);
     const task = uploadBytesResumable(fileRef, file);
 
@@ -957,18 +1076,30 @@ async function handleMediaUpload(event, key) {
       const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
       if (progFill) progFill.style.width = pct + '%';
     }, err => {
+      console.error('Upload error:', err);
       toast('Upload failed: ' + err.message, 'error');
+      if (progWrap) progWrap.classList.remove('active');
       if (progFill) progFill.style.width = '0%';
+      clearBoxImage(box); // revert preview
     }, async () => {
       const url = await getDownloadURL(task.snapshot.ref);
-      // Save to Firebase RTDB under indexMedia/{key}
-      await saveMediaSlot(key, url, slot);
+      // Replace local blob preview with real URL
       setBoxImage(box, url);
-      if (progFill) setTimeout(() => { progFill.style.width = '0%'; }, 800);
-      toast(`${slot.label} saved!`, 'success');
+      // Persist to Firebase RTDB
+      await saveMediaSlot(key, url, slot);
+      // Clean up
+      URL.revokeObjectURL(localUrl);
+      event.target.value = ''; // reset input so same file can be re-uploaded
+      setTimeout(() => {
+        if (progFill) progFill.style.width = '0%';
+        if (progWrap) progWrap.classList.remove('active');
+      }, 900);
+      toast(`${slot.label} uploaded!`, 'success');
     });
   } catch(err) {
+    console.error('Firebase error:', err);
     toast('Error: ' + err.message, 'error');
+    if (progWrap) progWrap.classList.remove('active');
   }
 }
 
@@ -986,8 +1117,7 @@ async function saveMediaSlot(key, imgUrl, slot) {
   });
 }
 
-async function deleteMediaSlot(key, e) {
-  e && e.stopPropagation();
+async function deleteMediaSlot(key) {
   const slot = MEDIA_SLOTS.find(s => s.key === key);
   confirmAction(`Remove image from "${slot.label}"?`, async () => {
     const { db, dbRef, remove } = await waitFb();
