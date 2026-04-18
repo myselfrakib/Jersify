@@ -421,6 +421,23 @@
       position: relative; z-index: 2;
     }
 
+    /* Video preview inside box */
+    .media-box video.box-vid {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; border-radius: calc(var(--radius) - 2px);
+      z-index: 1; pointer-events: none;
+    }
+
+    /* Video badge overlay */
+    .box-vid-badge {
+      position: absolute; top: 6px; left: 6px;
+      background: rgba(0,0,0,.65); color: #fff;
+      font-size: 9px; font-weight: 800; letter-spacing: .8px;
+      padding: 3px 7px; border-radius: 5px;
+      z-index: 3; pointer-events: none;
+      backdrop-filter: blur(4px);
+    }
+
     /* Progress bar */
     .media-box-progress {
       position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
@@ -937,14 +954,14 @@ function buildMediaPage() {
     // File input — sits on top (z-index:10) so entire box area is clickable
     const inp = document.createElement('input');
     inp.type = 'file';
-    inp.accept = 'image/*';
+    inp.accept = 'image/*,video/*';
     inp.id = 'inp_' + slot.key;
     inp.addEventListener('change', (e) => handleMediaUpload(e, slot.key));
 
     // Placeholder icon
     const icon = document.createElement('div');
     icon.className = 'media-box-icon';
-    icon.textContent = '📷';
+    icon.textContent = '📁';
 
     // Label
     const lbl = document.createElement('div');
@@ -954,7 +971,7 @@ function buildMediaPage() {
     // Hint text
     const hint = document.createElement('div');
     hint.className = 'media-box-add-text';
-    hint.textContent = 'Click to upload';
+    hint.textContent = 'Photo or Video';
 
     // Hover overlay with replace + delete (only shown when has-image)
     const overlay = document.createElement('div');
@@ -962,7 +979,7 @@ function buildMediaPage() {
 
     const replaceBtn = document.createElement('button');
     replaceBtn.className = 'mb-replace';
-    replaceBtn.title = 'Replace image';
+    replaceBtn.title = 'Replace';
     replaceBtn.textContent = '✎';
     replaceBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -971,7 +988,7 @@ function buildMediaPage() {
 
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'mb-delete';
-    deleteBtn.title = 'Remove image';
+    deleteBtn.title = 'Remove';
     deleteBtn.textContent = '✕';
     deleteBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1001,42 +1018,79 @@ function buildMediaPage() {
 }
 
 function renderIndexMediaData(data) {
-  // Build map
   _allIndexMedia = {};
   data.forEach(d => { _allIndexMedia[d.id] = d; });
 
-  // Populate boxes that have images
   MEDIA_SLOTS.forEach(slot => {
     const box = document.getElementById('box_' + slot.key);
     if (!box) return;
     const item = _allIndexMedia[slot.key];
-    if (item && item.imgUrl) {
-      setBoxImage(box, item.imgUrl);
+    const url = item && (item.mediaUrl || item.imgUrl);
+    if (url) {
+      const isVid = item.mediaType === 'video' || isVideoUrl(url);
+      setBoxMedia(box, url, isVid);
     }
   });
 }
 
-function setBoxImage(box, url) {
-  // Remove old thumb if any
-  const old = box.querySelector('img.box-img');
-  if (old) old.remove();
-  // Create thumbnail
-  const img = document.createElement('img');
-  img.src = url;
-  img.className = 'box-img';
-  img.onerror = () => { img.src = ''; img.style.display = 'none'; };
-  // Insert before overlay
+function isVideoFile(file) {
+  if (file && file.type) return file.type.startsWith('video/');
+  return false;
+}
+function isVideoUrl(url) {
+  if (!url) return false;
+  const ext = url.split('?')[0].split('.').pop().toLowerCase();
+  return ['mp4','webm','ogg','mov','avi','mkv'].includes(ext) || url.includes('video');
+}
+
+// Sets either an <img> or <video> preview inside the box
+function setBoxMedia(box, url, isVideo) {
+  // Remove old media preview
+  box.querySelector('img.box-img')?.remove();
+  box.querySelector('video.box-vid')?.remove();
+  box.querySelector('.box-vid-badge')?.remove();
+
   const overlay = box.querySelector('.media-box-overlay');
-  box.insertBefore(img, overlay);
-  // Mark as filled
+
+  if (isVideo) {
+    const vid = document.createElement('video');
+    vid.src = url;
+    vid.className = 'box-vid';
+    vid.muted = true;
+    vid.loop = true;
+    vid.playsInline = true;
+    vid.autoplay = true;
+    // Play on hover
+    box.addEventListener('mouseenter', () => vid.play().catch(()=>{}), { passive:true });
+    box.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0; }, { passive:true });
+    box.insertBefore(vid, overlay);
+
+    // Video badge
+    const badge = document.createElement('div');
+    badge.className = 'box-vid-badge';
+    badge.textContent = '▶ VIDEO';
+    box.insertBefore(badge, overlay);
+  } else {
+    const img = document.createElement('img');
+    img.src = url;
+    img.className = 'box-img';
+    img.onerror = () => { img.src = ''; img.style.display = 'none'; };
+    box.insertBefore(img, overlay);
+  }
+
   box.classList.add('has-image');
-  // Hide placeholder text (file input z-index is handled by CSS .has-image rule)
   box.querySelectorAll('.media-box-icon, .media-box-label, .media-box-add-text').forEach(el => el.style.visibility = 'hidden');
 }
 
+// Keep old name as alias for backwards compat (called from renderIndexMediaData)
+function setBoxImage(box, url) {
+  setBoxMedia(box, url, isVideoUrl(url));
+}
+
 function clearBoxImage(box) {
-  const img = box.querySelector('img.box-img');
-  if (img) img.remove();
+  box.querySelector('img.box-img')?.remove();
+  box.querySelector('video.box-vid')?.remove();
+  box.querySelector('.box-vid-badge')?.remove();
   box.classList.remove('has-image');
   box.querySelectorAll('.media-box-icon, .media-box-label, .media-box-add-text').forEach(el => el.style.visibility = '');
 }
@@ -1049,28 +1103,36 @@ function triggerBoxInput(key) {
 async function handleMediaUpload(event, key) {
   const file = event.target.files[0];
   if (!file) return;
-  if (file.size > 10 * 1024 * 1024) { toast('File exceeds 10MB', 'error'); return; }
+
+  const isVideo = file.type.startsWith('video/');
+  const maxSize = isVideo ? 200 * 1024 * 1024 : 15 * 1024 * 1024; // 200MB video / 15MB image
+  if (file.size > maxSize) {
+    toast(`File too large (max ${isVideo ? '200MB for video' : '15MB for image'})`, 'error');
+    return;
+  }
 
   const slot = MEDIA_SLOTS.find(s => s.key === key);
   const box = document.getElementById('box_' + key);
   const progFill = document.getElementById('prog_' + key);
   const progWrap = progFill ? progFill.parentElement : null;
 
-  // Show local preview immediately so user sees feedback
+  // Show local preview immediately
   const localUrl = URL.createObjectURL(file);
-  setBoxImage(box, localUrl);
+  setBoxMedia(box, localUrl, isVideo);
 
   // Show progress bar
   if (progWrap) progWrap.classList.add('active');
   if (progFill) progFill.style.width = '2%';
 
-  toast(`Uploading ${slot.label}…`, 'info');
+  toast(`Uploading ${slot.label} (${isVideo ? 'video' : 'image'})…`, 'info');
 
   try {
     const { storage, sRef, uploadBytesResumable, getDownloadURL } = await waitFb();
-    const path = `indexMedia/${key}_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g,'_')}`;
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const path = `indexMedia/${key}_${Date.now()}_${safeName}`;
     const fileRef = sRef(storage, path);
-    const task = uploadBytesResumable(fileRef, file);
+    const metadata = { contentType: file.type };
+    const task = uploadBytesResumable(fileRef, file, metadata);
 
     task.on('state_changed', snap => {
       const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
@@ -1080,21 +1142,18 @@ async function handleMediaUpload(event, key) {
       toast('Upload failed: ' + err.message, 'error');
       if (progWrap) progWrap.classList.remove('active');
       if (progFill) progFill.style.width = '0%';
-      clearBoxImage(box); // revert preview
+      clearBoxImage(box);
     }, async () => {
       const url = await getDownloadURL(task.snapshot.ref);
-      // Replace local blob preview with real URL
-      setBoxImage(box, url);
-      // Persist to Firebase RTDB
-      await saveMediaSlot(key, url, slot);
-      // Clean up
+      setBoxMedia(box, url, isVideo);
+      await saveMediaSlot(key, url, slot, isVideo ? 'video' : 'image');
       URL.revokeObjectURL(localUrl);
-      event.target.value = ''; // reset input so same file can be re-uploaded
+      event.target.value = '';
       setTimeout(() => {
         if (progFill) progFill.style.width = '0%';
         if (progWrap) progWrap.classList.remove('active');
       }, 900);
-      toast(`${slot.label} uploaded!`, 'success');
+      toast(`${slot.label} ${isVideo ? 'video' : 'image'} saved!`, 'success');
     });
   } catch(err) {
     console.error('Firebase error:', err);
@@ -1103,13 +1162,16 @@ async function handleMediaUpload(event, key) {
   }
 }
 
-async function saveMediaSlot(key, imgUrl, slot) {
+async function saveMediaSlot(key, mediaUrl, slot, mediaType) {
   const { db, dbRef, set } = await waitFb();
   const existing = _allIndexMedia[key] || {};
+  const type = mediaType || (isVideoUrl(mediaUrl) ? 'video' : 'image');
   await set(dbRef(db, `indexMedia/${key}`), {
     section: slot.section,
     label: slot.label,
-    imgUrl,
+    imgUrl: mediaUrl,      // keep imgUrl for backwards compat with index.html
+    mediaUrl: mediaUrl,    // also store as mediaUrl
+    mediaType: type,       // 'image' or 'video'
     order: MEDIA_SLOTS.findIndex(s => s.key === key) + 1,
     link: existing.link || '',
     description: existing.description || '',
