@@ -1376,8 +1376,6 @@
             return `
               <div class="promo-card" onclick="window.location.href='${link}'">
                 ${mediaHtml}
-                <div class="promo-overlay"></div>
-                <div class="promo-label">${m.label || ''}</div>
               </div>`;
           }).join("");
           promoBannersWrap.style.display = "block";
@@ -1407,11 +1405,7 @@
                 ontouchstart="const v=this.querySelector('video');if(v)v.play()"
               >
                 ${mediaContent}
-                <div class="play">
-                  <div style="line-height:1.2;">
-                    ${m.label || 'Reel'}<br>
-                    <span style="font-size:9px;color:rgba(255,255,255,.7)">${m.description || 'Watch now'}</span>
-                  </div>
+                <div class="play" style="justify-content:flex-end;">
                   <div class="play-badge">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                   </div>
