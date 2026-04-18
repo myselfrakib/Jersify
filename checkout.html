@@ -1,860 +1,594 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JERSIFY — Checkout</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap"
-    rel="stylesheet">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
     :root {
-      --bg: #0c0c14;
-      --card: #16162a;
-      --card-border: rgba(255, 255, 255, 0.06);
-      --card-glow: rgba(198, 31, 47, 0.08);
-      --text: #f0f0f5;
-      --muted: #7a7a9a;
-      --accent: #e63946;
-      --accent-dark: #b51f2e;
-      --accent-glow: rgba(230, 57, 70, 0.3);
-      --success: #2ecc71;
-      --gold: #f6c400;
-      --radius: 16px;
-      --maxw: 480px;
+      --bg: #ffffff;
+      --text: #111111;
+      --muted: #6f6f6f;
+      --accent: #c61f2f;
+      --accent2: #8f0f1d;
+      --line: #ececec;
+      --shadow: 0 12px 28px rgba(0,0,0,.08);
+      --shadow-soft: 0 8px 18px rgba(0,0,0,.06);
+      --success: #1e8c4a;
+      --gold: #c49a00;
+      --maxw: 430px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html,
-    body {
-      min-height: 100%;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0 }
+    html, body { min-height: 100% }
 
     body {
-      font-family: 'Barlow', sans-serif;
+      font-family: 'Poppins', Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
     }
+
+    a { text-decoration: none; color: inherit }
+    button, input, select, textarea { font: inherit }
 
     .page {
       width: min(100%, var(--maxw));
+      margin: 0 auto;
       min-height: 100vh;
+      background: #fff;
       position: relative;
-      overflow: hidden;
+      border-left: 1px solid rgba(0,0,0,.04);
+      border-right: 1px solid rgba(0,0,0,.04);
       padding-bottom: 120px;
-      background: linear-gradient(180deg, #0c0c14 0%, #12122a 50%, #0c0c14 100%);
     }
 
-    /* ====== Topbar ====== */
+    /* ── TOPBAR ── */
     .topbar {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 16px 20px;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 16px 16px 10px;
       position: sticky;
       top: 0;
-      background: rgba(12, 12, 20, 0.95);
-      backdrop-filter: blur(12px);
+      background: rgba(255,255,255,.98);
+      backdrop-filter: blur(8px);
       z-index: 30;
-      border-bottom: 1px solid var(--card-border);
+      border-bottom: 1px solid rgba(0,0,0,.04);
     }
+
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
 
     .back-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(255, 255, 255, 0.15);
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .back-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .back-btn svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    .topbar-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 20px;
-      letter-spacing: 2px;
-      color: var(--accent);
-    }
-
-    .topbar-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      margin-left: auto;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-
-    /* ====== Content ====== */
-    .content {
-      padding: 16px 20px;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      border: 1px solid var(--card-border);
-      padding: 18px;
-      margin-bottom: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
-    }
-
-    .card-header {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card-header svg {
-      width: 16px;
-      height: 16px;
-      opacity: 0.7;
-    }
-
-    /* ====== Product Card ====== */
-    .product-row {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .product-img {
-      width: 80px;
-      height: 100px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--accent-dark), #1a1a2e);
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .product-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 14px;
-    }
-
-    .product-img-placeholder {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px;
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .product-info {
-      flex: 1;
-    }
-
-    .product-name {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px;
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: 0.3px;
-      margin-bottom: 4px;
-    }
-
-    .product-team {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .product-price {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 26px;
-      color: var(--accent);
-      letter-spacing: 1px;
-    }
-
-    /* ====== Size Selector ====== */
-    .size-grid {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .size-btn {
-      width: 44px;
-      height: 38px;
-      border-radius: 10px;
-      border: 1.5px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--muted);
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: grid;
-      place-items: center;
-    }
-
-    .size-btn:hover {
-      border-color: rgba(255, 255, 255, 0.2);
-      color: #fff;
-    }
-
-    .size-btn.active {
-      border-color: var(--accent);
-      background: rgba(230, 57, 70, 0.12);
-      color: var(--accent);
-      box-shadow: 0 0 12px rgba(230, 57, 70, 0.2);
-    }
-
-    /* ====== Form ====== */
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--muted);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      font-family: 'Barlow Condensed', sans-serif;
-    }
-
-    .form-input {
-      width: 100%;
-      border: 1.5px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-family: 'Barlow', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      background: rgba(255, 255, 255, 0.04);
-      color: #fff;
-      outline: none;
-      transition: all 0.25s;
-    }
-
-    .form-input::placeholder {
-      color: rgba(255, 255, 255, 0.2);
-    }
-
-    .form-input:focus {
-      border-color: var(--accent);
-      background: rgba(230, 57, 70, 0.04);
-      box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    textarea.form-input {
-      resize: none;
-      min-height: 70px;
-      line-height: 1.5;
-    }
-
-    /* ====== Location Button ====== */
-    .location-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border: 1.5px dashed rgba(46, 204, 113, 0.3);
-      border-radius: 12px;
-      padding: 10px 14px;
-      background: rgba(46, 204, 113, 0.05);
-      color: var(--success);
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      width: 100%;
-      transition: all 0.25s;
-      margin-top: 8px;
-      text-transform: uppercase;
-    }
-
-    .location-btn:hover {
-      background: rgba(46, 204, 113, 0.1);
-      border-color: rgba(46, 204, 113, 0.5);
-    }
-
-    .location-btn.loading {
-      pointer-events: none;
-      opacity: 0.7;
-    }
-
-    .location-btn.success {
-      border-color: rgba(46, 204, 113, 0.5);
-      background: rgba(46, 204, 113, 0.1);
-      color: var(--success);
-    }
-
-    .location-btn svg {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-    }
-
-    .location-text {
-      flex: 1;
-      font-size: 12px;
-    }
-
-    /* ====== Coupon Section ====== */
-    .coupon-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    .coupon-input {
-      flex: 1;
-      border: 1.5px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      background: rgba(255, 255, 255, 0.04);
-      color: #fff;
-      outline: none;
-      transition: all 0.25s;
-    }
-
-    .coupon-input::placeholder {
-      color: rgba(255, 255, 255, 0.2);
-      text-transform: none;
-      font-weight: 400;
-      letter-spacing: 0;
-    }
-
-    .coupon-input:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(246, 196, 0, 0.08);
-    }
-
-    .coupon-apply-btn {
+      width: 36px; height: 36px;
       border: none;
-      border-radius: 12px;
-      padding: 0 20px;
-      background: linear-gradient(135deg, var(--gold), #d4a300);
-      color: #1a1a2e;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
+      border-radius: 50%;
+      background: #111;
+      color: #fff;
+      display: grid; place-items: center;
       cursor: pointer;
-      transition: all 0.2s;
+      box-shadow: var(--shadow-soft);
+      transition: transform .2s ease;
+      flex-shrink: 0;
+    }
+    .back-btn:hover { transform: translateY(-2px) }
+    .back-btn svg { width: 17px; height: 17px }
+
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 44px;
+      letter-spacing: 2.5px;
+      line-height: 1;
+      color: #111;
+      text-transform: uppercase;
       white-space: nowrap;
     }
 
-    .coupon-apply-btn:hover {
-      transform: scale(1.02);
-      box-shadow: 0 4px 16px rgba(246, 196, 0, 0.3);
-    }
-
-    .coupon-msg {
+    .topbar-title {
       font-size: 11px;
-      margin-top: 8px;
-      font-weight: 600;
-      display: none;
-    }
-
-    .coupon-msg.success {
-      color: var(--success);
-      display: block;
-    }
-
-    .coupon-msg.error {
-      color: var(--accent);
-      display: block;
-    }
-
-    .coupon-tags {
-      display: flex;
-      gap: 6px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .coupon-tag {
-      background: rgba(246, 196, 0, 0.08);
-      border: 1px solid rgba(246, 196, 0, 0.2);
-      border-radius: 8px;
-      padding: 4px 10px;
-      font-size: 10px;
       font-weight: 700;
-      color: var(--gold);
-      font-family: 'Barlow Condensed', sans-serif;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: all 0.2s;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-left: auto;
     }
 
-    .coupon-tag:hover {
-      background: rgba(246, 196, 0, 0.15);
-      border-color: rgba(246, 196, 0, 0.4);
+    /* ── CONTENT ── */
+    .content { padding: 12px 16px; }
+
+    /* ── CARD ── */
+    .card {
+      background: #fff;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+      animation: fadeInUp .35s ease both;
     }
 
-    /* ====== Payment Options ====== */
-    .pay-opt {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      border: 1.5px solid rgba(255, 255, 255, 0.06);
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      transition: all 0.25s;
-      background: rgba(255, 255, 255, 0.02);
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
+    .card:nth-child(1) { animation-delay: .00s }
+    .card:nth-child(2) { animation-delay: .05s }
+    .card:nth-child(3) { animation-delay: .10s }
+    .card:nth-child(4) { animation-delay: .15s }
+    .card:nth-child(5) { animation-delay: .20s }
+    .card:nth-child(6) { animation-delay: .25s }
+    .card:nth-child(7) { animation-delay: .30s }
 
-    .pay-opt:hover {
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    .pay-opt.active {
-      border-color: var(--accent);
-      background: rgba(230, 57, 70, 0.06);
-      box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.08);
-    }
-
-    .pay-opt input[type="radio"] {
-      accent-color: var(--accent);
-      transform: scale(1.2);
-      cursor: pointer;
-    }
-
-    .pay-opt-content {
-      flex: 1;
-    }
-
-    .pay-opt-text {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: 0.3px;
-    }
-
-    .pay-opt-sub {
+    .card-header {
       font-size: 11px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .pay-opt-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.06);
-      display: grid;
-      place-items: center;
-      font-size: 18px;
-    }
-
-    /* ====== Order Summary ====== */
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--muted);
-    }
-
-    .summary-row span:last-child {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .discount-row {
-      color: var(--success) !important;
-    }
-
-    .discount-row span {
-      color: var(--success) !important;
-    }
-
-    .summary-divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-      margin: 8px 0;
-    }
-
-    .summary-total {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0 4px;
-      border-top: 1.5px solid rgba(255, 255, 255, 0.08);
-      margin-top: 6px;
-    }
-
-    .summary-total-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px;
       font-weight: 800;
-      letter-spacing: 0.5px;
-    }
-
-    .summary-total-val {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
       color: var(--accent);
-      letter-spacing: 1px;
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 7px;
     }
+    .card-header svg { width: 14px; height: 14px; opacity: .8 }
 
-    /* ====== Confirm Button ====== */
-    .confirm-btn {
-      width: 100%;
-      border: none;
-      border-radius: 16px;
-      padding: 16px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: #fff;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-      box-shadow: 0 8px 32px var(--accent-glow);
-      transition: all 0.3s;
-    }
-
-    .confirm-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(230, 57, 70, 0.4);
-    }
-
-    .confirm-btn:active {
-      transform: translateY(0);
-    }
-
-    .confirm-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transition: 0.5s;
-    }
-
-    .confirm-btn:hover::before {
-      left: 100%;
-    }
-
-    /* ====== Loading State ====== */
+    /* ── LOADING ── */
     #loading {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 80px 20px;
-      gap: 16px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 80px 20px; gap: 14px;
     }
-
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(255, 255, 255, 0.1);
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--line);
       border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg) } }
+    #loading p { font-size: 13px; color: var(--muted); font-weight: 600; }
+
+    /* ── ORDER ITEMS ── */
+    .cart-item {
+      display: flex; gap: 14px; align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .cart-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .ci-img {
+      width: 72px; height: 88px;
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 30%),
+        linear-gradient(180deg, #131313, #262626);
+      display: grid; place-items: center;
+      flex-shrink: 0; overflow: hidden;
+    }
+    .ci-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+    .ci-img-placeholder { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: rgba(255,255,255,.55); }
+
+    .ci-info { flex: 1; }
+    .ci-name { font-size: 14px; font-weight: 800; margin-bottom: 3px; line-height: 1.3; }
+    .ci-meta { font-size: 11px; color: var(--muted); margin-bottom: 7px; }
+    .ci-price { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--accent); letter-spacing: .8px; }
+
+    .ci-qty { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .qty-btn {
+      width: 26px; height: 26px;
+      border: 1.5px solid var(--line);
+      border-radius: 7px;
+      background: #f8f8f8;
+      color: var(--text);
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; display: grid; place-items: center;
+      transition: all .18s;
+    }
+    .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .qty-display { font-size: 14px; font-weight: 800; min-width: 20px; text-align: center; }
+
+    /* Single product row */
+    .product-row { display: flex; gap: 14px; align-items: center; }
+    .product-img {
+      width: 80px; height: 100px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 30%),
+        linear-gradient(180deg, #131313, #262626);
+      display: grid; place-items: center;
+      flex-shrink: 0; overflow: hidden;
+    }
+    .product-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+    .product-img-placeholder { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: rgba(255,255,255,.55); }
+    .product-info { flex: 1; }
+    .product-name { font-size: 16px; font-weight: 900; margin-bottom: 4px; }
+    .product-team { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .product-price { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--accent); letter-spacing: 1px; }
+
+    /* Empty cart */
+    .empty-cart-hint { text-align: center; padding: 20px 0 8px; }
+    .empty-cart-hint svg { width: 44px; height: 44px; opacity: .18; margin-bottom: 10px; }
+    .empty-cart-hint p { font-size: 13px; color: var(--muted); font-weight: 500; line-height: 1.6; }
+    .browse-btn {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 10px 24px;
+      border: 1.5px solid #222;
+      border-radius: 99px;
+      font-size: 13px; font-weight: 700;
+      color: var(--text);
+      transition: all .2s;
+    }
+    .browse-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* ── SIZE SELECTOR ── */
+    .size-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+    .size-btn {
+      width: 46px; height: 40px;
+      border-radius: 10px;
+      border: 1.5px solid var(--line);
+      background: #fff;
+      font-size: 12px; font-weight: 700;
+      cursor: pointer; display: grid; place-items: center;
+      color: var(--text); transition: all .2s;
+    }
+    .size-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .size-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(198,31,47,.25); }
+
+    /* ── SAVED ADDRESSES ── */
+    .saved-addr {
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all .22s;
+      display: flex; align-items: flex-start; gap: 12px;
+      background: #fff;
+    }
+    .saved-addr:hover { border-color: var(--accent); }
+    .saved-addr.selected { border-color: var(--accent); background: rgba(198,31,47,.04); box-shadow: 0 0 0 3px rgba(198,31,47,.08); }
+
+    .saved-addr-radio {
+      width: 18px; height: 18px;
+      border: 2px solid #ccc;
+      border-radius: 50%;
+      flex-shrink: 0; margin-top: 2px;
+      display: grid; place-items: center;
+      transition: border-color .2s;
+    }
+    .saved-addr.selected .saved-addr-radio { border-color: var(--accent); }
+    .saved-addr.selected .saved-addr-radio::after {
+      content: ''; width: 8px; height: 8px;
+      background: var(--accent); border-radius: 50%;
     }
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
+    .addr-info { flex: 1; }
+    .addr-tag {
+      font-size: 9px; font-weight: 800;
+      background: rgba(198,31,47,.1); color: var(--accent);
+      padding: 2px 8px; border-radius: 99px;
+      text-transform: uppercase; letter-spacing: .5px;
+      display: inline-block; margin-bottom: 4px;
     }
+    .addr-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    .addr-text { font-size: 11px; color: var(--muted); line-height: 1.5; }
 
-    .loading-text {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
+    .new-addr-toggle {
+      display: flex; align-items: center; gap: 10px;
+      border: 1.5px dashed rgba(0,0,0,.14);
+      border-radius: 12px;
+      padding: 11px 14px;
       color: var(--muted);
-      letter-spacing: 1px;
+      font-size: 12px; font-weight: 700;
+      cursor: pointer; transition: all .22s;
+      margin-top: 4px;
     }
+    .new-addr-toggle:hover { border-color: var(--accent); color: var(--accent); }
+    .new-addr-toggle svg { width: 15px; height: 15px; }
 
-    /* ====== Secure Badge ====== */
-    .secure-badge {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 16px;
-      padding: 10px;
-      font-size: 11px;
-      font-weight: 600;
+    /* ── FORM ── */
+    .form-group { margin-bottom: 12px; }
+    .form-group label {
+      display: block;
+      font-size: 10px; font-weight: 700;
       color: var(--muted);
-      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+      text-transform: uppercase; letter-spacing: 1.2px;
     }
-
-    .secure-badge svg {
-      width: 14px;
-      height: 14px;
-      opacity: 0.5;
+    .form-input {
+      width: 100%;
+      border: 1.5px solid rgba(0,0,0,.12);
+      border-radius: 12px;
+      padding: 11px 13px;
+      font-size: 13px; font-weight: 500;
+      background: #fafafa; color: var(--text);
+      outline: none; transition: all .22s;
     }
+    .form-input::placeholder { color: #bbb; }
+    .form-input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(198,31,47,.08); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    textarea.form-input { resize: none; min-height: 68px; line-height: 1.5; }
 
-    /* ====== Animations ====== */
-    .fade-in {
-      animation: fadeIn 0.5s ease both;
+    /* ── LOCATION BTN ── */
+    .location-btn {
+      display: flex; align-items: center; gap: 9px;
+      border: 1.5px dashed rgba(30,140,74,.35);
+      border-radius: 12px;
+      padding: 10px 14px;
+      background: rgba(30,140,74,.05); color: var(--success);
+      font-size: 12px; font-weight: 700;
+      cursor: pointer; width: 100%;
+      transition: all .22s; margin-top: 8px;
     }
+    .location-btn:hover { background: rgba(30,140,74,.1); border-color: rgba(30,140,74,.55); }
+    .location-btn.loading { pointer-events: none; opacity: .65; }
+    .location-btn.success { border-style: solid; border-color: rgba(30,140,74,.5); background: rgba(30,140,74,.08); }
+    .location-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(16px);
-      }
+    .save-addr-row { display: flex; align-items: center; gap: 9px; margin-top: 10px; }
+    .save-addr-checkbox { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+    .save-addr-row label { font-size: 12px; color: var(--muted); cursor: pointer; }
 
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    /* ── COUPON ── */
+    .coupon-row { display: flex; gap: 8px; }
+    .coupon-input {
+      flex: 1;
+      border: 1.5px solid rgba(0,0,0,.12);
+      border-radius: 12px;
+      padding: 11px 13px;
+      font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      background: #fafafa; color: var(--text);
+      outline: none; transition: all .22s;
     }
-
-    .card:nth-child(1) {
-      animation-delay: 0s;
+    .coupon-input::placeholder { color: #bbb; text-transform: none; font-weight: 400; letter-spacing: 0; }
+    .coupon-input:focus { border-color: var(--gold); background: #fff; box-shadow: 0 0 0 3px rgba(196,154,0,.1); }
+    .coupon-apply-btn {
+      border: none; border-radius: 12px; padding: 0 18px;
+      background: linear-gradient(135deg, #c49a00, #9a7800);
+      color: #fff; font-size: 12px; font-weight: 800; letter-spacing: .5px;
+      cursor: pointer; transition: all .2s; white-space: nowrap;
     }
-
-    .card:nth-child(2) {
-      animation-delay: 0.05s;
+    .coupon-apply-btn:hover { transform: scale(1.03); box-shadow: 0 4px 14px rgba(196,154,0,.3); }
+    .coupon-msg { font-size: 11px; margin-top: 8px; font-weight: 600; display: none; }
+    .coupon-msg.success { color: var(--success); display: block; }
+    .coupon-msg.error { color: var(--accent); display: block; }
+    .coupon-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .coupon-tag {
+      background: rgba(196,154,0,.08);
+      border: 1px solid rgba(196,154,0,.25);
+      border-radius: 99px;
+      padding: 4px 11px;
+      font-size: 10px; font-weight: 700; color: var(--gold);
+      letter-spacing: .5px; cursor: pointer; transition: all .2s;
     }
+    .coupon-tag:hover { background: rgba(196,154,0,.15); border-color: rgba(196,154,0,.45); }
 
-    .card:nth-child(3) {
-      animation-delay: 0.1s;
+    /* ── PAYMENT OPTIONS ── */
+    .pay-opt {
+      display: flex; align-items: center; gap: 13px;
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      padding: 13px 15px; margin-bottom: 10px;
+      cursor: pointer; transition: all .22s; background: #fff;
     }
+    .pay-opt:hover { border-color: rgba(198,31,47,.3); background: rgba(198,31,47,.02); }
+    .pay-opt.active { border-color: var(--accent); background: rgba(198,31,47,.04); box-shadow: 0 0 0 3px rgba(198,31,47,.08); }
+    .pay-opt input[type="radio"] { accent-color: var(--accent); transform: scale(1.2); cursor: pointer; }
+    .pay-opt-content { flex: 1; }
+    .pay-opt-text { font-size: 14px; font-weight: 800; }
+    .pay-opt-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .pay-opt-icon { width: 38px; height: 38px; border-radius: 10px; background: #f4f4f4; display: grid; place-items: center; font-size: 18px; }
 
-    .card:nth-child(4) {
-      animation-delay: 0.15s;
+    /* ── ORDER SUMMARY ── */
+    .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 13px; font-weight: 500; color: var(--muted); }
+    .summary-row span:last-child { color: var(--text); font-weight: 700; }
+    .discount-row span { color: var(--success) !important; }
+    .summary-divider { height: 1px; background: var(--line); margin: 8px 0; }
+    .summary-total { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 2px; border-top: 2px solid #111; margin-top: 6px; }
+    .summary-total-label { font-size: 16px; font-weight: 900; }
+    .summary-total-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--accent); letter-spacing: 1px; }
+
+    /* ── CONFIRM BUTTON ── */
+    .confirm-btn {
+      width: 100%;
+      border: none; border-radius: 14px; padding: 16px;
+      font-size: 14px; font-weight: 800; letter-spacing: .5px;
+      color: #fff; cursor: pointer;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      box-shadow: 0 10px 28px rgba(198,31,47,.28);
+      transition: transform .2s ease, box-shadow .2s ease;
     }
+    .confirm-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(198,31,47,.38); }
+    .confirm-btn:active { transform: translateY(0); }
 
-    .card:nth-child(5) {
-      animation-delay: 0.2s;
+    /* ── SECURE BADGE ── */
+    .secure-badge { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 14px; padding: 10px; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .4px; }
+    .secure-badge svg { width: 13px; height: 13px; opacity: .5; }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: 6px;
+      background: linear-gradient(180deg, #111, #1a1a1a);
+      color: #fff;
+      padding: 22px 16px 24px;
+      border-radius: 24px 24px 0 0;
     }
+    .footer h4 { font-size: 18px; margin-bottom: 8px; font-weight: 900; }
+    .footer p { font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: 12px; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 10px 14px; font-size: 12px; margin-bottom: 14px; }
+    .footer-links a { color: rgba(255,255,255,.9); }
+    .copy { font-size: 11px; color: rgba(255,255,255,.55); border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; }
 
-    .card:nth-child(6) {
-      animation-delay: 0.25s;
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position: fixed;
+      left: 50%; transform: translateX(-50%);
+      bottom: 12px;
+      width: min(100%, calc(var(--maxw) - 16px));
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      display: flex; justify-content: space-around;
+      padding: 10px 8px;
+      z-index: 50;
     }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: #555; min-width: 56px; cursor: pointer; text-decoration: none; transition: color .2s ease; }
+    .nav-item svg { width: 19px; height: 19px }
+    .nav-item.active { color: var(--accent); font-weight: 800; }
+    .nav-item:hover:not(.active) { color: #111; }
 
-    /* ====== Responsive ====== */
     @media (max-width: 380px) {
-      .content {
-        padding: 12px 14px;
-      }
-
-      .card {
-        padding: 14px;
-      }
-
-      .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-      }
-
-      .product-name {
-        font-size: 16px;
-      }
-
-      .product-price {
-        font-size: 22px;
-      }
-
-      .summary-total-val {
-        font-size: 24px;
-      }
+      .form-row { grid-template-columns: 1fr; gap: 0; }
+      .logo { font-size: 40px }
     }
+
+    @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
   </style>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
 <body>
   <div class="page">
-    <!-- Topbar -->
-    <div class="topbar">
-      <button class="back-btn" onclick="history.back()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg>
-      </button>
-      <div class="topbar-logo">JERSIFY</div>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="back-btn" onclick="history.back()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <div class="logo">Jersify</div>
+      </div>
       <div class="topbar-title">Checkout</div>
-    </div>
+    </header>
 
-    <!-- Loading -->
+    <!-- LOADING -->
     <div id="loading">
-      <div class="loading-spinner"></div>
-      <div class="loading-text">Loading your order...</div>
+      <div class="spinner"></div>
+      <p>Loading your order…</p>
     </div>
 
-    <!-- Checkout Content -->
+    <!-- CHECKOUT CONTENT -->
     <div id="checkoutContent" style="display:none">
       <div class="content">
 
-        <!-- Product Card -->
-        <div class="card fade-in">
+        <!-- ORDER ITEMS -->
+        <div class="card" id="orderItemsCard">
           <div class="card-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
-              <line x1="7" y1="7" x2="7.01" y2="7" />
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+              <line x1="7" y1="7" x2="7.01" y2="7"/>
             </svg>
             Your Order
           </div>
-          <div class="product-row">
-            <div class="product-img" id="productImg">
-              <span class="product-img-placeholder">10</span>
-            </div>
-            <div class="product-info">
-              <div class="product-name" id="productTitle">Product Name</div>
-              <div class="product-team" id="productSub">Details</div>
-              <div class="product-price" id="productPrice">&#8377;0</div>
-            </div>
-          </div>
+          <div id="orderItemsBody"></div>
         </div>
 
-        <!-- Size Selection -->
-        <div class="card fade-in">
+        <!-- SIZE (single product only) -->
+        <div class="card" id="sizeCard" style="display:none;">
           <div class="card-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-              <line x1="3" y1="9" x2="21" y2="9" />
-              <line x1="9" y1="21" x2="9" y2="9" />
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <line x1="3" y1="9" x2="21" y2="9"/>
+              <line x1="9" y1="21" x2="9" y2="9"/>
             </svg>
             Select Size
           </div>
-          <div class="size-grid">
-            <button class="size-btn" onclick="selectSize(this)">XS</button>
-            <button class="size-btn" onclick="selectSize(this)">S</button>
-            <button class="size-btn active" onclick="selectSize(this)">M</button>
-            <button class="size-btn" onclick="selectSize(this)">L</button>
-            <button class="size-btn" onclick="selectSize(this)">XL</button>
-            <button class="size-btn" onclick="selectSize(this)">XXL</button>
-          </div>
+          <div class="size-grid" id="sizeGrid"></div>
         </div>
 
-        <!-- Shipping Address -->
-        <div class="card fade-in">
+        <!-- SHIPPING ADDRESS -->
+        <div class="card">
           <div class="card-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-              <circle cx="12" cy="10" r="3" />
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
             </svg>
             Shipping Address
           </div>
-          <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="custName" class="form-input" placeholder="Enter your full name">
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Email</label>
-              <input type="email" id="custEmail" class="form-input" placeholder="you@email.com">
-            </div>
-            <div class="form-group">
-              <label>Phone</label>
-              <input type="tel" id="custPhone" class="form-input" placeholder="+91 9876543210">
+
+          <div id="savedAddressesSection" style="display:none;">
+            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;">Saved</div>
+            <div id="savedAddressList"></div>
+            <div class="new-addr-toggle" id="newAddrToggle" onclick="toggleNewAddress()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+              Add New Address
             </div>
           </div>
-          <div class="form-group">
-            <label>Street Address</label>
-            <textarea id="custAddress" class="form-input" placeholder="House no, Street, Landmark..."></textarea>
+
+          <div id="addressForm">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="custName" class="form-input" placeholder="Enter your full name">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="custEmail" class="form-input" placeholder="you@email.com">
+              </div>
+              <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="custPhone" class="form-input" placeholder="+91 98765 43210">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Street Address</label>
+              <textarea id="custAddress" class="form-input" placeholder="House no, Street, Landmark…"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>City</label>
+                <input type="text" id="custCity" class="form-input" placeholder="City">
+              </div>
+              <div class="form-group">
+                <label>State</label>
+                <input type="text" id="custState" class="form-input" placeholder="State">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Pincode</label>
+                <input type="text" id="custPincode" class="form-input" placeholder="400001" maxlength="6">
+              </div>
+              <div class="form-group">
+                <label>Country</label>
+                <input type="text" id="custCountry" class="form-input" value="India">
+              </div>
+            </div>
+            <button class="location-btn" id="locationBtn" onclick="getLocation()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="2" x2="12" y2="4"/>
+                <line x1="12" y1="20" x2="12" y2="22"/>
+                <line x1="2" y1="12" x2="4" y2="12"/>
+                <line x1="20" y1="12" x2="22" y2="12"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <span id="locationText">Auto Detect My Location</span>
+            </button>
+            <div class="save-addr-row" id="saveAddrRow">
+              <input type="checkbox" id="saveAddrCheck" class="save-addr-checkbox">
+              <label for="saveAddrCheck">Save this address for future orders</label>
+            </div>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>City</label>
-              <input type="text" id="custCity" class="form-input" placeholder="City">
-            </div>
-            <div class="form-group">
-              <label>State</label>
-              <input type="text" id="custState" class="form-input" placeholder="State">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Pincode</label>
-              <input type="text" id="custPincode" class="form-input" placeholder="400001" maxlength="6">
-            </div>
-            <div class="form-group">
-              <label>Country</label>
-              <input type="text" id="custCountry" class="form-input" value="India" placeholder="India">
-            </div>
-          </div>
-          <button class="location-btn" id="locationBtn" onclick="getLocation()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="2" x2="12" y2="4" />
-              <line x1="12" y1="20" x2="12" y2="22" />
-              <line x1="2" y1="12" x2="4" y2="12" />
-              <line x1="20" y1="12" x2="22" y2="12" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-            <span class="location-text" id="locationText">Use My Current Location</span>
-          </button>
         </div>
 
-        <!-- Coupon Code -->
-        <div class="card fade-in">
+        <!-- COUPON -->
+        <div class="card">
           <div class="card-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 12 20 22 4 22 4 12" />
-              <rect x="2" y="7" width="20" height="5" rx="1" />
-              <line x1="12" y1="22" x2="12" y2="7" />
-              <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z" />
-              <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z" />
+              <polyline points="20 12 20 22 4 22 4 12"/>
+              <rect x="2" y="7" width="20" height="5" rx="1"/>
+              <line x1="12" y1="22" x2="12" y2="7"/>
+              <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/>
+              <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>
             </svg>
             Coupon Code
           </div>
@@ -870,12 +604,12 @@
           </div>
         </div>
 
-        <!-- Payment Method -->
-        <div class="card fade-in">
+        <!-- PAYMENT METHOD -->
+        <div class="card">
           <div class="card-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-              <line x1="1" y1="10" x2="23" y2="10" />
+              <rect x="1" y="4" width="22" height="16" rx="2"/>
+              <line x1="1" y1="10" x2="23" y2="10"/>
             </svg>
             Payment Method
           </div>
@@ -897,53 +631,92 @@
           </label>
         </div>
 
-        <!-- Order Summary -->
-        <div class="card fade-in">
+        <!-- ORDER SUMMARY -->
+        <div class="card">
           <div class="card-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="8" y1="6" x2="21" y2="6" />
-              <line x1="8" y1="12" x2="21" y2="12" />
-              <line x1="8" y1="18" x2="21" y2="18" />
-              <line x1="3" y1="6" x2="3.01" y2="6" />
-              <line x1="3" y1="12" x2="3.01" y2="12" />
-              <line x1="3" y1="18" x2="3.01" y2="18" />
+              <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
             </svg>
             Order Summary
           </div>
           <div class="summary-row">
             <span>Subtotal</span>
-            <span id="subTotal">&#8377;0</span>
+            <span id="subTotal">₹0</span>
           </div>
           <div class="summary-row">
             <span>Shipping</span>
-            <span style="color: var(--success)">FREE</span>
+            <span style="color:var(--success);font-weight:700;">FREE</span>
           </div>
           <div class="summary-row discount-row" id="discountRow" style="display:none;">
             <span>Discount</span>
-            <span id="discountVal">-&#8377;0</span>
+            <span id="discountVal">-₹0</span>
           </div>
           <div class="summary-divider"></div>
           <div class="summary-total">
             <div class="summary-total-label">Total</div>
-            <div class="summary-total-val" id="finalTotal">&#8377;0</div>
+            <div class="summary-total-val" id="finalTotal">₹0</div>
           </div>
         </div>
 
-        <!-- Confirm Button -->
-        <button class="confirm-btn" onclick="processOrder()">
-          CONFIRM ORDER &rarr;
-        </button>
+        <button class="confirm-btn" onclick="processOrder()">Confirm Order →</button>
 
         <div class="secure-badge">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0110 0v4" />
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0110 0v4"/>
           </svg>
           Secured with 256-bit SSL Encryption
         </div>
       </div>
+
+      <footer class="footer">
+        <h4>JERSIFY</h4>
+        <p>Premium football jerseys, clubwear, and fan drops designed for people who want style on and off the pitch.</p>
+        <div class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="checkout.html">Cart</a>
+          <a href="profile.html">Profile</a>
+        </div>
+        <div class="copy">© 2025 Jersify. All rights reserved.</div>
+      </footer>
     </div>
+
   </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <a href="index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>
+      </svg>
+      <div>Home</div>
+    </a>
+    <a href="shop.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 10h16"/><path d="M5 10l1-5h12l1 5"/>
+        <path d="M4 10v8h16v-8"/><path d="M9 18v-4h6v4"/>
+      </svg>
+      <div>Shop</div>
+    </a>
+    <a href="checkout.html" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 6h15l-1.5 9h-12z"/>
+        <circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>
+      </svg>
+      <div>Cart</div>
+    </a>
+    <a href="profile.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      <div>Profile</div>
+    </a>
+  </nav>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -962,280 +735,335 @@
     const db = getFirestore(app);
 
     let orderPrice = 0;
-    let orderItem = "";
+    let orderItems = [];
     let discountAmount = 0;
     let couponApplied = false;
+    let isCartMode = false;
+    let selectedSavedAddr = null;
+    let newAddrVisible = true;
 
-    // Available coupons
     const COUPONS = {
       'JERSIFY10': { type: 'percent', value: 10, desc: '10% OFF' },
-      'FIRST20': { type: 'percent', value: 20, desc: '20% OFF' },
-      'SAVE15': { type: 'percent', value: 15, desc: '15% OFF' },
-      'FLAT200': { type: 'flat', value: 200, desc: 'Flat Rs.200 OFF' },
-      'JERSEY50': { type: 'flat', value: 50, desc: 'Flat Rs.50 OFF' }
+      'FIRST20':   { type: 'percent', value: 20, desc: '20% OFF' },
+      'SAVE15':    { type: 'percent', value: 15, desc: '15% OFF' },
+      'FLAT200':   { type: 'flat',    value: 200, desc: 'Flat ₹200 OFF' },
+      'JERSEY50':  { type: 'flat',    value: 50,  desc: 'Flat ₹50 OFF' }
     };
 
-    // Size selector
+    function getCart() {
+      try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; }
+    }
+    function saveCart(c) { localStorage.setItem('jersify_cart', JSON.stringify(c)); }
+
+    function getSavedAddresses() {
+      try { return JSON.parse(localStorage.getItem('jersify_addresses') || '[]'); } catch { return []; }
+    }
+    function saveAddress(addrObj) {
+      const addrs = getSavedAddresses();
+      addrs.unshift({ ...addrObj, id: Date.now(), tag: 'Home' });
+      localStorage.setItem('jersify_addresses', JSON.stringify(addrs.slice(0, 5)));
+    }
+
+    function renderSavedAddresses() {
+      const addrs = getSavedAddresses();
+      const section = document.getElementById('savedAddressesSection');
+      const list = document.getElementById('savedAddressList');
+      if (!addrs.length) { section.style.display = 'none'; newAddrVisible = true; return; }
+
+      section.style.display = 'block';
+      list.innerHTML = addrs.map((a, i) => `
+        <div class="saved-addr${i === 0 ? ' selected' : ''}" onclick="selectSavedAddr(${i}, '${encodeURIComponent(JSON.stringify(a))}')" id="savedAddr_${i}">
+          <div class="saved-addr-radio"></div>
+          <div class="addr-info">
+            <span class="addr-tag">${a.tag || 'Home'}</span>
+            <div class="addr-name">${a.name}</div>
+            <div class="addr-text">${a.address}, ${a.city}, ${a.state} – ${a.pincode}</div>
+          </div>
+        </div>`).join('');
+
+      if (addrs.length > 0) selectSavedAddr(0, encodeURIComponent(JSON.stringify(addrs[0])));
+      document.getElementById('addressForm').style.display = 'none';
+      document.getElementById('saveAddrRow').style.display = 'none';
+      newAddrVisible = false;
+    }
+
+    window.selectSavedAddr = function(idx, encoded) {
+      document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected'));
+      const el = document.getElementById(`savedAddr_${idx}`);
+      if (el) el.classList.add('selected');
+      selectedSavedAddr = JSON.parse(decodeURIComponent(encoded));
+      document.getElementById('addressForm').style.display = 'none';
+      document.getElementById('saveAddrRow').style.display = 'none';
+      newAddrVisible = false;
+    };
+
+    window.toggleNewAddress = function() {
+      newAddrVisible = !newAddrVisible;
+      document.getElementById('addressForm').style.display = newAddrVisible ? 'block' : 'none';
+      document.getElementById('saveAddrRow').style.display = newAddrVisible ? 'flex' : 'none';
+      if (newAddrVisible) {
+        selectedSavedAddr = null;
+        document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected'));
+      }
+    };
+
     window.selectSize = (btn) => {
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     };
 
-    // Payment method selector
     window.selPay = (method) => {
       document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
-      if (method === 'razorpay') document.getElementById('pay_rzp').parentElement.classList.add('active');
-      else document.getElementById('pay_cod').parentElement.classList.add('active');
+      document.getElementById(method === 'razorpay' ? 'pay_rzp' : 'pay_cod').parentElement.classList.add('active');
     };
 
-    // Location auto-fill
     window.getLocation = () => {
       const btn = document.getElementById('locationBtn');
       const text = document.getElementById('locationText');
-
-      if (!navigator.geolocation) {
-        text.textContent = 'Geolocation not supported';
-        return;
-      }
-
+      if (!navigator.geolocation) { text.textContent = 'Geolocation not supported'; return; }
       btn.classList.add('loading');
-      text.textContent = 'Detecting location...';
-
+      text.textContent = 'Detecting your location…';
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
+        async (pos) => {
           try {
-            const { latitude, longitude } = position.coords;
-            // Use reverse geocoding
+            const { latitude, longitude } = pos.coords;
             const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`);
             const data = await resp.json();
-
-            if (data && data.address) {
-              const addr = data.address;
-              document.getElementById('custAddress').value = [
-                addr.house_number, addr.road, addr.neighbourhood, addr.suburb
-              ].filter(Boolean).join(', ');
-              document.getElementById('custCity').value = addr.city || addr.town || addr.village || '';
-              document.getElementById('custState').value = addr.state || '';
-              document.getElementById('custPincode').value = addr.postcode || '';
-              document.getElementById('custCountry').value = addr.country || 'India';
-
-              text.textContent = 'Location detected successfully!';
+            if (data?.address) {
+              const a = data.address;
+              document.getElementById('custAddress').value = [a.house_number, a.road, a.neighbourhood, a.suburb].filter(Boolean).join(', ');
+              document.getElementById('custCity').value = a.city || a.town || a.village || '';
+              document.getElementById('custState').value = a.state || '';
+              document.getElementById('custPincode').value = a.postcode || '';
+              document.getElementById('custCountry').value = a.country || 'India';
+              text.textContent = 'Location detected!';
               btn.classList.remove('loading');
               btn.classList.add('success');
             }
-          } catch (err) {
-            console.error('Geocoding error:', err);
-            text.textContent = 'Could not detect address. Enter manually.';
-            btn.classList.remove('loading');
-          }
+          } catch { text.textContent = 'Could not fetch address. Enter manually.'; btn.classList.remove('loading'); }
         },
-        (error) => {
-          console.error('Location error:', error);
-          text.textContent = 'Location access denied. Enter manually.';
-          btn.classList.remove('loading');
-        },
+        () => { text.textContent = 'Location denied. Enter manually.'; btn.classList.remove('loading'); },
         { enableHighAccuracy: true, timeout: 10000 }
       );
     };
 
-    // Coupon functions
-    window.useCoupon = (code) => {
-      document.getElementById('couponInput').value = code;
-      applyCoupon();
-    };
+    window.useCoupon = (code) => { document.getElementById('couponInput').value = code; applyCoupon(); };
 
     window.applyCoupon = () => {
       const code = document.getElementById('couponInput').value.trim().toUpperCase();
       const msgEl = document.getElementById('couponMsg');
-
-      if (!code) {
-        msgEl.textContent = 'Please enter a coupon code.';
-        msgEl.className = 'coupon-msg error';
-        return;
-      }
-
-      if (couponApplied) {
-        msgEl.textContent = 'A coupon is already applied. Remove it first.';
-        msgEl.className = 'coupon-msg error';
-        return;
-      }
-
+      if (!code) { msgEl.textContent = 'Please enter a coupon code.'; msgEl.className = 'coupon-msg error'; return; }
+      if (couponApplied) { msgEl.textContent = 'A coupon is already applied.'; msgEl.className = 'coupon-msg error'; return; }
       const coupon = COUPONS[code];
-      if (!coupon) {
-        msgEl.textContent = 'Invalid coupon code. Please try again.';
-        msgEl.className = 'coupon-msg error';
-        return;
-      }
-
-      // Apply discount
-      if (coupon.type === 'percent') {
-        discountAmount = Math.round(orderPrice * coupon.value / 100);
-      } else {
-        discountAmount = coupon.value;
-      }
-
+      if (!coupon) { msgEl.textContent = 'Invalid coupon code. Try another.'; msgEl.className = 'coupon-msg error'; return; }
+      discountAmount = coupon.type === 'percent' ? Math.round(orderPrice * coupon.value / 100) : coupon.value;
       if (discountAmount > orderPrice) discountAmount = orderPrice;
       couponApplied = true;
-
-      msgEl.textContent = `${coupon.desc} applied! You save Rs.${discountAmount}`;
+      msgEl.textContent = `${coupon.desc} applied! You save ₹${discountAmount}`;
       msgEl.className = 'coupon-msg success';
-
-      // Update totals
       document.getElementById('discountRow').style.display = 'flex';
-      document.getElementById('discountVal').textContent = `-\u20B9${discountAmount}`;
+      document.getElementById('discountVal').textContent = `-₹${discountAmount}`;
       updateTotal();
     };
 
     function updateTotal() {
-      const finalPrice = orderPrice - discountAmount;
-      document.getElementById('finalTotal').textContent = `\u20B9${finalPrice}`;
+      document.getElementById('finalTotal').textContent = `₹${(orderPrice - discountAmount).toLocaleString('en-IN')}`;
     }
 
-    // Load product data
+    window.changeQty = function(key, delta) {
+      const cart = getCart();
+      const item = cart.find(i => i.key === key);
+      if (!item) return;
+      item.qty = Math.max(1, item.qty + delta);
+      saveCart(cart);
+      recalcCartTotal();
+      const safeKey = key.replace(/[^a-zA-Z0-9]/g, '_');
+      const el = document.getElementById(`qty_${safeKey}`);
+      if (el) el.textContent = item.qty;
+    };
+
+    function recalcCartTotal() {
+      const cart = getCart();
+      orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      discountAmount = 0; couponApplied = false;
+      document.getElementById('subTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
+      document.getElementById('finalTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
+      document.getElementById('couponMsg').className = 'coupon-msg';
+      document.getElementById('discountRow').style.display = 'none';
+    }
+
     window.addEventListener('DOMContentLoaded', async () => {
+      renderSavedAddresses();
       const params = new URLSearchParams(window.location.search);
       const pid = params.get('id');
+      const paramSize = params.get('size');
+      const cart = getCart();
+      const orderBody = document.getElementById('orderItemsBody');
 
-      if (!pid) {
-        document.getElementById('loading').innerHTML = `
-        <div class="loading-text" style="color: var(--accent);">No product selected!</div>
-        <a href="index.html" style="color:var(--muted);font-size:13px;">Go back to shop</a>
-      `;
-        return;
-      }
+      if (pid) {
+        try {
+          const docSnap = await getDoc(doc(db, "products", pid));
+          if (docSnap.exists()) {
+            const p = docSnap.data();
+            const name = p.name || 'Jersify Kit';
+            orderPrice = p.price ? parseInt(p.price) : 1499;
+            orderItems = [{ name, price: orderPrice, size: paramSize || 'M', team: p.team || '', imgUrl: p.imgUrl || '' }];
 
-      try {
-        const docSnap = await getDoc(doc(db, "products", pid));
-        if (docSnap.exists()) {
-          const p = docSnap.data();
-          orderItem = p.name || 'Jersify Kit';
-          orderPrice = p.price ? parseInt(p.price) : 1499;
+            orderBody.innerHTML = `
+              <div class="product-row">
+                <div class="product-img">
+                  ${p.imgUrl ? `<img src="${p.imgUrl}" alt="${name}">` : `<span class="product-img-placeholder">10</span>`}
+                </div>
+                <div class="product-info">
+                  <div class="product-name">${name}</div>
+                  <div class="product-team">${Array.isArray(p.team) ? p.team.join(', ') : (p.team || 'Official Kit')}</div>
+                  <div class="product-price">₹${orderPrice.toLocaleString('en-IN')}</div>
+                </div>
+              </div>`;
 
-          document.getElementById('productTitle').textContent = orderItem;
-          document.getElementById('productSub').textContent = p.team || p.type || 'Official Kit';
-          document.getElementById('productPrice').textContent = '\u20B9' + orderPrice;
-          document.getElementById('subTotal').textContent = '\u20B9' + orderPrice;
-          document.getElementById('finalTotal').textContent = '\u20B9' + orderPrice;
-
-          if (p.imgUrl) {
-            document.getElementById('productImg').innerHTML = `<img src="${p.imgUrl}" alt="${orderItem}">`;
+            document.getElementById('sizeCard').style.display = 'block';
+            const sizes = ['XS','S','M','L','XL','XXL'];
+            document.getElementById('sizeGrid').innerHTML = sizes.map(sz =>
+              `<button class="size-btn${(paramSize || 'M').toUpperCase() === sz ? ' active' : ''}" onclick="selectSize(this)">${sz}</button>`
+            ).join('');
+          } else {
+            orderBody.innerHTML = `<p style="color:var(--muted);font-size:13px;text-align:center;padding:12px 0">Product not found.</p>`;
           }
-
-          document.getElementById('loading').style.display = 'none';
-          document.getElementById('checkoutContent').style.display = 'block';
-        } else {
-          document.getElementById('loading').innerHTML = `
-          <div class="loading-text" style="color: var(--accent);">Product not found!</div>
-          <a href="index.html" style="color:var(--muted);font-size:13px;">Browse other kits</a>
-        `;
+        } catch (err) {
+          console.error(err);
+          orderBody.innerHTML = `<p style="color:var(--accent);font-size:13px;text-align:center;padding:12px 0">Error loading product.</p>`;
         }
-      } catch (err) {
-        console.error(err);
-        document.getElementById('loading').innerHTML = `
-        <div class="loading-text" style="color: var(--accent);">Error loading product</div>
-      `;
+        document.getElementById('subTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
+        document.getElementById('finalTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
+
+      } else if (cart.length > 0) {
+        isCartMode = true;
+        orderItems = cart;
+        orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
+
+        orderBody.innerHTML = cart.map(item => {
+          const safeKey = item.key.replace(/[^a-zA-Z0-9]/g, '_');
+          return `
+            <div class="cart-item">
+              <div class="ci-img">
+                ${item.imageUrl || item.imgUrl
+                  ? `<img src="${item.imageUrl || item.imgUrl}" alt="${item.name}">`
+                  : `<span class="ci-img-placeholder">👕</span>`}
+              </div>
+              <div class="ci-info">
+                <div class="ci-name">${item.name}</div>
+                <div class="ci-meta">${item.team || ''} · Size: ${item.size}</div>
+                <div class="ci-price">₹${item.price.toLocaleString('en-IN')}</div>
+                <div class="ci-qty">
+                  <button class="qty-btn" onclick="changeQty('${item.key}', -1)">−</button>
+                  <span class="qty-display" id="qty_${safeKey}">${item.qty}</span>
+                  <button class="qty-btn" onclick="changeQty('${item.key}', 1)">+</button>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+
+        document.getElementById('subTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
+        document.getElementById('finalTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
+
+      } else {
+        orderBody.innerHTML = `
+          <div class="empty-cart-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/>
+              <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"/>
+            </svg>
+            <p>Your cart is empty.<br>Browse our jerseys and add items.</p>
+            <a href="shop.html" class="browse-btn">Browse Jerseys →</a>
+          </div>`;
+        document.getElementById('subTotal').textContent = '₹0';
+        document.getElementById('finalTotal').textContent = '₹0';
       }
+
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('checkoutContent').style.display = 'block';
     });
 
-    // Process order
     window.processOrder = () => {
+      if (orderPrice === 0) { alert('Your cart is empty. Please add items first.'); return; }
+
+      let name, phone, email, address, city, state, pincode;
+
+      if (selectedSavedAddr) {
+        ({ name, phone, email, address, city, state, pincode } = selectedSavedAddr);
+      } else {
+        name    = document.getElementById('custName').value.trim();
+        phone   = document.getElementById('custPhone').value.trim();
+        email   = document.getElementById('custEmail').value.trim();
+        address = document.getElementById('custAddress').value.trim();
+        city    = document.getElementById('custCity').value.trim();
+        state   = document.getElementById('custState').value.trim();
+        pincode = document.getElementById('custPincode').value.trim();
+
+        if (!name)                         { shakeField('custName');    alert('Please enter your name.');           return; }
+        if (!phone || phone.length < 10)   { shakeField('custPhone');   alert('Please enter a valid phone number.'); return; }
+        if (!address)                      { shakeField('custAddress'); alert('Please enter your address.');        return; }
+        if (!city)                         { shakeField('custCity');    alert('Please enter your city.');           return; }
+        if (!pincode || pincode.length < 4){ shakeField('custPincode'); alert('Please enter a valid pincode.');     return; }
+
+        if (document.getElementById('saveAddrCheck').checked) {
+          saveAddress({ name, phone, email, address, city, state, pincode,
+            country: document.getElementById('custCountry').value });
+        }
+      }
+
       const isRzp = document.getElementById('pay_rzp').checked;
-      const name = document.getElementById('custName').value.trim();
-      const phone = document.getElementById('custPhone').value.trim();
-      const address = document.getElementById('custAddress').value.trim();
-      const city = document.getElementById('custCity').value.trim();
-      const state = document.getElementById('custState').value.trim();
-      const pincode = document.getElementById('custPincode').value.trim();
-
-      // Validation
-      if (!name) { shakeField('custName'); alert('Please enter your name.'); return; }
-      if (!phone || phone.length < 10) { shakeField('custPhone'); alert('Please enter a valid phone number.'); return; }
-      if (!address) { shakeField('custAddress'); alert('Please enter your address.'); return; }
-      if (!city) { shakeField('custCity'); alert('Please enter your city.'); return; }
-      if (!pincode || pincode.length < 4) { shakeField('custPincode'); alert('Please enter a valid pincode.'); return; }
-
       const finalPrice = orderPrice - discountAmount;
       const selectedSize = document.querySelector('.size-btn.active')?.textContent || 'M';
+      const itemDesc = isCartMode
+        ? `${orderItems.length} item${orderItems.length > 1 ? 's' : ''} from Jersify`
+        : `${orderItems[0]?.name || 'Jersify Kit'} (Size: ${selectedSize})`;
 
       if (isRzp) {
         const options = {
-          "key": "rzp_test_YourMockKeyHere123",
-          "amount": finalPrice * 100,
-          "currency": "INR",
-          "name": "JERSIFY",
-          "description": `${orderItem} (Size: ${selectedSize})`,
-          "image": "https://dummyimage.com/100x100/111/fff&text=J",
-          "handler": function (response) {
-            showSuccess(response.razorpay_payment_id);
-          },
-          "prefill": {
-            "name": name,
-            "email": document.getElementById('custEmail').value,
-            "contact": phone
-          },
-          "notes": {
-            "address": `${address}, ${city}, ${state} - ${pincode}`,
-            "size": selectedSize
-          },
-          "theme": { "color": "#e63946" }
+          key: "rzp_test_YourMockKeyHere123",
+          amount: finalPrice * 100,
+          currency: "INR",
+          name: "JERSIFY",
+          description: itemDesc,
+          image: "https://dummyimage.com/100x100/111/fff&text=J",
+          handler: (r) => showSuccess(r.razorpay_payment_id),
+          prefill: { name, email, contact: phone },
+          notes: { address: `${address}, ${city}, ${state} - ${pincode}`, size: selectedSize },
+          theme: { color: "#c61f2f" }
         };
-        const rzp1 = new Razorpay(options);
-        rzp1.on('payment.failed', (response) => {
-          alert("Payment Failed: " + response.error.description);
-        });
-        rzp1.open();
+        const rzp = new Razorpay(options);
+        rzp.on('payment.failed', (r) => alert('Payment Failed: ' + r.error.description));
+        rzp.open();
       } else {
         showSuccess('COD-' + Date.now());
       }
     };
 
     function showSuccess(orderId) {
+      localStorage.removeItem('jersify_cart');
       document.querySelector('.content').innerHTML = `
-      <div style="text-align:center; padding: 60px 20px;">
-        <div style="font-size:64px; margin-bottom:16px;">🎉</div>
-        <div style="font-family:'Bebas Neue',sans-serif; font-size:36px; color:var(--success); letter-spacing:2px;">ORDER CONFIRMED!</div>
-        <div style="color:var(--muted); margin-top:8px; font-size:13px;">Order ID: ${orderId}</div>
-        <div style="color:var(--muted); margin-top:16px; font-size:14px; line-height:1.6;">
-          Thank you for shopping with Jersify! Your order is being processed and you'll receive a confirmation shortly.
-        </div>
-        <button onclick="window.location.href='index.html'" style="margin-top:28px; border:none; background:linear-gradient(135deg, var(--accent), var(--accent-dark)); color:#fff; border-radius:14px; padding:14px 32px; font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:800; letter-spacing:1px; cursor:pointer; box-shadow:0 8px 24px var(--accent-glow);">
-          CONTINUE SHOPPING
-        </button>
-      </div>
-    `;
+        <div style="text-align:center;padding:60px 16px;">
+          <div style="font-size:60px;margin-bottom:16px;">🎉</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--success);letter-spacing:2px;">Order Confirmed!</div>
+          <div style="color:var(--muted);margin-top:8px;font-size:12px;font-weight:600;">Order ID: ${orderId}</div>
+          <div style="color:var(--muted);margin-top:16px;font-size:13px;line-height:1.7;max-width:280px;margin-inline:auto;">
+            Thank you for shopping with Jersify! Your kit is being packed and will be on its way soon.
+          </div>
+          <button onclick="window.location.href='shop.html'"
+            style="margin-top:28px;border:none;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;border-radius:14px;padding:14px 32px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 10px 28px rgba(198,31,47,.28);">
+            Continue Shopping →
+          </button>
+        </div>`;
     }
 
     function shakeField(id) {
       const el = document.getElementById(id);
+      if (!el) return;
       el.style.borderColor = 'var(--accent)';
-      el.style.animation = 'shake 0.4s ease';
-      setTimeout(() => {
-        el.style.animation = '';
-        el.style.borderColor = '';
-      }, 500);
+      el.style.animation = 'shake .4s ease';
+      setTimeout(() => { el.style.animation = ''; el.style.borderColor = ''; }, 500);
     }
   </script>
-
-  <style>
-    @keyframes shake {
-
-      0%,
-      100% {
-        transform: translateX(0);
-      }
-
-      20%,
-      60% {
-        transform: translateX(-6px);
-      }
-
-      40%,
-      80% {
-        transform: translateX(6px);
-      }
-    }
-  </style>
-
 </body>
-
 </html>
