@@ -1,1062 +1,1210 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>JERSIFY — Admin Panel</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 
-  <!-- Firebase SDKs -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-    import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
+    import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
     import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-    import { getDatabase, ref as rtdbRef, set as rtdbSet, remove as rtdbRemove, onValue, push, update, get } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+    import { getDatabase, ref as dbRef, set, remove, onValue, push, update, get } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
-    const firebaseConfig = {
+    const cfg = {
       apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
       authDomain: "jersify-f9b5e.firebaseapp.com",
       projectId: "jersify-f9b5e",
       storageBucket: "jersify-f9b5e.firebasestorage.app",
       messagingSenderId: "461181023878",
       appId: "1:461181023878:web:6ebfbae603baf4a873c307",
-      measurementId: "G-V5E7D09PJ0",
       databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
     };
-
-    const app = initializeApp(firebaseConfig);
+    const app = initializeApp(cfg);
     const storage = getStorage(app);
     const auth = getAuth(app);
-    const rtdb = getDatabase(app);
+    const db = getDatabase(app);
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) { window.location.href = 'admin-login.html'; return; }
       try {
-        const snap = await get(rtdbRef(rtdb, `admins/${user.uid}`));
-        if (!snap.exists() || snap.val().status !== true) {
-          await signOut(auth);
-          window.location.href = 'admin-login.html';
-          return;
-        }
+        const snap = await get(dbRef(db, `admins/${user.uid}`));
+        if (!snap.exists() || snap.val().status !== true) { await signOut(auth); window.location.href = 'admin-login.html'; return; }
       } catch(e) { window.location.href = 'admin-login.html'; return; }
       initApp();
     });
 
-    window._fb = { storage, auth, rtdb, storageRef, uploadBytesResumable, getDownloadURL, deleteObject, signOut, onAuthStateChanged, rtdbRef, rtdbSet, rtdbRemove, onValue, push, update, get };
+    window._fb = { storage, auth, db, sRef, uploadBytesResumable, getDownloadURL, deleteObject, signOut, dbRef, set, remove, onValue, push, update, get };
   </script>
 
   <style>
     :root {
-      --bg: #0b0f1a;
-      --surface: #131929;
-      --surface2: #1a2338;
-      --surface3: #212d42;
-      --sky: #74ACDF;
-      --sky2: #4a8bc4;
-      --gold: #F6C400;
-      --red: #e74c3c;
-      --green: #27ae60;
-      --text: #e8f0fe;
-      --muted: #7a90b0;
-      --border: rgba(116, 172, 223, 0.15);
-      --radius: 14px;
-      --nav: 220px;
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --surface2: #f9f8f5;
+      --surface3: #f0ede8;
+      --border: #e4e0d8;
+      --border2: #d8d4cc;
+      --text: #1a1a18;
+      --text2: #4a4a46;
+      --muted: #8a8880;
+      --accent: #c41e2a;
+      --accent2: #9c1520;
+      --accent-bg: #fdf1f2;
+      --accent-border: #f5c6c9;
+      --green: #1a7a40;
+      --green-bg: #f0faf4;
+      --orange: #b85c00;
+      --orange-bg: #fef6ee;
+      --blue: #1a4fa0;
+      --blue-bg: #eef4ff;
+      --purple: #6b21a8;
+      --purple-bg: #faf5ff;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+      --shadow: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+      --shadow-lg: 0 12px 32px rgba(0,0,0,.12);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --nav-w: 240px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0 }
-    html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--text); font-size: 14px }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+    a { text-decoration: none; color: inherit; }
+    button, input, select, textarea { font: inherit; }
 
-    #app { display: flex; height: 100vh; overflow: hidden }
+    /* ── LAYOUT ── */
+    #layout { display: flex; height: 100vh; overflow: hidden; }
 
-    .sidebar { width: var(--nav); flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-    .sidebar-logo { padding: 24px 20px 16px; border-bottom: 1px solid var(--border); font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 3px; color: var(--sky); display: flex; align-items: center; gap: 10px; }
-    .sidebar-logo span { font-size: 10px; font-weight: 700; color: var(--gold); letter-spacing: 2px; display: block; margin-top: 2px; font-family: 'Barlow Condensed', sans-serif }
-    .nav-section { padding: 12px 12px 4px; font-size: 9px; font-weight: 700; letter-spacing: 2px; color: var(--muted); text-transform: uppercase }
-    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 10px; margin: 2px 8px; cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 600; transition: .18s; border: 1px solid transparent; }
-    .nav-item:hover { background: var(--surface2); color: var(--text) }
-    .nav-item.active { background: linear-gradient(135deg, rgba(116, 172, 223, 0.18), rgba(116, 172, 223, 0.06)); color: var(--sky); border-color: rgba(116, 172, 223, 0.25) }
-    .nav-item svg { width: 16px; height: 16px; flex-shrink: 0 }
-    .nav-badge { margin-left: auto; background: var(--sky2); color: #fff; border-radius: 999px; font-size: 10px; font-weight: 800; padding: 1px 7px }
-    .sidebar-footer { margin-top: auto; padding: 16px; border-top: 1px solid var(--border) }
-    .logout-btn { display: flex; align-items: center; gap: 8px; color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 600; padding: 8px 10px; border-radius: 8px; transition: .18s; width: 100%; background: none; border: none; }
-    .logout-btn:hover { color: var(--red); background: rgba(231, 76, 60, 0.1) }
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--nav-w);
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+      z-index: 100;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden }
-    .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-    .topbar-title { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 1px }
-    .topbar-actions { display: flex; align-items: center; gap: 10px }
+    .sidebar-logo {
+      padding: 20px 20px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-mark {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .logo-mark svg { width: 20px; height: 20px; fill: #fff; }
+    .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--text); line-height: 1; }
+    .logo-sub { font-size: 9px; font-weight: 600; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px; }
 
-    .btn { border: none; border-radius: 8px; padding: 8px 16px; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 800; letter-spacing: .5px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: .18s; }
-    .btn-primary { background: linear-gradient(135deg, var(--sky2), #1a3a5c); color: #fff }
-    .btn-primary:hover { background: linear-gradient(135deg, var(--sky), var(--sky2)) }
-    .btn-gold { background: var(--gold); color: #0c1a2e }
-    .btn-red { background: rgba(231, 76, 60, 0.15); color: var(--red); border: 1px solid rgba(231, 76, 60, 0.3) }
-    .btn-red:hover { background: rgba(231, 76, 60, 0.25) }
-    .btn-sm { padding: 5px 11px; font-size: 11px }
+    .nav-section-label {
+      padding: 16px 16px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      margin: 1px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--text2);
+      font-size: 13px;
+      font-weight: 500;
+      transition: background .15s, color .15s;
+      border: none;
+      background: none;
+      width: calc(100% - 16px);
+      text-align: left;
+    }
+    .nav-link svg { width: 16px; height: 16px; flex-shrink: 0; opacity: .7; }
+    .nav-link:hover { background: var(--surface3); color: var(--text); }
+    .nav-link.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+    .nav-link.active svg { opacity: 1; }
+    .nav-badge { margin-left: auto; background: var(--accent); color: #fff; border-radius: 999px; font-size: 10px; font-weight: 700; padding: 1px 7px; min-width: 20px; text-align: center; }
 
-    .content { flex: 1; overflow-y: auto; padding: 24px }
-    .content::-webkit-scrollbar { width: 5px }
-    .content::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px }
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .logout-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: var(--radius-sm);
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 13px; font-weight: 500;
+      width: 100%; transition: .15s;
+    }
+    .logout-btn:hover { color: var(--accent); background: var(--accent-bg); }
+    .logout-btn svg { width: 15px; height: 15px; }
 
-    .tab-pane { display: none }
-    .tab-pane.active { display: block }
+    /* ── MAIN ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
-    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px }
-    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; position: relative; overflow: hidden; }
-    .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--sky), var(--gold)) }
-    .stat-card-val { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--sky); line-height: 1 }
-    .stat-card-label { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .5px; text-transform: uppercase; margin-top: 4px }
-    .stat-card-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 32px; opacity: .25 }
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .burger-btn {
+      display: none;
+      width: 36px; height: 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      cursor: pointer;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .burger-btn span {
+      display: block; width: 18px; height: 2px;
+      background: var(--text); border-radius: 1px;
+      transition: .25s;
+    }
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 1.5px;
+      color: var(--text);
+      flex: 1;
+    }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .search-input {
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px 7px 34px;
+      font-size: 13px;
+      color: var(--text);
+      width: 220px;
+      outline: none;
+      transition: .2s;
+      position: relative;
+    }
+    .search-wrap { position: relative; }
+    .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--muted); pointer-events: none; }
+    .search-input:focus { border-color: var(--accent); background: #fff; width: 260px; }
+    .sync-pill {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--green-bg); color: var(--green);
+      border: 1px solid #b3e6c8; border-radius: 999px;
+      padding: 4px 11px; font-size: 11px; font-weight: 600;
+    }
+    .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1) } 50% { opacity:.5; transform:scale(1.3) } }
 
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px }
-    .card-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 900; letter-spacing: .5px; }
-    .card-body { padding: 18px }
+    /* ── CONTENT ── */
+    .content { flex: 1; overflow-y: auto; padding: 24px; }
+    .content::-webkit-scrollbar { width: 6px; }
+    .content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-    table { width: 100%; border-collapse: collapse }
-    th { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border) }
-    td { padding: 12px 14px; border-bottom: 1px solid rgba(116, 172, 223, 0.07); font-size: 13px; vertical-align: middle }
-    tr:last-child td { border-bottom: none }
-    tr:hover td { background: rgba(116, 172, 223, 0.04) }
+    .tab-pane { display: none; animation: fadeIn .2s ease; }
+    .tab-pane.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    .flag-thumb { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--border) }
-    .flag-thumb-svg { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 1.5px solid var(--border); background: var(--surface2); display: inline-flex; align-items: center; justify-content: center }
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: none; border-radius: var(--radius-sm);
+      padding: 8px 16px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: .15s; white-space: nowrap;
+    }
+    .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--surface3); }
+    .btn-danger { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .btn-danger:hover { background: #fee2e2; }
+    .btn-sm { padding: 5px 11px; font-size: 12px; }
 
-    .badge { display: inline-block; border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 700; letter-spacing: .3px }
-    .badge-sky { background: rgba(116, 172, 223, 0.15); color: var(--sky) }
-    .badge-gold { background: rgba(246, 196, 0, 0.15); color: var(--gold) }
-    .badge-red { background: rgba(231, 76, 60, 0.15); color: var(--red) }
-    .badge-green { background: rgba(39, 174, 96, 0.15); color: var(--green) }
-    .badge-orange { background: rgba(243, 156, 18, 0.15); color: #f39c12 }
-    .badge-purple { background: rgba(155, 89, 182, 0.15); color: #9b59b6 }
+    /* ── CARDS ── */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .card-header-left { display: flex; flex-direction: column; gap: 2px; }
+    .card-title { font-size: 15px; font-weight: 700; color: var(--text); }
+    .card-subtitle { font-size: 11px; color: var(--muted); }
+    .card-body { padding: 20px; }
 
-    .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0 }
-    .toggle-switch input { opacity: 0; width: 0; height: 0 }
-    .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: var(--surface3); border: 1px solid var(--border); border-radius: 999px; transition: .25s }
-    .toggle-slider::before { content: ''; position: absolute; height: 18px; width: 18px; left: 2px; bottom: 2px; background: var(--muted); border-radius: 50%; transition: .25s }
-    .toggle-switch input:checked+.toggle-slider { background: rgba(39, 174, 96, 0.25); border-color: var(--green) }
-    .toggle-switch input:checked+.toggle-slider::before { transform: translateX(20px); background: var(--green) }
+    /* ── STATS ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 20px;
+      box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+    }
+    .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .stat-card.red::after { background: var(--accent); }
+    .stat-card.green::after { background: var(--green); }
+    .stat-card.blue::after { background: var(--blue); }
+    .stat-card.orange::after { background: var(--orange); }
+    .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 40px; line-height: 1; color: var(--text); }
+    .stat-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-top: 4px; }
+    .stat-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 28px; opacity: .15; }
 
-    .pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px }
-    .page-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: flex; align-items: center; gap: 14px; transition: .18s; }
-    .page-card:hover { border-color: var(--sky); background: rgba(116, 172, 223, 0.04) }
-    .page-card-icon { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; font-size: 20px; flex-shrink: 0 }
-    .page-card-info { flex: 1; min-width: 0 }
-    .page-card-name { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 800; letter-spacing: .5px }
-    .page-card-url { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-    .page-card-status { font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; margin-top: 2px }
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding: 10px 16px; text-align: left; border-bottom: 2px solid var(--border); white-space: nowrap; }
+    td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: var(--surface2); }
 
-    .user-avatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; font-weight: 800; color: #fff; flex-shrink: 0 }
+    /* ── BADGES ── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .badge-red { background: var(--accent-bg); color: var(--accent); }
+    .badge-green { background: var(--green-bg); color: var(--green); }
+    .badge-blue { background: var(--blue-bg); color: var(--blue); }
+    .badge-orange { background: var(--orange-bg); color: var(--orange); }
+    .badge-purple { background: var(--purple-bg); color: var(--purple); }
+    .badge-gray { background: var(--surface3); color: var(--text2); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; }
 
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px }
-    .status-dot.pending { background: #f39c12 }
-    .status-dot.confirmed { background: var(--sky) }
-    .status-dot.shipped { background: #9b59b6 }
-    .status-dot.delivered { background: var(--green) }
-    .status-dot.cancelled { background: var(--red) }
+    /* ── FORMS ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group.span-2 { grid-column: span 2; }
+    label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .6px; }
+    input[type=text], input[type=email], input[type=number], input[type=url], select, textarea {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 9px 12px; font-size: 13px; color: var(--text); outline: none; transition: .15s; width: 100%;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+    textarea { resize: vertical; min-height: 72px; }
+    select option { background: var(--surface); }
 
-    .index-media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px }
-    .index-media-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: .18s; position: relative; }
-    .index-media-card:hover { border-color: var(--sky) }
-    .index-media-card img { width: 100%; height: 140px; object-fit: cover; display: block }
-    .index-media-card-body { padding: 12px }
-    .index-media-card-label { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 2px }
-    .index-media-card-section { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px }
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.35);
+      backdrop-filter: blur(3px); z-index: 500;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; width: min(560px, 95vw);
+      max-height: 88vh; overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(12px) scale(.98); transition: .25s;
+    }
+    .modal-overlay.open .modal { transform: none; }
+    .modal::-webkit-scrollbar { width: 4px; }
+    .modal::-webkit-scrollbar-thumb { background: var(--border2); }
+    .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .modal-title { font-size: 16px; font-weight: 700; }
+    .modal-close { border: none; background: var(--surface3); color: var(--text2); border-radius: 6px; width: 28px; height: 28px; display: grid; place-items: center; cursor: pointer; font-size: 16px; transition: .15s; }
+    .modal-close:hover { background: var(--border); }
+    .modal-body { padding: 20px 24px 24px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
 
-    /* Hero preview cards */
-    .hero-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px }
-    .hero-preview-card { border-radius: var(--radius); overflow: hidden; position: relative; border: 1px solid var(--border); transition: .18s; }
-    .hero-preview-card:hover { border-color: var(--sky) }
-    .hero-preview-card img { width: 100%; height: 120px; object-fit: cover; display: block }
-    .hero-preview-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.8) 0%, transparent 50%); pointer-events: none }
-    .hero-preview-card-body { padding: 10px 12px; position: relative; background: var(--surface2); }
-    .hero-preview-card-title { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 900; color: var(--text); }
-    .hero-preview-card-sub { font-size: 11px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-    .hero-color-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; border: 1px solid rgba(255,255,255,.2); vertical-align: middle; margin-right: 4px }
+    /* ── MEDIA PAGE ── */
+    .media-page-section { margin-bottom: 28px; }
+    .media-section-title {
+      font-size: 13px; font-weight: 700; color: var(--text2);
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .media-section-title::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
 
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, .7); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: .2s; }
-    .modal-overlay.open { opacity: 1; pointer-events: all }
-    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; width: min(580px, 95vw); max-height: 90vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0, 0, 0, .6); transform: translateY(20px); transition: .25s; }
-    .modal-overlay.open .modal { transform: translateY(0) }
-    .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between }
-    .modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 900; letter-spacing: .5px }
-    .modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 22px; line-height: 1; padding: 2px 6px; border-radius: 6px; transition: .15s }
-    .modal-close:hover { background: var(--surface2); color: var(--text) }
-    .modal-body { padding: 20px 24px 24px }
+    .media-boxes-row { display: flex; gap: 12px; flex-wrap: wrap; }
 
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px }
-    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px }
-    .form-group { margin-bottom: 14px }
-    .form-group.full { grid-column: 1/-1 }
+    /* Upload box */
+    .media-box {
+      position: relative;
+      width: 160px; height: 140px;
+      border: 2px dashed var(--border2);
+      border-radius: var(--radius);
+      background: var(--surface);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 6px; cursor: pointer;
+      transition: border-color .2s, background .2s;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .media-box:hover { border-color: var(--accent); background: var(--accent-bg); }
+    .media-box.has-image { border-style: solid; border-color: var(--border2); }
+    .media-box input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2; }
+    .media-box img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; border-radius: calc(var(--radius) - 2px);
+      z-index: 1;
+    }
+    .media-box-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,.45);
+      border-radius: calc(var(--radius) - 2px);
+      opacity: 0; transition: opacity .2s; z-index: 2;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .media-box.has-image:hover .media-box-overlay { opacity: 1; }
+    .media-box-overlay button {
+      width: 32px; height: 32px; border-radius: 8px; border: none;
+      cursor: pointer; display: grid; place-items: center; font-size: 14px;
+      backdrop-filter: blur(4px);
+    }
+    .mb-replace { background: rgba(255,255,255,.85); color: var(--text); }
+    .mb-delete { background: rgba(220,38,38,.8); color: #fff; }
+    .media-box-label {
+      font-size: 11px; font-weight: 700; color: var(--muted);
+      text-align: center; line-height: 1.2; z-index: 1; pointer-events: none;
+    }
+    .media-box-icon { font-size: 22px; z-index: 1; pointer-events: none; opacity: .5; }
+    .media-box-add-text { font-size: 10px; color: var(--muted); z-index: 1; pointer-events: none; }
 
-    label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; margin-bottom: 6px }
-    input[type=text], input[type=email], input[type=url], input[type=number], select, textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 10px 13px; color: var(--text); font-size: 13px; outline: none; transition: .18s; font-family: 'Barlow', sans-serif; }
-    input:focus, select:focus, textarea:focus { border-color: var(--sky) }
-    textarea { resize: vertical; min-height: 80px }
-    select option { background: var(--surface2) }
+    .media-box-progress {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+      background: var(--border); z-index: 3;
+    }
+    .media-box-progress-fill {
+      height: 100%; background: var(--accent);
+      border-radius: 0 0 0 var(--radius);
+      transition: width .3s; width: 0%;
+    }
 
-    /* Color input row */
-    .color-input-row { display: flex; align-items: center; gap: 10px }
-    .color-preview-box { width: 38px; height: 38px; border-radius: 8px; border: 2px solid var(--border); flex-shrink: 0; cursor: pointer; position: relative; overflow: hidden; }
-    .color-preview-box input[type=color] { position: absolute; inset: -4px; opacity: 0; cursor: pointer; width: 150%; height: 150% }
+    /* Reel boxes are taller */
+    .media-box.reel { width: 100px; height: 160px; }
 
-    /* Pills tag input */
-    .pills-input-wrap { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 6px 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 42px; cursor: text; transition: .18s; }
-    .pills-input-wrap:focus-within { border-color: var(--sky) }
-    .pill-tag { background: rgba(116,172,223,.18); color: var(--sky); border-radius: 6px; padding: 3px 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 5px; }
-    .pill-tag-remove { cursor: pointer; opacity: .7; font-size: 10px; }
-    .pill-tag-remove:hover { opacity: 1 }
-    .pills-hidden-input { border: none; background: transparent; color: var(--text); font-size: 13px; outline: none; flex: 1; min-width: 80px; font-family: 'Barlow', sans-serif; }
-    .pills-hint { font-size: 10px; color: var(--muted); margin-top: 4px }
+    /* Gallery photo 1 is wide */
+    .media-box.gallery-wide { width: 200px; }
 
-    .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 28px; text-align: center; cursor: pointer; transition: .2s; background: var(--surface2); position: relative; }
-    .upload-zone:hover, .upload-zone.dragover { border-color: var(--sky); background: rgba(116, 172, 223, 0.06) }
-    .upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer }
-    .upload-icon { font-size: 28px; margin-bottom: 8px }
-    .upload-text { font-size: 12px; color: var(--muted); line-height: 1.5 }
-    .upload-preview { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px }
-    .preview-item { width: 70px; height: 70px; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid var(--border); background: var(--surface3); }
-    .preview-item img { width: 100%; height: 100%; object-fit: cover }
-    .preview-remove { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--red); color: #fff; border: none; cursor: pointer; font-size: 10px; display: grid; place-items: center; }
+    /* ── TOGGLE ── */
+    .toggle { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute; cursor: pointer; inset: 0;
+      background: var(--border2); border-radius: 999px; transition: .25s;
+    }
+    .toggle-track::before {
+      content: ''; position: absolute;
+      height: 18px; width: 18px; left: 3px; bottom: 3px;
+      background: #fff; border-radius: 50%; transition: .25s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .toggle input:checked + .toggle-track { background: var(--green); }
+    .toggle input:checked + .toggle-track::before { transform: translateX(18px); }
 
-    .progress-bar-wrap { background: var(--surface3); border-radius: 999px; height: 6px; overflow: hidden; margin-top: 8px }
-    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--sky), var(--gold)); border-radius: 999px; transition: width .3s }
+    /* ── PAGES GRID ── */
+    .pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+    .page-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; border: 1px solid var(--border);
+      border-radius: var(--radius); background: var(--surface);
+      box-shadow: var(--shadow-sm); transition: .15s;
+    }
+    .page-card:hover { border-color: var(--border2); box-shadow: var(--shadow); }
+    .page-icon { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }
+    .page-info { flex: 1; min-width: 0; }
+    .page-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .page-file { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .page-status { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
 
-    .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px }
-    .media-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; cursor: pointer; transition: .18s; }
-    .media-item:hover { border-color: var(--sky) }
-    .media-item img { width: 100%; height: 110px; object-fit: cover; display: block }
-    .media-item-info { padding: 8px 10px }
-    .media-item-name { font-size: 11px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-    .media-item-size { font-size: 10px; color: var(--muted) }
-    .media-item-actions { position: absolute; top: 6px; right: 6px; display: flex; gap: 4px; opacity: 0; transition: .15s }
-    .media-item:hover .media-item-actions { opacity: 1 }
-    .media-action-btn { width: 26px; height: 26px; border-radius: 6px; border: none; cursor: pointer; display: grid; place-items: center; font-size: 11px; backdrop-filter: blur(6px); }
-    .ma-copy { background: rgba(116, 172, 223, 0.8); color: #fff }
-    .ma-del { background: rgba(231, 76, 60, 0.8); color: #fff }
+    /* ── USER AVATAR ── */
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
 
-    .svg-preview-box { background: var(--surface3); border: 1px solid var(--border); border-radius: 10px; padding: 14px; display: flex; align-items: center; justify-content: center; min-height: 80px; }
-    .svg-preview-box svg, .svg-preview-box img { max-width: 60px; max-height: 60px }
+    /* ── TOAST ── */
+    .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 16px;
+      font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px;
+      min-width: 220px; box-shadow: var(--shadow-lg);
+      animation: toastIn .25s ease;
+    }
+    .toast.success { border-color: #b3e6c8; color: var(--green); background: var(--green-bg); }
+    .toast.error { border-color: var(--accent-border); color: var(--accent); background: var(--accent-bg); }
+    .toast.info { border-color: #bdd3fb; color: var(--blue); background: var(--blue-bg); }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
 
-    /* img preview for hero/media — larger */
-    .img-preview-wide { background: var(--surface3); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: none; }
-    .img-preview-wide img { width: 100%; max-height: 160px; object-fit: cover; display: block }
+    /* ── CONFIRM MODAL ── */
+    .confirm-modal .modal { width: 360px; }
 
-    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px }
-    .toast { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; min-width: 240px; box-shadow: 0 8px 24px rgba(0, 0, 0, .4); animation: toastIn .25s ease; }
-    .toast.success { border-color: rgba(39, 174, 96, .4); color: var(--green) }
-    .toast.error { border-color: rgba(231, 76, 60, .4); color: var(--red) }
-    .toast.info { border-color: var(--border); color: var(--sky) }
-    @keyframes toastIn { from { opacity: 0; transform: translateX(20px) } to { opacity: 1; transform: translateX(0) } }
+    /* ── OVERLAY backdrop for mobile ── */
+    .sidebar-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.3); z-index: 99;
+    }
 
-    .search-bar { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 8px 13px; color: var(--text); font-size: 13px; outline: none; width: 240px; transition: .18s; }
-    .search-bar:focus { border-color: var(--sky); width: 280px }
-
-    .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse-dot 2s ease infinite; display: inline-block; margin-right: 6px }
-    @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1) } 50% { opacity: .5; transform: scale(1.4) } }
-    .sync-label { font-size: 11px; color: var(--muted); font-weight: 600 }
-
-    /* Section tabs inside hero/indexMedia panels */
-    .section-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap }
-    .section-tab { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); transition: .15s; letter-spacing: .3px }
-    .section-tab.active { background: rgba(116,172,223,.15); color: var(--sky); border-color: rgba(116,172,223,.3) }
-    .section-tab:hover:not(.active) { color: var(--text) }
-
-    @media(max-width:768px) {
-      .sidebar { display: none }
-      .stats-row { grid-template-columns: 1fr 1fr }
-      .form-row { grid-template-columns: 1fr }
-      .form-row-3 { grid-template-columns: 1fr }
-      .pages-grid { grid-template-columns: 1fr }
-      .index-media-grid { grid-template-columns: 1fr 1fr }
+    /* ── MOBILE ── */
+    @media(max-width: 768px) {
+      .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); z-index: 100; }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-backdrop.show { display: block; }
+      .burger-btn { display: flex; }
+      .sync-pill { display: none; }
+      .search-input { width: 160px; }
+      .search-input:focus { width: 190px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.span-2 { grid-column: span 1; }
     }
   </style>
 </head>
 
 <body>
-<div id="app">
+<div id="layout">
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
+  <!-- Backdrop for mobile -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <rect width="28" height="28" rx="8" fill="#74ACDF" opacity=".2"/>
-        <path d="M7 8l-3.5 4 3.5 1.5v9h14v-9L25 12l-3.5-4c-1-.8-2.5-1.5-3.5-2-.5-.3-1-.5-4-.5s-3.5.2-4 .5c-1 .5-2.5 1.2-3.5 2z" fill="#74ACDF"/>
-      </svg>
-      <div><div>JERSIFY</div><span>ADMIN v2.0</span></div>
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M6 3L3 7v13h18V7l-3-4c-1-.7-2.2-1.5-3-2-.5-.3-1-.5-3-.5s-2.5.2-3 .5C7.2 1.5 6 2.3 6 3z"/></svg>
+      </div>
+      <div><div class="logo-text">JERSIFY</div><div class="logo-sub">Admin v2.0</div></div>
     </div>
 
-    <div class="nav-section">Content</div>
-    <div class="nav-item" onclick="switchTab('hero',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-      Hero Banners
-    </div>
-    <div class="nav-item" onclick="switchTab('products',this)">
+    <div class="nav-section-label">Content</div>
+    <button class="nav-link" onclick="switchTab('products',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       Products
-    </div>
-
-    <div class="nav-section">Management</div>
-    <div class="nav-item" onclick="switchTab('orders',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><path d="M12 4v16"/></svg>
-      Orders <span class="nav-badge" id="orderBadgeNav">0</span>
-    </div>
-    <div class="nav-item" onclick="switchTab('users',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-      Users <span class="nav-badge" id="userBadgeNav">0</span>
-    </div>
-
-    <div class="nav-section">Settings</div>
-    <div class="nav-item" onclick="switchTab('indexmedia',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+    </button>
+    <button class="nav-link" onclick="switchTab('media',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
       Index Media
-    </div>
+    </button>
+
+    <div class="nav-section-label">Management</div>
+    <button class="nav-link" onclick="switchTab('orders',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><path d="M12 4v16"/></svg>
+      Orders
+      <span class="nav-badge" id="orderBadgeNav">0</span>
+    </button>
+    <button class="nav-link" onclick="switchTab('users',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      Users
+      <span class="nav-badge" id="userBadgeNav">0</span>
+    </button>
+
+    <div class="nav-section-label">Settings</div>
+    <button class="nav-link" onclick="switchTab('pages',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+      Page Settings
+    </button>
 
     <div class="sidebar-footer">
-      <div style="display:flex;align-items:center;margin-bottom:10px;">
-        <span class="sync-dot"></span><span class="sync-label">Live Sync Active</span>
-      </div>
       <button class="logout-btn" onclick="doLogout()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Sign Out
       </button>
     </div>
   </aside>
 
-  <!-- MAIN -->
+  <!-- ── MAIN ── -->
   <div class="main">
+    <!-- TOPBAR -->
     <div class="topbar">
-      <div class="topbar-title" id="pageTitle">Dashboard</div>
-      <div class="topbar-actions">
-        <input class="search-bar" id="globalSearch" placeholder="Search..." oninput="globalSearchFn()"/>
-        <div id="topbarBtn"></div>
+      <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="page-title" id="pageTitle">Products</div>
+      <div class="topbar-right">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input class="search-input" id="globalSearch" placeholder="Search…" oninput="globalSearchFn()"/>
+        </div>
+        <div class="sync-pill"><span class="sync-dot"></span> Live Sync</div>
       </div>
     </div>
 
+    <!-- CONTENT -->
     <div class="content" id="mainContent">
 
-      <!-- DASHBOARD -->
-      <div class="tab-pane active" id="tab-dashboard">
-        <div class="stats-row">
-          <div class="stat-card"><div class="stat-card-val" id="statProducts">—</div><div class="stat-card-label">Products</div><div class="stat-card-icon">👕</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statOrders">—</div><div class="stat-card-label">Orders</div><div class="stat-card-icon">📦</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statUsers">—</div><div class="stat-card-label">Users</div><div class="stat-card-icon">👤</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statMedia">—</div><div class="stat-card-label">Media Files</div><div class="stat-card-icon">🖼️</div></div>
-        </div>
-        <div class="card">
-          <div class="card-header">Quick Actions</div>
-          <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn btn-primary" onclick="switchTab('products',null);openProductModal()">+ Add Product</button>
-            <button class="btn btn-gold" onclick="switchTab('media',null)">📁 Media Library</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- HERO BANNERS -->
-      <div class="tab-pane" id="tab-hero">
-        <div class="card">
-          <div class="card-header">
-            Hero Banners
-            <div style="display:flex;gap:8px;align-items:center">
-              <span style="font-size:11px;color:var(--muted)">Saved as heroes/hero_N in Firebase</span>
-              <button class="btn btn-primary btn-sm" onclick="openHeroModal()">+ Add Banner</button>
-            </div>
-          </div>
-          <div class="card-body" style="padding-bottom:10px">
-            <!-- Hero preview cards -->
-            <div class="hero-preview-grid" id="heroBannerGrid">
-              <div style="color:var(--muted);font-size:13px">Loading…</div>
-            </div>
-          </div>
-        </div>
-        <!-- Raw table view -->
-        <div class="card">
-          <div class="card-header">All Banners (Table)</div>
-          <table>
-            <thead>
-              <tr>
-                <th>Key</th>
-                <th>Page</th>
-                <th>Title</th>
-                <th>Subtitle</th>
-                <th>Color</th>
-                <th>Order</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="heroTable">
-              <tr><td colspan="7" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- PRODUCTS -->
-      <div class="tab-pane" id="tab-products">
-        <div class="card">
-          <div class="card-header">Products / Kits <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ Add Product</button></div>
-          <table>
-            <thead>
-              <tr><th>Name</th><th>Country/Club</th><th>Type</th><th>Price (₹)</th><th>Status</th><th>Actions</th></tr>
-            </thead>
-            <tbody id="productsTable">
-              <tr><td colspan="6" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- MEDIA -->
-      <div class="tab-pane" id="tab-media">
-        <div class="card">
-          <div class="card-header">Upload Files <div style="font-size:11px;color:var(--muted);font-weight:400">SVG, PNG, JPG, WEBP — max 5MB</div></div>
-          <div class="card-body">
-            <div class="upload-zone" id="uploadZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-              <input type="file" id="mediaFileInput" multiple accept="image/*,.svg" onchange="handleFileSelect(event)"/>
-              <div class="upload-icon">☁️</div>
-              <div class="upload-text"><strong style="color:var(--sky)">Click to browse</strong> or drag & drop files here<br>Stored in Firebase Storage · URL auto-copied</div>
-            </div>
-            <div id="uploadQueue" class="upload-preview" style="margin-top:14px"></div>
-          </div>
+      <!-- ══ PRODUCTS TAB ══ -->
+      <div class="tab-pane active" id="tab-products">
+        <div class="stats-grid">
+          <div class="stat-card red"><div class="stat-val" id="statProducts">—</div><div class="stat-label">Products</div><div class="stat-icon">👕</div></div>
+          <div class="stat-card green"><div class="stat-val" id="statOrders">—</div><div class="stat-label">Orders</div><div class="stat-icon">📦</div></div>
+          <div class="stat-card blue"><div class="stat-val" id="statUsers">—</div><div class="stat-label">Users</div><div class="stat-icon">👤</div></div>
+          <div class="stat-card orange"><div class="stat-val" id="statRevenue">—</div><div class="stat-label">Revenue</div><div class="stat-icon">💰</div></div>
         </div>
         <div class="card">
           <div class="card-header">
-            Media Library
-            <select id="mediaFilter" onchange="filterMedia()" style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:4px 10px;color:var(--text);font-size:12px;outline:none">
-              <option value="">All Files</option>
-              <option value="countries">Countries</option>
-              <option value="clubs">Clubs</option>
-              <option value="products">Products</option>
-              <option value="media">General</option>
-            </select>
+            <div class="card-header-left"><div class="card-title">Products / Kits</div><div class="card-subtitle">Manage your jersey catalog</div></div>
+            <button class="btn btn-primary btn-sm" onclick="openProductModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Product
+            </button>
           </div>
-          <div class="card-body">
-            <div class="media-grid" id="mediaGrid"><div style="color:var(--muted);font-size:13px">Loading…</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ORDERS -->
-      <div class="tab-pane" id="tab-orders">
-        <div class="stats-row" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
-          <div class="stat-card"><div class="stat-card-val" id="statOrdersPending">—</div><div class="stat-card-label">Pending</div><div class="stat-card-icon" style="color:#f39c12">⏳</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statOrdersConfirmed">—</div><div class="stat-card-label">Confirmed</div><div class="stat-card-icon" style="color:var(--sky)">✓</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statOrdersShipped">—</div><div class="stat-card-label">Shipped</div><div class="stat-card-icon" style="color:#9b59b6">🚚</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statOrdersDelivered">—</div><div class="stat-card-label">Delivered</div><div class="stat-card-icon" style="color:var(--green)">✅</div></div>
-          <div class="stat-card"><div class="stat-card-val" id="statOrdersRevenue">—</div><div class="stat-card-label">Total Revenue</div><div class="stat-card-icon">💰</div></div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            All Orders
-            <select id="orderStatusFilter" onchange="filterOrders()" style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:4px 10px;color:var(--text);font-size:12px;outline:none">
-              <option value="">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
-          <div style="overflow-x:auto">
+          <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+                <tr><th>Product</th><th>Team</th><th>Type</th><th>Price</th><th>Status</th><th>Actions</th></tr>
               </thead>
-              <tbody id="ordersTable">
-                <tr><td colspan="8" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr>
+              <tbody id="productsTable">
+                <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- USERS -->
+      <!-- ══ INDEX MEDIA TAB ══ -->
+      <div class="tab-pane" id="tab-media">
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-title">Index Page Media</div>
+              <div class="card-subtitle">Click any box to upload · Images auto-saved to Firebase · Drag to replace</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="saveAllMedia()" id="saveAllBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Saved automatically
+            </button>
+          </div>
+          <div class="card-body">
+
+            <!-- HERO BANNERS -->
+            <div class="media-page-section">
+              <div class="media-section-title">🎯 Hero Banners <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(slides on homepage)</span></div>
+              <div class="media-boxes-row" id="heroBoxesRow">
+                <!-- hero_1, hero_2, hero_3 -->
+              </div>
+            </div>
+
+            <!-- FEATURED MEDIA -->
+            <div class="media-page-section">
+              <div class="media-section-title">⭐ Featured Media <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(big banner strip)</span></div>
+              <div class="media-boxes-row" id="featuredBoxesRow">
+                <!-- featured_1, featured_2, featured_3 -->
+              </div>
+            </div>
+
+            <!-- GALLERY -->
+            <div class="media-page-section">
+              <div class="media-section-title">🖼️ Photo Gallery <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(grid on homepage)</span></div>
+              <div class="media-boxes-row" id="galleryBoxesRow">
+                <!-- gallery_photo_1 (wide 2x), gallery_photo_2 (narrow) -->
+              </div>
+            </div>
+
+            <!-- REELS -->
+            <div class="media-page-section">
+              <div class="media-section-title">🎬 Reels <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(vertical video thumbnails)</span></div>
+              <div class="media-boxes-row" id="reelsBoxesRow">
+                <!-- reel_1 … reel_6 -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ ORDERS TAB ══ -->
+      <div class="tab-pane" id="tab-orders">
+        <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+          <div class="stat-card orange"><div class="stat-val" id="stPending">—</div><div class="stat-label">Pending</div></div>
+          <div class="stat-card blue"><div class="stat-val" id="stConfirmed">—</div><div class="stat-label">Confirmed</div></div>
+          <div class="stat-card purple" style="--purple-stat:#6b21a8"><div class="stat-val" id="stShipped">—</div><div class="stat-label">Shipped</div></div>
+          <div class="stat-card green"><div class="stat-val" id="stDelivered">—</div><div class="stat-label">Delivered</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-left"><div class="card-title">All Orders</div></div>
+            <select id="orderStatusFilter" onchange="filterOrders()" style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option><option value="confirmed">Confirmed</option>
+              <option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+              <tbody id="ordersTable"><tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ USERS TAB ══ -->
       <div class="tab-pane" id="tab-users">
         <div class="card">
-          <div class="card-header">Registered Users <div style="font-size:11px;color:var(--muted);font-weight:400">View all registered users</div></div>
-          <div style="overflow-x:auto">
+          <div class="card-header"><div class="card-header-left"><div class="card-title">Registered Users</div></div></div>
+          <div class="table-wrap">
             <table>
-              <thead>
-                <tr><th>Avatar</th><th>Name</th><th>Email</th><th>Phone</th><th>Orders</th><th>Joined</th><th>Status</th></tr>
-              </thead>
-              <tbody id="usersTable">
-                <tr><td colspan="7" style="color:var(--muted);text-align:center;padding:30px">Loading…</td></tr>
-              </tbody>
+              <thead><tr><th>User</th><th>Email</th><th>Phone</th><th>Orders</th><th>Joined</th><th>Status</th></tr></thead>
+              <tbody id="usersTable"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- PAGE SETTINGS -->
+      <!-- ══ PAGE SETTINGS TAB ══ -->
       <div class="tab-pane" id="tab-pages">
         <div class="card">
-          <div class="card-header">Page Visibility Settings <div style="font-size:11px;color:var(--muted);font-weight:400">Toggle pages active or inactive on the site</div></div>
-          <div class="card-body">
-            <div class="pages-grid" id="pagesGrid"><div style="color:var(--muted);font-size:13px">Loading page settings…</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- INDEX MEDIA -->
-      <div class="tab-pane" id="tab-indexmedia">
-        <div class="card">
           <div class="card-header">
-            Index Page Media
-            <button class="btn btn-primary btn-sm" onclick="openIndexMediaModal()">+ Add Media</button>
+            <div class="card-header-left"><div class="card-title">Page Visibility</div><div class="card-subtitle">Toggle pages active or inactive</div></div>
           </div>
           <div class="card-body">
-            <div style="color:var(--muted);font-size:12px;margin-bottom:14px">
-              Saved with structured keys: <code style="background:var(--surface3);padding:2px 6px;border-radius:4px;font-size:11px">featured_N</code>, <code style="background:var(--surface3);padding:2px 6px;border-radius:4px;font-size:11px">promo_N</code>, <code style="background:var(--surface3);padding:2px 6px;border-radius:4px;font-size:11px">reel_N</code>, <code style="background:var(--surface3);padding:2px 6px;border-radius:4px;font-size:11px">gallery_N</code>
-            </div>
-
-            <!-- Section filter tabs -->
-            <div class="section-tabs" id="imSectionTabs">
-              <div class="section-tab active" onclick="filterIndexMedia('all',this)">All</div>
-              <div class="section-tab" onclick="filterIndexMedia('featured',this)">Featured</div>
-              <div class="section-tab" onclick="filterIndexMedia('promo',this)">Promo</div>
-              <div class="section-tab" onclick="filterIndexMedia('reels',this)">Reels</div>
-              <div class="section-tab" onclick="filterIndexMedia('gallery',this)">Gallery</div>
-            </div>
-
-            <div class="index-media-grid" id="indexMediaGrid">
-              <div style="color:var(--muted);font-size:13px">Loading…</div>
-            </div>
+            <div class="pages-grid" id="pagesGrid"><div style="color:var(--muted)">Loading…</div></div>
           </div>
         </div>
       </div>
 
     </div><!-- /content -->
   </div><!-- /main -->
-</div><!-- /app -->
+</div><!-- /layout -->
 
-<!-- ══ MODALS ══ -->
-
-<!-- Hero Banner Modal — updated with sub, color, order, pills tag input -->
-<div class="modal-overlay" id="heroModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="heroModalTitle">Add Hero Banner</div>
-      <button class="modal-close" onclick="closeModal('heroModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div style="background:rgba(116,172,223,.08);border:1px solid rgba(116,172,223,.2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--sky)">
-        💾 Saved to <strong>heroes/hero_N</strong> in Firebase with fields: page, title, sub, pills, color, imgUrl, order
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Page*</label>
-          <input type="text" id="h_page" placeholder="index"/>
-        </div>
-        <div class="form-group">
-          <label>Order</label>
-          <input type="number" id="h_order" placeholder="1" min="1"/>
-        </div>
-        <div class="form-group full">
-          <label>Title*</label>
-          <input type="text" id="h_title" placeholder="Are You Ready?"/>
-        </div>
-        <div class="form-group full">
-          <label>Subtitle (sub)</label>
-          <input type="text" id="h_sub" placeholder="Premium football jerseys with a bold streetwear look."/>
-        </div>
-        <div class="form-group full">
-          <label>Stat Pills <span style="font-size:10px;font-weight:400;text-transform:none;color:var(--muted)">— press Enter or comma to add</span></label>
-          <div class="pills-input-wrap" id="h_pills_wrap" onclick="document.getElementById('h_pills_input').focus()">
-            <input class="pills-hidden-input" id="h_pills_input" placeholder="New Drop…" onkeydown="handlePillKey(event,'h_pills_tags')" oninput="handlePillInput(event,'h_pills_tags')"/>
-          </div>
-          <input type="hidden" id="h_pills_data"/>
-        </div>
-        <div class="form-group">
-          <label>Primary Color</label>
-          <div class="color-input-row">
-            <div class="color-preview-box" id="h_color_box" style="background:#c61f2f">
-              <input type="color" id="h_color_picker" value="#c61f2f" oninput="syncColor('h_color_picker','h_color_text','h_color_box')"/>
-            </div>
-            <input type="text" id="h_color_text" value="#c61f2f" placeholder="#c61f2f" oninput="syncColorText('h_color_text','h_color_picker','h_color_box')" style="flex:1"/>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Background Image</label>
-        <div class="upload-zone" style="padding:14px">
-          <input type="file" id="h_img_file" accept="image/*" onchange="previewWide(event,'h_img_preview_wide','h_img_url')"/>
-          <div class="upload-text">Click to upload hero background</div>
-        </div>
-        <div class="img-preview-wide" id="h_img_preview_wide" style="margin-top:8px"><img id="h_img_preview_wide_img" src="" alt=""/></div>
-        <input type="text" id="h_img_url" placeholder="or paste image URL" style="margin-top:8px"/>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-primary" style="flex:1" onclick="saveHero()">💾 Save Banner</button>
-        <button class="btn" style="background:var(--surface2)" onclick="closeModal('heroModal')">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Product Modal -->
+<!-- ══ PRODUCT MODAL ══ -->
 <div class="modal-overlay" id="productModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">Add / Edit Product</div>
+      <div class="modal-title" id="productModalTitle">Add Product</div>
       <button class="modal-close" onclick="closeModal('productModal')">×</button>
     </div>
     <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group"><label>Product Name*</label><input type="text" id="p_name" placeholder="Home Kit 2025"/></div>
+      <div class="form-grid">
+        <div class="form-group span-2"><label>Product Name *</label><input type="text" id="p_name" placeholder="Home Kit 2025"/></div>
         <div class="form-group">
           <label>Team / Country</label>
           <select id="p_team">
-            <optgroup label="Countries">
-              <option value="Argentina">Argentina</option>
-              <option value="Brazil">Brazil</option>
-              <option value="France">France</option>
-              <option value="Germany">Germany</option>
-              <option value="Spain">Spain</option>
-              <option value="Portugal">Portugal</option>
-            </optgroup>
-            <optgroup label="Clubs">
-              <option value="Barcelona">Barcelona</option>
-              <option value="Real Madrid">Real Madrid</option>
-              <option value="Chelsea">Chelsea</option>
-              <option value="Man City">Man City</option>
-              <option value="Man Utd">Man Utd</option>
-              <option value="PSG">PSG</option>
-            </optgroup>
+            <optgroup label="Countries"><option value="Argentina">Argentina</option><option value="Brazil">Brazil</option><option value="France">France</option><option value="Germany">Germany</option><option value="Spain">Spain</option><option value="Portugal">Portugal</option></optgroup>
+            <optgroup label="Clubs"><option value="Barcelona">Barcelona</option><option value="Real Madrid">Real Madrid</option><option value="Chelsea">Chelsea</option><option value="Man City">Man City</option><option value="Man Utd">Man Utd</option><option value="PSG">PSG</option></optgroup>
           </select>
         </div>
         <div class="form-group">
-          <label>Type</label>
-          <select id="p_type">
-            <option>Home Kit</option><option>Away Kit</option><option>Third Kit</option><option>Special Edition</option><option>Fan Kit</option>
-          </select>
+          <label>Kit Type</label>
+          <select id="p_type"><option>Home Kit</option><option>Away Kit</option><option>Third Kit</option><option>Special Edition</option><option>Fan Kit</option></select>
         </div>
-        <div class="form-group"><label>Price (₹)*</label><input type="text" id="p_price" placeholder="1499"/></div>
+        <div class="form-group"><label>Price (₹) *</label><input type="text" id="p_price" placeholder="1499"/></div>
         <div class="form-group"><label>Badge Label</label><input type="text" id="p_badge" placeholder="NEW 2025"/></div>
-        <div class="form-group">
-          <label>Status</label>
-          <select id="p_status"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+        <div class="form-group"><label>Status</label><select id="p_status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+        <div class="form-group"><label>Image URL</label><input type="text" id="p_img_url" placeholder="https://… or upload below"/></div>
+      </div>
+      <div style="margin-top:12px">
+        <label style="display:block;margin-bottom:6px">Stock by Size</label>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1;text-align:center"><label style="font-size:10px">XS</label><input type="number" id="p_xs" value="0" min="0"/></div>
+          <div style="flex:1;text-align:center"><label style="font-size:10px">S</label><input type="number" id="p_s" value="0" min="0"/></div>
+          <div style="flex:1;text-align:center"><label style="font-size:10px">M</label><input type="number" id="p_m" value="0" min="0"/></div>
+          <div style="flex:1;text-align:center"><label style="font-size:10px">L</label><input type="number" id="p_l" value="0" min="0"/></div>
+          <div style="flex:1;text-align:center"><label style="font-size:10px">XL</label><input type="number" id="p_xl" value="0" min="0"/></div>
         </div>
       </div>
-      <div class="form-group full" style="display:flex;gap:10px;">
-        <div style="flex:1;"><label>XS</label><input type="number" id="p_size_xs" value="0" min="0"/></div>
-        <div style="flex:1;"><label>S</label><input type="number" id="p_size_s" value="0" min="0"/></div>
-        <div style="flex:1;"><label>M</label><input type="number" id="p_size_m" value="0" min="0"/></div>
-        <div style="flex:1;"><label>L</label><input type="number" id="p_size_l" value="0" min="0"/></div>
-        <div style="flex:1;"><label>XL</label><input type="number" id="p_size_xl" value="0" min="0"/></div>
-      </div>
-      <div class="form-group full">
-        <label>Product Image</label>
-        <div class="upload-zone" style="padding:16px">
-          <input type="file" id="p_img_file" accept="image/*" onchange="previewLogo(event,'p_img_preview','p_img_url')"/>
-          <div class="upload-text">Click to upload product image</div>
+      <div style="margin-top:14px">
+        <label style="display:block;margin-bottom:6px">Upload Image</label>
+        <div id="p_img_upload_box" style="border:2px dashed var(--border2);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;position:relative;transition:.2s;background:var(--surface2);" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <input type="file" accept="image/*" id="p_img_file" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="handleProductImgPreview(event)"/>
+          <div id="p_img_preview_inner">
+            <div style="font-size:24px;margin-bottom:4px">📸</div>
+            <div style="font-size:12px;color:var(--muted)">Click or drag image here</div>
+          </div>
         </div>
-        <div class="svg-preview-box" id="p_img_preview" style="margin-top:8px;display:none"></div>
-        <input type="text" id="p_img_url" placeholder="or paste image URL" style="margin-top:8px"/>
       </div>
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-primary" style="flex:1" onclick="saveProduct()">💾 Save Product</button>
-        <button class="btn" style="background:var(--surface2)" onclick="closeModal('productModal')">Cancel</button>
-      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('productModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
     </div>
   </div>
 </div>
 
-<!-- Order Modal -->
+<!-- ══ ORDER MODAL ══ -->
 <div class="modal-overlay" id="orderModal">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Order Details</div>
-      <button class="modal-close" onclick="closeModal('orderModal')">×</button>
-    </div>
+    <div class="modal-header"><div class="modal-title">Order Details</div><button class="modal-close" onclick="closeModal('orderModal')">×</button></div>
     <div class="modal-body">
       <div id="orderDetailContent" style="margin-bottom:16px"><div style="color:var(--muted)">Loading…</div></div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Update Status</label>
-          <select id="o_status">
-            <option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Tracking Number</label><input type="text" id="o_tracking" placeholder="Enter tracking number"/></div>
+      <div class="form-grid">
+        <div class="form-group"><label>Update Status</label><select id="o_status"><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div>
+        <div class="form-group"><label>Tracking #</label><input type="text" id="o_tracking" placeholder="Enter tracking number"/></div>
+        <div class="form-group span-2"><label>Admin Notes</label><textarea id="o_notes" placeholder="Internal notes…"></textarea></div>
       </div>
-      <div class="form-group full"><label>Admin Notes</label><textarea id="o_notes" placeholder="Add internal notes…"></textarea></div>
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-primary" style="flex:1" onclick="updateOrder()">💾 Update Order</button>
-        <button class="btn" style="background:var(--surface2)" onclick="closeModal('orderModal')">Cancel</button>
-      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('orderModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="updateOrder()">Update Order</button>
     </div>
   </div>
 </div>
 
-<!-- Index Media Modal — updated with structured key format -->
-<div class="modal-overlay" id="indexMediaModal">
+<!-- ══ CONFIRM MODAL ══ -->
+<div class="modal-overlay confirm-modal" id="confirmModal">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="indexMediaModalTitle">Add Index Media</div>
-      <button class="modal-close" onclick="closeModal('indexMediaModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div style="background:rgba(116,172,223,.08);border:1px solid rgba(116,172,223,.2);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--sky)">
-        💾 Key format: <strong id="imKeyPreview">featured_1</strong> — auto-generated based on section + order
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Section*</label>
-          <select id="im_section" onchange="updateImKeyPreview()">
-            <option value="featured">Featured</option>
-            <option value="promo">Promo</option>
-            <option value="reels">Reels</option>
-            <option value="gallery">Gallery</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Sort Order*</label>
-          <input type="number" id="im_order" placeholder="1" min="1" oninput="updateImKeyPreview()"/>
-        </div>
-        <div class="form-group full">
-          <label>Label / Title*</label>
-          <input type="text" id="im_label" placeholder="e.g. Summer Collection"/>
-        </div>
-        <div class="form-group full">
-          <label>Link URL</label>
-          <input type="text" id="im_link" placeholder="e.g. shop.html or https://instagram.com/..."/>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Description <span style="font-size:10px;font-weight:400;text-transform:none;color:var(--muted)">— used for reels watch label / alt text</span></label>
-        <input type="text" id="im_desc" placeholder="Watch now"/>
-      </div>
-      <div class="form-group">
-        <label>Image</label>
-        <div class="upload-zone" style="padding:14px">
-          <input type="file" id="im_img_file" accept="image/*" onchange="previewWide(event,'im_img_preview_wide','im_img_url')"/>
-          <div class="upload-text">Click to upload image</div>
-        </div>
-        <div class="img-preview-wide" id="im_img_preview_wide" style="margin-top:8px"><img id="im_img_preview_wide_img" src="" alt=""/></div>
-        <input type="text" id="im_img_url" placeholder="or paste image URL" style="margin-top:8px"/>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-primary" style="flex:1" onclick="saveIndexMedia()">💾 Save Media</button>
-        <button class="btn" style="background:var(--surface2)" onclick="closeModal('indexMediaModal')">Cancel</button>
-      </div>
+    <div class="modal-header"><div class="modal-title">Confirm Delete</div><button class="modal-close" onclick="closeModal('confirmModal')">×</button></div>
+    <div class="modal-body"><p style="color:var(--text2)" id="confirmMsg">Are you sure?</p></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('confirmModal')">Cancel</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Delete</button>
     </div>
   </div>
 </div>
 
-<!-- Confirm Delete Modal -->
-<div class="modal-overlay" id="confirmModal">
-  <div class="modal" style="width:380px">
-    <div class="modal-header">
-      <div class="modal-title">Confirm Delete</div>
-      <button class="modal-close" onclick="closeModal('confirmModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div style="color:var(--muted);margin-bottom:20px;font-size:14px" id="confirmMsg">Are you sure you want to delete this item?</div>
-      <div style="display:flex;gap:10px">
-        <button class="btn btn-red" style="flex:1" id="confirmOkBtn">Delete</button>
-        <button class="btn" style="background:var(--surface2);flex:1" onclick="closeModal('confirmModal')">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
+<!-- Toast container -->
+<div class="toast-wrap" id="toastWrap"></div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  GLOBALS
-// ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
+   GLOBALS
+═══════════════════════════════════════════════════ */
 let _editId = null;
-let _editCollection = null;
-let _allMedia = [];
-let _allOrders = [];
-let _allUsers = [];
-let _allHeroes = [];
-let _allIndexMedia = [];
-let _imSectionFilter = 'all';
-let _unsubscribers = [];
+let _allOrders = [], _allUsers = [], _allProducts = [], _allIndexMedia = {};
+let _pageSettings = {};
 
 function waitFb() {
-  return new Promise(r => {
-    const t = setInterval(() => { if (window._fb) { clearInterval(t); r(window._fb) } }, 50);
-  });
+  return new Promise(r => { const t = setInterval(() => { if(window._fb){clearInterval(t);r(window._fb)} }, 50); });
 }
 
-// ═══════════════════════════════════════════════════════
-//  LOGOUT
-// ═══════════════════════════════════════════════════════
+/* ─── BURGER NAV ─── */
+function toggleSidebar() {
+  const s = document.getElementById('sidebar');
+  const b = document.getElementById('sidebarBackdrop');
+  s.classList.toggle('open');
+  b.classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('show');
+}
+
+/* ─── TAB SWITCH ─── */
+const TAB_TITLES = { products:'Products / Kits', media:'Index Media', orders:'Orders', users:'Users', pages:'Page Settings' };
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('pageTitle').textContent = TAB_TITLES[name] || name;
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  closeSidebar();
+}
+
+/* ─── LOGOUT ─── */
 async function doLogout() {
   const { auth, signOut } = await waitFb();
-  try { await signOut(auth); } catch(e) {}
+  try { await signOut(auth); } catch(e){}
   window.location.href = 'admin-login.html';
 }
 
-// ═══════════════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════════════
+/* ─── INIT ─── */
 async function initApp() {
-  listenCollection('products', renderProducts);
-  listenCollection('heroes', renderHeroes);
-  listenCollection('media', renderMedia);
-  listenCollection('orders', renderOrders);
-  listenCollection('users', renderUsers);
-  listenCollection('indexMedia', renderIndexMedia);
+  // Set first nav active
+  document.querySelector('.nav-link').classList.add('active');
+  listenCol('products', renderProducts);
+  listenCol('orders', renderOrders);
+  listenCol('users', renderUsers);
+  listenCol('indexMedia', renderIndexMediaData);
   initPageSettings();
+  buildMediaPage();
 }
 
-// ═══════════════════════════════════════════════════════
-//  REAL-TIME LISTENER
-// ═══════════════════════════════════════════════════════
-async function listenCollection(col, callback) {
-  const { rtdb, rtdbRef, onValue } = await waitFb();
-  const unsub = onValue(rtdbRef(rtdb, col), (snap) => {
+async function listenCol(col, cb) {
+  const { db, dbRef, onValue } = await waitFb();
+  onValue(dbRef(db, col), snap => {
     const data = [];
-    if (snap.exists()) {
-      snap.forEach(d => { data.push({ id: d.key, ...d.val() }); });
-    }
-    callback(data);
-    updateBadges(col, data.length);
+    if (snap.exists()) snap.forEach(d => data.push({ id: d.key, ...d.val() }));
+    cb(data);
+    updateStats(col, data);
   });
-  _unsubscribers.push(unsub);
 }
 
-function updateBadges(col, count) {
-  if (col === 'products') setEl('statProducts', count);
-  if (col === 'media') setEl('statMedia', count);
-  if (col === 'orders') { setEl('orderBadgeNav', count); setEl('statOrders', count) }
-  if (col === 'users') { setEl('userBadgeNav', count); setEl('statUsers', count) }
-}
-
-// ═══════════════════════════════════════════════════════
-//  HERO BANNERS RENDERER
-//  Data format: heroes/hero_N = { page, title, sub, pills[], color, imgUrl, order }
-// ═══════════════════════════════════════════════════════
-function renderHeroes(data) {
-  _allHeroes = data;
-
-  // Preview cards
-  const grid = document.getElementById('heroBannerGrid');
-  if (!data.length) {
-    grid.innerHTML = '<div style="color:var(--muted);font-size:13px">No banners yet — add one above!</div>';
-  } else {
-    const sorted = [...data].sort((a, b) => (a.order || 0) - (b.order || 0));
-    grid.innerHTML = sorted.map(h => `
-      <div class="hero-preview-card" style="background:${h.color || 'var(--surface2)'}22">
-        ${h.imgUrl ? `<img src="${h.imgUrl}" alt="${h.title||''}" style="height:120px;width:100%;object-fit:cover"/>` : `<div style="height:120px;display:grid;place-items:center;font-size:40px;background:var(--surface3)">🖼️</div>`}
-        <div class="hero-preview-card-body">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
-            <span class="badge badge-sky" style="font-size:9px">#${h.id || '?'}</span>
-            <span class="badge" style="background:${h.color || '#333'}22;color:${h.color || 'var(--muted)'};font-size:9px">Order ${h.order || '—'}</span>
-          </div>
-          <div class="hero-preview-card-title">${h.title || '—'}</div>
-          <div class="hero-preview-card-sub">${h.sub || h.subtitle || '—'}</div>
-          ${(h.pills||[]).length ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">${(h.pills||[]).map(p=>`<span class="badge badge-gold" style="font-size:9px">${p}</span>`).join('')}</div>` : ''}
-          <div style="display:flex;gap:6px;margin-top:8px">
-            <button class="btn btn-sm btn-primary" onclick="editItem('heroes','${h.id}')">Edit</button>
-            <button class="btn btn-sm btn-red" onclick="deleteItem('heroes','${h.id}')">Delete</button>
-          </div>
-        </div>
-      </div>`).join('');
+function updateStats(col, data) {
+  if (col === 'products') { setEl('statProducts', data.length); }
+  if (col === 'orders') {
+    setEl('statOrders', data.length);
+    setEl('orderBadgeNav', data.length);
+    const rev = data.reduce((s,o) => s + (parseFloat(o.total)||0), 0);
+    setEl('statRevenue', '₹' + (rev >= 1000 ? (rev/1000).toFixed(1)+'K' : rev));
   }
-
-  // Table
-  const tbody = document.getElementById('heroTable');
-  if (!data.length) { tbody.innerHTML = emptyRow(7, 'No banners yet'); return }
-  const sorted = [...data].sort((a,b) => (a.order||0)-(b.order||0));
-  tbody.innerHTML = sorted.map(h => `
-    <tr>
-      <td><code style="font-size:11px;color:var(--sky)">${h.id||'—'}</code></td>
-      <td><span class="badge badge-sky">${h.page||'—'}</span></td>
-      <td><strong>${h.title||'—'}</strong></td>
-      <td style="font-size:12px;color:var(--muted);max-width:180px">${h.sub||h.subtitle||'—'}</td>
-      <td><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:14px;height:14px;border-radius:3px;background:${h.color||'transparent'};border:1px solid var(--border);display:inline-block"></span><code style="font-size:11px">${h.color||'—'}</code></span></td>
-      <td><span class="badge badge-gold">${h.order||'—'}</span></td>
-      <td>${actionBtns('heroes', h.id)}</td>
-    </tr>`).join('');
+  if (col === 'users') { setEl('statUsers', data.length); setEl('userBadgeNav', data.length); }
 }
 
-// ═══════════════════════════════════════════════════════
-//  PRODUCTS RENDERER
-// ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
+   MEDIA PAGE — Visual upload boxes
+   Firebase structure: indexMedia / {key} = { imgUrl, label, link, section, order, … }
+   Keys: hero_1..3, featured_1..3, gallery_photo_1, gallery_photo_2, reel_1..6
+═══════════════════════════════════════════════════ */
+
+const MEDIA_SLOTS = [
+  // Heroes
+  { key:'hero_1',     section:'hero',     label:'Hero 1',         row:'heroBoxesRow',     cls:'' },
+  { key:'hero_2',     section:'hero',     label:'Hero 2',         row:'heroBoxesRow',     cls:'' },
+  { key:'hero_3',     section:'hero',     label:'Hero 3',         row:'heroBoxesRow',     cls:'' },
+  // Featured
+  { key:'featured_1', section:'featured', label:'Featured 1',     row:'featuredBoxesRow', cls:'' },
+  { key:'featured_2', section:'featured', label:'Featured 2',     row:'featuredBoxesRow', cls:'' },
+  { key:'featured_3', section:'featured', label:'Featured 3',     row:'featuredBoxesRow', cls:'' },
+  // Gallery
+  { key:'gallery_photo_1', section:'gallery', label:'Gallery Photo 1', row:'galleryBoxesRow', cls:'gallery-wide' },
+  { key:'gallery_photo_2', section:'gallery', label:'Gallery Photo 2', row:'galleryBoxesRow', cls:'' },
+  // Reels
+  { key:'reel_1',     section:'reels',    label:'Reel 1',         row:'reelsBoxesRow',    cls:'reel' },
+  { key:'reel_2',     section:'reels',    label:'Reel 2',         row:'reelsBoxesRow',    cls:'reel' },
+  { key:'reel_3',     section:'reels',    label:'Reel 3',         row:'reelsBoxesRow',    cls:'reel' },
+  { key:'reel_4',     section:'reels',    label:'Reel 4',         row:'reelsBoxesRow',    cls:'reel' },
+  { key:'reel_5',     section:'reels',    label:'Reel 5',         row:'reelsBoxesRow',    cls:'reel' },
+  { key:'reel_6',     section:'reels',    label:'Reel 6',         row:'reelsBoxesRow',    cls:'reel' },
+];
+
+function buildMediaPage() {
+  MEDIA_SLOTS.forEach(slot => {
+    const row = document.getElementById(slot.row);
+    if (!row) return;
+    const box = document.createElement('div');
+    box.className = 'media-box' + (slot.cls ? ' ' + slot.cls : '');
+    box.id = 'box_' + slot.key;
+    box.innerHTML = `
+      <input type="file" accept="image/*" onchange="handleMediaUpload(event,'${slot.key}')"/>
+      <div class="media-box-icon">+</div>
+      <div class="media-box-label">${slot.label}</div>
+      <div class="media-box-add-text">Click to upload</div>
+      <div class="media-box-overlay">
+        <button class="mb-replace" title="Replace" onclick="triggerBoxInput('${slot.key}',event)">✎</button>
+        <button class="mb-delete" title="Remove" onclick="deleteMediaSlot('${slot.key}',event)">✕</button>
+      </div>
+      <div class="media-box-progress"><div class="media-box-progress-fill" id="prog_${slot.key}"></div></div>
+    `;
+    row.appendChild(box);
+  });
+}
+
+function renderIndexMediaData(data) {
+  // Build map
+  _allIndexMedia = {};
+  data.forEach(d => { _allIndexMedia[d.id] = d; });
+
+  // Populate boxes that have images
+  MEDIA_SLOTS.forEach(slot => {
+    const box = document.getElementById('box_' + slot.key);
+    if (!box) return;
+    const item = _allIndexMedia[slot.key];
+    if (item && item.imgUrl) {
+      setBoxImage(box, item.imgUrl);
+    }
+  });
+}
+
+function setBoxImage(box, url) {
+  // Remove old img
+  const old = box.querySelector('img.box-img');
+  if (old) old.remove();
+  const img = document.createElement('img');
+  img.src = url;
+  img.className = 'box-img';
+  box.classList.add('has-image');
+  // Remove placeholder elements
+  box.querySelectorAll('.media-box-icon, .media-box-label, .media-box-add-text').forEach(el => el.style.display = 'none');
+  box.insertBefore(img, box.querySelector('.media-box-overlay'));
+}
+
+function clearBoxImage(box) {
+  const img = box.querySelector('img.box-img');
+  if (img) img.remove();
+  box.classList.remove('has-image');
+  box.querySelectorAll('.media-box-icon, .media-box-label, .media-box-add-text').forEach(el => el.style.display = '');
+}
+
+function triggerBoxInput(key, e) {
+  e && e.stopPropagation();
+  const box = document.getElementById('box_' + key);
+  if (box) box.querySelector('input[type=file]').click();
+}
+
+async function handleMediaUpload(event, key) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 8 * 1024 * 1024) { toast('File exceeds 8MB', 'error'); return; }
+
+  const slot = MEDIA_SLOTS.find(s => s.key === key);
+  const box = document.getElementById('box_' + key);
+  const progFill = document.getElementById('prog_' + key);
+
+  toast(`Uploading ${slot.label}…`, 'info');
+
+  try {
+    const { storage, sRef, uploadBytesResumable, getDownloadURL } = await waitFb();
+    const path = `indexMedia/${key}_${Date.now()}`;
+    const fileRef = sRef(storage, path);
+    const task = uploadBytesResumable(fileRef, file);
+
+    task.on('state_changed', snap => {
+      const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+      if (progFill) progFill.style.width = pct + '%';
+    }, err => {
+      toast('Upload failed: ' + err.message, 'error');
+      if (progFill) progFill.style.width = '0%';
+    }, async () => {
+      const url = await getDownloadURL(task.snapshot.ref);
+      // Save to Firebase RTDB under indexMedia/{key}
+      await saveMediaSlot(key, url, slot);
+      setBoxImage(box, url);
+      if (progFill) setTimeout(() => { progFill.style.width = '0%'; }, 800);
+      toast(`${slot.label} saved!`, 'success');
+    });
+  } catch(err) {
+    toast('Error: ' + err.message, 'error');
+  }
+}
+
+async function saveMediaSlot(key, imgUrl, slot) {
+  const { db, dbRef, set } = await waitFb();
+  const existing = _allIndexMedia[key] || {};
+  await set(dbRef(db, `indexMedia/${key}`), {
+    section: slot.section,
+    label: slot.label,
+    imgUrl,
+    order: MEDIA_SLOTS.findIndex(s => s.key === key) + 1,
+    link: existing.link || '',
+    description: existing.description || '',
+    updatedAt: Date.now()
+  });
+}
+
+async function deleteMediaSlot(key, e) {
+  e && e.stopPropagation();
+  const slot = MEDIA_SLOTS.find(s => s.key === key);
+  confirmAction(`Remove image from "${slot.label}"?`, async () => {
+    const { db, dbRef, remove } = await waitFb();
+    await remove(dbRef(db, `indexMedia/${key}`));
+    const box = document.getElementById('box_' + key);
+    clearBoxImage(box);
+    toast(`${slot.label} removed`, 'info');
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   PRODUCTS
+═══════════════════════════════════════════════════ */
 function renderProducts(data) {
+  _allProducts = data;
   const tbody = document.getElementById('productsTable');
-  if (!data.length) { tbody.innerHTML = emptyRow(6, 'No products yet'); return }
+  if (!data.length) { tbody.innerHTML = emptyRow(6,'No products yet'); return; }
   tbody.innerHTML = data.map(p => `
     <tr>
-      <td><strong>${p.name||'—'}</strong>${p.badge?`<span class="badge badge-gold" style="margin-left:6px">${p.badge}</span>`:''}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${p.imgUrl ? `<img src="${p.imgUrl}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display='none'"/>` : `<div style="width:36px;height:36px;border-radius:8px;background:var(--surface3);display:grid;place-items:center;font-size:18px">👕</div>`}
+          <div>
+            <div style="font-weight:600">${p.name||'—'}</div>
+            ${p.badge ? `<span class="badge badge-orange" style="font-size:10px">${p.badge}</span>` : ''}
+          </div>
+        </div>
+      </td>
       <td>${p.team||'—'}</td>
-      <td>${p.type||'—'}</td>
-      <td>₹${p.price||'—'}</td>
+      <td><span class="badge badge-gray">${p.type||'Kit'}</span></td>
+      <td><strong>₹${p.price||'—'}</strong></td>
       <td><span class="badge ${p.status==='active'?'badge-green':'badge-red'}">${p.status||'active'}</span></td>
-      <td>${actionBtns('products', p.id)}</td>
+      <td><div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="editProduct('${p.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteItem('products','${p.id}')">Delete</button>
+      </div></td>
     </tr>`).join('');
 }
 
-// ═══════════════════════════════════════════════════════
-//  MEDIA RENDERER
-// ═══════════════════════════════════════════════════════
-function renderMedia(data) {
-  _allMedia = data;
-  filterMedia();
+function openProductModal(data) {
+  _editId = data ? data.id : null;
+  document.getElementById('productModalTitle').textContent = data ? 'Edit Product' : 'Add Product';
+  setV('p_name', data?.name || '');
+  setV('p_team', data?.team || 'Argentina');
+  setV('p_type', data?.type || 'Home Kit');
+  setV('p_price', data?.price || '');
+  setV('p_badge', data?.badge || '');
+  setV('p_img_url', data?.imgUrl || '');
+  setV('p_status', data?.status || 'active');
+  const sz = data?.sizes || {};
+  setV('p_xs', sz.xs||0); setV('p_s', sz.s||0); setV('p_m', sz.m||0); setV('p_l', sz.l||0); setV('p_xl', sz.xl||0);
+  document.getElementById('p_img_preview_inner').innerHTML = data?.imgUrl
+    ? `<img src="${data.imgUrl}" style="max-height:80px;border-radius:8px;max-width:100%"/>`
+    : `<div style="font-size:24px;margin-bottom:4px">📸</div><div style="font-size:12px;color:var(--muted)">Click or drag image here</div>`;
+  openModal('productModal');
 }
 
-function filterMedia() {
-  const filter = document.getElementById('mediaFilter').value;
-  const data = filter ? _allMedia.filter(m => m.folder === filter) : _allMedia;
-  const grid = document.getElementById('mediaGrid');
-  if (!data.length) { grid.innerHTML = `<div style="color:var(--muted);font-size:13px;grid-column:1/-1">No media files yet — upload some above!</div>`; return }
-  grid.innerHTML = data.map(m => `
-    <div class="media-item">
-      ${m.url ? `<img src="${m.url}" alt="${m.name||''}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'140\\' height=\\'110\\'><rect fill=\\'%231a2338\\' width=\\'140\\' height=\\'110\\'/><text y=\\'60\\' x=\\'70\\' text-anchor=\\'middle\\' fill=\\'%2374ACDF\\' font-size=\\'28\\'>📷</text></svg>'"/>` : `<div style="height:110px;display:grid;place-items:center;font-size:32px">📄</div>`}
-      <div class="media-item-actions">
-        <button class="media-action-btn ma-copy" onclick="copyUrl('${m.url||''}',event)">⎘</button>
-        <button class="media-action-btn ma-del" onclick="deleteMedia('${m.id}','${m.storagePath||''}',event)">✕</button>
-      </div>
-      <div class="media-item-info">
-        <div class="media-item-name">${m.name||'file'}</div>
-        <div class="media-item-size">${m.folder||'media'}</div>
-      </div>
-    </div>`).join('');
+function editProduct(id) {
+  const p = _allProducts.find(x => x.id === id);
+  if (p) openProductModal(p);
 }
 
-// ═══════════════════════════════════════════════════════
-//  ORDERS RENDERER
-// ═══════════════════════════════════════════════════════
+function handleProductImgPreview(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('p_img_preview_inner').innerHTML = `<img src="${e.target.result}" style="max-height:80px;border-radius:8px;max-width:100%"/>`;
+    setV('p_img_url', '[file selected]');
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveProduct() {
+  const name = getV('p_name');
+  if (!name) { toast('Product name required','error'); return; }
+
+  let imgUrl = getV('p_img_url');
+  if (imgUrl === '[file selected]') {
+    const file = document.getElementById('p_img_file').files[0];
+    if (file) {
+      toast('Uploading image…','info');
+      imgUrl = await uploadToStorage(file, `products/${Date.now()}_${file.name}`);
+    } else imgUrl = '';
+  }
+
+  const data = {
+    name, team: getV('p_team'), type: getV('p_type'), price: getV('p_price'),
+    badge: getV('p_badge'), imgUrl: imgUrl || '', status: getV('p_status'),
+    sizes: { xs:parseInt(getV('p_xs'))||0, s:parseInt(getV('p_s'))||0, m:parseInt(getV('p_m'))||0, l:parseInt(getV('p_l'))||0, xl:parseInt(getV('p_xl'))||0 },
+    updatedAt: Date.now()
+  };
+
+  await saveDoc('products', data, _editId);
+  closeModal('productModal');
+  toast('Product saved! 👕', 'success');
+  _editId = null;
+}
+
+/* ═══════════════════════════════════════════════════
+   ORDERS
+═══════════════════════════════════════════════════ */
 function renderOrders(data) {
   _allOrders = data;
-  const pending = data.filter(o => (o.status||'pending') === 'pending').length;
-  const confirmed = data.filter(o => o.status === 'confirmed').length;
-  const shipped = data.filter(o => o.status === 'shipped').length;
-  const delivered = data.filter(o => o.status === 'delivered').length;
-  const revenue = data.reduce((sum, o) => sum + (parseFloat(o.total)||0), 0);
-  setEl('statOrdersPending', pending);
-  setEl('statOrdersConfirmed', confirmed);
-  setEl('statOrdersShipped', shipped);
-  setEl('statOrdersDelivered', delivered);
-  setEl('statOrdersRevenue', '₹' + revenue.toLocaleString('en-IN'));
+  setEl('stPending', data.filter(o=>(o.status||'pending')==='pending').length);
+  setEl('stConfirmed', data.filter(o=>o.status==='confirmed').length);
+  setEl('stShipped', data.filter(o=>o.status==='shipped').length);
+  setEl('stDelivered', data.filter(o=>o.status==='delivered').length);
   filterOrders();
 }
 
 function filterOrders() {
-  const filter = document.getElementById('orderStatusFilter').value;
-  const data = filter ? _allOrders.filter(o => (o.status||'pending') === filter) : _allOrders;
+  const f = document.getElementById('orderStatusFilter').value;
+  const data = f ? _allOrders.filter(o=>(o.status||'pending')===f) : _allOrders;
   const tbody = document.getElementById('ordersTable');
-  if (!data.length) { tbody.innerHTML = emptyRow(8, 'No orders found'); return }
-  const sorted = [...data].sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
+  if (!data.length) { tbody.innerHTML = emptyRow(8,'No orders found'); return; }
+  const sorted = [...data].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   tbody.innerHTML = sorted.map(o => {
     const st = o.status||'pending';
-    const badgeCls = st==='pending'?'badge-orange':st==='confirmed'?'badge-sky':st==='shipped'?'badge-purple':st==='delivered'?'badge-green':'badge-red';
-    const items = (o.items||[]).map(i=>`${i.name||'Item'} x${i.qty||1}`).join(', ') || o.productName || '—';
+    const badge = {pending:'badge-orange',confirmed:'badge-blue',shipped:'badge-purple',delivered:'badge-green',cancelled:'badge-red'}[st]||'badge-gray';
+    const items = (o.items||[]).map(i=>`${i.name} ×${i.qty||1}`).join(', ') || o.productName||'—';
     const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—';
-    const payMethod = o.paymentMethod==='cod'?'<span class="badge badge-gold">COD</span>':'<span class="badge badge-sky">Online</span>';
     return `<tr>
-      <td><span style="font-family:monospace;font-size:11px;color:var(--sky)">${(o.orderId||o.id||'').slice(0,10)}…</span></td>
+      <td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${(o.orderId||o.id||'').slice(0,10)}…</span></td>
       <td><strong>${o.customerName||o.name||'—'}</strong><br><span style="font-size:11px;color:var(--muted)">${o.email||o.phone||''}</span></td>
-      <td style="max-width:180px;font-size:12px;color:var(--muted)">${items}</td>
+      <td style="max-width:160px;font-size:12px;color:var(--text2)">${items}</td>
       <td><strong>₹${o.total||'0'}</strong></td>
-      <td>${payMethod}</td>
-      <td><span class="status-dot ${st}"></span><span class="badge ${badgeCls}">${st}</span></td>
+      <td><span class="badge ${o.paymentMethod==='cod'?'badge-orange':'badge-blue'}">${o.paymentMethod==='cod'?'COD':'Online'}</span></td>
+      <td><span class="badge ${badge}">${st}</span></td>
       <td style="font-size:12px;color:var(--muted)">${date}</td>
-      <td><button class="btn btn-sm btn-primary" onclick="viewOrder('${o.id}')">View</button></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">View</button></td>
     </tr>`;
   }).join('');
 }
 
-async function viewOrder(id) {
-  const order = _allOrders.find(o => o.id === id);
-  if (!order) { toast('Order not found', 'error'); return }
-  _editId = id; _editCollection = 'orders';
-  const det = document.getElementById('orderDetailContent');
-  const items = (order.items||[]).map(i => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
-    <span>${i.name||'Item'} <span class="badge badge-sky">x${i.qty||1}</span>${i.size?`<span class="badge badge-gold">${i.size}</span>`:''}</span>
-    <span>₹${i.price||'0'}</span>
-  </div>`).join('') || `<div style="color:var(--muted)">Product: ${order.productName||'—'}</div>`;
-  det.innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Order ID</span><br><strong style="font-family:monospace;color:var(--sky)">${order.orderId||order.id}</strong></div>
-      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Date</span><br><strong>${order.createdAt?new Date(order.createdAt).toLocaleString('en-IN'):'—'}</strong></div>
-      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Customer</span><br><strong>${order.customerName||order.name||'—'}</strong></div>
-      <div><span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Contact</span><br><strong>${order.email||'—'}</strong><br><span style="font-size:12px;color:var(--muted)">${order.phone||''}</span></div>
+function viewOrder(id) {
+  const o = _allOrders.find(x=>x.id===id);
+  if (!o) return;
+  _editId = id;
+  const items = (o.items||[]).map(i=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>${i.name||'Item'} ×${i.qty||1} ${i.size?`<span class="badge badge-gray">${i.size}</span>`:''}</span><span>₹${i.price||0}</span></div>`).join('') || `<div>Product: ${o.productName||'—'}</div>`;
+  document.getElementById('orderDetailContent').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Order ID</div><div style="font-family:'DM Mono',monospace;color:var(--blue);font-size:12px">${o.orderId||o.id}</div></div>
+      <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Date</div><div>${o.createdAt?new Date(o.createdAt).toLocaleString('en-IN'):'—'}</div></div>
+      <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Customer</div><div style="font-weight:600">${o.customerName||o.name||'—'}</div></div>
+      <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Contact</div><div>${o.email||'—'}</div></div>
     </div>
-    <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border);margin-bottom:12px">
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Items</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px">
       ${items}
-      <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:800;font-size:15px;border-top:2px solid var(--border);margin-top:8px">
-        <span>Total</span><span style="color:var(--gold)">₹${order.total||'0'}</span>
+      <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:700;border-top:2px solid var(--border);margin-top:8px">
+        <span>Total</span><span style="color:var(--accent)">₹${o.total||'0'}</span>
       </div>
     </div>
-    <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Shipping Address</div>
-      <div style="font-size:13px;line-height:1.5">${order.address||'—'}<br>${order.city||''} ${order.state||''} ${order.pincode||''}</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px">
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Shipping</div>
+      <div style="font-size:13px">${o.address||'—'} ${o.city||''} ${o.pincode||''}</div>
     </div>`;
-  s('o_status', order.status||'pending');
-  s('o_tracking', order.trackingNumber||'');
-  s('o_notes', order.adminNotes||'');
+  setV('o_status', o.status||'pending');
+  setV('o_tracking', o.trackingNumber||'');
+  setV('o_notes', o.adminNotes||'');
   openModal('orderModal');
 }
 
 async function updateOrder() {
-  if (!_editId) { toast('No order selected', 'error'); return }
-  const data = { status: g('o_status'), trackingNumber: g('o_tracking'), adminNotes: g('o_notes'), updatedAt: Date.now() };
-  await saveDoc('orders', data, _editId);
-  closeModal('orderModal'); toast('Order updated! 📦', 'success');
+  if (!_editId) return;
+  await saveDoc('orders', { status:getV('o_status'), trackingNumber:getV('o_tracking'), adminNotes:getV('o_notes'), updatedAt:Date.now() }, _editId);
+  closeModal('orderModal');
+  toast('Order updated!', 'success');
   _editId = null;
 }
 
-// ═══════════════════════════════════════════════════════
-//  USERS RENDERER
-// ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
+   USERS
+═══════════════════════════════════════════════════ */
 function renderUsers(data) {
   _allUsers = data;
   const tbody = document.getElementById('usersTable');
-  if (!data.length) { tbody.innerHTML = emptyRow(7, 'No users registered yet'); return }
-  const sorted = [...data].sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
+  if (!data.length) { tbody.innerHTML = emptyRow(6,'No users yet'); return; }
+  const sorted = [...data].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  const COLORS = ['#c41e2a','#1a4fa0','#6b21a8','#1a7a40','#b85c00','#0e7490'];
   tbody.innerHTML = sorted.map(u => {
     const name = u.displayName||u.name||u.email?.split('@')[0]||'User';
     const initials = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    const colors = ['#e74c3c','#3498db','#9b59b6','#27ae60','#f39c12','#1abc9c','#e67e22'];
-    const color = colors[name.charCodeAt(0)%colors.length];
-    const orderCount = _allOrders.filter(o => (o.email||'') === (u.email||'__none') || (o.userId||'') === (u.id||'__none')).length;
+    const color = COLORS[name.charCodeAt(0)%COLORS.length];
     const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—';
     return `<tr>
-      <td><div class="user-avatar" style="background:${color}">${initials}</div></td>
-      <td><strong>${name}</strong></td>
-      <td style="font-size:12px;color:var(--muted)">${u.email||'—'}</td>
+      <td><div style="display:flex;align-items:center;gap:10px"><div class="user-avatar" style="background:${color}">${initials}</div><strong>${name}</strong></div></td>
+      <td style="font-size:12px;color:var(--text2)">${u.email||'—'}</td>
       <td style="font-size:12px">${u.phone||'—'}</td>
-      <td><span class="badge badge-sky">${orderCount}</span></td>
+      <td><span class="badge badge-blue">${_allOrders.filter(o=>o.email===u.email||o.userId===u.id).length}</span></td>
       <td style="font-size:12px;color:var(--muted)">${joined}</td>
       <td><span class="badge ${u.status==='blocked'?'badge-red':'badge-green'}">${u.status||'active'}</span></td>
     </tr>`;
   }).join('');
 }
 
-// ═══════════════════════════════════════════════════════
-//  PAGE SETTINGS
-// ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
+   PAGE SETTINGS
+═══════════════════════════════════════════════════ */
 const SITE_PAGES = [
-  { id:'argentina', label:'Argentina', file:'argentina.html', icon:'🇦🇷', bg:'linear-gradient(135deg,#74ACDF 0%,#1a3a5c 100%)' },
-  { id:'brazil', label:'Brazil', file:'brazil.html', icon:'🇧🇷', bg:'linear-gradient(135deg,#009c3b 0%,#ffdf00 100%)' },
-  { id:'france', label:'France', file:'france.html', icon:'🇫🇷', bg:'linear-gradient(135deg,#002395 0%,#ED2939 100%)' },
-  { id:'germany', label:'Germany', file:'germany.html', icon:'🇩🇪', bg:'linear-gradient(135deg,#000 0%,#DD0000 50%,#FFCC00 100%)' },
-  { id:'spain', label:'Spain', file:'spain.html', icon:'🇪🇸', bg:'linear-gradient(135deg,#AA151B 0%,#F1BF00 100%)' },
-  { id:'portugal', label:'Portugal', file:'portugal.html', icon:'🇵🇹', bg:'linear-gradient(135deg,#006600 0%,#FF0000 100%)' },
-  { id:'barcelona', label:'FC Barcelona', file:'barcelona.html', icon:'🔵', bg:'linear-gradient(135deg,#a50044 0%,#004d98 100%)' },
-  { id:'real-madrid', label:'Real Madrid', file:'real-madrid.html', icon:'⚪', bg:'linear-gradient(135deg,#febe10 0%,#00529f 100%)' },
-  { id:'chelsea', label:'Chelsea FC', file:'chelsea.html', icon:'🔷', bg:'linear-gradient(135deg,#034694 0%,#1b1b1b 100%)' },
-  { id:'man-utd', label:'Man United', file:'man-utd.html', icon:'🔴', bg:'linear-gradient(135deg,#DA291C 0%,#1a1a1a 100%)' },
-  { id:'man-city', label:'Man City', file:'man-city.html', icon:'🩵', bg:'linear-gradient(135deg,#6CABDD 0%,#1C2C5B 100%)' },
-  { id:'psg', label:'PSG', file:'psg.html', icon:'🔵', bg:'linear-gradient(135deg,#004170 0%,#DA291C 100%)' },
+  { id:'argentina', label:'Argentina', file:'argentina.html', icon:'🇦🇷', color:'#74ACDF' },
+  { id:'brazil', label:'Brazil', file:'brazil.html', icon:'🇧🇷', color:'#009c3b' },
+  { id:'france', label:'France', file:'france.html', icon:'🇫🇷', color:'#002395' },
+  { id:'germany', label:'Germany', file:'germany.html', icon:'🇩🇪', color:'#222' },
+  { id:'spain', label:'Spain', file:'spain.html', icon:'🇪🇸', color:'#AA151B' },
+  { id:'portugal', label:'Portugal', file:'portugal.html', icon:'🇵🇹', color:'#006600' },
+  { id:'barcelona', label:'FC Barcelona', file:'barcelona.html', icon:'🔵', color:'#a50044' },
+  { id:'real-madrid', label:'Real Madrid', file:'real-madrid.html', icon:'⚪', color:'#febe10' },
+  { id:'chelsea', label:'Chelsea FC', file:'chelsea.html', icon:'🔷', color:'#034694' },
+  { id:'man-utd', label:'Man United', file:'man-utd.html', icon:'🔴', color:'#DA291C' },
+  { id:'man-city', label:'Man City', file:'man-city.html', icon:'🩵', color:'#6CABDD' },
+  { id:'psg', label:'PSG', file:'psg.html', icon:'🔵', color:'#004170' },
 ];
 
-let _pageSettings = {};
-
 async function initPageSettings() {
-  const { rtdb, rtdbRef, onValue } = await waitFb();
-  onValue(rtdbRef(rtdb, 'settings/pages'), (snap) => {
+  const { db, dbRef, onValue } = await waitFb();
+  onValue(dbRef(db, 'settings/pages'), snap => {
     _pageSettings = snap.exists() ? snap.val() : {};
     renderPageSettings();
   });
@@ -1065,523 +1213,80 @@ async function initPageSettings() {
 function renderPageSettings() {
   const grid = document.getElementById('pagesGrid');
   grid.innerHTML = SITE_PAGES.map(p => {
-    const isActive = _pageSettings[p.id] !== false;
+    const active = _pageSettings[p.id] !== false;
     return `<div class="page-card">
-      <div class="page-card-icon" style="background:${p.bg}">${p.icon}</div>
-      <div class="page-card-info">
-        <div class="page-card-name">${p.label}</div>
-        <div class="page-card-url">${p.file}</div>
-        <div class="page-card-status" style="color:${isActive?'var(--green)':'var(--red)'}">${isActive?'● Active':'○ Inactive'}</div>
+      <div class="page-icon" style="background:${p.color}22;border:1px solid ${p.color}33">${p.icon}</div>
+      <div class="page-info">
+        <div class="page-name">${p.label}</div>
+        <div class="page-file">${p.file}</div>
+        <div class="page-status" style="color:${active?'var(--green)':'var(--muted)'}">${active?'● Active':'○ Inactive'}</div>
       </div>
-      <label class="toggle-switch">
-        <input type="checkbox" ${isActive?'checked':''} onchange="togglePage('${p.id}',this.checked)"/>
-        <span class="toggle-slider"></span>
+      <label class="toggle">
+        <input type="checkbox" ${active?'checked':''} onchange="togglePage('${p.id}',this.checked)"/>
+        <span class="toggle-track"></span>
       </label>
     </div>`;
   }).join('');
 }
 
-async function togglePage(pageId, active) {
-  const { rtdb, rtdbRef, update } = await waitFb();
-  await update(rtdbRef(rtdb, 'settings/pages'), { [pageId]: active });
-  _pageSettings[pageId] = active;
-  toast(`${pageId} is now ${active?'active':'inactive'}`, 'success');
+async function togglePage(id, active) {
+  const { db, dbRef, update } = await waitFb();
+  await update(dbRef(db, 'settings/pages'), { [id]: active });
+  toast(`${id} is now ${active?'active':'inactive'}`, 'success');
 }
 
-// ═══════════════════════════════════════════════════════
-//  INDEX MEDIA RENDERER
-//  Key format: featured_N, promo_N, reel_N, gallery_N
-//  Fields: section, label, imgUrl, link, order, description
-// ═══════════════════════════════════════════════════════
-function renderIndexMedia(data) {
-  _allIndexMedia = data;
-  filterIndexMedia(_imSectionFilter);
-}
-
-function filterIndexMedia(section, el) {
-  _imSectionFilter = section;
-  if (el) {
-    document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-  }
-  const data = section === 'all' ? _allIndexMedia : _allIndexMedia.filter(m => m.section === section);
-  const grid = document.getElementById('indexMediaGrid');
-  if (!data.length) { grid.innerHTML = '<div style="color:var(--muted);font-size:13px">No media in this section yet.</div>'; return }
-  const sorted = [...data].sort((a,b) => (a.order||0)-(b.order||0));
-  const sectionColors = { featured:'rgba(116,172,223,.15)', promo:'rgba(246,196,0,.1)', reels:'rgba(155,89,182,.1)', gallery:'rgba(39,174,96,.1)' };
-  grid.innerHTML = sorted.map(m => `
-    <div class="index-media-card" style="border-color:${sectionColors[m.section]||'var(--border)'}">
-      ${m.imgUrl ? `<img src="${m.imgUrl}" alt="${m.label||''}"/>` : `<div style="height:140px;display:grid;place-items:center;font-size:32px;background:var(--surface3)">🖼️</div>`}
-      <div class="index-media-card-body">
-        <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px">
-          <span class="badge badge-sky" style="font-size:9px">${m.id||'?'}</span>
-          ${m.section==='reels'?'<span class="badge badge-purple" style="font-size:9px">Reel</span>':m.section==='promo'?'<span class="badge badge-gold" style="font-size:9px">Promo</span>':m.section==='gallery'?'<span class="badge badge-green" style="font-size:9px">Gallery</span>':'<span class="badge badge-sky" style="font-size:9px">Featured</span>'}
-        </div>
-        <div class="index-media-card-label">${m.label||'—'}</div>
-        <div class="index-media-card-section">${m.section||'—'} · Order: ${m.order||0}</div>
-        ${m.description ? `<div style="font-size:10px;color:var(--muted);margin-top:2px">${m.description}</div>` : ''}
-        ${m.link ? `<div style="font-size:10px;color:var(--sky);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🔗 ${m.link}</div>` : ''}
-        <div style="margin-top:8px;display:flex;gap:6px">
-          <button class="btn btn-sm btn-primary" onclick="editIndexMedia('${m.id}')">Edit</button>
-          <button class="btn btn-sm btn-red" onclick="deleteItem('indexMedia','${m.id}')">Delete</button>
-        </div>
-      </div>
-    </div>`).join('');
-}
-
-// ═══════════════════════════════════════════════════════
-//  INDEX MEDIA KEY GENERATOR
-//  section "featured" → "featured_N"
-//  section "promo"    → "promo_N"
-//  section "reels"    → "reel_N"
-//  section "gallery"  → "gallery_N"
-// ═══════════════════════════════════════════════════════
-function getImKeyPrefix(section) {
-  const map = { featured: 'featured', promo: 'promo', reels: 'reel', gallery: 'gallery' };
-  return map[section] || section;
-}
-
-function buildImKey(section, order) {
-  return `${getImKeyPrefix(section)}_${order}`;
-}
-
-function updateImKeyPreview() {
-  const section = g('im_section');
-  const order = g('im_order') || '?';
-  document.getElementById('imKeyPreview').textContent = buildImKey(section, order);
-}
-
-function openIndexMediaModal() {
-  _editId = null;
-  _editCollection = 'indexMedia';
-  document.getElementById('indexMediaModalTitle').textContent = 'Add Index Media';
-  resetForm(['im_label','im_link','im_order','im_img_url','im_desc']);
-  const pw = document.getElementById('im_img_preview_wide');
-  if (pw) pw.style.display = 'none';
-  updateImKeyPreview();
-  openModal('indexMediaModal');
-}
-
-function editIndexMedia(id) {
-  const item = _allIndexMedia.find(m => m.id === id);
-  if (!item) { toast('Item not found', 'error'); return }
-  _editId = id; _editCollection = 'indexMedia';
-  document.getElementById('indexMediaModalTitle').textContent = `Edit Media: ${id}`;
-  s('im_section', item.section);
-  s('im_label', item.label);
-  s('im_link', item.link);
-  s('im_order', item.order);
-  s('im_img_url', item.imgUrl);
-  s('im_desc', item.description);
-  const pw = document.getElementById('im_img_preview_wide');
-  if (pw && item.imgUrl) {
-    pw.style.display = 'block';
-    document.getElementById('im_img_preview_wide_img').src = item.imgUrl;
-  }
-  updateImKeyPreview();
-  openModal('indexMediaModal');
-}
-
-async function saveIndexMedia() {
-  const label = g('im_label');
-  const section = g('im_section');
-  const order = parseInt(g('im_order')) || 1;
-  if (!label) { toast('Label is required', 'error'); return }
-  if (!section) { toast('Section is required', 'error'); return }
-
-  let imgUrl = g('im_img_url');
-  const file = document.getElementById('im_img_file').files[0];
-  if (file) {
-    toast('Uploading image…', 'info');
-    imgUrl = await uploadFile(file, `indexMedia/${Date.now()}_${file.name}`, null);
-  }
-
-  // Build structured key: featured_1, promo_2, reel_1, gallery_1
-  const key = _editId || buildImKey(section, order);
-
-  const data = {
-    section,
-    label,
-    imgUrl: imgUrl || '',
-    link: g('im_link') || '',
-    order,
-    description: g('im_desc') || '',
-    updatedAt: Date.now()
-  };
-
-  // Write with explicit key to Firebase
-  await saveDocWithKey('indexMedia', key, data);
-  closeModal('indexMediaModal');
-  toast(`Index media saved as "${key}"! 🖼️`, 'success');
-  resetForm(['im_label','im_link','im_order','im_img_url','im_desc']);
-  _editId = null;
-}
-
-// ═══════════════════════════════════════════════════════
-//  HERO SAVE
-//  Saved as heroes/hero_N = { page, title, sub, pills, color, imgUrl, order }
-// ═══════════════════════════════════════════════════════
-function openHeroModal() {
-  _editId = null;
-  document.getElementById('heroModalTitle').textContent = 'Add Hero Banner';
-  resetForm(['h_page','h_title','h_sub','h_img_url','h_order']);
-  document.getElementById('h_color_text').value = '#c61f2f';
-  document.getElementById('h_color_picker').value = '#c61f2f';
-  document.getElementById('h_color_box').style.background = '#c61f2f';
-  clearPills('h_pills_tags');
-  const pw = document.getElementById('h_img_preview_wide');
-  if (pw) pw.style.display = 'none';
-  openModal('heroModal');
-}
-
-async function saveHero() {
-  const page = g('h_page');
-  const title = g('h_title');
-  if (!page || !title) { toast('Page and Title required', 'error'); return }
-
-  const order = parseInt(g('h_order')) || 1;
-
-  let imgUrl = g('h_img_url');
-  if (imgUrl === '[file selected — will upload on save]') imgUrl = '';
-  const file = document.getElementById('h_img_file').files[0];
-  if (file) {
-    toast('Uploading image…', 'info');
-    imgUrl = await uploadFile(file, `heroes/${page}_${Date.now()}`, null);
-  }
-
-  const pills = getPillsData('h_pills_tags');
-  const color = g('h_color_text') || '#c61f2f';
-
-  // Key: hero_N (based on order)
-  const key = _editId || `hero_${order}`;
-
-  const data = {
-    page,
-    title,
-    sub: g('h_sub'),          // "sub" field (not subtitle)
-    pills,
-    color,                    // "color" field (not primaryColor)
-    imgUrl: imgUrl || '',
-    order,
-    updatedAt: Date.now()
-  };
-
-  await saveDocWithKey('heroes', key, data);
-  closeModal('heroModal');
-  toast(`Hero banner saved as "${key}"! 🎯`, 'success');
-  _editId = null;
-}
-
-// ═══════════════════════════════════════════════════════
-//  PRODUCT SAVE
-// ═══════════════════════════════════════════════════════
-async function saveProduct() {
-  const name = g('p_name');
-  if (!name) { toast('Product name required', 'error'); return }
-  let imgUrl = g('p_img_url');
-  const file = document.getElementById('p_img_file').files[0];
-  if (file) imgUrl = await uploadFile(file, `products/${Date.now()}_${file.name}`, null);
-  const data = {
-    name, team: g('p_team'), type: g('p_type'), price: g('p_price'), badge: g('p_badge'), imgUrl, status: g('p_status'),
-    sizes: { xs: parseInt(g('p_size_xs'))||0, s: parseInt(g('p_size_s'))||0, m: parseInt(g('p_size_m'))||0, l: parseInt(g('p_size_l'))||0, xl: parseInt(g('p_size_xl'))||0 },
-    updatedAt: Date.now()
-  };
-  await saveDoc('products', data, _editId);
-  closeModal('productModal');
-  toast('Product saved! 👕', 'success');
-  _editId = null;
-}
-
-// ═══════════════════════════════════════════════════════
-//  FIRESTORE CRUD
-// ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
+   FIREBASE CRUD HELPERS
+═══════════════════════════════════════════════════ */
 async function saveDoc(col, data, id) {
-  const { rtdb, rtdbRef, update, push, rtdbSet } = await waitFb();
-  if (id) {
-    await update(rtdbRef(rtdb, `${col}/${id}`), data);
-  } else {
-    const newRef = push(rtdbRef(rtdb, col));
-    await rtdbSet(newRef, data);
-  }
-}
-
-// Save with explicit key (for heroes/hero_N and indexMedia/featured_N)
-async function saveDocWithKey(col, key, data) {
-  const { rtdb, rtdbRef, rtdbSet } = await waitFb();
-  await rtdbSet(rtdbRef(rtdb, `${col}/${key}`), data);
+  const { db, dbRef, update, push, set } = await waitFb();
+  if (id) { await update(dbRef(db, `${col}/${id}`), data); }
+  else { const r = push(dbRef(db, col)); await set(r, data); }
 }
 
 async function deleteDocById(col, id) {
-  const { rtdb, rtdbRef, rtdbRemove } = await waitFb();
-  await rtdbRemove(rtdbRef(rtdb, `${col}/${id}`));
+  const { db, dbRef, remove } = await waitFb();
+  await remove(dbRef(db, `${col}/${id}`));
 }
 
-// ═══════════════════════════════════════════════════════
-//  FIREBASE STORAGE UPLOAD
-// ═══════════════════════════════════════════════════════
-async function uploadFile(file, path, progressCb) {
-  const { storage, storageRef, uploadBytesResumable, getDownloadURL } = await waitFb();
-  return new Promise((resolve, reject) => {
-    const fileRef = storageRef(storage, path);
-    const task = uploadBytesResumable(fileRef, file);
-    task.on('state_changed', (snap) => {
-      const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
-      if (progressCb) progressCb(pct);
-    }, reject, async () => {
-      const url = await getDownloadURL(task.snapshot.ref);
-      await saveDoc('media', { name: file.name, url, storagePath: path, folder: path.split('/')[0], size: file.size, createdAt: Date.now() }, null);
-      resolve(url);
+async function uploadToStorage(file, path) {
+  const { storage, sRef, uploadBytesResumable, getDownloadURL } = await waitFb();
+  return new Promise((res, rej) => {
+    const ref = sRef(storage, path);
+    const task = uploadBytesResumable(ref, file);
+    task.on('state_changed', null, rej, async () => {
+      res(await getDownloadURL(task.snapshot.ref));
     });
   });
 }
 
-async function handleFileSelect(e) { await uploadFilesFromInput(Array.from(e.target.files)) }
-function handleDragOver(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover') }
-function handleDragLeave() { document.getElementById('uploadZone').classList.remove('dragover') }
-async function handleDrop(e) { e.preventDefault(); document.getElementById('uploadZone').classList.remove('dragover'); await uploadFilesFromInput(Array.from(e.dataTransfer.files)) }
-
-async function uploadFilesFromInput(files) {
-  for (const file of files) {
-    if (file.size > 5*1024*1024) { toast(`${file.name} exceeds 5MB`, 'error'); continue }
-    const queue = document.getElementById('uploadQueue');
-    const item = document.createElement('div');
-    item.style.cssText = 'width:140px;background:var(--surface2);border-radius:10px;padding:10px;border:1px solid var(--border)';
-    item.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${file.name}</div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%"></div></div>`;
-    queue.appendChild(item);
-    try {
-      await uploadFile(file, `media/${Date.now()}_${file.name}`, (pct) => {
-        const el = item.querySelector('.progress-bar-fill');
-        if (el) el.style.width = pct + '%';
-      });
-      item.innerHTML += `<div style="font-size:10px;color:var(--green);margin-top:4px">✓ Done</div>`;
-      toast(`${file.name} uploaded!`, 'success');
-    } catch (err) {
-      item.innerHTML += `<div style="font-size:10px;color:var(--red);margin-top:4px">✗ Failed</div>`;
-      toast(`Upload failed: ${file.name}`, 'error');
-    }
-  }
-}
-
-async function deleteMedia(id, storagePath, e) {
-  e && e.stopPropagation();
-  confirmAction('Delete this media file?', async () => {
-    try {
-      if (storagePath) {
-        const { storage, storageRef, deleteObject } = await waitFb();
-        await deleteObject(storageRef(storage, storagePath));
-      }
-      await deleteDocById('media', id);
-      toast('Media deleted', 'info');
-    } catch (err) { toast('Error: ' + err.message, 'error') }
-  });
-}
-
-function copyUrl(url, e) {
-  e && e.stopPropagation();
-  navigator.clipboard.writeText(url).then(() => toast('URL copied!', 'success'));
-}
-
-// ═══════════════════════════════════════════════════════
-//  ACTIONS (EDIT / DELETE)
-// ═══════════════════════════════════════════════════════
-function actionBtns(col, id) {
-  return `<div style="display:flex;gap:6px">
-    <button class="btn btn-sm btn-primary" onclick="editItem('${col}','${id}')">Edit</button>
-    <button class="btn btn-sm btn-red" onclick="deleteItem('${col}','${id}')">Delete</button>
-  </div>`;
-}
-
-async function editItem(col, id) {
-  const { rtdb, rtdbRef, get } = await waitFb();
-  const snap = await get(rtdbRef(rtdb, `${col}/${id}`));
-  if (!snap.exists()) { toast('Item not found', 'error'); return }
-  const data = snap.val();
-  _editId = id; _editCollection = col;
-
-  if (col === 'products') {
-    switchTab('products'); openProductModal();
-    s('p_name', data.name); s('p_team', data.team); s('p_type', data.type); s('p_price', data.price);
-    s('p_badge', data.badge); s('p_img_url', data.imgUrl); s('p_status', data.status||'active');
-    const sz = data.sizes||{};
-    s('p_size_xs', sz.xs||0); s('p_size_s', sz.s||0); s('p_size_m', sz.m||0); s('p_size_l', sz.l||0); s('p_size_xl', sz.xl||0);
-    _editId = id;
-  } else if (col === 'heroes') {
-    switchTab('hero');
-    document.getElementById('heroModalTitle').textContent = `Edit Banner: ${id}`;
-    // Set fields
-    s('h_page', data.page);
-    s('h_title', data.title);
-    s('h_sub', data.sub || data.subtitle || '');
-    s('h_order', data.order || '');
-    s('h_img_url', data.imgUrl || data.bgUrl || '');
-    // Color
-    const col_val = data.color || data.primaryColor || '#c61f2f';
-    document.getElementById('h_color_text').value = col_val;
-    document.getElementById('h_color_picker').value = col_val;
-    document.getElementById('h_color_box').style.background = col_val;
-    // Pills
-    clearPills('h_pills_tags');
-    (data.pills || []).forEach(p => addPill('h_pills_tags', p));
-    // Image preview
-    if (data.imgUrl || data.bgUrl) {
-      const pw = document.getElementById('h_img_preview_wide');
-      pw.style.display = 'block';
-      document.getElementById('h_img_preview_wide_img').src = data.imgUrl || data.bgUrl;
-    }
-    _editId = id;
-    openModal('heroModal');
-  }
-}
-
 function deleteItem(col, id) {
-  confirmAction(`Delete "${id}" from "${col}"?`, async () => {
-    try { await deleteDocById(col, id); toast('Deleted successfully', 'info') }
-    catch (e) { toast('Error: ' + e.message, 'error') }
+  confirmAction(`Delete this item from "${col}"?`, async () => {
+    await deleteDocById(col, id);
+    toast('Deleted', 'info');
   });
 }
+
+function editItem(col, id) {
+  if (col === 'products') editProduct(id);
+}
+
+/* ═══════════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════════ */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }));
 
 function confirmAction(msg, cb) {
   document.getElementById('confirmMsg').textContent = msg;
-  document.getElementById('confirmOkBtn').onclick = () => { closeModal('confirmModal'); cb() };
+  document.getElementById('confirmOkBtn').onclick = () => { closeModal('confirmModal'); cb(); };
   openModal('confirmModal');
 }
 
-// ═══════════════════════════════════════════════════════
-//  PILLS TAG INPUT (for hero banner pills)
-// ═══════════════════════════════════════════════════════
-function handlePillKey(e, containerId) {
-  if (e.key === 'Enter' || e.key === ',') {
-    e.preventDefault();
-    const val = e.target.value.replace(/,/g,'').trim();
-    if (val) { addPill(containerId, val); e.target.value = '' }
-  } else if (e.key === 'Backspace' && !e.target.value) {
-    removeLastPill(containerId);
-  }
-}
-
-function handlePillInput(e, containerId) {
-  const val = e.target.value;
-  if (val.endsWith(',')) {
-    const pill = val.slice(0,-1).trim();
-    if (pill) { addPill(containerId, pill); e.target.value = '' }
-  }
-}
-
-function addPill(containerId, text) {
-  const wrap = document.getElementById('h_pills_wrap');
-  const input = document.getElementById('h_pills_input');
-  const tag = document.createElement('span');
-  tag.className = 'pill-tag';
-  tag.dataset.value = text;
-  tag.innerHTML = `${text} <span class="pill-tag-remove" onclick="removePill(this)">✕</span>`;
-  wrap.insertBefore(tag, input);
-}
-
-function removePill(el) {
-  el.closest('.pill-tag').remove();
-}
-
-function removeLastPill(containerId) {
-  const wrap = document.getElementById('h_pills_wrap');
-  const tags = wrap.querySelectorAll('.pill-tag');
-  if (tags.length) tags[tags.length-1].remove();
-}
-
-function clearPills(containerId) {
-  const wrap = document.getElementById('h_pills_wrap');
-  wrap.querySelectorAll('.pill-tag').forEach(t => t.remove());
-}
-
-function getPillsData(containerId) {
-  const wrap = document.getElementById('h_pills_wrap');
-  return Array.from(wrap.querySelectorAll('.pill-tag')).map(t => t.dataset.value).filter(Boolean);
-}
-
-// ═══════════════════════════════════════════════════════
-//  COLOR SYNC HELPERS
-// ═══════════════════════════════════════════════════════
-function syncColor(pickerId, textId, boxId) {
-  const val = document.getElementById(pickerId).value;
-  document.getElementById(textId).value = val;
-  document.getElementById(boxId).style.background = val;
-}
-
-function syncColorText(textId, pickerId, boxId) {
-  const val = document.getElementById(textId).value;
-  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-    document.getElementById(pickerId).value = val;
-    document.getElementById(boxId).style.background = val;
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-//  MODAL CONTROLS
-// ═══════════════════════════════════════════════════════
-function openProductModal() { _editId = null; openModal('productModal') }
-function openModal(id) { document.getElementById(id).classList.add('open') }
-function closeModal(id) { document.getElementById(id).classList.remove('open') }
-document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open') }));
-
-// ═══════════════════════════════════════════════════════
-//  TAB SWITCHING
-// ═══════════════════════════════════════════════════════
-const tabTitles = { dashboard:'Dashboard', hero:'Hero Banners', products:'Products / Kits', media:'Media Library', orders:'Orders', users:'Users', pages:'Page Settings', indexmedia:'Index Media' };
-function switchTab(name, el) {
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  document.getElementById('pageTitle').textContent = tabTitles[name] || name;
-  if (el) {
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    el.classList.add('active');
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-//  IMAGE PREVIEW (wide banner style)
-// ═══════════════════════════════════════════════════════
-function previewWide(event, wrapId, urlId) {
-  const file = event.target.files[0]; if (!file) return;
-  const wrap = document.getElementById(wrapId);
-  const img = document.getElementById(wrapId + '_img');
-  const reader = new FileReader();
-  reader.onload = e => {
-    wrap.style.display = 'block';
-    if (img) img.src = e.target.result;
-    if (urlId) document.getElementById(urlId).value = '[file selected — will upload on save]';
-  };
-  reader.readAsDataURL(file);
-}
-
-function previewLogo(event, previewId, urlId) {
-  const file = event.target.files[0]; if (!file) return;
-  const preview = document.getElementById(previewId);
-  const reader = new FileReader();
-  reader.onload = e => {
-    const isSvg = file.name.endsWith('.svg') || file.type === 'image/svg+xml';
-    preview.style.display = 'flex';
-    if (isSvg) preview.innerHTML = e.target.result;
-    else preview.innerHTML = `<img src="${e.target.result}" style="max-width:80px;max-height:60px;border-radius:6px"/>`;
-    document.getElementById(urlId).value = '[file selected — will upload on save]';
-  };
-  if (file.name.endsWith('.svg')) reader.readAsText(file);
-  else reader.readAsDataURL(file);
-}
-
-// ═══════════════════════════════════════════════════════
-//  TOAST
-// ═══════════════════════════════════════════════════════
-function toast(msg, type = 'info') {
-  const c = document.getElementById('toastContainer');
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = `<span>${type==='success'?'✓':type==='error'?'✗':'ℹ'}</span>${msg}`;
-  c.appendChild(el);
-  setTimeout(() => el.remove(), 3200);
-}
-
-// ═══════════════════════════════════════════════════════
-//  SEARCH
-// ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════════════════ */
 function globalSearchFn() {
   const q = document.getElementById('globalSearch').value.toLowerCase();
   document.querySelectorAll('table tbody tr').forEach(row => {
@@ -1589,21 +1294,26 @@ function globalSearchFn() {
   });
 }
 
-// ═══════════════════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════════════════
-function g(id) { const el = document.getElementById(id); return el ? el.value.trim() : '' }
-function s(id, val) { const el = document.getElementById(id); if (el && val !== undefined) el.value = val || '' }
-function setEl(id, val) { const el = document.getElementById(id); if (el) el.textContent = val }
-function emptyRow(cols, msg) { return `<tr><td colspan="${cols}" style="color:var(--muted);text-align:center;padding:30px">${msg}</td></tr>` }
-function resetForm(ids) { ids.forEach(id => s(id, '')) }
-
-function logoThumb(url, name) {
-  if (!url) return `<div class="flag-thumb-svg" title="${name||''}"><span style="font-size:14px">🏳</span></div>`;
-  const isSvg = url.trim().startsWith('<svg') || url.trim().startsWith('<SVG');
-  if (isSvg) return `<div class="flag-thumb-svg">${url}</div>`;
-  return `<img class="flag-thumb" src="${url}" alt="${name||''}" onerror="this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'32\\' height=\\'32\\'><rect fill=\\'%231a2338\\' width=\\'32\\' height=\\'32\\' rx=\\'16\\'/><text y=\\'22\\' x=\\'16\\' text-anchor=\\'middle\\' fill=\\'%2374ACDF\\' font-size=\\'16\\'>🏳</text></svg>'"/>`;
+/* ═══════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════ */
+function toast(msg, type = 'info') {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  const icons = { success: '✓', error: '✗', info: 'ℹ' };
+  el.innerHTML = `<span>${icons[type]||'ℹ'}</span>${msg}`;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
 }
+
+/* ═══════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════ */
+function getV(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function setV(id, val) { const el = document.getElementById(id); if (el) el.value = val ?? ''; }
+function setEl(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+function emptyRow(cols, msg) { return `<tr><td colspan="${cols}" style="text-align:center;padding:32px;color:var(--muted)">${msg}</td></tr>`; }
 </script>
 </body>
 </html>
