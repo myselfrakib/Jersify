@@ -239,14 +239,11 @@
     .pay-opt-icon { width: 38px; height: 38px; border-radius: 10px; background: #f4f4f4; display: grid; place-items: center; font-size: 18px; }
 
     /* ── PAYMENT FAILED BANNER ── */
-    /* [CHANGE 4] Shown in-page after failed payment instead of navigating away */
     .pay-failed-banner {
       display: none;
       background: rgba(198,31,47,.05);
       border: 1.5px solid rgba(198,31,47,.3);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 14px;
+      border-radius: 16px; padding: 16px; margin-bottom: 14px;
       animation: fadeInUp .3s ease both;
     }
     .pay-failed-banner.visible { display: block; }
@@ -291,6 +288,30 @@
 
     .secure-badge { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 14px; padding: 10px; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .4px; }
     .secure-badge svg { width: 13px; height: 13px; opacity: .5; }
+
+    /* ── SUCCESS SCREEN ── */
+    .success-screen { text-align: center; padding: 60px 16px 40px; }
+    .success-emoji { font-size: 64px; margin-bottom: 16px; display: block; animation: popIn .5s cubic-bezier(.34,1.56,.64,1) both; }
+    @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .success-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; color: var(--success); letter-spacing: 2px; margin-bottom: 6px; }
+    .success-order-id { font-size: 12px; font-weight: 700; color: var(--muted); background: #f5f5f5; display: inline-block; padding: 5px 14px; border-radius: 99px; margin-bottom: 16px; }
+    .success-msg { font-size: 13px; color: var(--muted); line-height: 1.7; max-width: 280px; margin: 0 auto 24px; }
+    .success-redirect { font-size: 12px; color: var(--muted); margin-top: 16px; }
+    .success-redirect span { color: var(--accent); font-weight: 800; }
+    .success-details {
+      background: #f9f9f9; border: 1px solid var(--line); border-radius: 18px;
+      padding: 16px; margin: 0 auto 24px; max-width: 320px; text-align: left;
+    }
+    .success-detail-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 12px; }
+    .success-detail-row span:first-child { color: var(--muted); font-weight: 500; }
+    .success-detail-row span:last-child { font-weight: 700; }
+    .success-btn {
+      border: none; border-radius: 14px; padding: 14px 32px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      color: #fff; font-size: 13px; font-weight: 800; cursor: pointer;
+      box-shadow: 0 10px 28px rgba(198,31,47,.28); transition: transform .2s;
+    }
+    .success-btn:hover { transform: translateY(-2px); }
 
     /* ── FOOTER ── */
     .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0; }
@@ -343,7 +364,7 @@
   <div id="checkoutContent" style="display:none">
     <div class="content">
 
-      <!-- [CHANGE 4] Payment failed banner — shown in-page, order preserved -->
+      <!-- Payment failed banner -->
       <div class="pay-failed-banner" id="payFailedBanner">
         <div class="pay-failed-header">
           <span class="pay-failed-icon">⚠️</span>
@@ -435,7 +456,6 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3"/></svg>
             <span id="locationText">Auto Detect My Location</span>
           </button>
-          <!-- [CHANGE 2] checked by default -->
           <div class="save-addr-row" id="saveAddrRow">
             <input type="checkbox" id="saveAddrCheck" class="save-addr-checkbox" checked>
             <label for="saveAddrCheck">Save this address for future orders</label>
@@ -454,7 +474,6 @@
           <button class="coupon-apply-btn" onclick="applyCoupon()">APPLY</button>
         </div>
         <div class="coupon-msg" id="couponMsg"></div>
-        <!-- [CHANGE 1] Coupon tags loaded from Realtime DB — no hardcoded codes -->
         <div class="coupon-tags" id="couponTagsContainer">
           <span class="coupon-loading-text">Loading coupons…</span>
         </div>
@@ -534,10 +553,10 @@
 </nav>
 
 <script type="module">
-  import { initializeApp }       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { initializeApp }                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged }      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import {
-    getDatabase, ref, get, child
+    getDatabase, ref, get, child, set, update, push
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
@@ -550,37 +569,35 @@
     databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
   };
 
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getDatabase(app);
+  const app   = initializeApp(firebaseConfig);
+  const auth  = getAuth(app);
+  const db    = getDatabase(app);
   const dbRef = ref(db);
 
   /* ── state ── */
-  let orderPrice       = 0;
-  let orderItems       = [];
-  let discountAmount   = 0;
-  let couponApplied    = false;
-  let isCartMode       = false;
+  let orderPrice        = 0;
+  let orderItems        = [];
+  let discountAmount    = 0;
+  let couponApplied     = false;
+  let isCartMode        = false;
   let selectedSavedAddr = null;
-  let newAddrVisible   = true;
-  let couponsMap       = {};   // populated from /coupons in RTDB
-  let lastOrderDetails = null; // [CHANGE 4] preserved for retry
+  let newAddrVisible    = true;
+  let couponsMap        = {};
+  let currentUser       = null;  // Firebase Auth user
 
   /* ── localStorage helpers ── */
-  function getCart()   { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } }
-  function saveCart(c) { localStorage.setItem('jersify_cart', JSON.stringify(c)); }
-  function getSavedAddresses() { try { return JSON.parse(localStorage.getItem('jersify_addresses') || '[]'); } catch { return []; } }
-  function saveAddress(addrObj) {
+  const getCart   = () => { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } };
+  const saveCart  = c  => localStorage.setItem('jersify_cart', JSON.stringify(c));
+  const getSavedAddresses = () => { try { return JSON.parse(localStorage.getItem('jersify_addresses') || '[]'); } catch { return []; } };
+  const saveAddressLocal  = a  => {
     const addrs = getSavedAddresses();
-    addrs.unshift({ ...addrObj, id: Date.now(), tag: 'Home' });
+    addrs.unshift({ ...a, id: Date.now(), tag: 'Home' });
     localStorage.setItem('jersify_addresses', JSON.stringify(addrs.slice(0, 5)));
-  }
+  };
 
-  /* ════════════════════════════════════════════════
-     [CHANGE 1] Fetch coupons from /coupons in RTDB
-     Expected structure:
-       /coupons/JERSIFY10: { type:"percent", value:10, desc:"10% OFF", active:true }
-     ════════════════════════════════════════════════ */
+  /* ════════════════════════════════════
+     Fetch coupons from /coupons in RTDB
+     ════════════════════════════════════ */
   async function loadCoupons() {
     const tagsEl = document.getElementById('couponTagsContainer');
     try {
@@ -599,30 +616,26 @@
             activeCodes.push(code);
           }
         });
-        if (activeCodes.length) {
-          tagsEl.innerHTML = activeCodes.map(c =>
-            `<span class="coupon-tag" onclick="useCoupon('${c}')">${c}</span>`
-          ).join('');
-        } else {
-          tagsEl.innerHTML = '<span class="coupon-loading-text">No active coupons right now.</span>';
-        }
+        tagsEl.innerHTML = activeCodes.length
+          ? activeCodes.map(c => `<span class="coupon-tag" onclick="useCoupon('${c}')">${c}</span>`).join('')
+          : '<span class="coupon-loading-text">No active coupons right now.</span>';
       } else {
         tagsEl.innerHTML = '<span class="coupon-loading-text">No coupons available.</span>';
       }
     } catch (err) {
-      console.warn('Coupons fetch failed:', err);
       tagsEl.innerHTML = '<span class="coupon-loading-text">Could not load coupons.</span>';
     }
   }
 
-  /* ════════════════════════════════════════════════
-     [CHANGE 3] Pre-fill name/email/phone from /users/{uid}
-     Handles both DB user shapes found in the export:
-       Shape A: { displayName, photoURL, ... }         (UPUh4zvyEwUWeBIsEZdcQN0S7UF2)
-       Shape B: { profile: { name, email, phone } }    (ggUyPAYKiMcENvl6bLNFbi752mJ2)
-     Also cross-checks /admins/{uid} for name/email/phone.
-     Also uses Firebase Auth currentUser fields as fallback.
-     ════════════════════════════════════════════════ */
+  /* ════════════════════════════════════════════════════════
+     Pre-fill name / email / phone from /users/{uid}
+     Handles:
+       Shape A  /users/{uid}  → { displayName, photoURL }
+       Shape B  /users/{uid}  → { profile: { name, email, phone } }
+       Also reads phone/dob from top-level fields
+     Falls back to /admins/{uid} for admin accounts.
+     Always uses Firebase Auth fields as additional fallback.
+     ════════════════════════════════════════════════════════ */
   async function prefillUserInfo(user) {
     let name  = user.displayName || '';
     let email = user.email       || '';
@@ -632,7 +645,7 @@
       const snap = await get(child(dbRef, `users/${user.uid}`));
       if (snap.exists()) {
         const u = snap.val();
-        // Shape B: nested profile object
+        // Shape B: nested profile
         const p = u.profile || {};
         name  = p.name        || u.name        || u.displayName || name;
         email = p.email       || u.email       || email;
@@ -640,7 +653,7 @@
       }
     } catch (_) {}
 
-    // Fallback to /admins if still missing phone
+    // Fallback to /admins if phone still missing
     if (!phone) {
       try {
         const aSnap = await get(child(dbRef, `admins/${user.uid}`));
@@ -653,7 +666,6 @@
       } catch (_) {}
     }
 
-    // Set fields only if currently empty (don't overwrite what user typed)
     const setIfEmpty = (id, val) => {
       const el = document.getElementById(id);
       if (el && !el.value && val) el.value = val;
@@ -665,7 +677,7 @@
 
   /* ── saved addresses ── */
   function renderSavedAddresses() {
-    const addrs = getSavedAddresses();
+    const addrs   = getSavedAddresses();
     const section = document.getElementById('savedAddressesSection');
     if (!addrs.length) { section.style.display = 'none'; newAddrVisible = true; return; }
 
@@ -681,8 +693,8 @@
       </div>`).join('');
 
     selectSavedAddr(0, encodeURIComponent(JSON.stringify(addrs[0])));
-    document.getElementById('addressForm').style.display = 'none';
-    document.getElementById('saveAddrRow').style.display = 'none';
+    document.getElementById('addressForm').style.display  = 'none';
+    document.getElementById('saveAddrRow').style.display  = 'none';
     newAddrVisible = false;
   }
 
@@ -698,7 +710,7 @@
   window.toggleNewAddress = () => {
     newAddrVisible = !newAddrVisible;
     document.getElementById('addressForm').style.display = newAddrVisible ? 'block' : 'none';
-    document.getElementById('saveAddrRow').style.display = newAddrVisible ? 'flex' : 'none';
+    document.getElementById('saveAddrRow').style.display = newAddrVisible ? 'flex'  : 'none';
     if (newAddrVisible) {
       selectedSavedAddr = null;
       document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected'));
@@ -750,11 +762,10 @@
     applyCoupon();
   };
 
-  /* [CHANGE 1] applyCoupon reads from couponsMap (fetched from DB) */
   window.applyCoupon = () => {
     const code  = document.getElementById('couponInput').value.trim().toUpperCase();
     const msgEl = document.getElementById('couponMsg');
-    if (!code) { msgEl.textContent = 'Please enter a coupon code.'; msgEl.className = 'coupon-msg error'; return; }
+    if (!code)         { msgEl.textContent = 'Please enter a coupon code.'; msgEl.className = 'coupon-msg error'; return; }
     if (couponApplied) { msgEl.textContent = 'A coupon is already applied.'; msgEl.className = 'coupon-msg error'; return; }
     if (!Object.keys(couponsMap).length) { msgEl.textContent = 'Coupons are still loading, please wait.'; msgEl.className = 'coupon-msg error'; return; }
     const coupon = couponsMap[code];
@@ -787,7 +798,7 @@
   };
 
   function recalcCartTotal() {
-    const cart = getCart();
+    const cart     = getCart();
     orderPrice     = cart.reduce((s, i) => s + i.price * i.qty, 0);
     discountAmount = 0; couponApplied = false;
     document.getElementById('subTotal').textContent   = `₹${orderPrice.toLocaleString('en-IN')}`;
@@ -796,10 +807,7 @@
     document.getElementById('discountRow').style.display = 'none';
   }
 
-  /* ════════════════════════════════════════════════
-     [CHANGE 4] Payment failure helpers
-     Page stays alive — order items preserved, banner shown
-     ════════════════════════════════════════════════ */
+  /* ── Payment failure helpers ── */
   function showPaymentFailed(reason) {
     const banner = document.getElementById('payFailedBanner');
     document.getElementById('payFailedDesc').textContent =
@@ -807,7 +815,6 @@
       ' Your items are still here — try again or switch to Cash on Delivery.';
     banner.classList.add('visible');
     banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    // Re-enable confirm button so user can retry
     const btn = document.getElementById('confirmBtn');
     btn.disabled = false;
     btn.textContent = 'Confirm Order →';
@@ -815,7 +822,6 @@
 
   window.retryPayment = () => {
     document.getElementById('payFailedBanner').classList.remove('visible');
-    // Scroll to confirm button for quick retry
     document.getElementById('confirmBtn').scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
@@ -825,14 +831,69 @@
     document.getElementById('pay_cod').parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
+  /* ════════════════════════════════════════════════════════
+     Save order to Firebase RTDB
+     Writes to:
+       /orders/{orderId}             — full order record
+       /users/{uid}/orders/{orderId} — true  (index for profile page)
+     For guests: only writes to /orders
+     ════════════════════════════════════════════════════════ */
+  async function saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId, paymentMethod }) {
+    const items = orderItems.map(item => ({
+      id:       item.id   || item.key || '',
+      name:     item.name || '',
+      price:    item.price || 0,
+      qty:      item.qty  || 1,
+      size:     item.size || selectedSize || 'M',
+      team:     item.team || '',
+      imgUrl:   item.imgUrl || item.imageUrl || '',
+      emoji:    item.emoji || '👕'
+    }));
+
+    const subtotal = orderPrice;
+    const orderData = {
+      orderId,
+      customerName: name,
+      phone,
+      email,
+      address:     `${address}, ${city}, ${state} ${pincode}`,
+      country:     country || 'India',
+      items,
+      subtotal,
+      discount:    discountAmount,
+      total:       finalPrice,
+      paymentMethod,
+      paymentId:   paymentId || '',
+      status:      'processing',
+      createdAt:   Date.now(),
+      updatedAt:   Date.now(),
+      userId:      currentUser ? currentUser.uid : 'guest'
+    };
+
+    try {
+      // Write the full order to /orders/{orderId}
+      await set(ref(db, `orders/${orderId}`), orderData);
+
+      // If logged in, add index entry to /users/{uid}/orders/{orderId}
+      if (currentUser) {
+        await set(ref(db, `users/${currentUser.uid}/orders/${orderId}`), true);
+      }
+    } catch (err) {
+      console.error('Failed to save order to DB:', err);
+      // Don't block the success screen — order confirmed on payment side
+    }
+  }
+
   /* ── DOMContentLoaded ── */
   window.addEventListener('DOMContentLoaded', async () => {
-    // Run coupon fetch and auth check in parallel — don't block page render
     loadCoupons();
     renderSavedAddresses();
 
-    // [CHANGE 3] Watch auth state → prefill from /users/{uid}
-    onAuthStateChanged(auth, user => { if (user) prefillUserInfo(user); });
+    // Watch auth state → prefill from /users/{uid}
+    onAuthStateChanged(auth, user => {
+      currentUser = user;
+      if (user) prefillUserInfo(user);
+    });
 
     const params    = new URLSearchParams(window.location.search);
     const pid       = params.get('id');
@@ -841,14 +902,14 @@
     const orderBody = document.getElementById('orderItemsBody');
 
     if (pid) {
-      /* ── Single product mode (direct Buy Now) ── */
+      /* ── Single product mode (Buy Now) ── */
       try {
         const snap = await get(child(dbRef, `products/${pid}`));
         if (snap.exists()) {
           const p    = snap.val();
           const name = p.name || 'Jersify Kit';
           orderPrice = p.price ? parseInt(p.price) : 1499;
-          orderItems = [{ name, price: orderPrice, size: paramSize || 'M', team: p.team || '', imgUrl: p.imgUrl || '' }];
+          orderItems = [{ id: pid, name, price: orderPrice, size: paramSize || 'M', team: p.team || '', imgUrl: p.imgUrl || '', qty: 1 }];
 
           orderBody.innerHTML = `
             <div class="product-row">
@@ -871,7 +932,6 @@
           orderBody.innerHTML = `<p style="color:var(--muted);font-size:13px;text-align:center;padding:12px 0">Product not found.</p>`;
         }
       } catch (err) {
-        console.error(err);
         orderBody.innerHTML = `<p style="color:var(--accent);font-size:13px;text-align:center;padding:12px 0">Error loading product.</p>`;
       }
 
@@ -922,17 +982,19 @@
     document.getElementById('checkoutContent').style.display = 'block';
   });
 
-  /* ── Process Order ── */
+  /* ════════════════════════════════════════════════
+     Process Order
+     ════════════════════════════════════════════════ */
   window.processOrder = () => {
     if (orderPrice === 0) { alert('Your cart is empty. Please add items first.'); return; }
 
-    // Hide any previous failed banner
     document.getElementById('payFailedBanner').classList.remove('visible');
 
-    let name, phone, email, address, city, state, pincode;
+    let name, phone, email, address, city, state, pincode, country;
 
     if (selectedSavedAddr) {
       ({ name, phone, email, address, city, state, pincode } = selectedSavedAddr);
+      country = selectedSavedAddr.country || 'India';
     } else {
       name    = document.getElementById('custName').value.trim();
       phone   = document.getElementById('custPhone').value.trim();
@@ -941,88 +1003,117 @@
       city    = document.getElementById('custCity').value.trim();
       state   = document.getElementById('custState').value.trim();
       pincode = document.getElementById('custPincode').value.trim();
+      country = document.getElementById('custCountry').value.trim() || 'India';
 
-      if (!name)                         { shakeField('custName');    alert('Please enter your name.');            return; }
-      if (!phone || phone.length < 10)   { shakeField('custPhone');   alert('Please enter a valid phone number.'); return; }
-      if (!address)                      { shakeField('custAddress'); alert('Please enter your address.');         return; }
-      if (!city)                         { shakeField('custCity');    alert('Please enter your city.');            return; }
-      if (!pincode || pincode.length < 4){ shakeField('custPincode'); alert('Please enter a valid pincode.');      return; }
+      if (!name)                          { shakeField('custName');    alert('Please enter your name.');            return; }
+      if (!phone || phone.length < 10)    { shakeField('custPhone');   alert('Please enter a valid phone number.'); return; }
+      if (!address)                       { shakeField('custAddress'); alert('Please enter your address.');         return; }
+      if (!city)                          { shakeField('custCity');    alert('Please enter your city.');            return; }
+      if (!pincode || pincode.length < 4) { shakeField('custPincode'); alert('Please enter a valid pincode.');      return; }
 
-      // [CHANGE 2] auto-checked by default so this almost always fires
       if (document.getElementById('saveAddrCheck').checked) {
-        saveAddress({ name, phone, email, address, city, state, pincode,
-          country: document.getElementById('custCountry').value });
+        saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
       }
     }
 
-    const isRzp      = document.getElementById('pay_rzp').checked;
-    const finalPrice = orderPrice - discountAmount;
+    const isRzp        = document.getElementById('pay_rzp').checked;
+    const finalPrice   = orderPrice - discountAmount;
     const selectedSize = document.querySelector('.size-btn.active')?.textContent || 'M';
-    const itemDesc   = isCartMode
+    const itemDesc     = isCartMode
       ? `${orderItems.length} item${orderItems.length > 1 ? 's' : ''} from Jersify`
       : `${orderItems[0]?.name || 'Jersify Kit'} (Size: ${selectedSize})`;
-
-    // [CHANGE 4] Save order context for retry
-    lastOrderDetails = { name, phone, email, address, city, state, pincode, isRzp, finalPrice, selectedSize, itemDesc };
 
     const btn = document.getElementById('confirmBtn');
     btn.disabled = true;
     btn.textContent = 'Processing…';
 
+    // Generate order ID matching existing pattern: JRS-{timestamp}
+    const orderId = `JRS-${Date.now()}`;
+
     if (isRzp) {
       const options = {
-        key:         "rzp_test_YourKeyHere",
+        key:         "rzp_test_YourKeyHere",  // ← replace with your live key
         amount:      finalPrice * 100,
         currency:    "INR",
         name:        "JERSIFY",
         description: itemDesc,
         image:       "https://dummyimage.com/100x100/111/fff&text=J",
-        handler: r => {
-          // SUCCESS — clear cart and show confirmation
+        handler: async r => {
+          // Payment successful — save to DB then show success
+          await saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: r.razorpay_payment_id, paymentMethod: 'razorpay' });
+          localStorage.removeItem('jersify_cart');
           btn.disabled = false;
           btn.textContent = 'Confirm Order →';
-          showSuccess(r.razorpay_payment_id);
+          showSuccess(orderId, name, finalPrice, selectedSize, 'Online Payment');
         },
         prefill: { name, email, contact: phone },
-        notes: { address: `${address}, ${city}, ${state} - ${pincode}`, size: selectedSize },
-        theme: { color: "#c61f2f" },
-        modal: {
-          // [CHANGE 4] User closes the modal without paying — don't navigate away
+        notes:   { address: `${address}, ${city}, ${state} - ${pincode}`, size: selectedSize },
+        theme:   { color: "#c61f2f" },
+        modal:   {
           ondismiss: () => {
             showPaymentFailed('Payment was cancelled.');
           }
         }
       };
       const rzp = new Razorpay(options);
-      // [CHANGE 4] payment.failed — stay on page with error detail
       rzp.on('payment.failed', r => {
         const reason = r?.error?.description || r?.error?.reason || 'Unknown error';
         showPaymentFailed(`Payment failed: ${reason}`);
       });
       rzp.open();
     } else {
-      // COD always succeeds
-      btn.disabled = false;
-      btn.textContent = 'Confirm Order →';
-      showSuccess('COD-' + Date.now());
+      // COD — save immediately
+      saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: '', paymentMethod: 'cod' }).then(() => {
+        localStorage.removeItem('jersify_cart');
+        btn.disabled = false;
+        btn.textContent = 'Confirm Order →';
+        showSuccess(orderId, name, finalPrice, selectedSize, 'Cash on Delivery');
+      });
     }
   };
 
-  function showSuccess(orderId) {
-    localStorage.removeItem('jersify_cart');
+  /* ════════════════════════════════════════════════
+     Success screen — redirects to profile.html after 5s
+     ════════════════════════════════════════════════ */
+  function showSuccess(orderId, name, total, size, payMethod) {
+    let countdown = 5;
+
     document.querySelector('.content').innerHTML = `
-      <div style="text-align:center;padding:60px 16px;">
-        <div style="font-size:60px;margin-bottom:16px;">🎉</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--success);letter-spacing:2px;">Order Confirmed!</div>
-        <div style="color:var(--muted);margin-top:8px;font-size:12px;font-weight:600;">Order ID: ${orderId}</div>
-        <div style="color:var(--muted);margin-top:16px;font-size:13px;line-height:1.7;max-width:280px;margin-inline:auto;">
-          Thank you for shopping with Jersify! Your kit is being packed and will be on its way soon.
+      <div class="success-screen">
+        <span class="success-emoji">🎉</span>
+        <div class="success-title">Order Confirmed!</div>
+        <div class="success-order-id">Order ID: ${orderId}</div>
+
+        <div class="success-details">
+          <div class="success-detail-row"><span>Customer</span><span>${name}</span></div>
+          <div class="success-detail-row"><span>Amount Paid</span><span>₹${total.toLocaleString('en-IN')}</span></div>
+          <div class="success-detail-row"><span>Payment</span><span>${payMethod}</span></div>
+          ${!isCartMode ? `<div class="success-detail-row"><span>Size</span><span>${size}</span></div>` : ''}
         </div>
-        <button onclick="window.location.href='shop.html'"
-          style="margin-top:28px;border:none;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;border-radius:14px;padding:14px 32px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 10px 28px rgba(198,31,47,.28);">
-          Continue Shopping →
+
+        <div class="success-msg">
+          Thank you for shopping with Jersify! Your kit is being packed and will be on its way soon. You can track your order from your profile.
+        </div>
+
+        <button class="success-btn" onclick="window.location.href='profile.html'">
+          View My Orders →
         </button>
+
+        <div class="success-redirect" id="successRedirect">
+          Redirecting to your profile in <span id="countdownNum">${countdown}</span>s…
+        </div>
       </div>`;
+
+    // Countdown + auto-redirect
+    const interval = setInterval(() => {
+      countdown--;
+      const el = document.getElementById('countdownNum');
+      if (el) el.textContent = countdown;
+      if (countdown <= 0) {
+        clearInterval(interval);
+        window.location.href = 'profile.html';
+      }
+    }, 1000);
   }
 
   function shakeField(id) {
