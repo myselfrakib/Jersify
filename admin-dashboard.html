@@ -21,17 +21,13 @@
       appId: "1:461181023878:web:6ebfbae603baf4a873c307",
       databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
     };
-    const app = initializeApp(cfg);
+    const app     = initializeApp(cfg);
     const storage = getStorage(app);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
+    const auth    = getAuth(app);
+    const db      = getDatabase(app);
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        // Uncomment in production: window.location.href = 'admin-login.html'; return;
-        initApp(); // Allow access without login for now
-        return;
-      }
+      if (!user) { initApp(); return; }
       try {
         const snap = await get(dbRef(db, `admins/${user.uid}`));
         if (!snap.exists() || snap.val().status !== true) {
@@ -39,9 +35,7 @@
           window.location.href = 'admin-login.html';
           return;
         }
-      } catch(e) {
-        console.warn('Admin check failed, proceeding anyway:', e);
-      }
+      } catch(e) { console.warn('Admin check failed, proceeding anyway:', e); }
       initApp();
     });
 
@@ -71,6 +65,8 @@
       --blue-bg: #eef4ff;
       --purple: #6b21a8;
       --purple-bg: #faf5ff;
+      --gold: #b8860b;
+      --gold-bg: #fffbeb;
       --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
       --shadow: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
       --shadow-lg: 0 12px 32px rgba(0,0,0,.12);
@@ -78,7 +74,6 @@
       --radius-sm: 8px;
       --nav-w: 240px;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
@@ -90,82 +85,32 @@
 
     /* ── SIDEBAR ── */
     .sidebar {
-      width: var(--nav-w);
-      flex-shrink: 0;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      overflow-x: hidden;
-      transition: transform .3s cubic-bezier(.4,0,.2,1);
-      z-index: 100;
+      width: var(--nav-w); flex-shrink: 0; background: var(--surface);
+      border-right: 1px solid var(--border); display: flex; flex-direction: column;
+      overflow-y: auto; overflow-x: hidden;
+      transition: transform .3s cubic-bezier(.4,0,.2,1); z-index: 100;
     }
     .sidebar::-webkit-scrollbar { width: 4px; }
     .sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
-    .sidebar-logo {
-      padding: 20px 20px 14px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .logo-mark {
-      width: 36px; height: 36px;
-      background: var(--accent);
-      border-radius: 10px;
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-    }
+    .sidebar-logo { padding: 20px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .logo-mark { width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; }
     .logo-mark svg { width: 20px; height: 20px; fill: #fff; }
     .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--text); line-height: 1; }
     .logo-sub { font-size: 9px; font-weight: 600; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px; }
-
-    .nav-section-label {
-      padding: 16px 16px 6px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
+    .nav-section-label { padding: 16px 16px 6px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; }
     .nav-link {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 14px;
-      margin: 1px 8px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      color: var(--text2);
-      font-size: 13px;
-      font-weight: 500;
-      transition: background .15s, color .15s;
-      border: none;
-      background: none;
-      width: calc(100% - 16px);
-      text-align: left;
+      display: flex; align-items: center; gap: 10px; padding: 9px 14px; margin: 1px 8px;
+      border-radius: var(--radius-sm); cursor: pointer; color: var(--text2); font-size: 13px;
+      font-weight: 500; transition: background .15s, color .15s; border: none; background: none;
+      width: calc(100% - 16px); text-align: left;
     }
     .nav-link svg { width: 16px; height: 16px; flex-shrink: 0; opacity: .7; }
     .nav-link:hover { background: var(--surface3); color: var(--text); }
     .nav-link.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
     .nav-link.active svg { opacity: 1; }
     .nav-badge { margin-left: auto; background: var(--accent); color: #fff; border-radius: 999px; font-size: 10px; font-weight: 700; padding: 1px 7px; min-width: 20px; text-align: center; }
-
-    .sidebar-footer {
-      margin-top: auto;
-      padding: 14px;
-      border-top: 1px solid var(--border);
-    }
-    .logout-btn {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 12px; border-radius: var(--radius-sm);
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); font-size: 13px; font-weight: 500;
-      width: 100%; transition: .15s;
-    }
+    .sidebar-footer { margin-top: auto; padding: 14px; border-top: 1px solid var(--border); }
+    .logout-btn { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--radius-sm); background: none; border: none; cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 500; width: 100%; transition: .15s; }
     .logout-btn:hover { color: var(--accent); background: var(--accent-bg); }
     .logout-btn svg { width: 15px; height: 15px; }
 
@@ -173,64 +118,16 @@
     .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
     /* ── TOPBAR ── */
-    .topbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 24px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-shrink: 0;
-      box-shadow: var(--shadow-sm);
-    }
-    .burger-btn {
-      display: none;
-      width: 36px; height: 36px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--surface);
-      cursor: pointer;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      flex-shrink: 0;
-    }
-    .burger-btn span {
-      display: block; width: 18px; height: 2px;
-      background: var(--text); border-radius: 1px;
-      transition: .25s;
-    }
-    .page-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      letter-spacing: 1.5px;
-      color: var(--text);
-      flex: 1;
-    }
+    .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 60px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; box-shadow: var(--shadow-sm); }
+    .burger-btn { display: none; width: 36px; height: 36px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 4px; flex-shrink: 0; }
+    .burger-btn span { display: block; width: 18px; height: 2px; background: var(--text); border-radius: 1px; transition: .25s; }
+    .page-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1.5px; color: var(--text); flex: 1; }
     .topbar-right { display: flex; align-items: center; gap: 10px; }
-    .search-input {
-      background: var(--surface3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 7px 12px 7px 34px;
-      font-size: 13px;
-      color: var(--text);
-      width: 220px;
-      outline: none;
-      transition: .2s;
-      position: relative;
-    }
+    .search-input { background: var(--surface3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 12px 7px 34px; font-size: 13px; color: var(--text); width: 220px; outline: none; transition: .2s; }
     .search-wrap { position: relative; }
     .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--muted); pointer-events: none; }
     .search-input:focus { border-color: var(--accent); background: #fff; width: 260px; }
-    .sync-pill {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--green-bg); color: var(--green);
-      border: 1px solid #b3e6c8; border-radius: 999px;
-      padding: 4px 11px; font-size: 11px; font-weight: 600;
-    }
+    .sync-pill { display: flex; align-items: center; gap: 6px; background: var(--green-bg); color: var(--green); border: 1px solid #b3e6c8; border-radius: 999px; padding: 4px 11px; font-size: 11px; font-weight: 600; }
     .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100% { opacity:1; transform:scale(1) } 50% { opacity:.5; transform:scale(1.3) } }
 
@@ -238,18 +135,12 @@
     .content { flex: 1; overflow-y: auto; padding: 24px; }
     .content::-webkit-scrollbar { width: 6px; }
     .content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-
     .tab-pane { display: none; animation: fadeIn .2s ease; }
     .tab-pane.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      border: none; border-radius: var(--radius-sm);
-      padding: 8px 16px; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: .15s; white-space: nowrap;
-    }
+    .btn { display: inline-flex; align-items: center; gap: 6px; border: none; border-radius: var(--radius-sm); padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: .15s; white-space: nowrap; }
     .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-primary:hover { background: var(--accent2); }
@@ -257,6 +148,8 @@
     .btn-ghost:hover { background: var(--surface3); }
     .btn-danger { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
     .btn-danger:hover { background: #fee2e2; }
+    .btn-gold { background: var(--gold-bg); color: var(--gold); border: 1px solid #fde68a; }
+    .btn-gold:hover { background: #fef3c7; }
     .btn-sm { padding: 5px 11px; font-size: 12px; }
 
     /* ── CARDS ── */
@@ -269,16 +162,13 @@
 
     /* ── STATS ── */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
-    .stat-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 18px 20px;
-      box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
-    }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
     .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
     .stat-card.red::after { background: var(--accent); }
     .stat-card.green::after { background: var(--green); }
     .stat-card.blue::after { background: var(--blue); }
     .stat-card.orange::after { background: var(--orange); }
+    .stat-card.gold::after { background: var(--gold); }
     .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 40px; line-height: 1; color: var(--text); }
     .stat-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-top: 4px; }
     .stat-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 28px; opacity: .15; }
@@ -298,14 +188,15 @@
     .badge-blue { background: var(--blue-bg); color: var(--blue); }
     .badge-orange { background: var(--orange-bg); color: var(--orange); }
     .badge-purple { background: var(--purple-bg); color: var(--purple); }
+    .badge-gold { background: var(--gold-bg); color: var(--gold); }
     .badge-gray { background: var(--surface3); color: var(--text2); }
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; }
 
     /* ── FORMS ── */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
     .form-group { display: flex; flex-direction: column; gap: 5px; }
     .form-group.span-2 { grid-column: span 2; }
+    .form-group.span-3 { grid-column: span 3; }
     label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .6px; }
     input[type=text], input[type=email], input[type=number], input[type=url], select, textarea {
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
@@ -313,23 +204,11 @@
     }
     input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
     textarea { resize: vertical; min-height: 72px; }
-    select option { background: var(--surface); }
 
     /* ── MODAL ── */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,.35);
-      backdrop-filter: blur(3px); z-index: 500;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity .2s;
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); backdrop-filter: blur(3px); z-index: 500; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .2s; }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; width: min(560px, 95vw);
-      max-height: 88vh; overflow-y: auto;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(12px) scale(.98); transition: .25s;
-    }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: min(580px, 95vw); max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); transform: translateY(12px) scale(.98); transition: .25s; }
     .modal-overlay.open .modal { transform: none; }
     .modal::-webkit-scrollbar { width: 4px; }
     .modal::-webkit-scrollbar-thumb { background: var(--border2); }
@@ -340,133 +219,81 @@
     .modal-body { padding: 20px 24px 24px; }
     .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
 
+    /* ── PRODUCT IMAGE SLOTS ── */
+    .product-img-slots { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+    .p-img-slot {
+      position: relative; width: 100px; height: 100px;
+      border: 2px dashed var(--border2); border-radius: var(--radius-sm);
+      background: var(--surface2); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 4px;
+      cursor: pointer; transition: border-color .2s; overflow: hidden; flex-shrink: 0;
+    }
+    .p-img-slot:not(.has-img):hover { border-color: var(--accent); background: var(--accent-bg); }
+    .p-img-slot.has-img { border-style: solid; border-color: var(--border); }
+    .p-img-slot.primary-slot { border-color: var(--accent); }
+    .p-img-slot input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 5; width: 100%; height: 100%; }
+    .p-img-slot.has-img input[type=file] { z-index: 0; pointer-events: none; }
+    .p-img-slot img.slot-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
+    .p-img-slot-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.5); opacity: 0; transition: opacity .2s; z-index: 3; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .p-img-slot.has-img:hover .p-img-slot-overlay { opacity: 1; }
+    .p-img-slot-overlay button { width: 28px; height: 28px; border-radius: 6px; border: none; cursor: pointer; display: grid; place-items: center; font-size: 12px; }
+    .slot-replace-btn { background: rgba(255,255,255,.9); color: var(--text); }
+    .slot-delete-btn { background: rgba(220,38,38,.9); color: #fff; }
+    .p-img-slot-label { font-size: 9px; font-weight: 700; color: var(--muted); text-align: center; position: relative; z-index: 2; pointer-events: none; }
+    .p-img-slot-icon { font-size: 20px; opacity: .4; position: relative; z-index: 2; pointer-events: none; }
+    .primary-badge { position: absolute; top: 4px; left: 4px; background: var(--accent); color: #fff; font-size: 8px; font-weight: 800; padding: 2px 5px; border-radius: 4px; z-index: 4; letter-spacing: .5px; pointer-events: none; }
+    .slot-prog-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 6; display: none; }
+    .slot-prog-bar.active { display: block; }
+    .slot-prog-fill { height: 100%; background: var(--accent); transition: width .3s; width: 0%; }
+
     /* ── MEDIA PAGE ── */
     .media-page-section { margin-bottom: 28px; }
-    .media-section-title {
-      font-size: 13px; font-weight: 700; color: var(--text2);
-      text-transform: uppercase; letter-spacing: 1px;
-      margin-bottom: 12px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .media-section-title::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
-
+    .media-section-title { font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .media-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
     .media-boxes-row { display: flex; gap: 12px; flex-wrap: wrap; }
-
-    /* Upload box */
+    .media-slot-wrap { display: flex; flex-direction: column; gap: 6px; }
+    .media-link-input { width: 160px; border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 11px; color: var(--text); background: var(--surface); outline: none; transition: .15s; }
+    .media-link-input:focus { border-color: var(--accent); }
     .media-box {
-      position: relative;
-      width: 160px; height: 140px;
-      border: 2px dashed var(--border2);
-      border-radius: var(--radius);
-      background: var(--surface);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 6px; cursor: pointer;
-      transition: border-color .2s, background .2s;
-      overflow: hidden;
-      flex-shrink: 0;
-      user-select: none;
+      position: relative; width: 160px; height: 140px; border: 2px dashed var(--border2);
+      border-radius: var(--radius); background: var(--surface); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px; cursor: pointer;
+      transition: border-color .2s, background .2s; overflow: hidden; flex-shrink: 0; user-select: none;
     }
     .media-box:not(.has-image):hover { border-color: var(--accent); background: var(--accent-bg); }
     .media-box.has-image { border-style: solid; border-color: var(--border); }
-
-    .media-box > input[type=file] {
-      position: absolute; inset: 0;
-      opacity: 0; cursor: pointer;
-      z-index: 10;
-      width: 100%; height: 100%;
-    }
+    .media-box > input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 10; width: 100%; height: 100%; }
     .media-box.has-image > input[type=file] { z-index: 0; pointer-events: none; }
-
-    .media-box img.box-img {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; border-radius: calc(var(--radius) - 2px);
-      z-index: 1; pointer-events: none;
-    }
-
-    .media-box-overlay {
-      position: absolute; inset: 0; background: rgba(0,0,0,.5);
-      border-radius: calc(var(--radius) - 2px);
-      opacity: 0; transition: opacity .2s; z-index: 5;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
+    .media-box img.box-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: calc(var(--radius) - 2px); z-index: 1; pointer-events: none; }
+    .media-box-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.5); border-radius: calc(var(--radius) - 2px); opacity: 0; transition: opacity .2s; z-index: 5; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .media-box.has-image:hover .media-box-overlay { opacity: 1; }
-    .media-box-overlay button {
-      width: 34px; height: 34px; border-radius: 8px; border: none;
-      cursor: pointer; display: grid; place-items: center; font-size: 15px;
-      backdrop-filter: blur(6px); position: relative; z-index: 6;
-    }
+    .media-box-overlay button { width: 34px; height: 34px; border-radius: 8px; border: none; cursor: pointer; display: grid; place-items: center; font-size: 15px; backdrop-filter: blur(6px); position: relative; z-index: 6; }
     .mb-replace { background: rgba(255,255,255,.9); color: var(--text); }
     .mb-delete { background: rgba(220,38,38,.9); color: #fff; }
-
-    .media-box-label {
-      font-size: 11px; font-weight: 700; color: var(--muted);
-      text-align: center; line-height: 1.3; pointer-events: none;
-      position: relative; z-index: 2;
-    }
-    .media-box-icon {
-      font-size: 24px; pointer-events: none; opacity: .4;
-      position: relative; z-index: 2;
-    }
-    .media-box-add-text {
-      font-size: 10px; color: var(--muted); pointer-events: none;
-      position: relative; z-index: 2;
-    }
-
-    .media-box video.box-vid {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; border-radius: calc(var(--radius) - 2px);
-      z-index: 1; pointer-events: none;
-    }
-
-    .box-vid-badge {
-      position: absolute; top: 6px; left: 6px;
-      background: rgba(0,0,0,.65); color: #fff;
-      font-size: 9px; font-weight: 800; letter-spacing: .8px;
-      padding: 3px 7px; border-radius: 5px;
-      z-index: 3; pointer-events: none;
-      backdrop-filter: blur(4px);
-    }
-
-    .media-box-progress {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
-      background: var(--border); z-index: 7; display: none;
-    }
+    .media-box-label { font-size: 11px; font-weight: 700; color: var(--muted); text-align: center; line-height: 1.3; pointer-events: none; position: relative; z-index: 2; }
+    .media-box-icon { font-size: 24px; pointer-events: none; opacity: .4; position: relative; z-index: 2; }
+    .media-box-add-text { font-size: 10px; color: var(--muted); pointer-events: none; position: relative; z-index: 2; }
+    .media-box video.box-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: calc(var(--radius) - 2px); z-index: 1; pointer-events: none; }
+    .box-vid-badge { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,.65); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: .8px; padding: 3px 7px; border-radius: 5px; z-index: 3; pointer-events: none; backdrop-filter: blur(4px); }
+    .media-box-progress { position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: var(--border); z-index: 7; display: none; }
     .media-box-progress.active { display: block; }
-    .media-box-progress-fill {
-      height: 100%; background: var(--accent);
-      transition: width .3s; width: 0%;
-    }
-
+    .media-box-progress-fill { height: 100%; background: var(--accent); transition: width .3s; width: 0%; }
     .media-box.reel { width: 100px; height: 170px; }
+    .media-box.reel ~ .media-link-input { width: 100px; }
     .media-box.gallery-wide { width: 210px; }
+    .media-box.gallery-wide ~ .media-link-input { width: 210px; }
 
     /* ── TOGGLE ── */
     .toggle { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-track {
-      position: absolute; cursor: pointer; inset: 0;
-      background: var(--border2); border-radius: 999px; transition: .25s;
-    }
-    .toggle-track::before {
-      content: ''; position: absolute;
-      height: 18px; width: 18px; left: 3px; bottom: 3px;
-      background: #fff; border-radius: 50%; transition: .25s;
-      box-shadow: 0 1px 3px rgba(0,0,0,.2);
-    }
+    .toggle-track { position: absolute; cursor: pointer; inset: 0; background: var(--border2); border-radius: 999px; transition: .25s; }
+    .toggle-track::before { content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: .25s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
     .toggle input:checked + .toggle-track { background: var(--green); }
     .toggle input:checked + .toggle-track::before { transform: translateX(18px); }
 
     /* ── PAGES GRID ── */
     .pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-    .page-card {
-      display: flex; align-items: center; gap: 12px;
-      padding: 14px 16px; border: 1px solid var(--border);
-      border-radius: var(--radius); background: var(--surface);
-      box-shadow: var(--shadow-sm); transition: .15s;
-    }
+    .page-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-sm); transition: .15s; }
     .page-card:hover { border-color: var(--border2); box-shadow: var(--shadow); }
     .page-icon { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }
     .page-info { flex: 1; min-width: 0; }
@@ -474,18 +301,15 @@
     .page-file { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .page-status { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
 
+    /* ── COUPON TABLE ── */
+    .coupon-code-badge { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 600; background: var(--gold-bg); color: var(--gold); border: 1px solid #fde68a; border-radius: 6px; padding: 2px 8px; letter-spacing: 1px; }
+
     /* ── USER AVATAR ── */
     .user-avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
 
     /* ── TOAST ── */
     .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
-    .toast {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 12px 16px;
-      font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px;
-      min-width: 220px; box-shadow: var(--shadow-lg);
-      animation: toastIn .25s ease;
-    }
+    .toast { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; min-width: 220px; box-shadow: var(--shadow-lg); animation: toastIn .25s ease; }
     .toast.success { border-color: #b3e6c8; color: var(--green); background: var(--green-bg); }
     .toast.error { border-color: var(--accent-border); color: var(--accent); background: var(--accent-bg); }
     .toast.info { border-color: #bdd3fb; color: var(--blue); background: var(--blue-bg); }
@@ -494,13 +318,8 @@
     /* ── CONFIRM MODAL ── */
     .confirm-modal .modal { width: 360px; }
 
-    /* ── OVERLAY backdrop for mobile ── */
-    .sidebar-backdrop {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,.3); z-index: 99;
-    }
+    .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 99; }
 
-    /* ── MOBILE ── */
     @media(max-width: 768px) {
       .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); z-index: 100; }
       .sidebar.open { transform: translateX(0); }
@@ -511,15 +330,13 @@
       .search-input:focus { width: 190px; }
       .stats-grid { grid-template-columns: 1fr 1fr; }
       .form-grid { grid-template-columns: 1fr; }
-      .form-group.span-2 { grid-column: span 1; }
+      .form-group.span-2, .form-group.span-3 { grid-column: span 1; }
     }
   </style>
 </head>
 
 <body>
 <div id="layout">
-
-  <!-- Backdrop for mobile -->
   <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
   <!-- ── SIDEBAR ── -->
@@ -528,11 +345,11 @@
       <div class="logo-mark">
         <svg viewBox="0 0 24 24"><path d="M6 3L3 7v13h18V7l-3-4c-1-.7-2.2-1.5-3-2-.5-.3-1-.5-3-.5s-2.5.2-3 .5C7.2 1.5 6 2.3 6 3z"/></svg>
       </div>
-      <div><div class="logo-text">JERSIFY</div><div class="logo-sub">Admin v2.0</div></div>
+      <div><div class="logo-text">JERSIFY</div><div class="logo-sub">Admin v3.0</div></div>
     </div>
 
     <div class="nav-section-label">Content</div>
-    <button class="nav-link" onclick="switchTab('products',this)">
+    <button class="nav-link active" onclick="switchTab('products',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       Products
     </button>
@@ -552,6 +369,11 @@
       Users
       <span class="nav-badge" id="userBadgeNav">0</span>
     </button>
+    <button class="nav-link" onclick="switchTab('coupons',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5" rx="1"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
+      Coupons
+      <span class="nav-badge" id="couponBadgeNav">0</span>
+    </button>
 
     <div class="nav-section-label">Settings</div>
     <button class="nav-link" onclick="switchTab('pages',this)">
@@ -569,7 +391,6 @@
 
   <!-- ── MAIN ── -->
   <div class="main">
-    <!-- TOPBAR -->
     <div class="topbar">
       <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">
         <span></span><span></span><span></span>
@@ -584,7 +405,6 @@
       </div>
     </div>
 
-    <!-- CONTENT -->
     <div class="content" id="mainContent">
 
       <!-- ══ PRODUCTS TAB ══ -->
@@ -605,12 +425,8 @@
           </div>
           <div class="table-wrap">
             <table>
-              <thead>
-                <tr><th>Product</th><th>Team</th><th>Type</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr>
-              </thead>
-              <tbody id="productsTable">
-                <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr>
-              </tbody>
+              <thead><tr><th>Product</th><th>Team</th><th>Type</th><th>Price</th><th>Stock</th><th>Images</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="productsTable"><tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -622,39 +438,26 @@
           <div class="card-header">
             <div class="card-header-left">
               <div class="card-title">Index Page Media</div>
-              <div class="card-subtitle">Click any box to upload · Images auto-saved to Firebase · Drag to replace</div>
+              <div class="card-subtitle">Click any box to upload · Add a link URL below each slot · Auto-saved to Firebase</div>
             </div>
-            <button class="btn btn-ghost btn-sm" onclick="saveAllMedia()" id="saveAllBtn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-              Saved automatically
-            </button>
           </div>
           <div class="card-body">
-
-            <!-- HERO BANNERS -->
             <div class="media-page-section">
               <div class="media-section-title">🎯 Hero Banners <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(slides on homepage)</span></div>
               <div class="media-boxes-row" id="heroBoxesRow"></div>
             </div>
-
-            <!-- FEATURED MEDIA -->
             <div class="media-page-section">
               <div class="media-section-title">⭐ Featured Media <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(big banner strip)</span></div>
               <div class="media-boxes-row" id="featuredBoxesRow"></div>
             </div>
-
-            <!-- GALLERY -->
             <div class="media-page-section">
               <div class="media-section-title">🖼️ Photo Gallery <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(grid on homepage)</span></div>
               <div class="media-boxes-row" id="galleryBoxesRow"></div>
             </div>
-
-            <!-- REELS -->
             <div class="media-page-section">
               <div class="media-section-title">🎬 Reels <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(vertical video thumbnails)</span></div>
               <div class="media-boxes-row" id="reelsBoxesRow"></div>
             </div>
-
           </div>
         </div>
       </div>
@@ -664,17 +467,20 @@
         <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
           <div class="stat-card orange"><div class="stat-val" id="stPending">—</div><div class="stat-label">Pending</div></div>
           <div class="stat-card blue"><div class="stat-val" id="stConfirmed">—</div><div class="stat-label">Confirmed</div></div>
-          <div class="stat-card purple" style="--purple-stat:#6b21a8"><div class="stat-val" id="stShipped">—</div><div class="stat-label">Shipped</div></div>
+          <div class="stat-card" style="--c:#6b21a8"><div class="stat-val" id="stShipped">—</div><div class="stat-label">Shipped</div></div>
           <div class="stat-card green"><div class="stat-val" id="stDelivered">—</div><div class="stat-label">Delivered</div></div>
         </div>
         <div class="card">
           <div class="card-header">
-            <div class="card-header-left"><div class="card-title">All Orders</div></div>
-            <select id="orderStatusFilter" onchange="filterOrders()" style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none">
-              <option value="">All Statuses</option>
-              <option value="pending">Pending</option><option value="confirmed">Confirmed</option>
-              <option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option>
-            </select>
+            <div class="card-header-left"><div class="card-title">All Orders</div><div class="card-subtitle" id="ordersSubtitle">Live from database</div></div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="orderStatusFilter" onchange="filterOrders()" style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option><option value="confirmed">Confirmed</option>
+                <option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option>
+              </select>
+              <button class="btn btn-ghost btn-sm" onclick="manualRefreshOrders()">↻ Refresh</button>
+            </div>
           </div>
           <div class="table-wrap">
             <table>
@@ -693,6 +499,28 @@
             <table>
               <thead><tr><th>User</th><th>Email</th><th>Phone</th><th>Orders</th><th>Joined</th><th>Status</th></tr></thead>
               <tbody id="usersTable"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ COUPONS TAB ══ -->
+      <div class="tab-pane" id="tab-coupons">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-title">Coupon Codes</div>
+              <div class="card-subtitle">Codes sync live to the checkout page</div>
+            </div>
+            <button class="btn btn-gold btn-sm" onclick="openCouponModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Coupon
+            </button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Description</th><th>Active</th><th>Actions</th></tr></thead>
+              <tbody id="couponsTable"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -737,10 +565,11 @@
         </div>
         <div class="form-group"><label>Price (₹) *</label><input type="text" id="p_price" placeholder="1499"/></div>
         <div class="form-group"><label>Badge Label</label><input type="text" id="p_badge" placeholder="NEW 2025"/></div>
-        <div class="form-group"><label>Status</label><select id="p_status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
-        <div class="form-group"><label>Image URL</label><input type="text" id="p_img_url" placeholder="https://… or upload below"/></div>
+        <div class="form-group span-2"><label>Status</label><select id="p_status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
       </div>
-      <div style="margin-top:12px">
+
+      <!-- STOCK BY SIZE -->
+      <div style="margin-top:14px">
         <label style="display:block;margin-bottom:6px">Stock by Size</label>
         <div style="display:flex;gap:8px">
           <div style="flex:1;text-align:center"><label style="font-size:10px">XS</label><input type="number" id="p_xs" value="0" min="0"/></div>
@@ -750,20 +579,16 @@
           <div style="flex:1;text-align:center"><label style="font-size:10px">XL</label><input type="number" id="p_xl" value="0" min="0"/></div>
         </div>
       </div>
-      <div style="margin-top:14px">
-        <label style="display:block;margin-bottom:6px">Upload Image</label>
-        <div id="p_img_upload_box" style="border:2px dashed var(--border2);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;position:relative;transition:.2s;background:var(--surface2);" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
-          <input type="file" accept="image/*" id="p_img_file" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="handleProductImgPreview(event)"/>
-          <div id="p_img_preview_inner">
-            <div style="font-size:24px;margin-bottom:4px">📸</div>
-            <div style="font-size:12px;color:var(--muted)">Click or drag image here</div>
-          </div>
-        </div>
+
+      <!-- PRODUCT IMAGES -->
+      <div style="margin-top:18px">
+        <label style="display:block;margin-bottom:4px">Product Images <span style="color:var(--muted);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">(up to 5 · first = primary displayed in shop)</span></label>
+        <div class="product-img-slots" id="productImgSlots"></div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('productModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+      <button class="btn btn-primary" id="saveProductBtn" onclick="saveProduct()">Save Product</button>
     </div>
   </div>
 </div>
@@ -787,6 +612,55 @@
   </div>
 </div>
 
+<!-- ══ COUPON MODAL ══ -->
+<div class="modal-overlay" id="couponModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="couponModalTitle">Add Coupon</div>
+      <button class="modal-close" onclick="closeModal('couponModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group span-2">
+          <label>Coupon Code * <span style="font-size:10px;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(uppercase, no spaces)</span></label>
+          <input type="text" id="c_code" placeholder="JERSIFY20" style="text-transform:uppercase;font-family:'DM Mono',monospace;letter-spacing:1px;font-weight:600" oninput="this.value=this.value.toUpperCase().replace(/\s/g,'')"/>
+        </div>
+        <div class="form-group">
+          <label>Discount Type</label>
+          <select id="c_type" onchange="updateCouponPreview()">
+            <option value="percent">Percent Off (%)</option>
+            <option value="flat">Flat Amount (₹)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Value *</label>
+          <input type="number" id="c_value" placeholder="10" min="1" oninput="updateCouponPreview()"/>
+        </div>
+        <div class="form-group span-2">
+          <label>Description <span style="font-size:10px;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(shown to customer)</span></label>
+          <input type="text" id="c_desc" placeholder="10% OFF on all orders"/>
+        </div>
+        <div class="form-group span-2">
+          <label>Status</label>
+          <select id="c_active">
+            <option value="true">Active — visible in checkout</option>
+            <option value="false">Inactive — hidden from customers</option>
+          </select>
+        </div>
+      </div>
+      <!-- Preview -->
+      <div id="couponPreview" style="margin-top:14px;padding:12px 14px;background:var(--gold-bg);border:1px solid #fde68a;border-radius:var(--radius-sm);font-size:12px;display:none">
+        <strong style="color:var(--gold)">Preview:</strong>
+        <span id="couponPreviewText" style="color:var(--text2);margin-left:6px"></span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('couponModal')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveCoupon()">Save Coupon</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ CONFIRM MODAL ══ -->
 <div class="modal-overlay confirm-modal" id="confirmModal">
   <div class="modal">
@@ -799,16 +673,18 @@
   </div>
 </div>
 
-<!-- Toast container -->
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    GLOBALS
-═══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
 let _editId = null;
-let _allOrders = [], _allUsers = [], _allProducts = [], _allIndexMedia = {};
+let _allOrders = [], _allUsers = [], _allProducts = [], _allIndexMedia = {}, _allCoupons = [];
 let _pageSettings = {};
+
+// Product image slots state — 5 slots, each: { file: File|null, url: string|null, uploading: false }
+let _pImgSlots = [{},{},{},{},{}];
 
 function waitFb() {
   return new Promise(r => { const t = setInterval(() => { if(window._fb){clearInterval(t);r(window._fb)} }, 50); });
@@ -827,7 +703,7 @@ function closeSidebar() {
 }
 
 /* ─── TAB SWITCH ─── */
-const TAB_TITLES = { products:'Products / Kits', media:'Index Media', orders:'Orders', users:'Users', pages:'Page Settings' };
+const TAB_TITLES = { products:'Products / Kits', media:'Index Media', orders:'Orders', users:'Users', coupons:'Coupon Codes', pages:'Page Settings' };
 function switchTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
@@ -850,23 +726,20 @@ async function initApp() {
   if (_initCalled) return;
   _initCalled = true;
 
-  // Set first nav active
-  const firstNav = document.querySelector('.nav-link');
-  if (firstNav) firstNav.classList.add('active');
-
-  // Build media boxes immediately (pure DOM, no Firebase needed)
   buildMediaPage();
+  buildProductImgSlots();
 
-  // Subscribe to Firebase data
   listenCol('products', renderProducts);
-  listenCol('orders', renderOrders);
+  listenOrders();
   listenCol('users', renderUsers);
   listenCol('indexMedia', renderIndexMediaData);
+  listenCoupons();
   initPageSettings();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   buildMediaPage();
+  buildProductImgSlots();
 });
 
 async function listenCol(col, cb) {
@@ -874,20 +747,57 @@ async function listenCol(col, cb) {
   onValue(dbRef(db, col), snap => {
     const data = [];
     if (snap.exists()) {
-      snap.forEach(d => {
-        // Merge key as 'id' — works for both push-key products and orderId-keyed orders
-        data.push({ id: d.key, ...d.val() });
-      });
+      snap.forEach(d => { data.push({ id: d.key, ...d.val() }); });
     }
     cb(data);
     updateStats(col, data);
+  }, err => {
+    console.error(`Error listening to ${col}:`, err);
+    toast(`Error loading ${col}: ${err.message}`, 'error');
   });
 }
 
-function updateStats(col, data) {
-  if (col === 'products') {
-    setEl('statProducts', data.length);
+/* ─── ORDERS LISTENER (separate for reliability) ─── */
+async function listenOrders() {
+  const { db, dbRef, onValue } = await waitFb();
+  onValue(dbRef(db, 'orders'), snap => {
+    const data = [];
+    if (snap.exists()) {
+      snap.forEach(d => {
+        const val = d.val();
+        // Support both push-key orders and orderId-keyed orders
+        data.push({ id: d.key, ...val });
+      });
+    }
+    _allOrders = data;
+    updateStats('orders', data);
+    setEl('orderBadgeNav', data.length);
+    renderOrders(data);
+    document.getElementById('ordersSubtitle').textContent = `${data.length} order${data.length !== 1 ? 's' : ''} — live from database`;
+  }, err => {
+    console.error('Error listening to orders:', err);
+    document.getElementById('ordersTable').innerHTML = emptyRow(8, '⚠ Could not load orders. Check Firebase rules.');
+  });
+}
+
+async function manualRefreshOrders() {
+  const { db, dbRef, get } = await waitFb();
+  try {
+    const snap = await get(dbRef(db, 'orders'));
+    const data = [];
+    if (snap.exists()) {
+      snap.forEach(d => { data.push({ id: d.key, ...d.val() }); });
+    }
+    _allOrders = data;
+    renderOrders(data);
+    toast(`${data.length} orders loaded`, 'success');
+  } catch(e) {
+    toast('Refresh failed: ' + e.message, 'error');
   }
+}
+
+function updateStats(col, data) {
+  if (col === 'products') setEl('statProducts', data.length);
   if (col === 'orders') {
     setEl('statOrders', data.length);
     setEl('orderBadgeNav', data.length);
@@ -900,9 +810,172 @@ function updateStats(col, data) {
   }
 }
 
-/* ═══════════════════════════════════════════════════
-   MEDIA PAGE — Visual upload boxes
-═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   PRODUCT IMAGES (5 slots)
+═══════════════════════════════════════════════ */
+function buildProductImgSlots() {
+  const container = document.getElementById('productImgSlots');
+  if (!container || container.children.length > 0) return;
+
+  _pImgSlots = [{},{},{},{},{}];
+
+  for (let i = 0; i < 5; i++) {
+    const wrap = document.createElement('div');
+    wrap.className = 'p-img-slot' + (i === 0 ? ' primary-slot' : '');
+    wrap.id = `pslot_${i}`;
+
+    if (i === 0) {
+      const pb = document.createElement('div');
+      pb.className = 'primary-badge';
+      pb.textContent = 'PRIMARY';
+      wrap.appendChild(pb);
+    }
+
+    const fileInp = document.createElement('input');
+    fileInp.type = 'file';
+    fileInp.accept = 'image/*';
+    fileInp.id = `pslot_file_${i}`;
+    fileInp.addEventListener('change', (e) => handleProductSlotUpload(e, i));
+    wrap.appendChild(fileInp);
+
+    const icon = document.createElement('div');
+    icon.className = 'p-img-slot-icon';
+    icon.textContent = i === 0 ? '🖼️' : '📷';
+    wrap.appendChild(icon);
+
+    const lbl = document.createElement('div');
+    lbl.className = 'p-img-slot-label';
+    lbl.textContent = i === 0 ? 'Primary' : `Image ${i + 1}`;
+    wrap.appendChild(lbl);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'p-img-slot-overlay';
+
+    const replBtn = document.createElement('button');
+    replBtn.className = 'slot-replace-btn';
+    replBtn.title = 'Replace';
+    replBtn.textContent = '✎';
+    replBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById(`pslot_file_${i}`).click();
+    });
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'slot-delete-btn';
+    delBtn.title = 'Remove';
+    delBtn.textContent = '✕';
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearProductSlot(i);
+    });
+
+    overlay.appendChild(replBtn);
+    overlay.appendChild(delBtn);
+    wrap.appendChild(overlay);
+
+    const prog = document.createElement('div');
+    prog.className = 'slot-prog-bar';
+    const progFill = document.createElement('div');
+    progFill.className = 'slot-prog-fill';
+    progFill.id = `pslot_prog_${i}`;
+    prog.appendChild(progFill);
+    wrap.appendChild(prog);
+
+    container.appendChild(wrap);
+  }
+}
+
+function handleProductSlotUpload(event, idx) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('Please select an image file', 'error'); return; }
+  if (file.size > 15 * 1024 * 1024) { toast('Image too large (max 15MB)', 'error'); return; }
+
+  _pImgSlots[idx] = { file, url: null };
+
+  // Show local preview immediately
+  const reader = new FileReader();
+  reader.onload = e => setProductSlotPreview(idx, e.target.result);
+  reader.readAsDataURL(file);
+}
+
+function setProductSlotPreview(idx, url) {
+  const slot = document.getElementById(`pslot_${idx}`);
+  slot.querySelector('img.slot-preview')?.remove();
+  const img = document.createElement('img');
+  img.src = url;
+  img.className = 'slot-preview';
+  img.onerror = () => img.remove();
+  slot.insertBefore(img, slot.querySelector('.p-img-slot-overlay'));
+  slot.classList.add('has-img');
+  slot.querySelector('.p-img-slot-icon').style.display = 'none';
+  slot.querySelector('.p-img-slot-label').style.display = 'none';
+  // Update state url if it's a real URL (not blob)
+  if (!url.startsWith('data:') && !url.startsWith('blob:')) {
+    if (!_pImgSlots[idx]) _pImgSlots[idx] = {};
+    _pImgSlots[idx].url = url;
+  }
+}
+
+function clearProductSlot(idx) {
+  _pImgSlots[idx] = {};
+  const slot = document.getElementById(`pslot_${idx}`);
+  slot.querySelector('img.slot-preview')?.remove();
+  slot.classList.remove('has-img');
+  slot.querySelector('.p-img-slot-icon').style.display = '';
+  slot.querySelector('.p-img-slot-label').style.display = '';
+  document.getElementById(`pslot_file_${idx}`).value = '';
+}
+
+function resetAllProductSlots() {
+  for (let i = 0; i < 5; i++) clearProductSlot(i);
+}
+
+function loadProductSlotsFromImages(images) {
+  resetAllProductSlots();
+  (images || []).slice(0, 5).forEach((url, i) => {
+    if (!url) return;
+    _pImgSlots[i] = { url, file: null };
+    setProductSlotPreview(i, url);
+  });
+}
+
+/* Upload a single slot's file to Storage, return URL */
+async function uploadProductSlotFile(idx, productName) {
+  const slot = _pImgSlots[idx];
+  if (!slot || !slot.file) return slot?.url || null;
+
+  const progFill = document.getElementById(`pslot_prog_${idx}`);
+  const progBar = progFill?.parentElement;
+  if (progBar) progBar.classList.add('active');
+
+  const { storage, sRef, uploadBytesResumable, getDownloadURL } = await waitFb();
+  const safeName = slot.file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const path = `products/${Date.now()}_${idx}_${safeName}`;
+  const fileRef = sRef(storage, path);
+  const task = uploadBytesResumable(fileRef, slot.file, { contentType: slot.file.type });
+
+  return new Promise((resolve, reject) => {
+    task.on('state_changed', snap => {
+      const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+      if (progFill) progFill.style.width = pct + '%';
+    }, err => {
+      if (progBar) progBar.classList.remove('active');
+      reject(err);
+    }, async () => {
+      const url = await getDownloadURL(task.snapshot.ref);
+      _pImgSlots[idx].url = url;
+      _pImgSlots[idx].file = null;
+      if (progFill) progFill.style.width = '100%';
+      setTimeout(() => { if (progBar) progBar.classList.remove('active'); if (progFill) progFill.style.width = '0%'; }, 800);
+      resolve(url);
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   MEDIA PAGE
+═══════════════════════════════════════════════ */
 const MEDIA_SLOTS = [
   { key:'hero_1',          section:'hero',     label:'Hero 1',         row:'heroBoxesRow',     cls:'' },
   { key:'hero_2',          section:'hero',     label:'Hero 2',         row:'heroBoxesRow',     cls:'' },
@@ -927,6 +1000,10 @@ function buildMediaPage() {
   MEDIA_SLOTS.forEach(slot => {
     const row = document.getElementById(slot.row);
     if (!row) return;
+
+    // Wrapper for box + link input
+    const wrap = document.createElement('div');
+    wrap.className = 'media-slot-wrap';
 
     const box = document.createElement('div');
     box.className = 'media-box' + (slot.cls ? ' ' + slot.cls : '');
@@ -988,7 +1065,18 @@ function buildMediaPage() {
     box.appendChild(overlay);
     box.appendChild(progWrap);
 
-    row.appendChild(box);
+    // Link URL input below the box
+    const linkInp = document.createElement('input');
+    linkInp.type = 'url';
+    linkInp.className = 'media-link-input';
+    linkInp.id = 'link_' + slot.key;
+    linkInp.placeholder = 'Link URL (optional)';
+    linkInp.addEventListener('change', () => saveMediaLink(slot.key));
+    linkInp.addEventListener('blur', () => saveMediaLink(slot.key));
+
+    wrap.appendChild(box);
+    wrap.appendChild(linkInp);
+    row.appendChild(wrap);
   });
 }
 
@@ -998,15 +1086,30 @@ function renderIndexMediaData(data) {
 
   MEDIA_SLOTS.forEach(slot => {
     const box = document.getElementById('box_' + slot.key);
+    const linkInp = document.getElementById('link_' + slot.key);
     if (!box) return;
     const item = _allIndexMedia[slot.key];
-    // Support both mediaUrl (new) and imgUrl (legacy)
     const url = item && (item.mediaUrl || item.imgUrl);
     if (url) {
       const isVid = (item.mediaType === 'video') || isVideoUrl(url);
       setBoxMedia(box, url, isVid);
     }
+    // Populate link input if item has a link
+    if (linkInp && item && item.link) {
+      if (!linkInp.value) linkInp.value = item.link;
+    }
   });
+}
+
+async function saveMediaLink(key) {
+  const linkInp = document.getElementById('link_' + key);
+  if (!linkInp) return;
+  const link = linkInp.value.trim();
+  const existing = _allIndexMedia[key];
+  if (!existing) return; // Only save link if media exists
+  const { db, dbRef, update } = await waitFb();
+  await update(dbRef(db, `indexMedia/${key}`), { link, updatedAt: Date.now() });
+  toast('Link saved!', 'success');
 }
 
 function isVideoUrl(url) {
@@ -1019,32 +1122,21 @@ function setBoxMedia(box, url, isVideo) {
   box.querySelector('img.box-img')?.remove();
   box.querySelector('video.box-vid')?.remove();
   box.querySelector('.box-vid-badge')?.remove();
-
   const overlay = box.querySelector('.media-box-overlay');
-
   if (isVideo) {
     const vid = document.createElement('video');
-    vid.src = url;
-    vid.className = 'box-vid';
-    vid.muted = true;
-    vid.loop = true;
-    vid.playsInline = true;
+    vid.src = url; vid.className = 'box-vid'; vid.muted = true; vid.loop = true; vid.playsInline = true;
     box.addEventListener('mouseenter', () => vid.play().catch(()=>{}), { passive:true });
     box.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0; }, { passive:true });
     box.insertBefore(vid, overlay);
-
     const badge = document.createElement('div');
-    badge.className = 'box-vid-badge';
-    badge.textContent = '▶ VIDEO';
+    badge.className = 'box-vid-badge'; badge.textContent = '▶ VIDEO';
     box.insertBefore(badge, overlay);
   } else {
     const img = document.createElement('img');
-    img.src = url;
-    img.className = 'box-img';
-    img.onerror = () => { img.style.display = 'none'; };
+    img.src = url; img.className = 'box-img'; img.onerror = () => img.style.display = 'none';
     box.insertBefore(img, overlay);
   }
-
   box.classList.add('has-image');
   box.querySelectorAll('.media-box-icon, .media-box-label, .media-box-add-text').forEach(el => el.style.visibility = 'hidden');
 }
@@ -1060,25 +1152,19 @@ function clearBoxImage(box) {
 async function handleMediaUpload(event, key) {
   const file = event.target.files[0];
   if (!file) return;
-
   const isVideo = file.type.startsWith('video/');
   const maxSize = isVideo ? 200 * 1024 * 1024 : 15 * 1024 * 1024;
-  if (file.size > maxSize) {
-    toast(`File too large (max ${isVideo ? '200MB for video' : '15MB for image'})`, 'error');
-    return;
-  }
+  if (file.size > maxSize) { toast(`File too large (max ${isVideo ? '200MB for video' : '15MB for image'})`, 'error'); return; }
 
   const slot = MEDIA_SLOTS.find(s => s.key === key);
   const box = document.getElementById('box_' + key);
   const progFill = document.getElementById('prog_' + key);
-  const progWrap = progFill ? progFill.parentElement : null;
+  const progWrap = progFill?.parentElement;
 
   const localUrl = URL.createObjectURL(file);
   setBoxMedia(box, localUrl, isVideo);
-
   if (progWrap) progWrap.classList.add('active');
   if (progFill) progFill.style.width = '2%';
-
   toast(`Uploading ${slot.label}…`, 'info');
 
   try {
@@ -1092,41 +1178,36 @@ async function handleMediaUpload(event, key) {
       const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
       if (progFill) progFill.style.width = pct + '%';
     }, err => {
-      console.error('Upload error:', err);
       toast('Upload failed: ' + err.message, 'error');
       if (progWrap) progWrap.classList.remove('active');
       clearBoxImage(box);
     }, async () => {
       const url = await getDownloadURL(task.snapshot.ref);
       setBoxMedia(box, url, isVideo);
-      await saveMediaSlot(key, url, slot, isVideo ? 'video' : 'image');
+      // Preserve existing link
+      const existingLink = document.getElementById('link_' + key)?.value.trim() || (_allIndexMedia[key]?.link || '');
+      await saveMediaSlot(key, url, slot, isVideo ? 'video' : 'image', existingLink);
       URL.revokeObjectURL(localUrl);
       event.target.value = '';
-      setTimeout(() => {
-        if (progFill) progFill.style.width = '0%';
-        if (progWrap) progWrap.classList.remove('active');
-      }, 900);
+      setTimeout(() => { if (progFill) progFill.style.width = '0%'; if (progWrap) progWrap.classList.remove('active'); }, 900);
       toast(`${slot.label} saved!`, 'success');
     });
   } catch(err) {
-    console.error('Firebase error:', err);
     toast('Error: ' + err.message, 'error');
     if (progWrap) progWrap.classList.remove('active');
   }
 }
 
-async function saveMediaSlot(key, mediaUrl, slot, mediaType) {
+async function saveMediaSlot(key, mediaUrl, slot, mediaType, link) {
   const { db, dbRef, set } = await waitFb();
-  const existing = _allIndexMedia[key] || {};
   await set(dbRef(db, `indexMedia/${key}`), {
-    section: slot.section,
-    label: slot.label,
-    imgUrl: mediaUrl,
-    mediaUrl: mediaUrl,
+    section:   slot.section,
+    label:     slot.label,
+    imgUrl:    mediaUrl,
+    mediaUrl:  mediaUrl,
     mediaType: mediaType || (isVideoUrl(mediaUrl) ? 'video' : 'image'),
-    order: MEDIA_SLOTS.findIndex(s => s.key === key) + 1,
-    link: existing.link || '',
-    description: existing.description || '',
+    order:     MEDIA_SLOTS.findIndex(s => s.key === key) + 1,
+    link:      link || '',
     updatedAt: Date.now()
   });
 }
@@ -1138,36 +1219,37 @@ async function deleteMediaSlot(key) {
     await remove(dbRef(db, `indexMedia/${key}`));
     const box = document.getElementById('box_' + key);
     clearBoxImage(box);
+    const linkInp = document.getElementById('link_' + key);
+    if (linkInp) linkInp.value = '';
     toast(`${slot.label} removed`, 'info');
   });
 }
 
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    PRODUCTS
-   DB structure: products/{pushId} = { name, team, type, price, badge,
-     imgUrl, images[], sizes:{xs,s,m,l,xl}, status, updatedAt }
-═══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
 function renderProducts(data) {
   _allProducts = data;
   const tbody = document.getElementById('productsTable');
-  if (!data.length) { tbody.innerHTML = emptyRow(7, 'No products yet'); return; }
+  if (!data.length) { tbody.innerHTML = emptyRow(8, 'No products yet'); return; }
 
   tbody.innerHTML = data.map(p => {
-    // Calculate total stock across all sizes
     const sz = p.sizes || {};
-    const totalStock = (sz.xs||0) + (sz.s||0) + (sz.m||0) + (sz.l||0) + (sz.xl||0);
+    const totalStock = (sz.xs||0)+(sz.s||0)+(sz.m||0)+(sz.l||0)+(sz.xl||0);
     const stockBadge = totalStock === 0
       ? `<span class="badge badge-red">Out of Stock</span>`
       : `<span class="badge badge-green">${totalStock} units</span>`;
 
-    // Show first image from images array or fallback to imgUrl
-    const imgSrc = (p.images && p.images[0]) || p.imgUrl || '';
+    // images array support
+    const imgs = Array.isArray(p.images) && p.images.length ? p.images : (p.imgUrl ? [p.imgUrl] : []);
+    const primaryImg = imgs[0] || '';
+    const imgCountBadge = imgs.length > 1 ? `<span style="font-size:9px;color:var(--muted);display:block;margin-top:2px">📷 ${imgs.length} photos</span>` : '';
 
     return `<tr>
       <td>
         <div style="display:flex;align-items:center;gap:10px">
-          ${imgSrc
-            ? `<img src="${imgSrc}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display='none'"/>`
+          ${primaryImg
+            ? `<img src="${primaryImg}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display='none'"/>`
             : `<div style="width:40px;height:40px;border-radius:8px;background:var(--surface3);display:grid;place-items:center;font-size:18px">👕</div>`
           }
           <div>
@@ -1180,6 +1262,13 @@ function renderProducts(data) {
       <td><span class="badge badge-gray">${esc(p.type||'Kit')}</span></td>
       <td><strong>₹${esc(String(p.price||'—'))}</strong></td>
       <td>${stockBadge}</td>
+      <td>
+        <div style="display:flex;gap:3px">
+          ${imgs.slice(0,5).map((u,i) => `<div style="width:22px;height:22px;border-radius:4px;overflow:hidden;border:1px solid var(--border)"><img src="${u}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.style.background='var(--surface3)'"/></div>`).join('')}
+          ${imgs.length === 0 ? '<span style="font-size:11px;color:var(--muted)">—</span>' : ''}
+        </div>
+        ${imgCountBadge}
+      </td>
       <td><span class="badge ${p.status==='active'?'badge-green':'badge-red'}">${p.status||'active'}</span></td>
       <td><div style="display:flex;gap:6px">
         <button class="btn btn-ghost btn-sm" onclick="editProduct('${p.id}')">Edit</button>
@@ -1197,15 +1286,14 @@ function openProductModal(data) {
   setV('p_type', data?.type || 'Home Kit');
   setV('p_price', data?.price || '');
   setV('p_badge', data?.badge || '');
-  setV('p_img_url', data?.imgUrl || '');
   setV('p_status', data?.status || 'active');
   const sz = data?.sizes || {};
   setV('p_xs', sz.xs||0); setV('p_s', sz.s||0); setV('p_m', sz.m||0); setV('p_l', sz.l||0); setV('p_xl', sz.xl||0);
 
-  const imgSrc = (data?.images && data.images[0]) || data?.imgUrl || '';
-  document.getElementById('p_img_preview_inner').innerHTML = imgSrc
-    ? `<img src="${imgSrc}" style="max-height:80px;border-radius:8px;max-width:100%"/>`
-    : `<div style="font-size:24px;margin-bottom:4px">📸</div><div style="font-size:12px;color:var(--muted)">Click or drag image here</div>`;
+  // Load existing images into slots
+  const existingImages = data?.images || (data?.imgUrl ? [data.imgUrl] : []);
+  loadProductSlotsFromImages(existingImages);
+
   openModal('productModal');
 }
 
@@ -1214,70 +1302,62 @@ function editProduct(id) {
   if (p) openProductModal(p);
 }
 
-function handleProductImgPreview(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('p_img_preview_inner').innerHTML = `<img src="${e.target.result}" style="max-height:80px;border-radius:8px;max-width:100%"/>`;
-    setV('p_img_url', '[file selected]');
-  };
-  reader.readAsDataURL(file);
-}
-
 async function saveProduct() {
   const name = getV('p_name');
-  if (!name) { toast('Product name required', 'error'); return; }
+  if (!name) { toast('Product name is required', 'error'); return; }
 
-  let imgUrl = getV('p_img_url');
-  if (imgUrl === '[file selected]') {
-    const file = document.getElementById('p_img_file').files[0];
-    if (file) {
-      toast('Uploading image…', 'info');
-      imgUrl = await uploadToStorage(file, `products/${Date.now()}_${file.name}`);
-    } else imgUrl = '';
+  const btn = document.getElementById('saveProductBtn');
+  btn.disabled = true;
+  btn.textContent = 'Uploading…';
+
+  try {
+    // Upload any pending slot files
+    const imageUrls = [];
+    for (let i = 0; i < 5; i++) {
+      const slot = _pImgSlots[i];
+      if (slot.file) {
+        toast(`Uploading image ${i + 1}…`, 'info');
+        const url = await uploadProductSlotFile(i, name);
+        if (url) imageUrls.push(url);
+      } else if (slot.url) {
+        imageUrls.push(slot.url);
+      }
+    }
+
+    const data = {
+      name,
+      team:   getV('p_team'),
+      type:   getV('p_type'),
+      price:  getV('p_price'),
+      badge:  getV('p_badge'),
+      status: getV('p_status'),
+      imgUrl: imageUrls[0] || '',     // primary image for backward compat
+      images: imageUrls,               // full array for shop display
+      sizes: {
+        xs: parseInt(getV('p_xs'))||0,
+        s:  parseInt(getV('p_s'))||0,
+        m:  parseInt(getV('p_m'))||0,
+        l:  parseInt(getV('p_l'))||0,
+        xl: parseInt(getV('p_xl'))||0
+      },
+      updatedAt: Date.now()
+    };
+
+    await saveDoc('products', data, _editId);
+    closeModal('productModal');
+    toast('Product saved! 👕', 'success');
+    _editId = null;
+  } catch(err) {
+    toast('Save failed: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save Product';
   }
-
-  // Preserve existing images array if editing; otherwise start fresh
-  const existing = _editId ? (_allProducts.find(x => x.id === _editId) || {}) : {};
-  let images = existing.images || [];
-  if (imgUrl && imgUrl !== (existing.imgUrl || '')) {
-    // New main image — prepend it
-    images = [imgUrl, ...images.filter(u => u !== imgUrl)];
-  }
-
-  const data = {
-    name,
-    team: getV('p_team'),
-    type: getV('p_type'),
-    price: getV('p_price'),
-    badge: getV('p_badge'),
-    imgUrl: imgUrl || existing.imgUrl || '',
-    images: images.length ? images : (imgUrl ? [imgUrl] : []),
-    status: getV('p_status'),
-    sizes: {
-      xs: parseInt(getV('p_xs'))||0,
-      s:  parseInt(getV('p_s'))||0,
-      m:  parseInt(getV('p_m'))||0,
-      l:  parseInt(getV('p_l'))||0,
-      xl: parseInt(getV('p_xl'))||0
-    },
-    updatedAt: Date.now()
-  };
-
-  await saveDoc('products', data, _editId);
-  closeModal('productModal');
-  toast('Product saved! 👕', 'success');
-  _editId = null;
 }
 
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    ORDERS
-   DB structure: orders/{orderId} = { orderId, customerName, email, phone,
-     address, city, pincode, country, items[], subtotal, tax, total,
-     status, paymentMethod, userId, createdAt, updatedAt,
-     trackingNumber?, adminNotes? }
-═══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
 function renderOrders(data) {
   _allOrders = data;
   setEl('stPending',   data.filter(o => (o.status||'pending') === 'pending').length);
@@ -1291,38 +1371,22 @@ function filterOrders() {
   const f = document.getElementById('orderStatusFilter').value;
   const data = f ? _allOrders.filter(o => (o.status||'pending') === f) : _allOrders;
   const tbody = document.getElementById('ordersTable');
-  if (!data.length) { tbody.innerHTML = emptyRow(8, 'No orders found'); return; }
+  if (!data.length) { tbody.innerHTML = emptyRow(8, f ? `No ${f} orders` : 'No orders found'); return; }
 
   const sorted = [...data].sort((a, b) => (b.createdAt||0) - (a.createdAt||0));
   tbody.innerHTML = sorted.map(o => {
     const st = o.status || 'pending';
-    const badge = {
-      pending:'badge-orange', confirmed:'badge-blue',
-      shipped:'badge-purple', delivered:'badge-green', cancelled:'badge-red'
-    }[st] || 'badge-gray';
-
-    // orderId is the Firebase key (e.g. "JRS-1774977236385")
+    const badge = { pending:'badge-orange', confirmed:'badge-blue', shipped:'badge-purple', delivered:'badge-green', cancelled:'badge-red' }[st] || 'badge-gray';
     const displayId = o.orderId || o.id || '—';
-
-    // Items summary
     const itemsSummary = Array.isArray(o.items) && o.items.length
       ? o.items.map(i => `${i.name||'Item'} ×${i.qty||1}${i.size?' ('+i.size+')':''}`).join(', ')
       : (o.productName || '—');
-
-    const date = o.createdAt
-      ? new Date(o.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
-      : '—';
-
-    const total = parseFloat(o.total||0).toFixed(2);
-
+    const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
     return `<tr>
       <td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(displayId)}</span></td>
-      <td>
-        <strong>${esc(o.customerName||o.name||'—')}</strong><br>
-        <span style="font-size:11px;color:var(--muted)">${esc(o.email||o.phone||'')}</span>
-      </td>
-      <td style="max-width:180px;font-size:12px;color:var(--text2);white-space:normal">${esc(itemsSummary)}</td>
-      <td><strong>₹${total}</strong></td>
+      <td><strong>${esc(o.customerName||o.name||'—')}</strong><br><span style="font-size:11px;color:var(--muted)">${esc(o.email||o.phone||'')}</span></td>
+      <td style="max-width:180px;font-size:12px;white-space:normal">${esc(itemsSummary)}</td>
+      <td><strong>₹${parseFloat(o.total||0).toFixed(2)}</strong></td>
       <td><span class="badge ${o.paymentMethod==='cod'?'badge-orange':'badge-blue'}">${(o.paymentMethod||'online').toUpperCase()}</span></td>
       <td><span class="badge ${badge}">${st}</span></td>
       <td style="font-size:12px;color:var(--muted)">${date}</td>
@@ -1335,56 +1399,27 @@ function viewOrder(id) {
   const o = _allOrders.find(x => x.id === id);
   if (!o) return;
   _editId = id;
-
-  const itemsHtml = Array.isArray(o.items) && o.items.length
-    ? o.items.map(i => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
-          <span>
-            ${esc(i.name||'Item')} ×${i.qty||1}
-            ${i.size ? `<span class="badge badge-gray" style="margin-left:4px">${i.size}</span>` : ''}
-          </span>
-          <span>₹${parseFloat(i.price||0).toFixed(2)}</span>
-        </div>`).join('')
-    : `<div>Product: ${esc(o.productName||'—')}</div>`;
-
   const displayId = o.orderId || o.id || '—';
+  const itemsHtml = Array.isArray(o.items) && o.items.length
+    ? o.items.map(i => `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)"><span>${esc(i.name||'Item')} ×${i.qty||1} ${i.size?`<span class="badge badge-gray">${i.size}</span>`:''}</span><span>₹${parseFloat(i.price||0).toFixed(2)}</span></div>`).join('')
+    : `<div>${esc(o.productName||'—')}</div>`;
 
   document.getElementById('orderDetailContent').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-      <div>
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Order ID</div>
-        <div style="font-family:'DM Mono',monospace;color:var(--blue);font-size:12px">${esc(displayId)}</div>
-      </div>
-      <div>
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Date</div>
-        <div>${o.createdAt ? new Date(o.createdAt).toLocaleString('en-IN') : '—'}</div>
-      </div>
-      <div>
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Customer</div>
-        <div style="font-weight:600">${esc(o.customerName||o.name||'—')}</div>
-      </div>
-      <div>
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Contact</div>
-        <div>${esc(o.email||'—')} ${o.phone ? '· '+esc(o.phone) : ''}</div>
-      </div>
+      <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Order ID</div><div style="font-family:'DM Mono',monospace;color:var(--blue);font-size:12px">${esc(displayId)}</div></div>
+      <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Date</div><div>${o.createdAt ? new Date(o.createdAt).toLocaleString('en-IN') : '—'}</div></div>
+      <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Customer</div><div style="font-weight:600">${esc(o.customerName||o.name||'—')}</div></div>
+      <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Contact</div><div>${esc(o.email||'—')} ${o.phone?'· '+esc(o.phone):''}</div></div>
     </div>
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px">
       ${itemsHtml}
-      ${o.subtotal !== undefined ? `
-      <div style="display:flex;justify-content:space-between;padding:6px 0;color:var(--text2);font-size:12px">
-        <span>Subtotal</span><span>₹${parseFloat(o.subtotal||0).toFixed(2)}</span>
-      </div>` : ''}
-      ${o.tax !== undefined ? `
-      <div style="display:flex;justify-content:space-between;padding:6px 0;color:var(--text2);font-size:12px">
-        <span>Tax</span><span>₹${parseFloat(o.tax||0).toFixed(2)}</span>
-      </div>` : ''}
-      <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:700;border-top:2px solid var(--border);margin-top:6px">
-        <span>Total</span><span style="color:var(--accent)">₹${parseFloat(o.total||0).toFixed(2)}</span>
-      </div>
+      ${o.subtotal!==undefined?`<div style="display:flex;justify-content:space-between;padding:6px 0;color:var(--text2);font-size:12px"><span>Subtotal</span><span>₹${parseFloat(o.subtotal||0).toFixed(2)}</span></div>`:''}
+      ${o.tax!==undefined?`<div style="display:flex;justify-content:space-between;padding:6px 0;color:var(--text2);font-size:12px"><span>Tax</span><span>₹${parseFloat(o.tax||0).toFixed(2)}</span></div>`:''}
+      <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:700;border-top:2px solid var(--border);margin-top:6px"><span>Total</span><span style="color:var(--accent)">₹${parseFloat(o.total||0).toFixed(2)}</span></div>
     </div>
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px">
       <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Shipping Address</div>
-      <div style="font-size:13px">${esc([o.address, o.city, o.pincode, o.country].filter(Boolean).join(', ') || '—')}</div>
+      <div style="font-size:13px">${esc([o.address,o.city,o.pincode,o.country].filter(Boolean).join(', ')||'—')}</div>
     </div>`;
 
   setV('o_status', o.status || 'pending');
@@ -1395,25 +1430,16 @@ function viewOrder(id) {
 
 async function updateOrder() {
   if (!_editId) return;
-  await saveDoc('orders', {
-    status: getV('o_status'),
-    trackingNumber: getV('o_tracking'),
-    adminNotes: getV('o_notes'),
-    updatedAt: Date.now()
-  }, _editId);
+  await saveDoc('orders', { status:getV('o_status'), trackingNumber:getV('o_tracking'), adminNotes:getV('o_notes'), updatedAt:Date.now() }, _editId);
   closeModal('orderModal');
   toast('Order updated!', 'success');
   _editId = null;
 }
 
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    USERS
-   DB structure varies:
-   - users/{uid} = { displayName, photoURL, orders:{orderId:true} }  (OAuth users)
-   - users/{uid} = { profile:{ name, email, createdAt } }            (email/pass users)
-═══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
 function normalizeUser(u) {
-  // Handle both structures
   const profile = u.profile || {};
   return {
     id: u.id,
@@ -1423,7 +1449,6 @@ function normalizeUser(u) {
     photoURL: u.photoURL || '',
     status: u.status || 'active',
     createdAt: u.createdAt || profile.createdAt || null,
-    // orders can be object {orderId: true} or array
     orderKeys: u.orders ? Object.keys(u.orders) : [],
   };
 }
@@ -1432,68 +1457,173 @@ function renderUsers(data) {
   _allUsers = data;
   const tbody = document.getElementById('usersTable');
   if (!data.length) { tbody.innerHTML = emptyRow(6, 'No users yet'); return; }
-
-  const sorted = [...data].sort((a, b) => {
-    const ac = a.createdAt || (a.profile && a.profile.createdAt) || 0;
-    const bc = b.createdAt || (b.profile && b.profile.createdAt) || 0;
-    return bc - ac;
-  });
-
+  const sorted = [...data].sort((a,b) => ((b.createdAt||b.profile?.createdAt||0)-(a.createdAt||a.profile?.createdAt||0)));
   const COLORS = ['#c41e2a','#1a4fa0','#6b21a8','#1a7a40','#b85c00','#0e7490'];
-
   tbody.innerHTML = sorted.map(raw => {
     const u = normalizeUser(raw);
-    const initials = u.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-    const color = COLORS[u.name.charCodeAt(0) % COLORS.length];
-
-    const joined = u.createdAt
-      ? new Date(u.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
-      : '—';
-
-    // Count orders: use orderKeys (from orders object) + scan _allOrders by email/userId
-    const ordersByKey = u.orderKeys.length;
-    const ordersByEmail = _allOrders.filter(o =>
-      (o.email && u.email && o.email.toLowerCase() === u.email.toLowerCase()) ||
-      o.userId === u.id
-    ).length;
-    const orderCount = Math.max(ordersByKey, ordersByEmail);
-
+    const initials = u.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const color = COLORS[u.name.charCodeAt(0)%COLORS.length];
+    const joined = u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+    const orderCount = Math.max(u.orderKeys.length, _allOrders.filter(o=>(o.email&&u.email&&o.email.toLowerCase()===u.email.toLowerCase())||o.userId===u.id).length);
     const avatarHtml = u.photoURL
       ? `<img src="${u.photoURL}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display='none'"/>`
       : `<div class="user-avatar" style="background:${color}">${initials}</div>`;
-
     return `<tr>
-      <td>
-        <div style="display:flex;align-items:center;gap:10px">
-          ${avatarHtml}
-          <strong>${esc(u.name)}</strong>
-        </div>
-      </td>
-      <td style="font-size:12px;color:var(--text2)">${esc(u.email || '—')}</td>
-      <td style="font-size:12px">${esc(u.phone || '—')}</td>
+      <td><div style="display:flex;align-items:center;gap:10px">${avatarHtml}<strong>${esc(u.name)}</strong></div></td>
+      <td style="font-size:12px;color:var(--text2)">${esc(u.email||'—')}</td>
+      <td style="font-size:12px">${esc(u.phone||'—')}</td>
       <td><span class="badge badge-blue">${orderCount}</span></td>
       <td style="font-size:12px;color:var(--muted)">${joined}</td>
-      <td><span class="badge ${u.status === 'blocked' ? 'badge-red' : 'badge-green'}">${u.status}</span></td>
+      <td><span class="badge ${u.status==='blocked'?'badge-red':'badge-green'}">${u.status}</span></td>
     </tr>`;
   }).join('');
 }
 
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
+   COUPONS
+   DB: /coupons/{CODE} = { type, value, desc, active }
+   CODE is the key — e.g. "JERSIFY10"
+═══════════════════════════════════════════════ */
+let _editCouponCode = null;
+
+async function listenCoupons() {
+  const { db, dbRef, onValue } = await waitFb();
+  onValue(dbRef(db, 'coupons'), snap => {
+    const data = [];
+    if (snap.exists()) {
+      snap.forEach(d => { data.push({ code: d.key, ...d.val() }); });
+    }
+    _allCoupons = data;
+    setEl('couponBadgeNav', data.filter(c => c.active !== false).length);
+    renderCoupons(data);
+  });
+}
+
+function renderCoupons(data) {
+  const tbody = document.getElementById('couponsTable');
+  if (!data.length) { tbody.innerHTML = emptyRow(6, 'No coupons yet — add one!'); return; }
+  tbody.innerHTML = data.map(c => {
+    const isActive = c.active !== false;
+    const valueDisplay = c.type === 'flat' ? `₹${c.value} OFF` : `${c.value}% OFF`;
+    return `<tr>
+      <td><span class="coupon-code-badge">${esc(c.code)}</span></td>
+      <td><span class="badge ${c.type==='flat'?'badge-blue':'badge-purple'}">${c.type==='flat'?'Flat':'Percent'}</span></td>
+      <td><strong>${esc(valueDisplay)}</strong></td>
+      <td style="color:var(--text2);font-size:12px">${esc(c.desc||'—')}</td>
+      <td>
+        <label class="toggle">
+          <input type="checkbox" ${isActive?'checked':''} onchange="toggleCoupon('${esc(c.code)}',this.checked)"/>
+          <span class="toggle-track"></span>
+        </label>
+      </td>
+      <td><div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="editCoupon('${esc(c.code)}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCouponById('${esc(c.code)}')">Delete</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function openCouponModal(existingCode) {
+  _editCouponCode = existingCode || null;
+  document.getElementById('couponModalTitle').textContent = existingCode ? 'Edit Coupon' : 'Add Coupon';
+
+  if (existingCode) {
+    const c = _allCoupons.find(x => x.code === existingCode);
+    if (!c) return;
+    const codeInput = document.getElementById('c_code');
+    codeInput.value = c.code;
+    codeInput.readOnly = true; // Don't allow changing code during edit
+    codeInput.style.opacity = '.6';
+    setV('c_type', c.type || 'percent');
+    setV('c_value', c.value || '');
+    setV('c_desc', c.desc || '');
+    setV('c_active', String(c.active !== false));
+  } else {
+    const codeInput = document.getElementById('c_code');
+    codeInput.value = '';
+    codeInput.readOnly = false;
+    codeInput.style.opacity = '1';
+    setV('c_type', 'percent');
+    setV('c_value', '');
+    setV('c_desc', '');
+    setV('c_active', 'true');
+  }
+  updateCouponPreview();
+  openModal('couponModal');
+}
+
+function editCoupon(code) { openCouponModal(code); }
+
+function updateCouponPreview() {
+  const type = getV('c_type');
+  const val = getV('c_value');
+  const code = document.getElementById('c_code').value.trim();
+  const preview = document.getElementById('couponPreview');
+  const previewText = document.getElementById('couponPreviewText');
+  if (val && code) {
+    const display = type === 'flat' ? `₹${val} off` : `${val}% off`;
+    previewText.textContent = `Code "${code}" gives ${display} on the order total.`;
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+  // Auto-fill description if empty
+  const descInput = document.getElementById('c_desc');
+  if (!descInput.value && val) {
+    descInput.placeholder = type === 'flat' ? `₹${val} OFF on all orders` : `${val}% OFF on all orders`;
+  }
+}
+
+async function saveCoupon() {
+  const code = document.getElementById('c_code').value.trim().toUpperCase().replace(/\s/g,'');
+  const value = parseFloat(getV('c_value'));
+  const type = getV('c_type');
+
+  if (!code) { toast('Coupon code is required', 'error'); return; }
+  if (!value || value <= 0) { toast('Value must be greater than 0', 'error'); return; }
+  if (type === 'percent' && value > 100) { toast('Percent discount cannot exceed 100%', 'error'); return; }
+
+  const desc = getV('c_desc') || (type === 'flat' ? `₹${value} OFF` : `${value}% OFF`);
+  const active = getV('c_active') === 'true';
+
+  const { db, dbRef, set } = await waitFb();
+  await set(dbRef(db, `coupons/${code}`), { type, value, desc, active, updatedAt: Date.now() });
+  closeModal('couponModal');
+  toast(`Coupon "${code}" saved! 🎟`, 'success');
+  _editCouponCode = null;
+}
+
+async function toggleCoupon(code, active) {
+  const { db, dbRef, update } = await waitFb();
+  await update(dbRef(db, `coupons/${code}`), { active });
+  toast(`${code} is now ${active ? 'active' : 'inactive'}`, 'success');
+}
+
+function deleteCouponById(code) {
+  confirmAction(`Delete coupon "${code}"? This will remove it from checkout.`, async () => {
+    const { db, dbRef, remove } = await waitFb();
+    await remove(dbRef(db, `coupons/${code}`));
+    toast(`Coupon "${code}" deleted`, 'info');
+  });
+}
+
+/* ═══════════════════════════════════════════════
    PAGE SETTINGS
-═══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
 const SITE_PAGES = [
-  { id:'argentina',  label:'Argentina',  file:'argentina.html',  icon:'🇦🇷', color:'#74ACDF' },
-  { id:'brazil',     label:'Brazil',     file:'brazil.html',     icon:'🇧🇷', color:'#009c3b' },
-  { id:'france',     label:'France',     file:'france.html',     icon:'🇫🇷', color:'#002395' },
-  { id:'germany',    label:'Germany',    file:'germany.html',    icon:'🇩🇪', color:'#222' },
-  { id:'spain',      label:'Spain',      file:'spain.html',      icon:'🇪🇸', color:'#AA151B' },
-  { id:'portugal',   label:'Portugal',   file:'portugal.html',   icon:'🇵🇹', color:'#006600' },
-  { id:'barcelona',  label:'FC Barcelona', file:'barcelona.html',icon:'🔵', color:'#a50044' },
-  { id:'real-madrid',label:'Real Madrid',file:'real-madrid.html',icon:'⚪', color:'#febe10' },
-  { id:'chelsea',    label:'Chelsea FC', file:'chelsea.html',    icon:'🔷', color:'#034694' },
-  { id:'man-utd',    label:'Man United', file:'man-utd.html',    icon:'🔴', color:'#DA291C' },
-  { id:'man-city',   label:'Man City',   file:'man-city.html',   icon:'🩵', color:'#6CABDD' },
-  { id:'psg',        label:'PSG',        file:'psg.html',        icon:'🔵', color:'#004170' },
+  { id:'argentina',   label:'Argentina',    file:'argentina.html',  icon:'🇦🇷', color:'#74ACDF' },
+  { id:'brazil',      label:'Brazil',       file:'brazil.html',     icon:'🇧🇷', color:'#009c3b' },
+  { id:'france',      label:'France',       file:'france.html',     icon:'🇫🇷', color:'#002395' },
+  { id:'germany',     label:'Germany',      file:'germany.html',    icon:'🇩🇪', color:'#222' },
+  { id:'spain',       label:'Spain',        file:'spain.html',      icon:'🇪🇸', color:'#AA151B' },
+  { id:'portugal',    label:'Portugal',     file:'portugal.html',   icon:'🇵🇹', color:'#006600' },
+  { id:'barcelona',   label:'FC Barcelona', file:'barcelona.html',  icon:'🔵', color:'#a50044' },
+  { id:'real-madrid', label:'Real Madrid',  file:'real-madrid.html',icon:'⚪', color:'#febe10' },
+  { id:'chelsea',     label:'Chelsea FC',   file:'chelsea.html',    icon:'🔷', color:'#034694' },
+  { id:'man-utd',     label:'Man United',   file:'man-utd.html',    icon:'🔴', color:'#DA291C' },
+  { id:'man-city',    label:'Man City',     file:'man-city.html',   icon:'🩵', color:'#6CABDD' },
+  { id:'psg',         label:'PSG',          file:'psg.html',        icon:'🔵', color:'#004170' },
 ];
 
 async function initPageSettings() {
@@ -1529,9 +1659,9 @@ async function togglePage(id, active) {
   toast(`${id} is now ${active?'active':'inactive'}`, 'success');
 }
 
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    FIREBASE CRUD HELPERS
-═══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
 async function saveDoc(col, data, id) {
   const { db, dbRef, update, push, set } = await waitFb();
   if (id) {
@@ -1552,9 +1682,7 @@ async function uploadToStorage(file, path) {
   return new Promise((res, rej) => {
     const ref = sRef(storage, path);
     const task = uploadBytesResumable(ref, file);
-    task.on('state_changed', null, rej, async () => {
-      res(await getDownloadURL(task.snapshot.ref));
-    });
+    task.on('state_changed', null, rej, async () => { res(await getDownloadURL(task.snapshot.ref)); });
   });
 }
 
@@ -1565,12 +1693,12 @@ function deleteItem(col, id) {
   });
 }
 
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    MODAL
-═══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }));
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target===m) m.classList.remove('open'); }));
 
 function confirmAction(msg, cb) {
   document.getElementById('confirmMsg').textContent = msg;
@@ -1578,9 +1706,9 @@ function confirmAction(msg, cb) {
   openModal('confirmModal');
 }
 
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    SEARCH
-═══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
 function globalSearchFn() {
   const q = document.getElementById('globalSearch').value.toLowerCase();
   document.querySelectorAll('table tbody tr').forEach(row => {
@@ -1588,36 +1716,29 @@ function globalSearchFn() {
   });
 }
 
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    TOAST
-═══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
 function toast(msg, type = 'info') {
   const wrap = document.getElementById('toastWrap');
   const el = document.createElement('div');
   el.className = `toast ${type}`;
-  const icons = { success: '✓', error: '✗', info: 'ℹ' };
+  const icons = { success:'✓', error:'✗', info:'ℹ' };
   el.innerHTML = `<span>${icons[type]||'ℹ'}</span>${msg}`;
   wrap.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
+  setTimeout(() => el.remove(), 3200);
 }
 
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    HELPERS
-═══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
 function getV(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
-function setV(id, val) { const el = document.getElementById(id); if (el) el.value = val ?? ''; }
-function setEl(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+function setV(id, val) { const el = document.getElementById(id); if(el) el.value = val ?? ''; }
+function setEl(id, val) { const el = document.getElementById(id); if(el) el.textContent = val; }
 function emptyRow(cols, msg) { return `<tr><td colspan="${cols}" style="text-align:center;padding:32px;color:var(--muted)">${msg}</td></tr>`; }
-
-// XSS-safe escaping for user-supplied strings rendered via innerHTML
 function esc(str) {
-  if (str == null) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+  if(str==null) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 </script>
 </body>
