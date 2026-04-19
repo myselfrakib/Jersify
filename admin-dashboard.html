@@ -28,8 +28,7 @@
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        // Uncomment in production: window.location.href = 'admin-login.html'; return;
-        initApp(); // Allow access without login for now
+        initApp();
         return;
       }
       try {
@@ -85,156 +84,51 @@
     a { text-decoration: none; color: inherit; }
     button, input, select, textarea { font: inherit; }
 
-    /* ── LAYOUT ── */
     #layout { display: flex; height: 100vh; overflow: hidden; }
 
-    /* ── SIDEBAR ── */
     .sidebar {
-      width: var(--nav-w);
-      flex-shrink: 0;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      overflow-x: hidden;
-      transition: transform .3s cubic-bezier(.4,0,.2,1);
-      z-index: 100;
+      width: var(--nav-w); flex-shrink: 0; background: var(--surface);
+      border-right: 1px solid var(--border); display: flex; flex-direction: column;
+      overflow-y: auto; overflow-x: hidden;
+      transition: transform .3s cubic-bezier(.4,0,.2,1); z-index: 100;
     }
     .sidebar::-webkit-scrollbar { width: 4px; }
     .sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-    .sidebar-logo {
-      padding: 20px 20px 14px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .logo-mark {
-      width: 36px; height: 36px;
-      background: var(--accent);
-      border-radius: 10px;
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-    }
+    .sidebar-logo { padding: 20px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .logo-mark { width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; }
     .logo-mark svg { width: 20px; height: 20px; fill: #fff; }
     .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--text); line-height: 1; }
     .logo-sub { font-size: 9px; font-weight: 600; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px; }
 
-    .nav-section-label {
-      padding: 16px 16px 6px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-    .nav-link {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 14px;
-      margin: 1px 8px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      color: var(--text2);
-      font-size: 13px;
-      font-weight: 500;
-      transition: background .15s, color .15s;
-      border: none;
-      background: none;
-      width: calc(100% - 16px);
-      text-align: left;
-    }
+    .nav-section-label { padding: 16px 16px 6px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; }
+    .nav-link { display: flex; align-items: center; gap: 10px; padding: 9px 14px; margin: 1px 8px; border-radius: var(--radius-sm); cursor: pointer; color: var(--text2); font-size: 13px; font-weight: 500; transition: background .15s, color .15s; border: none; background: none; width: calc(100% - 16px); text-align: left; }
     .nav-link svg { width: 16px; height: 16px; flex-shrink: 0; opacity: .7; }
     .nav-link:hover { background: var(--surface3); color: var(--text); }
     .nav-link.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
     .nav-link.active svg { opacity: 1; }
     .nav-badge { margin-left: auto; background: var(--accent); color: #fff; border-radius: 999px; font-size: 10px; font-weight: 700; padding: 1px 7px; min-width: 20px; text-align: center; }
 
-    .sidebar-footer {
-      margin-top: auto;
-      padding: 14px;
-      border-top: 1px solid var(--border);
-    }
-    .logout-btn {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 12px; border-radius: var(--radius-sm);
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); font-size: 13px; font-weight: 500;
-      width: 100%; transition: .15s;
-    }
+    .sidebar-footer { margin-top: auto; padding: 14px; border-top: 1px solid var(--border); }
+    .logout-btn { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--radius-sm); background: none; border: none; cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 500; width: 100%; transition: .15s; }
     .logout-btn:hover { color: var(--accent); background: var(--accent-bg); }
     .logout-btn svg { width: 15px; height: 15px; }
 
-    /* ── MAIN ── */
     .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
-    /* ── TOPBAR ── */
-    .topbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 24px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-shrink: 0;
-      box-shadow: var(--shadow-sm);
-    }
-    .burger-btn {
-      display: none;
-      width: 36px; height: 36px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--surface);
-      cursor: pointer;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      flex-shrink: 0;
-    }
-    .burger-btn span {
-      display: block; width: 18px; height: 2px;
-      background: var(--text); border-radius: 1px;
-      transition: .25s;
-    }
-    .page-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      letter-spacing: 1.5px;
-      color: var(--text);
-      flex: 1;
-    }
+    .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 60px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; box-shadow: var(--shadow-sm); }
+    .burger-btn { display: none; width: 36px; height: 36px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 4px; flex-shrink: 0; }
+    .burger-btn span { display: block; width: 18px; height: 2px; background: var(--text); border-radius: 1px; transition: .25s; }
+    .page-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1.5px; color: var(--text); flex: 1; }
     .topbar-right { display: flex; align-items: center; gap: 10px; }
-    .search-input {
-      background: var(--surface3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 7px 12px 7px 34px;
-      font-size: 13px;
-      color: var(--text);
-      width: 220px;
-      outline: none;
-      transition: .2s;
-      position: relative;
-    }
     .search-wrap { position: relative; }
     .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--muted); pointer-events: none; }
+    .search-input { background: var(--surface3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 12px 7px 34px; font-size: 13px; color: var(--text); width: 220px; outline: none; transition: .2s; }
     .search-input:focus { border-color: var(--accent); background: #fff; width: 260px; }
-    .sync-pill {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--green-bg); color: var(--green);
-      border: 1px solid #b3e6c8; border-radius: 999px;
-      padding: 4px 11px; font-size: 11px; font-weight: 600;
-    }
+    .sync-pill { display: flex; align-items: center; gap: 6px; background: var(--green-bg); color: var(--green); border: 1px solid #b3e6c8; border-radius: 999px; padding: 4px 11px; font-size: 11px; font-weight: 600; }
     .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100% { opacity:1; transform:scale(1) } 50% { opacity:.5; transform:scale(1.3) } }
 
-    /* ── CONTENT ── */
     .content { flex: 1; overflow-y: auto; padding: 24px; }
     .content::-webkit-scrollbar { width: 6px; }
     .content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
@@ -243,13 +137,7 @@
     .tab-pane.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      border: none; border-radius: var(--radius-sm);
-      padding: 8px 16px; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: .15s; white-space: nowrap;
-    }
+    .btn { display: inline-flex; align-items: center; gap: 6px; border: none; border-radius: var(--radius-sm); padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: .15s; white-space: nowrap; }
     .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-primary:hover { background: var(--accent2); }
@@ -259,7 +147,6 @@
     .btn-danger:hover { background: #fee2e2; }
     .btn-sm { padding: 5px 11px; font-size: 12px; }
 
-    /* ── CARDS ── */
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
     .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .card-header-left { display: flex; flex-direction: column; gap: 2px; }
@@ -267,13 +154,8 @@
     .card-subtitle { font-size: 11px; color: var(--muted); }
     .card-body { padding: 20px; }
 
-    /* ── STATS ── */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
-    .stat-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 18px 20px;
-      box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
-    }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
     .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
     .stat-card.red::after { background: var(--accent); }
     .stat-card.green::after { background: var(--green); }
@@ -283,7 +165,6 @@
     .stat-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-top: 4px; }
     .stat-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 28px; opacity: .15; }
 
-    /* ── TABLE ── */
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     th { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding: 10px 16px; text-align: left; border-bottom: 2px solid var(--border); white-space: nowrap; }
@@ -291,7 +172,6 @@
     tr:last-child td { border-bottom: none; }
     tbody tr:hover td { background: var(--surface2); }
 
-    /* ── BADGES ── */
     .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; white-space: nowrap; }
     .badge-red { background: var(--accent-bg); color: var(--accent); }
     .badge-green { background: var(--green-bg); color: var(--green); }
@@ -299,37 +179,18 @@
     .badge-orange { background: var(--orange-bg); color: var(--orange); }
     .badge-purple { background: var(--purple-bg); color: var(--purple); }
     .badge-gray { background: var(--surface3); color: var(--text2); }
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; }
 
-    /* ── FORMS ── */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
     .form-group { display: flex; flex-direction: column; gap: 5px; }
     .form-group.span-2 { grid-column: span 2; }
     label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .6px; }
-    input[type=text], input[type=email], input[type=number], input[type=url], select, textarea {
-      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
-      padding: 9px 12px; font-size: 13px; color: var(--text); outline: none; transition: .15s; width: 100%;
-    }
+    input[type=text], input[type=email], input[type=number], input[type=url], select, textarea { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px; font-size: 13px; color: var(--text); outline: none; transition: .15s; width: 100%; }
     input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
     textarea { resize: vertical; min-height: 72px; }
-    select option { background: var(--surface); }
 
-    /* ── MODAL ── */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,.35);
-      backdrop-filter: blur(3px); z-index: 500;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity .2s;
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); backdrop-filter: blur(3px); z-index: 500; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .2s; }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; width: min(560px, 95vw);
-      max-height: 88vh; overflow-y: auto;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(12px) scale(.98); transition: .25s;
-    }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: min(600px, 95vw); max-height: 88vh; overflow-y: auto; box-shadow: var(--shadow-lg); transform: translateY(12px) scale(.98); transition: .25s; }
     .modal-overlay.open .modal { transform: none; }
     .modal::-webkit-scrollbar { width: 4px; }
     .modal::-webkit-scrollbar-thumb { background: var(--border2); }
@@ -340,145 +201,88 @@
     .modal-body { padding: 20px 24px 24px; }
     .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
 
-    /* ── MEDIA PAGE ── */
-    .media-page-section { margin-bottom: 28px; }
-    .media-section-title {
-      font-size: 13px; font-weight: 700; color: var(--text2);
-      text-transform: uppercase; letter-spacing: 1px;
-      margin-bottom: 12px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .media-section-title::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
+    /* ── PRODUCT IMAGE GALLERY UPLOAD ── */
+    .img-gallery-upload { margin-top: 14px; }
+    .img-gallery-label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; display: block; }
+    .img-gallery-grid { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    .media-boxes-row { display: flex; gap: 12px; flex-wrap: wrap; }
-
-    /* Upload box */
-    .media-box {
+    .img-slot {
       position: relative;
-      width: 160px; height: 140px;
+      width: 88px; height: 88px;
       border: 2px dashed var(--border2);
-      border-radius: var(--radius);
-      background: var(--surface);
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      gap: 6px; cursor: pointer;
-      transition: border-color .2s, background .2s;
-      overflow: hidden;
-      flex-shrink: 0;
-      user-select: none;
+      gap: 4px; cursor: pointer;
+      overflow: hidden; flex-shrink: 0;
+      transition: border-color .15s, background .15s;
     }
-    /* Empty box: hover shows accent */
+    .img-slot:not(.has-img):hover { border-color: var(--accent); background: var(--accent-bg); }
+    .img-slot.has-img { border-style: solid; border-color: var(--border); cursor: default; }
+    .img-slot.is-primary { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+
+    .img-slot > input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 10; width: 100%; height: 100%; }
+    .img-slot.has-img > input[type=file] { z-index: 0; pointer-events: none; }
+
+    .img-slot img.slot-thumb { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: calc(var(--radius-sm) - 2px); z-index: 1; pointer-events: none; }
+
+    .img-slot-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.55); border-radius: calc(var(--radius-sm) - 2px); opacity: 0; transition: opacity .15s; z-index: 5; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .img-slot.has-img:hover .img-slot-overlay { opacity: 1; }
+    .img-slot-overlay button { width: 26px; height: 26px; border-radius: 6px; border: none; cursor: pointer; display: grid; place-items: center; font-size: 12px; z-index: 6; }
+    .slot-replace-btn { background: rgba(255,255,255,.9); color: var(--text); }
+    .slot-delete-btn { background: rgba(220,38,38,.9); color: #fff; }
+
+    .img-slot-placeholder { font-size: 20px; opacity: .35; pointer-events: none; position: relative; z-index: 2; }
+    .img-slot-hint { font-size: 9px; color: var(--muted); pointer-events: none; position: relative; z-index: 2; font-weight: 600; text-align: center; line-height: 1.3; }
+
+    .primary-badge { position: absolute; top: 4px; left: 4px; background: var(--accent); color: #fff; font-size: 8px; font-weight: 800; padding: 2px 5px; border-radius: 4px; z-index: 3; pointer-events: none; letter-spacing: .5px; }
+
+    .img-slot-progress { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--border); z-index: 7; display: none; }
+    .img-slot-progress.active { display: block; }
+    .img-slot-progress-fill { height: 100%; background: var(--accent); transition: width .3s; width: 0%; }
+
+    /* ── TABLE PRODUCT IMAGES STRIP ── */
+    .product-imgs-strip { display: flex; gap: 4px; align-items: center; }
+    .product-imgs-strip img { width: 28px; height: 28px; object-fit: cover; border-radius: 5px; border: 1px solid var(--border); }
+    .product-imgs-strip .more-badge { background: var(--surface3); color: var(--text2); font-size: 9px; font-weight: 700; width: 28px; height: 28px; border-radius: 5px; display: grid; place-items: center; border: 1px solid var(--border); }
+
+    /* ── INDEX MEDIA ── */
+    .media-page-section { margin-bottom: 28px; }
+    .media-section-title { font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .media-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .media-boxes-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .media-box { position: relative; width: 160px; height: 140px; border: 2px dashed var(--border2); border-radius: var(--radius); background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: border-color .2s, background .2s; overflow: hidden; flex-shrink: 0; user-select: none; }
     .media-box:not(.has-image):hover { border-color: var(--accent); background: var(--accent-bg); }
     .media-box.has-image { border-style: solid; border-color: var(--border); }
-
-    /* The hidden file input — sits on top of EVERYTHING so the whole box is clickable */
-    .media-box > input[type=file] {
-      position: absolute; inset: 0;
-      opacity: 0; cursor: pointer;
-      z-index: 10;   /* must be highest */
-      width: 100%; height: 100%;
-    }
-    /* When image present, hide the file input so overlay buttons work */
+    .media-box > input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 10; width: 100%; height: 100%; }
     .media-box.has-image > input[type=file] { z-index: 0; pointer-events: none; }
-
-    /* Thumbnail image */
-    .media-box img.box-img {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; border-radius: calc(var(--radius) - 2px);
-      z-index: 1; pointer-events: none;
-    }
-
-    /* Overlay (replace/delete) — only on has-image, appears on hover */
-    .media-box-overlay {
-      position: absolute; inset: 0; background: rgba(0,0,0,.5);
-      border-radius: calc(var(--radius) - 2px);
-      opacity: 0; transition: opacity .2s; z-index: 5;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
+    .media-box img.box-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: calc(var(--radius) - 2px); z-index: 1; pointer-events: none; }
+    .media-box-overlay { position: absolute; inset: 0; background: rgba(0,0,0,.5); border-radius: calc(var(--radius) - 2px); opacity: 0; transition: opacity .2s; z-index: 5; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .media-box.has-image:hover .media-box-overlay { opacity: 1; }
-    .media-box-overlay button {
-      width: 34px; height: 34px; border-radius: 8px; border: none;
-      cursor: pointer; display: grid; place-items: center; font-size: 15px;
-      backdrop-filter: blur(6px); position: relative; z-index: 6;
-    }
+    .media-box-overlay button { width: 34px; height: 34px; border-radius: 8px; border: none; cursor: pointer; display: grid; place-items: center; font-size: 15px; backdrop-filter: blur(6px); position: relative; z-index: 6; }
     .mb-replace { background: rgba(255,255,255,.9); color: var(--text); }
     .mb-delete { background: rgba(220,38,38,.9); color: #fff; }
-
-    /* Placeholder text/icon (only visible when no image) */
-    .media-box-label {
-      font-size: 11px; font-weight: 700; color: var(--muted);
-      text-align: center; line-height: 1.3; pointer-events: none;
-      position: relative; z-index: 2;
-    }
-    .media-box-icon {
-      font-size: 24px; pointer-events: none; opacity: .4;
-      position: relative; z-index: 2;
-    }
-    .media-box-add-text {
-      font-size: 10px; color: var(--muted); pointer-events: none;
-      position: relative; z-index: 2;
-    }
-
-    /* Video preview inside box */
-    .media-box video.box-vid {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; border-radius: calc(var(--radius) - 2px);
-      z-index: 1; pointer-events: none;
-    }
-
-    /* Video badge overlay */
-    .box-vid-badge {
-      position: absolute; top: 6px; left: 6px;
-      background: rgba(0,0,0,.65); color: #fff;
-      font-size: 9px; font-weight: 800; letter-spacing: .8px;
-      padding: 3px 7px; border-radius: 5px;
-      z-index: 3; pointer-events: none;
-      backdrop-filter: blur(4px);
-    }
-
-    /* Progress bar */
-    .media-box-progress {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
-      background: var(--border); z-index: 7; display: none;
-    }
+    .media-box-label { font-size: 11px; font-weight: 700; color: var(--muted); text-align: center; line-height: 1.3; pointer-events: none; position: relative; z-index: 2; }
+    .media-box-icon { font-size: 24px; pointer-events: none; opacity: .4; position: relative; z-index: 2; }
+    .media-box-add-text { font-size: 10px; color: var(--muted); pointer-events: none; position: relative; z-index: 2; }
+    .media-box video.box-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: calc(var(--radius) - 2px); z-index: 1; pointer-events: none; }
+    .box-vid-badge { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,.65); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: .8px; padding: 3px 7px; border-radius: 5px; z-index: 3; pointer-events: none; backdrop-filter: blur(4px); }
+    .media-box-progress { position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: var(--border); z-index: 7; display: none; }
     .media-box-progress.active { display: block; }
-    .media-box-progress-fill {
-      height: 100%; background: var(--accent);
-      transition: width .3s; width: 0%;
-    }
-
-    /* Reel boxes are taller/narrower */
+    .media-box-progress-fill { height: 100%; background: var(--accent); transition: width .3s; width: 0%; }
     .media-box.reel { width: 100px; height: 170px; }
-
-    /* Gallery photo 1 is wider */
     .media-box.gallery-wide { width: 210px; }
 
-    /* ── TOGGLE ── */
     .toggle { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-track {
-      position: absolute; cursor: pointer; inset: 0;
-      background: var(--border2); border-radius: 999px; transition: .25s;
-    }
-    .toggle-track::before {
-      content: ''; position: absolute;
-      height: 18px; width: 18px; left: 3px; bottom: 3px;
-      background: #fff; border-radius: 50%; transition: .25s;
-      box-shadow: 0 1px 3px rgba(0,0,0,.2);
-    }
+    .toggle-track { position: absolute; cursor: pointer; inset: 0; background: var(--border2); border-radius: 999px; transition: .25s; }
+    .toggle-track::before { content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: .25s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
     .toggle input:checked + .toggle-track { background: var(--green); }
     .toggle input:checked + .toggle-track::before { transform: translateX(18px); }
 
-    /* ── PAGES GRID ── */
     .pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-    .page-card {
-      display: flex; align-items: center; gap: 12px;
-      padding: 14px 16px; border: 1px solid var(--border);
-      border-radius: var(--radius); background: var(--surface);
-      box-shadow: var(--shadow-sm); transition: .15s;
-    }
+    .page-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-sm); transition: .15s; }
     .page-card:hover { border-color: var(--border2); box-shadow: var(--shadow); }
     .page-icon { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }
     .page-info { flex: 1; min-width: 0; }
@@ -486,33 +290,18 @@
     .page-file { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .page-status { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
 
-    /* ── USER AVATAR ── */
     .user-avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
 
-    /* ── TOAST ── */
     .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
-    .toast {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 12px 16px;
-      font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px;
-      min-width: 220px; box-shadow: var(--shadow-lg);
-      animation: toastIn .25s ease;
-    }
+    .toast { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; min-width: 220px; box-shadow: var(--shadow-lg); animation: toastIn .25s ease; }
     .toast.success { border-color: #b3e6c8; color: var(--green); background: var(--green-bg); }
     .toast.error { border-color: var(--accent-border); color: var(--accent); background: var(--accent-bg); }
     .toast.info { border-color: #bdd3fb; color: var(--blue); background: var(--blue-bg); }
     @keyframes toastIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
 
-    /* ── CONFIRM MODAL ── */
     .confirm-modal .modal { width: 360px; }
+    .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 99; }
 
-    /* ── OVERLAY backdrop for mobile ── */
-    .sidebar-backdrop {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,.3); z-index: 99;
-    }
-
-    /* ── MOBILE ── */
     @media(max-width: 768px) {
       .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); z-index: 100; }
       .sidebar.open { transform: translateX(0); }
@@ -530,11 +319,8 @@
 
 <body>
 <div id="layout">
-
-  <!-- Backdrop for mobile -->
   <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
-  <!-- ── SIDEBAR ── -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <div class="logo-mark">
@@ -579,9 +365,7 @@
     </div>
   </aside>
 
-  <!-- ── MAIN ── -->
   <div class="main">
-    <!-- TOPBAR -->
     <div class="topbar">
       <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">
         <span></span><span></span><span></span>
@@ -596,7 +380,6 @@
       </div>
     </div>
 
-    <!-- CONTENT -->
     <div class="content" id="mainContent">
 
       <!-- ══ PRODUCTS TAB ══ -->
@@ -618,10 +401,10 @@
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>Product</th><th>Team</th><th>Type</th><th>Price</th><th>Status</th><th>Actions</th></tr>
+                <tr><th>Product</th><th>Images</th><th>Team</th><th>Type</th><th>Price</th><th>Status</th><th>Actions</th></tr>
               </thead>
               <tbody id="productsTable">
-                <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr>
+                <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr>
               </tbody>
             </table>
           </div>
@@ -634,47 +417,30 @@
           <div class="card-header">
             <div class="card-header-left">
               <div class="card-title">Index Page Media</div>
-              <div class="card-subtitle">Click any box to upload · Images auto-saved to Firebase · Drag to replace</div>
+              <div class="card-subtitle">Click any box to upload · Images auto-saved to Firebase</div>
             </div>
-            <button class="btn btn-ghost btn-sm" onclick="saveAllMedia()" id="saveAllBtn">
+            <button class="btn btn-ghost btn-sm">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
               Saved automatically
             </button>
           </div>
           <div class="card-body">
-
-            <!-- HERO BANNERS -->
             <div class="media-page-section">
               <div class="media-section-title">🎯 Hero Banners <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(slides on homepage)</span></div>
-              <div class="media-boxes-row" id="heroBoxesRow">
-                <!-- hero_1, hero_2, hero_3 -->
-              </div>
+              <div class="media-boxes-row" id="heroBoxesRow"></div>
             </div>
-
-            <!-- FEATURED MEDIA -->
             <div class="media-page-section">
               <div class="media-section-title">⭐ Featured Media <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(big banner strip)</span></div>
-              <div class="media-boxes-row" id="featuredBoxesRow">
-                <!-- featured_1, featured_2, featured_3 -->
-              </div>
+              <div class="media-boxes-row" id="featuredBoxesRow"></div>
             </div>
-
-            <!-- GALLERY -->
             <div class="media-page-section">
               <div class="media-section-title">🖼️ Photo Gallery <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(grid on homepage)</span></div>
-              <div class="media-boxes-row" id="galleryBoxesRow">
-                <!-- gallery_photo_1 (wide 2x), gallery_photo_2 (narrow) -->
-              </div>
+              <div class="media-boxes-row" id="galleryBoxesRow"></div>
             </div>
-
-            <!-- REELS -->
             <div class="media-page-section">
               <div class="media-section-title">🎬 Reels <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(vertical video thumbnails)</span></div>
-              <div class="media-boxes-row" id="reelsBoxesRow">
-                <!-- reel_1 … reel_6 -->
-              </div>
+              <div class="media-boxes-row" id="reelsBoxesRow"></div>
             </div>
-
           </div>
         </div>
       </div>
@@ -684,7 +450,7 @@
         <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
           <div class="stat-card orange"><div class="stat-val" id="stPending">—</div><div class="stat-label">Pending</div></div>
           <div class="stat-card blue"><div class="stat-val" id="stConfirmed">—</div><div class="stat-label">Confirmed</div></div>
-          <div class="stat-card purple" style="--purple-stat:#6b21a8"><div class="stat-val" id="stShipped">—</div><div class="stat-label">Shipped</div></div>
+          <div class="stat-card" style="--purple-stat:#6b21a8"><div class="stat-val" id="stShipped">—</div><div class="stat-label">Shipped</div></div>
           <div class="stat-card green"><div class="stat-val" id="stDelivered">—</div><div class="stat-label">Delivered</div></div>
         </div>
         <div class="card">
@@ -730,9 +496,9 @@
         </div>
       </div>
 
-    </div><!-- /content -->
-  </div><!-- /main -->
-</div><!-- /layout -->
+    </div>
+  </div>
+</div>
 
 <!-- ══ PRODUCT MODAL ══ -->
 <div class="modal-overlay" id="productModal">
@@ -758,8 +524,9 @@
         <div class="form-group"><label>Price (₹) *</label><input type="text" id="p_price" placeholder="1499"/></div>
         <div class="form-group"><label>Badge Label</label><input type="text" id="p_badge" placeholder="NEW 2025"/></div>
         <div class="form-group"><label>Status</label><select id="p_status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
-        <div class="form-group"><label>Image URL</label><input type="text" id="p_img_url" placeholder="https://… or upload below"/></div>
+        <div class="form-group"><label>Primary Image URL</label><input type="text" id="p_img_url" placeholder="https://… or upload below"/></div>
       </div>
+
       <div style="margin-top:12px">
         <label style="display:block;margin-bottom:6px">Stock by Size</label>
         <div style="display:flex;gap:8px">
@@ -770,20 +537,19 @@
           <div style="flex:1;text-align:center"><label style="font-size:10px">XL</label><input type="number" id="p_xl" value="0" min="0"/></div>
         </div>
       </div>
-      <div style="margin-top:14px">
-        <label style="display:block;margin-bottom:6px">Upload Image</label>
-        <div id="p_img_upload_box" style="border:2px dashed var(--border2);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;position:relative;transition:.2s;background:var(--surface2);" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
-          <input type="file" accept="image/*" id="p_img_file" style="position:absolute;inset:0;opacity:0;cursor:pointer" onchange="handleProductImgPreview(event)"/>
-          <div id="p_img_preview_inner">
-            <div style="font-size:24px;margin-bottom:4px">📸</div>
-            <div style="font-size:12px;color:var(--muted)">Click or drag image here</div>
-          </div>
+
+      <!-- ── MULTI-IMAGE UPLOAD (up to 5) ── -->
+      <div class="img-gallery-upload">
+        <span class="img-gallery-label">Product Images (up to 5) — First is primary shown in listings</span>
+        <div class="img-gallery-grid" id="imgSlotGrid">
+          <!-- 5 slots built by JS -->
         </div>
+        <div style="margin-top:6px;font-size:11px;color:var(--muted)">💡 Click any slot to upload. Hover over an image to replace or delete it.</div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('productModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+      <button class="btn btn-primary" onclick="saveProduct()" id="saveProductBtn">Save Product</button>
     </div>
   </div>
 </div>
@@ -819,7 +585,6 @@
   </div>
 </div>
 
-<!-- Toast container -->
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
@@ -830,23 +595,23 @@ let _editId = null;
 let _allOrders = [], _allUsers = [], _allProducts = [], _allIndexMedia = {};
 let _pageSettings = {};
 
+// Product image slots state (up to 5)
+const MAX_PRODUCT_IMGS = 5;
+let _productImgSlots = [null, null, null, null, null]; // each: { url, uploading }
+
 function waitFb() {
   return new Promise(r => { const t = setInterval(() => { if(window._fb){clearInterval(t);r(window._fb)} }, 50); });
 }
 
-/* ─── BURGER NAV ─── */
 function toggleSidebar() {
-  const s = document.getElementById('sidebar');
-  const b = document.getElementById('sidebarBackdrop');
-  s.classList.toggle('open');
-  b.classList.toggle('show');
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarBackdrop').classList.toggle('show');
 }
 function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebarBackdrop').classList.remove('show');
 }
 
-/* ─── TAB SWITCH ─── */
 const TAB_TITLES = { products:'Products / Kits', media:'Index Media', orders:'Orders', users:'Users', pages:'Page Settings' };
 function switchTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
@@ -857,27 +622,20 @@ function switchTab(name, el) {
   closeSidebar();
 }
 
-/* ─── LOGOUT ─── */
 async function doLogout() {
   const { auth, signOut } = await waitFb();
   try { await signOut(auth); } catch(e){}
   window.location.href = 'admin-login.html';
 }
 
-/* ─── INIT ─── */
 let _initCalled = false;
 async function initApp() {
   if (_initCalled) return;
   _initCalled = true;
-
-  // Set first nav active
   const firstNav = document.querySelector('.nav-link');
   if (firstNav) firstNav.classList.add('active');
-
-  // Build media boxes immediately (pure DOM, no Firebase needed)
   buildMediaPage();
-
-  // Then subscribe to Firebase data
+  buildImgSlots();
   listenCol('products', renderProducts);
   listenCol('orders', renderOrders);
   listenCol('users', renderUsers);
@@ -885,10 +643,9 @@ async function initApp() {
   initPageSettings();
 }
 
-// Also call at DOMContentLoaded in case Firebase module fires late
 document.addEventListener('DOMContentLoaded', () => {
-  // Build media boxes right away so UI is visible even before auth
   buildMediaPage();
+  buildImgSlots();
 });
 
 async function listenCol(col, cb) {
@@ -913,24 +670,319 @@ function updateStats(col, data) {
 }
 
 /* ═══════════════════════════════════════════════════
-   MEDIA PAGE — Visual upload boxes
-   Firebase structure: indexMedia / {key} = { imgUrl, label, link, section, order, … }
-   Keys: hero_1..3, featured_1..3, gallery_photo_1, gallery_photo_2, reel_1..6
+   PRODUCT IMAGE SLOTS (up to 5)
 ═══════════════════════════════════════════════════ */
+function buildImgSlots() {
+  const grid = document.getElementById('imgSlotGrid');
+  if (!grid || grid.dataset.built) return;
+  grid.dataset.built = '1';
+  grid.innerHTML = '';
 
+  for (let i = 0; i < MAX_PRODUCT_IMGS; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'img-slot';
+    slot.id = `imgSlot_${i}`;
+
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    inp.id = `imgSlotInp_${i}`;
+    inp.addEventListener('change', (e) => handleSlotUpload(e, i));
+
+    const placeholder = document.createElement('div');
+    placeholder.className = 'img-slot-placeholder';
+    placeholder.textContent = i === 0 ? '📸' : '+';
+
+    const hint = document.createElement('div');
+    hint.className = 'img-slot-hint';
+    hint.textContent = i === 0 ? 'Primary' : `Image ${i+1}`;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'img-slot-overlay';
+
+    const replBtn = document.createElement('button');
+    replBtn.className = 'slot-replace-btn';
+    replBtn.title = 'Replace';
+    replBtn.textContent = '✎';
+    replBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById(`imgSlotInp_${i}`).click();
+    });
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'slot-delete-btn';
+    delBtn.title = 'Remove';
+    delBtn.textContent = '✕';
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearImgSlot(i);
+    });
+
+    overlay.appendChild(replBtn);
+    overlay.appendChild(delBtn);
+
+    const progWrap = document.createElement('div');
+    progWrap.className = 'img-slot-progress';
+    const progFill = document.createElement('div');
+    progFill.className = 'img-slot-progress-fill';
+    progFill.id = `imgSlotProg_${i}`;
+    progWrap.appendChild(progFill);
+
+    slot.appendChild(inp);
+    slot.appendChild(placeholder);
+    slot.appendChild(hint);
+    slot.appendChild(overlay);
+    slot.appendChild(progWrap);
+
+    grid.appendChild(slot);
+  }
+}
+
+function setImgSlotValue(index, url) {
+  _productImgSlots[index] = url || null;
+  const slot = document.getElementById(`imgSlot_${index}`);
+  if (!slot) return;
+
+  // Remove old thumb
+  slot.querySelector('img.slot-thumb')?.remove();
+  slot.querySelector('.primary-badge')?.remove();
+
+  if (url) {
+    const img = document.createElement('img');
+    img.src = url;
+    img.className = 'slot-thumb';
+    img.onerror = () => { img.remove(); clearImgSlotUI(index); };
+    slot.insertBefore(img, slot.querySelector('.img-slot-overlay'));
+    slot.classList.add('has-img');
+    slot.querySelectorAll('.img-slot-placeholder, .img-slot-hint').forEach(el => el.style.visibility = 'hidden');
+
+    if (index === 0) {
+      const badge = document.createElement('div');
+      badge.className = 'primary-badge';
+      badge.textContent = 'PRIMARY';
+      slot.insertBefore(badge, slot.querySelector('.img-slot-overlay'));
+    }
+    if (index === 0) slot.classList.add('is-primary');
+  } else {
+    clearImgSlotUI(index);
+  }
+}
+
+function clearImgSlotUI(index) {
+  const slot = document.getElementById(`imgSlot_${index}`);
+  if (!slot) return;
+  slot.querySelector('img.slot-thumb')?.remove();
+  slot.querySelector('.primary-badge')?.remove();
+  slot.classList.remove('has-img', 'is-primary');
+  slot.querySelectorAll('.img-slot-placeholder, .img-slot-hint').forEach(el => el.style.visibility = '');
+}
+
+function clearImgSlot(index) {
+  _productImgSlots[index] = null;
+  clearImgSlotUI(index);
+  // Sync primary img url field
+  if (index === 0) setV('p_img_url', _productImgSlots[1] || '');
+}
+
+function resetImgSlots() {
+  _productImgSlots = [null, null, null, null, null];
+  for (let i = 0; i < MAX_PRODUCT_IMGS; i++) {
+    clearImgSlotUI(i);
+    const inp = document.getElementById(`imgSlotInp_${i}`);
+    if (inp) inp.value = '';
+  }
+}
+
+function loadImgSlotsFromProduct(p) {
+  resetImgSlots();
+  // images array takes precedence, fall back to single imgUrl
+  const imgs = p.images || (p.imgUrl ? [p.imgUrl] : []);
+  imgs.slice(0, MAX_PRODUCT_IMGS).forEach((url, i) => {
+    if (url) setImgSlotValue(i, url);
+  });
+}
+
+async function handleSlotUpload(event, index) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 15 * 1024 * 1024) { toast('Image too large (max 15MB)', 'error'); return; }
+
+  const localUrl = URL.createObjectURL(file);
+  setImgSlotValue(index, localUrl);
+
+  const progFill = document.getElementById(`imgSlotProg_${index}`);
+  const progWrap = progFill?.parentElement;
+  if (progWrap) progWrap.classList.add('active');
+  if (progFill) progFill.style.width = '5%';
+
+  toast(`Uploading image ${index + 1}…`, 'info');
+
+  try {
+    const { storage, sRef, uploadBytesResumable, getDownloadURL } = await waitFb();
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const path = `products/${Date.now()}_slot${index}_${safeName}`;
+    const fileRef = sRef(storage, path);
+    const task = uploadBytesResumable(fileRef, file, { contentType: file.type });
+
+    task.on('state_changed', snap => {
+      const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+      if (progFill) progFill.style.width = pct + '%';
+    }, err => {
+      toast('Upload failed: ' + err.message, 'error');
+      if (progWrap) progWrap.classList.remove('active');
+      clearImgSlot(index);
+    }, async () => {
+      const url = await getDownloadURL(task.snapshot.ref);
+      URL.revokeObjectURL(localUrl);
+      setImgSlotValue(index, url);
+      event.target.value = '';
+      setTimeout(() => {
+        if (progFill) progFill.style.width = '0%';
+        if (progWrap) progWrap.classList.remove('active');
+      }, 800);
+      toast(`Image ${index + 1} uploaded!`, 'success');
+      // Keep p_img_url in sync with slot 0
+      if (index === 0) setV('p_img_url', url);
+    });
+  } catch(err) {
+    toast('Error: ' + err.message, 'error');
+    if (progWrap) progWrap.classList.remove('active');
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   PRODUCTS
+═══════════════════════════════════════════════════ */
+function renderProducts(data) {
+  _allProducts = data;
+  const tbody = document.getElementById('productsTable');
+  if (!data.length) { tbody.innerHTML = emptyRow(7,'No products yet'); return; }
+  tbody.innerHTML = data.map(p => {
+    const imgs = p.images || (p.imgUrl ? [p.imgUrl] : []);
+    const primaryImg = imgs[0] || '';
+    const extraCount = imgs.length > 1 ? imgs.length - 1 : 0;
+
+    const stripHtml = imgs.slice(0, 3).map((u, i) =>
+      `<img src="${u}" onerror="this.style.display='none'" title="Image ${i+1}"/>`
+    ).join('') + (extraCount > 2 ? `<div class="more-badge">+${imgs.length - 3}</div>` : '');
+
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${primaryImg
+            ? `<img src="${primaryImg}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display='none'"/>`
+            : `<div style="width:36px;height:36px;border-radius:8px;background:var(--surface3);display:grid;place-items:center;font-size:18px">👕</div>`}
+          <div>
+            <div style="font-weight:600">${p.name||'—'}</div>
+            ${p.badge ? `<span class="badge badge-orange" style="font-size:10px">${p.badge}</span>` : ''}
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="product-imgs-strip">
+          ${imgs.length ? stripHtml : '<span style="color:var(--muted);font-size:11px">No images</span>'}
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">${imgs.length}/5 images</div>
+      </td>
+      <td>${p.team||'—'}</td>
+      <td><span class="badge badge-gray">${p.type||'Kit'}</span></td>
+      <td><strong>₹${p.price||'—'}</strong></td>
+      <td><span class="badge ${p.status==='active'?'badge-green':'badge-red'}">${p.status||'active'}</span></td>
+      <td><div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="editProduct('${p.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteItem('products','${p.id}')">Delete</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function openProductModal(data) {
+  _editId = data ? data.id : null;
+  document.getElementById('productModalTitle').textContent = data ? 'Edit Product' : 'Add Product';
+  setV('p_name', data?.name || '');
+  setV('p_team', data?.team || 'Argentina');
+  setV('p_type', data?.type || 'Home Kit');
+  setV('p_price', data?.price || '');
+  setV('p_badge', data?.badge || '');
+  setV('p_img_url', data?.imgUrl || '');
+  setV('p_status', data?.status || 'active');
+  const sz = data?.sizes || {};
+  setV('p_xs', sz.xs||0); setV('p_s', sz.s||0); setV('p_m', sz.m||0); setV('p_l', sz.l||0); setV('p_xl', sz.xl||0);
+
+  // Load image slots
+  buildImgSlots(); // ensure built
+  if (data) {
+    loadImgSlotsFromProduct(data);
+  } else {
+    resetImgSlots();
+  }
+
+  openModal('productModal');
+}
+
+function editProduct(id) {
+  const p = _allProducts.find(x => x.id === id);
+  if (p) openProductModal(p);
+}
+
+async function saveProduct() {
+  const name = getV('p_name');
+  if (!name) { toast('Product name required','error'); return; }
+
+  const btn = document.getElementById('saveProductBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  try {
+    // Collect all non-null image slots
+    const images = _productImgSlots.filter(Boolean);
+    const primaryImgUrl = images[0] || getV('p_img_url') || '';
+
+    const data = {
+      name,
+      team: getV('p_team'),
+      type: getV('p_type'),
+      price: getV('p_price'),
+      badge: getV('p_badge'),
+      imgUrl: primaryImgUrl,   // keep imgUrl for backwards compat with shop page
+      images: images,           // full array for gallery
+      status: getV('p_status'),
+      sizes: {
+        xs: parseInt(getV('p_xs'))||0,
+        s:  parseInt(getV('p_s'))||0,
+        m:  parseInt(getV('p_m'))||0,
+        l:  parseInt(getV('p_l'))||0,
+        xl: parseInt(getV('p_xl'))||0
+      },
+      updatedAt: Date.now()
+    };
+
+    if (!_editId) data.createdAt = Date.now();
+
+    await saveDoc('products', data, _editId);
+    closeModal('productModal');
+    toast('Product saved! 👕', 'success');
+    _editId = null;
+  } catch(err) {
+    toast('Save failed: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save Product';
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   INDEX MEDIA
+═══════════════════════════════════════════════════ */
 const MEDIA_SLOTS = [
-  // Heroes
   { key:'hero_1',     section:'hero',     label:'Hero 1',         row:'heroBoxesRow',     cls:'' },
   { key:'hero_2',     section:'hero',     label:'Hero 2',         row:'heroBoxesRow',     cls:'' },
   { key:'hero_3',     section:'hero',     label:'Hero 3',         row:'heroBoxesRow',     cls:'' },
-  // Featured
   { key:'featured_1', section:'featured', label:'Featured 1',     row:'featuredBoxesRow', cls:'' },
   { key:'featured_2', section:'featured', label:'Featured 2',     row:'featuredBoxesRow', cls:'' },
   { key:'featured_3', section:'featured', label:'Featured 3',     row:'featuredBoxesRow', cls:'' },
-  // Gallery
   { key:'gallery_photo_1', section:'gallery', label:'Gallery Photo 1', row:'galleryBoxesRow', cls:'gallery-wide' },
   { key:'gallery_photo_2', section:'gallery', label:'Gallery Photo 2', row:'galleryBoxesRow', cls:'' },
-  // Reels
   { key:'reel_1',     section:'reels',    label:'Reel 1',         row:'reelsBoxesRow',    cls:'reel' },
   { key:'reel_2',     section:'reels',    label:'Reel 2',         row:'reelsBoxesRow',    cls:'reel' },
   { key:'reel_3',     section:'reels',    label:'Reel 3',         row:'reelsBoxesRow',    cls:'reel' },
@@ -946,34 +998,28 @@ function buildMediaPage() {
   MEDIA_SLOTS.forEach(slot => {
     const row = document.getElementById(slot.row);
     if (!row) return;
-
     const box = document.createElement('div');
     box.className = 'media-box' + (slot.cls ? ' ' + slot.cls : '');
     box.id = 'box_' + slot.key;
 
-    // File input — sits on top (z-index:10) so entire box area is clickable
     const inp = document.createElement('input');
     inp.type = 'file';
     inp.accept = 'image/*,video/*';
     inp.id = 'inp_' + slot.key;
     inp.addEventListener('change', (e) => handleMediaUpload(e, slot.key));
 
-    // Placeholder icon
     const icon = document.createElement('div');
     icon.className = 'media-box-icon';
     icon.textContent = '📁';
 
-    // Label
     const lbl = document.createElement('div');
     lbl.className = 'media-box-label';
     lbl.textContent = slot.label;
 
-    // Hint text
     const hint = document.createElement('div');
     hint.className = 'media-box-add-text';
     hint.textContent = 'Photo or Video';
 
-    // Hover overlay with replace + delete (only shown when has-image)
     const overlay = document.createElement('div');
     overlay.className = 'media-box-overlay';
 
@@ -998,7 +1044,6 @@ function buildMediaPage() {
     overlay.appendChild(replaceBtn);
     overlay.appendChild(deleteBtn);
 
-    // Progress bar
     const progWrap = document.createElement('div');
     progWrap.className = 'media-box-progress';
     const progFill = document.createElement('div');
@@ -1020,7 +1065,6 @@ function buildMediaPage() {
 function renderIndexMediaData(data) {
   _allIndexMedia = {};
   data.forEach(d => { _allIndexMedia[d.id] = d; });
-
   MEDIA_SLOTS.forEach(slot => {
     const box = document.getElementById('box_' + slot.key);
     if (!box) return;
@@ -1033,39 +1077,26 @@ function renderIndexMediaData(data) {
   });
 }
 
-function isVideoFile(file) {
-  if (file && file.type) return file.type.startsWith('video/');
-  return false;
-}
 function isVideoUrl(url) {
   if (!url) return false;
   const ext = url.split('?')[0].split('.').pop().toLowerCase();
   return ['mp4','webm','ogg','mov','avi','mkv'].includes(ext) || url.includes('video');
 }
 
-// Sets either an <img> or <video> preview inside the box
 function setBoxMedia(box, url, isVideo) {
-  // Remove old media preview
   box.querySelector('img.box-img')?.remove();
   box.querySelector('video.box-vid')?.remove();
   box.querySelector('.box-vid-badge')?.remove();
-
   const overlay = box.querySelector('.media-box-overlay');
 
   if (isVideo) {
     const vid = document.createElement('video');
     vid.src = url;
     vid.className = 'box-vid';
-    vid.muted = true;
-    vid.loop = true;
-    vid.playsInline = true;
-    vid.autoplay = true;
-    // Play on hover
+    vid.muted = true; vid.loop = true; vid.playsInline = true;
     box.addEventListener('mouseenter', () => vid.play().catch(()=>{}), { passive:true });
     box.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0; }, { passive:true });
     box.insertBefore(vid, overlay);
-
-    // Video badge
     const badge = document.createElement('div');
     badge.className = 'box-vid-badge';
     badge.textContent = '▶ VIDEO';
@@ -1077,14 +1108,8 @@ function setBoxMedia(box, url, isVideo) {
     img.onerror = () => { img.src = ''; img.style.display = 'none'; };
     box.insertBefore(img, overlay);
   }
-
   box.classList.add('has-image');
   box.querySelectorAll('.media-box-icon, .media-box-label, .media-box-add-text').forEach(el => el.style.visibility = 'hidden');
-}
-
-// Keep old name as alias for backwards compat (called from renderIndexMediaData)
-function setBoxImage(box, url) {
-  setBoxMedia(box, url, isVideoUrl(url));
 }
 
 function clearBoxImage(box) {
@@ -1095,53 +1120,37 @@ function clearBoxImage(box) {
   box.querySelectorAll('.media-box-icon, .media-box-label, .media-box-add-text').forEach(el => el.style.visibility = '');
 }
 
-function triggerBoxInput(key) {
-  const inp = document.getElementById('inp_' + key);
-  if (inp) inp.click();
-}
-
 async function handleMediaUpload(event, key) {
   const file = event.target.files[0];
   if (!file) return;
-
   const isVideo = file.type.startsWith('video/');
-  const maxSize = isVideo ? 200 * 1024 * 1024 : 15 * 1024 * 1024; // 200MB video / 15MB image
-  if (file.size > maxSize) {
-    toast(`File too large (max ${isVideo ? '200MB for video' : '15MB for image'})`, 'error');
-    return;
-  }
+  const maxSize = isVideo ? 200 * 1024 * 1024 : 15 * 1024 * 1024;
+  if (file.size > maxSize) { toast(`File too large (max ${isVideo ? '200MB for video' : '15MB for image'})`, 'error'); return; }
 
   const slot = MEDIA_SLOTS.find(s => s.key === key);
   const box = document.getElementById('box_' + key);
   const progFill = document.getElementById('prog_' + key);
   const progWrap = progFill ? progFill.parentElement : null;
 
-  // Show local preview immediately
   const localUrl = URL.createObjectURL(file);
   setBoxMedia(box, localUrl, isVideo);
-
-  // Show progress bar
   if (progWrap) progWrap.classList.add('active');
   if (progFill) progFill.style.width = '2%';
-
-  toast(`Uploading ${slot.label} (${isVideo ? 'video' : 'image'})…`, 'info');
+  toast(`Uploading ${slot.label}…`, 'info');
 
   try {
     const { storage, sRef, uploadBytesResumable, getDownloadURL } = await waitFb();
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
     const path = `indexMedia/${key}_${Date.now()}_${safeName}`;
     const fileRef = sRef(storage, path);
-    const metadata = { contentType: file.type };
-    const task = uploadBytesResumable(fileRef, file, metadata);
+    const task = uploadBytesResumable(fileRef, file, { contentType: file.type });
 
     task.on('state_changed', snap => {
       const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
       if (progFill) progFill.style.width = pct + '%';
     }, err => {
-      console.error('Upload error:', err);
       toast('Upload failed: ' + err.message, 'error');
       if (progWrap) progWrap.classList.remove('active');
-      if (progFill) progFill.style.width = '0%';
       clearBoxImage(box);
     }, async () => {
       const url = await getDownloadURL(task.snapshot.ref);
@@ -1153,10 +1162,9 @@ async function handleMediaUpload(event, key) {
         if (progFill) progFill.style.width = '0%';
         if (progWrap) progWrap.classList.remove('active');
       }, 900);
-      toast(`${slot.label} ${isVideo ? 'video' : 'image'} saved!`, 'success');
+      toast(`${slot.label} saved!`, 'success');
     });
   } catch(err) {
-    console.error('Firebase error:', err);
     toast('Error: ' + err.message, 'error');
     if (progWrap) progWrap.classList.remove('active');
   }
@@ -1165,13 +1173,12 @@ async function handleMediaUpload(event, key) {
 async function saveMediaSlot(key, mediaUrl, slot, mediaType) {
   const { db, dbRef, set } = await waitFb();
   const existing = _allIndexMedia[key] || {};
-  const type = mediaType || (isVideoUrl(mediaUrl) ? 'video' : 'image');
   await set(dbRef(db, `indexMedia/${key}`), {
     section: slot.section,
     label: slot.label,
-    imgUrl: mediaUrl,      // keep imgUrl for backwards compat with index.html
-    mediaUrl: mediaUrl,    // also store as mediaUrl
-    mediaType: type,       // 'image' or 'video'
+    imgUrl: mediaUrl,
+    mediaUrl: mediaUrl,
+    mediaType: mediaType || 'image',
     order: MEDIA_SLOTS.findIndex(s => s.key === key) + 1,
     link: existing.link || '',
     description: existing.description || '',
@@ -1188,95 +1195,6 @@ async function deleteMediaSlot(key) {
     clearBoxImage(box);
     toast(`${slot.label} removed`, 'info');
   });
-}
-
-/* ═══════════════════════════════════════════════════
-   PRODUCTS
-═══════════════════════════════════════════════════ */
-function renderProducts(data) {
-  _allProducts = data;
-  const tbody = document.getElementById('productsTable');
-  if (!data.length) { tbody.innerHTML = emptyRow(6,'No products yet'); return; }
-  tbody.innerHTML = data.map(p => `
-    <tr>
-      <td>
-        <div style="display:flex;align-items:center;gap:10px">
-          ${p.imgUrl ? `<img src="${p.imgUrl}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display='none'"/>` : `<div style="width:36px;height:36px;border-radius:8px;background:var(--surface3);display:grid;place-items:center;font-size:18px">👕</div>`}
-          <div>
-            <div style="font-weight:600">${p.name||'—'}</div>
-            ${p.badge ? `<span class="badge badge-orange" style="font-size:10px">${p.badge}</span>` : ''}
-          </div>
-        </div>
-      </td>
-      <td>${p.team||'—'}</td>
-      <td><span class="badge badge-gray">${p.type||'Kit'}</span></td>
-      <td><strong>₹${p.price||'—'}</strong></td>
-      <td><span class="badge ${p.status==='active'?'badge-green':'badge-red'}">${p.status||'active'}</span></td>
-      <td><div style="display:flex;gap:6px">
-        <button class="btn btn-ghost btn-sm" onclick="editProduct('${p.id}')">Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteItem('products','${p.id}')">Delete</button>
-      </div></td>
-    </tr>`).join('');
-}
-
-function openProductModal(data) {
-  _editId = data ? data.id : null;
-  document.getElementById('productModalTitle').textContent = data ? 'Edit Product' : 'Add Product';
-  setV('p_name', data?.name || '');
-  setV('p_team', data?.team || 'Argentina');
-  setV('p_type', data?.type || 'Home Kit');
-  setV('p_price', data?.price || '');
-  setV('p_badge', data?.badge || '');
-  setV('p_img_url', data?.imgUrl || '');
-  setV('p_status', data?.status || 'active');
-  const sz = data?.sizes || {};
-  setV('p_xs', sz.xs||0); setV('p_s', sz.s||0); setV('p_m', sz.m||0); setV('p_l', sz.l||0); setV('p_xl', sz.xl||0);
-  document.getElementById('p_img_preview_inner').innerHTML = data?.imgUrl
-    ? `<img src="${data.imgUrl}" style="max-height:80px;border-radius:8px;max-width:100%"/>`
-    : `<div style="font-size:24px;margin-bottom:4px">📸</div><div style="font-size:12px;color:var(--muted)">Click or drag image here</div>`;
-  openModal('productModal');
-}
-
-function editProduct(id) {
-  const p = _allProducts.find(x => x.id === id);
-  if (p) openProductModal(p);
-}
-
-function handleProductImgPreview(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('p_img_preview_inner').innerHTML = `<img src="${e.target.result}" style="max-height:80px;border-radius:8px;max-width:100%"/>`;
-    setV('p_img_url', '[file selected]');
-  };
-  reader.readAsDataURL(file);
-}
-
-async function saveProduct() {
-  const name = getV('p_name');
-  if (!name) { toast('Product name required','error'); return; }
-
-  let imgUrl = getV('p_img_url');
-  if (imgUrl === '[file selected]') {
-    const file = document.getElementById('p_img_file').files[0];
-    if (file) {
-      toast('Uploading image…','info');
-      imgUrl = await uploadToStorage(file, `products/${Date.now()}_${file.name}`);
-    } else imgUrl = '';
-  }
-
-  const data = {
-    name, team: getV('p_team'), type: getV('p_type'), price: getV('p_price'),
-    badge: getV('p_badge'), imgUrl: imgUrl || '', status: getV('p_status'),
-    sizes: { xs:parseInt(getV('p_xs'))||0, s:parseInt(getV('p_s'))||0, m:parseInt(getV('p_m'))||0, l:parseInt(getV('p_l'))||0, xl:parseInt(getV('p_xl'))||0 },
-    updatedAt: Date.now()
-  };
-
-  await saveDoc('products', data, _editId);
-  closeModal('productModal');
-  toast('Product saved! 👕', 'success');
-  _editId = null;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1329,9 +1247,7 @@ function viewOrder(id) {
     </div>
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px">
       ${items}
-      <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:700;border-top:2px solid var(--border);margin-top:8px">
-        <span>Total</span><span style="color:var(--accent)">₹${o.total||'0'}</span>
-      </div>
+      <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:700;border-top:2px solid var(--border);margin-top:8px"><span>Total</span><span style="color:var(--accent)">₹${o.total||'0'}</span></div>
     </div>
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px">
       <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Shipping</div>
@@ -1428,7 +1344,7 @@ async function togglePage(id, active) {
 }
 
 /* ═══════════════════════════════════════════════════
-   FIREBASE CRUD HELPERS
+   FIREBASE CRUD
 ═══════════════════════════════════════════════════ */
 async function saveDoc(col, data, id) {
   const { db, dbRef, update, push, set } = await waitFb();
@@ -1446,9 +1362,7 @@ async function uploadToStorage(file, path) {
   return new Promise((res, rej) => {
     const ref = sRef(storage, path);
     const task = uploadBytesResumable(ref, file);
-    task.on('state_changed', null, rej, async () => {
-      res(await getDownloadURL(task.snapshot.ref));
-    });
+    task.on('state_changed', null, rej, async () => { res(await getDownloadURL(task.snapshot.ref)); });
   });
 }
 
@@ -1457,10 +1371,6 @@ function deleteItem(col, id) {
     await deleteDocById(col, id);
     toast('Deleted', 'info');
   });
-}
-
-function editItem(col, id) {
-  if (col === 'products') editProduct(id);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1477,7 +1387,7 @@ function confirmAction(msg, cb) {
 }
 
 /* ═══════════════════════════════════════════════════
-   SEARCH
+   SEARCH / TOAST / HELPERS
 ═══════════════════════════════════════════════════ */
 function globalSearchFn() {
   const q = document.getElementById('globalSearch').value.toLowerCase();
@@ -1486,9 +1396,6 @@ function globalSearchFn() {
   });
 }
 
-/* ═══════════════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════════════ */
 function toast(msg, type = 'info') {
   const wrap = document.getElementById('toastWrap');
   const el = document.createElement('div');
@@ -1499,9 +1406,6 @@ function toast(msg, type = 'info') {
   setTimeout(() => el.remove(), 3000);
 }
 
-/* ═══════════════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════════════ */
 function getV(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
 function setV(id, val) { const el = document.getElementById(id); if (el) el.value = val ?? ''; }
 function setEl(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
