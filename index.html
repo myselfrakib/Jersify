@@ -16,8 +16,8 @@
       --accent: #c61f2f;
       --accent2: #8f0f1d;
       --line: #ececec;
-      --shadow: 0 12px 28px rgba(0, 0, 0, .08);
-      --shadow-soft: 0 8px 18px rgba(0, 0, 0, .06);
+      --shadow: 0 12px 28px rgba(0,0,0,.08);
+      --shadow-soft: 0 8px 18px rgba(0,0,0,.06);
       --radius: 22px;
       --maxw: 430px;
     }
@@ -47,348 +47,67 @@
       padding-bottom: 110px;
     }
 
-    /* HEADER */
+    /* ── HEADER ── */
     .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 16px 16px 10px;
-      position: sticky;
-      top: 0;
-      background: rgba(255,255,255,.98);
-      backdrop-filter: blur(8px);
-      z-index: 30;
-      border-bottom: 1px solid rgba(0,0,0,.04);
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 16px 16px 10px; position: sticky; top: 0;
+      background: rgba(255,255,255,.98); backdrop-filter: blur(8px);
+      z-index: 30; border-bottom: 1px solid rgba(0,0,0,.04);
     }
-
-    .logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 44px;
-      letter-spacing: 2.5px;
-      line-height: 1;
-      color: #111;
-      text-transform: uppercase;
-      white-space: nowrap;
-      text-shadow: 0 1px 0 rgba(255,255,255,.8);
-    }
-
-    .logo-sub {
-      font-size: 9px;
-      font-weight: 600;
-      color: var(--muted);
-      letter-spacing: .5px;
-      margin-top: -2px;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-    }
-
-    .shop-btn {
-      border: none;
-      background: #111;
-      color: #fff;
-      border-radius: 999px;
-      padding: 9px 15px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .4px;
-      cursor: pointer;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .icon-btn {
-      width: 38px;
-      height: 38px;
-      border: none;
-      border-radius: 50%;
-      background: #111;
-      color: #fff;
-      display: grid;
-      place-items: center;
-      box-shadow: var(--shadow-soft);
-      cursor: pointer;
-      flex: 0 0 auto;
-      transition: transform .2s ease;
-      position: relative;
-    }
-
+    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 44px; letter-spacing: 2.5px; line-height: 1; color: #111; text-transform: uppercase; white-space: nowrap; text-shadow: 0 1px 0 rgba(255,255,255,.8); }
+    .logo-sub { font-size: 9px; font-weight: 600; color: var(--muted); letter-spacing: .5px; margin-top: -2px; font-family: 'Poppins', sans-serif; }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .shop-btn { border: none; background: #111; color: #fff; border-radius: 999px; padding: 9px 15px; font-size: 12px; font-weight: 700; letter-spacing: .4px; cursor: pointer; box-shadow: var(--shadow-soft); }
+    .icon-btn { width: 38px; height: 38px; border: none; border-radius: 50%; background: #111; color: #fff; display: grid; place-items: center; box-shadow: var(--shadow-soft); cursor: pointer; flex: 0 0 auto; transition: transform .2s ease; position: relative; }
     .icon-btn:hover { transform: translateY(-2px) }
     .icon-btn svg { width: 19px; height: 19px }
-
-    .profile-btn {
-      width: 38px;
-      height: 38px;
-      border: 2px solid #fff;
-      background: linear-gradient(135deg, #f4d8de, #f7f7f7);
-      color: #111;
-      overflow: hidden;
-    }
-
+    .profile-btn { width: 38px; height: 38px; border: 2px solid #fff; background: linear-gradient(135deg, #f4d8de, #f7f7f7); color: #111; overflow: hidden; }
     .profile-btn svg { width: 19px; height: 19px }
     .profile-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-
-    .profile-initials {
-      font-size: 13px;
-      font-weight: 800;
-      color: var(--accent);
-      font-family: 'Poppins', sans-serif;
-    }
-
-    /* Cart badge */
-    .cart-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-size: 9px;
-      font-weight: 900;
-      display: none;
-      place-items: center;
-      border: 2px solid #fff;
-      font-family: 'Poppins', sans-serif;
-    }
-
+    .profile-initials { font-size: 13px; font-weight: 800; color: var(--accent); font-family: 'Poppins', sans-serif; }
+    .cart-badge { position: absolute; top: -4px; right: -4px; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 9px; font-weight: 900; display: none; place-items: center; border: 2px solid #fff; font-family: 'Poppins', sans-serif; }
     .cart-badge.show { display: grid; }
 
-    /* SEARCH */
+    /* ── SEARCH ── */
     .search-wrap { padding: 0 16px 14px; }
-
-    .search {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      border: 1.5px solid rgba(17,17,17,.16);
-      background: #fff;
-      border-radius: 999px;
-      padding: 11px 14px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.04);
-      transition: border-color .2s;
-    }
-
-    .search:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 4px 18px rgba(198,31,47,.1);
-    }
-
+    .search { display: flex; align-items: center; gap: 10px; width: 100%; border: 1.5px solid rgba(17,17,17,.16); background: #fff; border-radius: 999px; padding: 11px 14px; box-shadow: 0 4px 18px rgba(0,0,0,.04); transition: border-color .2s; }
+    .search:focus-within { border-color: var(--accent); box-shadow: 0 4px 18px rgba(198,31,47,.1); }
     .search svg { width: 18px; height: 18px; opacity: .65; flex: 0 0 auto }
-
-    .search input {
-      border: none;
-      outline: none;
-      width: 100%;
-      background: transparent;
-      font-size: 14px;
-    }
-
+    .search input { border: none; outline: none; width: 100%; background: transparent; font-size: 14px; }
     .mic { width: 18px; height: 18px; opacity: .7; flex: 0 0 auto; cursor: pointer; }
 
-    /* SECTION */
+    /* ── SECTION ── */
     .section { padding: 0 16px 16px; }
     .section h3 { font-size: 18px; font-weight: 900; margin: 0 0 12px; letter-spacing: .2px; }
     .section-sub { font-size: 12px; color: var(--muted); margin-top: -6px; margin-bottom: 12px; }
 
-    /* HERO SLIDER */
+    /* ── REUSABLE: section row header with nav arrows ── */
+    .row-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px 10px;
+    }
+    .row-header h3 { font-size: 18px; font-weight: 900; margin: 0; }
+    .row-header-flat {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+    }
+    .row-header-flat h3 { font-size: 18px; font-weight: 900; margin: 0; }
+    .nav-controls { display: flex; gap: 8px; }
+    .nav-ctrl { border: none; background: #111; color: #fff; border-radius: 999px; width: 34px; height: 34px; display: grid; place-items: center; cursor: pointer; box-shadow: var(--shadow-soft); flex-shrink: 0; }
+    .nav-ctrl svg { width: 18px; height: 18px; }
+
+    /* ── HERO SLIDER ── */
     .hero { padding: 0 16px 14px; }
-
-    .slider {
-      position: relative;
-      border-radius: 26px;
-      overflow: hidden;
-      background: #111;
-      box-shadow: var(--shadow);
-      height: 220px;
-    }
-
-    .slides {
-      display: flex;
-      height: 100%;
-      transition: transform .5s ease;
-    }
-
-    .slide {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      flex: 0 0 100%;
-      overflow: hidden;
-    }
-
-    .slide-bg {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, #111 0%, #1c1c1c 45%, #2a0009 100%);
-      z-index: 0;
-    }
-
-    .slide-bg-img {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-
-    /* Full-cover media (image or video) for hero slides */
-    .slide-media-cover {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    /* REMOVED: .slide-bg-overlay — no gradient over hero media */
-
-    .slide-content {
-      position: absolute;
-      inset: 0;
-      padding: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      z-index: 3;
-    }
-
-    .slide-text {
-      max-width: 55%;
-      color: #fff;
-    }
-
-    .slide-text .kicker {
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 999px;
-      display: inline-block;
-      background: rgba(255,255,255,.15);
-      backdrop-filter: blur(4px);
-      color: #fff;
-    }
-
-    .slide-text h2 {
-      font-size: 28px;
-      line-height: .95;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      font-weight: 900;
-    }
-
-    .slide-text p {
-      font-size: 11px;
-      color: rgba(255,255,255,.85);
-      line-height: 1.45;
-    }
-
-    .slide-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-top: 8px;
-    }
-
-    .slide-pill {
-      font-size: 9px;
-      font-weight: 700;
-      padding: 3px 7px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.15);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,.25);
-      backdrop-filter: blur(4px);
-    }
-
-    .slide-visual {
-      width: 46%;
-      height: 88%;
-      position: relative;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-    }
-
-    .slide-visual::before {
-      content: "";
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 18px;
-      background: linear-gradient(150deg, rgba(198,31,47,.85) 0 18%, transparent 18% 40%, rgba(198,31,47,.8) 40% 56%, transparent 56% 100%);
-      clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%, 0 18%);
-      opacity: .9;
-      z-index: 0;
-    }
-
-    .slide-visual .jersey {
-      position: absolute;
-      inset: auto 10% 10% auto;
-      width: 120px;
-      height: 140px;
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.02)), linear-gradient(135deg, #c61f2f 0%, #111 40%, #c61f2f 100%);
-      transform: rotate(-8deg);
-      box-shadow: 0 12px 25px rgba(0,0,0,.4);
-      display: grid;
-      place-items: center;
-      color: #fff;
-      font-weight: 900;
-      text-align: center;
-      border: 1px solid rgba(255,255,255,.14);
-      z-index: 1;
-    }
-
-    .slide-visual .jersey span { display: block; font-size: 28px; line-height: 1; }
-    .slide-visual .jersey small { font-size: 10px; letter-spacing: 1px; opacity: .85; margin-top: 4px; }
-    .slide-visual .ball {
-      position: absolute; left: 8px; bottom: 8px;
-      width: 80px; height: 80px; border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #fff 0 12%, #d9d9d9 12% 24%, #111 24% 26%, transparent 26%), radial-gradient(circle at center, #fff 0 38%, #ccc 38% 39%, transparent 39%);
-      opacity: .18; z-index: 0;
-    }
-
-    .dots {
-      position: absolute;
-      left: 0; right: 0; bottom: 10px;
-      display: flex; gap: 6px; justify-content: center; z-index: 10;
-    }
-
-    .dot {
-      width: 8px; height: 8px;
-      border-radius: 50%; border: none;
-      background: rgba(255,255,255,.55);
-      cursor: pointer; transition: .2s;
-    }
-
+    .slider { position: relative; border-radius: 26px; overflow: hidden; background: #111; box-shadow: var(--shadow); height: 220px; }
+    .slides { display: flex; height: 100%; transition: transform .5s ease; }
+    .slide { width: 100%; height: 100%; position: relative; flex: 0 0 100%; overflow: hidden; }
+    .slide-media-cover { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .dots { position: absolute; left: 0; right: 0; bottom: 10px; display: flex; gap: 6px; justify-content: center; z-index: 10; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; border: none; background: rgba(255,255,255,.55); cursor: pointer; transition: .2s; }
     .dot.active { background: #fff; transform: scale(1.2) }
 
-    /* FEATURES */
-    .features {
-      margin: 0 16px 16px;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 18px rgba(0,0,0,.05);
-      overflow: hidden;
-      border: 1px solid var(--line);
-    }
-
-    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 10px 8px 8px; text-align: center; }
-
+    /* ── FEATURES ── */
+    .features { margin: 0 16px 16px; background: #fff; border-radius: 16px; box-shadow: 0 8px 18px rgba(0,0,0,.05); overflow: hidden; border: 1px solid var(--line); }
+    .feature-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; padding: 10px 8px 8px; text-align: center; }
     .feature { padding: 6px 2px; }
     .icon { width: 22px; height: 22px; margin: 0 auto 4px; display: grid; place-items: center; color: #222; }
     .icon svg { width: 22px; height: 22px }
@@ -396,337 +115,144 @@
     .feature p { font-size: 9px; color: var(--muted); line-height: 1.1; }
     .feature-bar { height: 6px; background: linear-gradient(90deg, #f1f1f1 0%, #ca2534 100%); }
 
-    /* PRODUCT COUNT BADGE */
-    .product-count-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: linear-gradient(135deg, #111, #1c1c1c);
-      color: #fff;
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 10px;
-      font-weight: 700;
-      margin: 0 16px 14px;
-    }
-
-    .product-count-badge .live-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: #4caf50;
-      animation: pulse-green 1.5s infinite;
-    }
-
-    @keyframes pulse-green {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: .6; transform: scale(.85); }
-    }
-
-    /* WOW PICKS */
+    /* ── WOW PICKS / PRODUCT CARDS ── */
     .loop-section { padding: 0 0 12px; }
-
-    .loop-header {
-      padding: 0 16px 10px;
-      display: flex; align-items: end; justify-content: space-between; gap: 10px;
-    }
-
-    .loop-header h3 { margin: 0; }
-    .loop-header span { font-size: 11px; color: var(--muted); white-space: nowrap; }
-
-    .loop-controls { display: flex; gap: 8px; }
-
-    .loop-control {
-      border: none; background: #111; color: #fff;
-      border-radius: 999px; width: 34px; height: 34px;
-      display: grid; place-items: center;
-      cursor: pointer; box-shadow: var(--shadow-soft);
-    }
-
-    .loop-control svg { width: 18px; height: 18px; }
-
+    .loop-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; width: 100%; padding: 2px 0 6px; touch-action: pan-y; }
     .loop-viewport::-webkit-scrollbar { display: none; }
-
-    .loop-viewport {
-      overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
-      scrollbar-width: none; width: 100%; padding: 2px 0 6px; touch-action: pan-y;
-    }
-
     .loop-track { display: flex; gap: 12px; width: max-content; padding: 0 16px; }
-
-    .loop-card {
-      flex: 0 0 170px; scroll-snap-align: center;
-      border-radius: 22px; background: #fff;
-      border: 1px solid var(--line); box-shadow: var(--shadow-soft); overflow: hidden;
-    }
-
-    .loop-card .pic {
-      height: 150px;
-      background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%);
-      display: grid; place-items: center; position: relative; overflow: hidden;
-    }
-
-    .loop-card .pic::after {
-      content: ""; position: absolute; inset: 14px; border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.08); background: linear-gradient(135deg, rgba(255,255,255,.05), transparent);
-      pointer-events: none;
-    }
-
+    .loop-card { flex: 0 0 170px; scroll-snap-align: start; border-radius: 22px; background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow-soft); overflow: hidden; }
+    .loop-card .pic { height: 150px; background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%); display: grid; place-items: center; position: relative; overflow: hidden; }
+    .loop-card .pic::after { content: ""; position: absolute; inset: 14px; border-radius: 18px; border: 1px solid rgba(255,255,255,.08); background: linear-gradient(135deg, rgba(255,255,255,.05), transparent); pointer-events: none; }
     .loop-card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; }
-
-    .mini-jersey {
-      width: 86px; height: 104px; border-radius: 22px; position: relative; z-index: 1;
-      box-shadow: 0 14px 24px rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.16);
-      display: grid; place-items: center; color: #fff; font-weight: 900; text-align: center; overflow: hidden;
-    }
-
-    .mini-jersey.red { background: linear-gradient(135deg, #c61f2f 0%, #101010 45%, #c61f2f 100%); }
+    .mini-jersey { width: 86px; height: 104px; border-radius: 22px; position: relative; z-index: 1; box-shadow: 0 14px 24px rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.16); display: grid; place-items: center; color: #fff; font-weight: 900; text-align: center; overflow: hidden; }
+    .mini-jersey.red   { background: linear-gradient(135deg, #c61f2f 0%, #101010 45%, #c61f2f 100%); }
     .mini-jersey.white { background: linear-gradient(135deg, #ffffff 0%, #f1f1f1 45%, #ffffff 100%); color: #111; }
-    .mini-jersey.blue { background: linear-gradient(135deg, #ffffff 0%, #dff0ff 45%, #1b76d1 100%); color: #111; }
-    .mini-jersey.dark { background: linear-gradient(135deg, #111 0%, #3b3b3b 45%, #111 100%); }
-    .mini-jersey.gold { background: linear-gradient(135deg, #f8df8a 0%, #fff5ca 45%, #c79b16 100%); color: #111; }
-    .mini-jersey span { font-size: 24px; line-height: 1; display: block; }
+    .mini-jersey.blue  { background: linear-gradient(135deg, #ffffff 0%, #dff0ff 45%, #1b76d1 100%); color: #111; }
+    .mini-jersey.dark  { background: linear-gradient(135deg, #111 0%, #3b3b3b 45%, #111 100%); }
+    .mini-jersey.gold  { background: linear-gradient(135deg, #f8df8a 0%, #fff5ca 45%, #c79b16 100%); color: #111; }
+    .mini-jersey span  { font-size: 24px; line-height: 1; display: block; }
     .mini-jersey small { font-size: 9px; letter-spacing: 1px; margin-top: 4px; display: block; }
-
     .loop-info { padding: 10px 12px 12px; }
     .loop-info h4 { font-size: 12px; font-weight: 900; margin-bottom: 4px; }
     .loop-info p { font-size: 10px; color: var(--muted); line-height: 1.35; min-height: 28px; }
-
-    .loop-badge {
-      display: inline-block;
-      font-size: 8px; font-weight: 800; text-transform: uppercase;
-      padding: 2px 6px; border-radius: 999px;
-      background: var(--accent); color: #fff;
-      margin-bottom: 4px; letter-spacing: .5px;
-    }
-
+    .loop-badge { display: inline-block; font-size: 8px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 999px; background: var(--accent); color: #fff; margin-bottom: 4px; letter-spacing: .5px; }
     .loop-info .price-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
     .loop-info .price { font-size: 13px; font-weight: 900; }
+    .small-btn { border: none; background: linear-gradient(180deg, var(--accent), var(--accent2)); color: #fff; border-radius: 999px; padding: 7px 11px; font-size: 10px; font-weight: 800; box-shadow: 0 8px 18px rgba(198,31,47,.22); cursor: pointer; }
 
-    .small-btn {
-      border: none; background: linear-gradient(180deg, var(--accent), var(--accent2));
-      color: #fff; border-radius: 999px; padding: 7px 11px;
-      font-size: 10px; font-weight: 800; box-shadow: 0 8px 18px rgba(198,31,47,.22); cursor: pointer;
-    }
-
-    /* COUNTRY / CLUB / CHIPS */
+    /* ── CHIPS ── */
     .chip-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
     .chip-row::-webkit-scrollbar { display: none }
-
-    .card-chip {
-      flex: 0 0 auto; width: 96px; background: #fff;
-      border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-soft);
-      padding: 8px 8px 10px; text-align: center;
-    }
-
-    .card-chip .chip-img {
-      width: 60px; height: 60px; border-radius: 50%; overflow: hidden;
-      margin: 0 auto 8px; border: 2px solid #f1f1f1; background: #f8f8f8;
-      display: grid; place-items: center;
-    }
-
+    .card-chip { flex: 0 0 auto; width: 96px; background: #fff; border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-soft); padding: 8px 8px 10px; text-align: center; }
+    .card-chip .chip-img { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; margin: 0 auto 8px; border: 2px solid #f1f1f1; background: #f8f8f8; display: grid; place-items: center; }
     .card-chip .chip-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .card-chip .chip-name { font-size: 11px; font-weight: 800; line-height: 1.15; }
     .card-chip .chip-sub { font-size: 9px; color: var(--muted); margin-top: 2px; line-height: 1.1; }
 
-    /* MEDIA SPACE */
-    .media-space {
-      width: 100%; aspect-ratio: 3/1; border-radius: 18px; overflow: hidden;
-      border: 1px dashed rgba(17,17,17,.18); background: #fff;
-      display: grid; place-items: center; color: #666;
-      box-shadow: 0 8px 18px rgba(0,0,0,.04); position: relative;
-    }
-
+    /* ── MEDIA SPACE ── */
+    .media-space { width: 100%; aspect-ratio: 3/1; border-radius: 18px; overflow: hidden; border: 1px dashed rgba(17,17,17,.18); background: #fff; display: grid; place-items: center; color: #666; box-shadow: 0 8px 18px rgba(0,0,0,.04); position: relative; }
     .media-space img, .media-space video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .media-space .placeholder { font-size: 13px; font-weight: 700; text-align: center; padding: 0 14px; }
 
-    /* PROMO BANNERS STRIP */
-    .promo-strip {
-      display: flex; gap: 10px; overflow-x: auto;
-      padding-bottom: 8px; scrollbar-width: none; margin-top: 14px;
-    }
+    /* ── PROMOTIONS SECTION — 4-card scrollable strip with arrows ──
+       Firebase injects featured_2, featured_3 … BEFORE the 2 blank slots.
+       Total visible = Firebase promo cards + 2 blank = always ≥ 2, up to 4+ depending on DB.
+    ── */
+    .promo-section { padding: 0 16px 16px; }
+    .promo-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; touch-action: pan-y; }
+    .promo-viewport::-webkit-scrollbar { display: none; }
+    .promo-track { display: flex; gap: 10px; width: max-content; padding: 2px 0 6px; }
 
-    .promo-strip::-webkit-scrollbar { display: none; }
+    /* filled card */
+    .promo-card { flex: 0 0 220px; height: 100px; border-radius: 16px; overflow: hidden; position: relative; cursor: pointer; background: #111; box-shadow: var(--shadow-soft); scroll-snap-align: start; }
+    .promo-card img, .promo-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .promo-card .promo-overlay { position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(0,0,0,.65)); }
+    .promo-card .promo-label { position: absolute; bottom: 8px; left: 10px; right: 10px; color: #fff; font-size: 11px; font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .promo-card {
-      flex: 0 0 220px; height: 100px; border-radius: 16px; overflow: hidden;
-      position: relative; cursor: pointer; background: #111;
-      box-shadow: var(--shadow-soft);
-    }
+    /* blank placeholder card */
+    .promo-card-blank { flex: 0 0 220px; height: 100px; border-radius: 16px; overflow: hidden; position: relative; background: #f7f7f7; border: 2px dashed rgba(17,17,17,.14); box-shadow: var(--shadow-soft); scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+    .promo-card-blank svg { width: 26px; height: 26px; opacity: .22; }
+    .promo-card-blank span { font-size: 10px; font-weight: 700; color: #bbb; letter-spacing: .3px; }
 
-    .promo-card img,
-    .promo-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-    .promo-card .promo-label {
-      position: absolute; bottom: 8px; left: 10px; right: 10px;
-      color: #fff; font-size: 11px; font-weight: 800;
-      text-shadow: 0 1px 4px rgba(0,0,0,.6);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-
-    .promo-card .promo-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(transparent 40%, rgba(0,0,0,.65));
-    }
-
-    /* REELS */
+    /* ── REELS ── */
     .reels { padding: 0 16px 18px; }
-
-    .reels-row {
-      display: flex; gap: 14px; overflow-x: auto;
-      scrollbar-width: none; padding-bottom: 6px;
-      scroll-snap-type: x mandatory;
-    }
-
+    .reels-row { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 6px; scroll-snap-type: x mandatory; }
     .reels-row::-webkit-scrollbar { display: none }
+    .reel-card { flex: 0 0 150px; height: 240px; border-radius: 22px; overflow: hidden; background: #111; box-shadow: var(--shadow); position: relative; border: 1px solid rgba(0,0,0,.05); scroll-snap-align: center; cursor: pointer; }
+    .reel-card video.reel-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .reel-card .thumb { position: absolute; inset: 0; background: center/cover; filter: saturate(1.15); }
+    .reel-card::before { content: ""; position: absolute; inset: 0; z-index: 1; background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.15), transparent 20%), linear-gradient(180deg, rgba(198,31,47,.15), rgba(0,0,0,.3)); }
+    /* play icon */
+    .reel-play { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+    .reel-play svg { width: 36px; height: 36px; opacity: .82; filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); }
 
-    .reel-card {
-      flex: 0 0 150px; height: 240px; border-radius: 22px; overflow: hidden;
-      background: #111; box-shadow: var(--shadow); position: relative;
-      border: 1px solid rgba(0,0,0,.05); scroll-snap-align: center; cursor: pointer;
+    /* ── REEL FULLSCREEN TOAST MODAL ── */
+    #reelModal { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.94); align-items: center; justify-content: center; }
+    #reelModal.open { display: flex; }
+    #reelModal .reel-modal-inner { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    #reelModal video { max-width: 100vw; max-height: 100vh; width: 100%; height: 100%; object-fit: contain; display: block; }
+    /* ✕ close button — top right corner */
+    #reelModal .reel-close {
+      position: absolute; top: 18px; right: 18px; z-index: 10;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,.14); backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255,255,255,.28);
+      color: #fff; font-size: 18px; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background .2s; line-height: 1;
+    }
+    #reelModal .reel-close:hover { background: rgba(255,255,255,.26); }
+    /* Shop Now CTA inside modal */
+    #reelModal .reel-shop-cta {
+      position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: 999px;
+      padding: 13px 32px; font-size: 14px; font-weight: 800;
+      box-shadow: 0 10px 28px rgba(198,31,47,.4); cursor: pointer;
+      letter-spacing: .3px; white-space: nowrap;
     }
 
-    /* video fills the reel card */
-    .reel-card video.reel-vid {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .reel-card .thumb {
-      position: absolute; inset: 0; background: center/cover; filter: saturate(1.15);
-    }
-
-    .reel-card::before {
-      content: ""; position: absolute; inset: 0; z-index: 1;
-      background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.15), transparent 20%), linear-gradient(180deg, rgba(198,31,47,.15), rgba(0,0,0,.3));
-    }
-
-    /* GALLERY */
+    /* ── GALLERY ── */
     .gallery { padding: 0 16px 18px; }
+    .grid { display: flex; gap: 8px; align-items: stretch; }
+    /* 2:1 ratio first image fills 2/3 of row; second takes remaining 1/3, same height */
+    .grid-item-a { flex: 2 1 0; aspect-ratio: 2/1; border-radius: 18px; overflow: hidden; background: #ddd; box-shadow: var(--shadow-soft); position: relative; cursor: pointer; min-width: 0; }
+    .grid-item-b { flex: 1 1 0; border-radius: 18px; overflow: hidden; background: #ddd; box-shadow: var(--shadow-soft); position: relative; cursor: pointer; min-width: 0; }
+    .grid-item-a img, .grid-item-a video, .grid-item-b img, .grid-item-b video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    .grid {
-      display: flex;
-      gap: 8px;
-      align-items: stretch;
-    }
-
-    .grid-item-a {
-      width: 192px;
-      height: 192px;
-      flex: 0 0 192px;
-      border-radius: 18px;
-      overflow: hidden;
-      background: #ddd;
-      box-shadow: var(--shadow-soft);
-      position: relative;
-      cursor: pointer;
-    }
-
-    .grid-item-b {
-      width: 96px;
-      height: 192px;
-      flex: 0 0 96px;
-      border-radius: 18px;
-      overflow: hidden;
-      background: #ddd;
-      box-shadow: var(--shadow-soft);
-      position: relative;
-      cursor: pointer;
-    }
-
-    .grid-item-a img, .grid-item-a video,
-    .grid-item-b img, .grid-item-b video { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-    /* PRODUCTS */
+    /* ── ALL PRODUCTS ── */
     .products { padding: 0 16px 18px; }
     .products-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; touch-action: pan-y; }
     .products-viewport::-webkit-scrollbar { display: none; }
     .product-row { display: flex; gap: 12px; padding: 0 0 8px; }
-
-    .btn {
-      border: none; background: linear-gradient(180deg, var(--accent), var(--accent2));
-      color: #fff; border-radius: 999px; padding: 10px 14px; font-size: 12px; font-weight: 800;
-      cursor: pointer; box-shadow: 0 10px 22px rgba(198,31,47,.22);
-    }
-
     .viewall-wrap { display: flex; justify-content: center; margin-top: 10px; }
+    .viewall { min-width: 110px; padding: 8px 18px; border: 1.5px solid #222; border-radius: 4px; background: #fff; font-weight: 700; cursor: pointer; }
 
-    .viewall {
-      min-width: 110px; padding: 8px 18px; border: 1.5px solid #222;
-      border-radius: 4px; background: #fff; font-weight: 700; cursor: pointer;
-    }
-
-    /* FOOTER */
-    .footer {
-      margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a);
-      color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0;
-    }
-
+    /* ── FOOTER ── */
+    .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0; }
     .footer h4 { font-size: 18px; margin-bottom: 8px; font-weight: 900; }
     .footer p { font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: 12px; }
-
     .footer-links { display: flex; flex-wrap: wrap; gap: 10px 14px; font-size: 12px; color: rgba(255,255,255,.9); margin-bottom: 14px; }
     .footer-links a { color: rgba(255,255,255,.9); }
     .footer-links a:hover { color: #fff; }
     .copy { font-size: 11px; color: rgba(255,255,255,.55); border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; }
 
-    /* BOTTOM NAV */
-    .bottom-nav {
-      position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px;
-      width: min(100%, calc(var(--maxw) - 16px));
-      background: rgba(255,255,255,.96); backdrop-filter: blur(10px);
-      border: 1px solid rgba(0,0,0,.06); border-radius: 22px;
-      box-shadow: var(--shadow); display: flex; justify-content: space-around;
-      padding: 10px 8px; z-index: 50;
-    }
-
-    .nav-item {
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-      font-size: 10px; color: #555; min-width: 56px; cursor: pointer;
-      text-decoration: none;
-    }
-
+    /* ── BOTTOM NAV ── */
+    .bottom-nav { position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px; width: min(100%, calc(var(--maxw) - 16px)); background: rgba(255,255,255,.96); backdrop-filter: blur(10px); border: 1px solid rgba(0,0,0,.06); border-radius: 22px; box-shadow: var(--shadow); display: flex; justify-content: space-around; padding: 10px 8px; z-index: 50; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: #555; min-width: 56px; cursor: pointer; text-decoration: none; }
     .nav-item svg { width: 19px; height: 19px }
     .nav-item.active { color: var(--accent); font-weight: 800; }
 
-    /* SKELETON LOADERS */
-    .skeleton {
-      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 12px;
-    }
-
+    /* ── SKELETON ── */
+    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 12px; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .pic-ghost { height: 150px; position: relative; overflow: hidden; background: linear-gradient(135deg, #ececec 0%, #f5f5f5 50%, #ececec 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite; display: flex; align-items: center; justify-content: center; }
+    .pic-ghost::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
 
-    /* Ghost image placeholder for WOW Picks */
-    .pic-ghost {
-      height: 150px;
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(135deg, #ececec 0%, #f5f5f5 50%, #ececec 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .pic-ghost::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-    }
-
-
-    @media (max-width:380px) {
+    @media (max-width: 380px) {
       .logo { font-size: 40px }
-      .slide-text h2 { font-size: 24px }
-      .slide-text { max-width: 55% }
       .loop-card { flex-basis: 160px }
+      .promo-card, .promo-card-blank { flex-basis: 190px }
     }
   </style>
 </head>
@@ -734,61 +260,42 @@
 <body>
   <div class="page">
 
-    <!-- ══════════════ HEADER ══════════════ -->
+    <!-- ══ HEADER ══ -->
     <header class="topbar">
       <div>
         <div class="logo">Jersify</div>
         <div class="logo-sub" id="productCountLabel">Loading...</div>
       </div>
       <div class="header-actions">
-        <button class="shop-btn" id="shopBtn" onclick="window.location.href='shop.html'">Shop</button>
-
-        <button class="icon-btn" id="cartBtn" aria-label="Cart" onclick="window.location.href='checkout.html'">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="9" cy="20" r="1"></circle>
-            <circle cx="17" cy="20" r="1"></circle>
-            <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path>
-          </svg>
+        <button class="shop-btn" onclick="window.location.href='shop.html'">Shop</button>
+        <button class="icon-btn" aria-label="Cart" onclick="window.location.href='checkout.html'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
           <span class="cart-badge" id="cartBadge"></span>
         </button>
-
         <button class="icon-btn profile-btn" id="profileBtn" aria-label="Profile" onclick="window.location.href='profile.html'">
-          <svg id="profileIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="8" r="4"></circle>
-            <path d="M4 21a8 8 0 0 1 16 0"></path>
-          </svg>
+          <svg id="profileIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
         </button>
       </div>
     </header>
 
-    <!-- ══════════════ SEARCH ══════════════ -->
+    <!-- ══ SEARCH ══ -->
     <div class="search-wrap">
       <div class="search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="7"></circle>
-          <path d="M21 21l-4.3-4.3"></path>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
         <input type="text" id="searchInput" placeholder="Search jerseys, clubs, countries..." />
-        <svg class="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 1a3 3 0 0 0-3 3v7a3 3 0 1 0 6 0V4a3 3 0 0 0-3-3z"></path>
-          <path d="M5 11a7 7 0 0 0 14 0"></path>
-          <path d="M12 18v4"></path>
-          <path d="M8 22h8"></path>
-        </svg>
+        <svg class="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v7a3 3 0 1 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M5 11a7 7 0 0 0 14 0"></path><path d="M12 18v4"></path><path d="M8 22h8"></path></svg>
       </div>
     </div>
 
-    <!-- ══════════════ HERO SLIDER ══════════════ -->
+    <!-- ══ HERO SLIDER ══ -->
     <section class="hero">
       <div class="slider" id="heroSlider">
         <div class="slides" id="slides">
-          <!-- Ghost skeleton shown until Firebase injects real slides -->
           <div class="slide" id="heroSkeleton" style="flex:0 0 100%;width:100%;height:100%;position:relative;overflow:hidden;">
             <div style="position:absolute;inset:0;background:linear-gradient(90deg,#e8e8e8 25%,#f5f5f5 50%,#e8e8e8 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
             <div style="position:absolute;bottom:18px;left:18px;right:18px;display:flex;flex-direction:column;gap:10px;">
-              <div style="width:64px;height:14px;border-radius:999px;background:rgba(255,255,255,.55);animation:shimmer 1.5s infinite;background-size:200% 100%;background-image:linear-gradient(90deg,rgba(255,255,255,.3) 25%,rgba(255,255,255,.6) 50%,rgba(255,255,255,.3) 75%);"></div>
-              <div style="width:55%;height:22px;border-radius:8px;background:rgba(255,255,255,.45);animation:shimmer 1.5s infinite;background-size:200% 100%;background-image:linear-gradient(90deg,rgba(255,255,255,.25) 25%,rgba(255,255,255,.55) 50%,rgba(255,255,255,.25) 75%);"></div>
-              <div style="width:40%;height:12px;border-radius:6px;background:rgba(255,255,255,.35);animation:shimmer 1.5s infinite;background-size:200% 100%;background-image:linear-gradient(90deg,rgba(255,255,255,.2) 25%,rgba(255,255,255,.45) 50%,rgba(255,255,255,.2) 75%);"></div>
+              <div style="width:64px;height:14px;border-radius:999px;background:rgba(0,0,0,.08);animation:shimmer 1.5s infinite;background-size:200% 100%;"></div>
+              <div style="width:55%;height:22px;border-radius:8px;background:rgba(0,0,0,.06);animation:shimmer 1.5s infinite;background-size:200% 100%;"></div>
             </div>
           </div>
         </div>
@@ -796,7 +303,7 @@
       </div>
     </section>
 
-    <!-- ══════════════ FEATURES BAR ══════════════ -->
+    <!-- ══ FEATURES BAR ══ -->
     <section class="features">
       <div class="feature-grid">
         <div class="feature">
@@ -815,119 +322,106 @@
       <div class="feature-bar"></div>
     </section>
 
-    <!-- ══════════════ WOW PICKS ══════════════ -->
-    <section class="section loop-section">
-      <div class="loop-header">
-        <div>
-          <h3>WOW Picks ✦</h3>
-        </div>
-        <div class="loop-controls">
-          <button class="loop-control" id="prevProduct" aria-label="Previous">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    <!-- ══ WOW PICKS ══ -->
+    <section class="loop-section">
+      <div class="row-header">
+        <h3>WOW Picks ✦</h3>
+        <div class="nav-controls">
+          <button class="nav-ctrl" id="prevWow" aria-label="Previous">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
-          <button class="loop-control" id="nextProduct" aria-label="Next">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          <button class="nav-ctrl" id="nextWow" aria-label="Next">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
       </div>
       <div class="loop-viewport" id="loopViewport">
         <div class="loop-track" id="loopTrack">
-          <div class="loop-card" style="pointer-events:none;">
-            <div class="pic-ghost"></div>
-            <div class="loop-info" style="padding:10px 12px 12px;">
-              <div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div>
-              <div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div>
-              <div class="skeleton" style="height:10px;width:65%;border-radius:6px;margin-bottom:4px;"></div>
-              <div class="skeleton" style="height:10px;width:50%;border-radius:6px;margin-bottom:12px;"></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;">
-                <div class="skeleton" style="height:15px;width:38%;border-radius:6px;"></div>
-                <div class="skeleton" style="height:30px;width:72px;border-radius:999px;"></div>
-              </div>
-            </div>
-          </div>
-          <div class="loop-card" style="pointer-events:none;">
-            <div class="pic-ghost"></div>
-            <div class="loop-info" style="padding:10px 12px 12px;">
-              <div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div>
-              <div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div>
-              <div class="skeleton" style="height:10px;width:65%;border-radius:6px;margin-bottom:4px;"></div>
-              <div class="skeleton" style="height:10px;width:50%;border-radius:6px;margin-bottom:12px;"></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;">
-                <div class="skeleton" style="height:15px;width:38%;border-radius:6px;"></div>
-                <div class="skeleton" style="height:30px;width:72px;border-radius:999px;"></div>
-              </div>
-            </div>
-          </div>
-          <div class="loop-card" style="pointer-events:none;">
-            <div class="pic-ghost"></div>
-            <div class="loop-info" style="padding:10px 12px 12px;">
-              <div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div>
-              <div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div>
-              <div class="skeleton" style="height:10px;width:65%;border-radius:6px;margin-bottom:4px;"></div>
-              <div class="skeleton" style="height:10px;width:50%;border-radius:6px;margin-bottom:12px;"></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;">
-                <div class="skeleton" style="height:15px;width:38%;border-radius:6px;"></div>
-                <div class="skeleton" style="height:30px;width:72px;border-radius:999px;"></div>
-              </div>
-            </div>
-          </div>
-          <div class="loop-card" style="pointer-events:none;">
-            <div class="pic-ghost"></div>
-            <div class="loop-info" style="padding:10px 12px 12px;">
-              <div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div>
-              <div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div>
-              <div class="skeleton" style="height:10px;width:65%;border-radius:6px;margin-bottom:4px;"></div>
-              <div class="skeleton" style="height:10px;width:50%;border-radius:6px;margin-bottom:12px;"></div>
-              <div style="display:flex;align-items:center;justify-content:space-between;">
-                <div class="skeleton" style="height:15px;width:38%;border-radius:6px;"></div>
-                <div class="skeleton" style="height:30px;width:72px;border-radius:999px;"></div>
-              </div>
-            </div>
-          </div>
+          <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
+          <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
+          <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
+          <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
         </div>
       </div>
     </section>
 
-    <!-- ══════════════ SHOP BY COUNTRY ══════════════ -->
+    <!-- ══ SHOP BY COUNTRY ══ -->
     <section class="section">
       <h3>Shop by Country</h3>
       <p class="section-sub">Choose jerseys by nation</p>
       <div class="chip-row" id="countryRow"></div>
     </section>
 
-    <!-- ══════════════ MEDIA SPACE (Featured + Promo) ══════════════ -->
+    <!-- ══ MEDIA SPACE (featured_1) ══ -->
     <section class="section">
       <div class="media-space" id="mediaSpace">
         <div class="placeholder skeleton" style="width:100%;height:100%;"></div>
       </div>
-      <div id="promoBannersWrap" style="display:none;">
-        <div style="font-size:13px;font-weight:800;margin:12px 0 8px;letter-spacing:.2px;">Promotions</div>
-        <div class="promo-strip" id="promoStrip"></div>
+    </section>
+
+    <!-- ══ PROMOTIONS — 4 slidable blocks (featured_2 + featured_3 from Firebase + 2 blank) ══ -->
+    <section class="section" style="padding-bottom:16px;">
+      <div class="row-header-flat" style="margin:0 0 10px;padding:0;">
+        <h3 style="font-size:18px;font-weight:900;margin:0;">Promotions</h3>
+        <div class="nav-controls">
+          <button class="nav-ctrl" id="prevPromo" aria-label="Previous promotion">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="nav-ctrl" id="nextPromo" aria-label="Next promotion">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="promo-viewport" id="promoViewport">
+        <!--
+          Firebase JS will prepend featured_2, featured_3 cards BEFORE the 2 blank slots below.
+          Result = up to 4 cards total: [FB card 1] [FB card 2] [Blank 1] [Blank 2]
+        -->
+        <div class="promo-track" id="promoTrack">
+          <div class="promo-card-blank" id="promoBlank1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+            <span>Promo Space</span>
+          </div>
+          <div class="promo-card-blank" id="promoBlank2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+            <span>Promo Space</span>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- ══════════════ SHOP BY CLUB ══════════════ -->
+    <!-- ══ SHOP BY CLUB ══ -->
     <section class="section">
       <h3>Shop by Club</h3>
       <p class="section-sub">Choose jerseys by club</p>
       <div class="chip-row" id="clubRow"></div>
     </section>
 
-    <!-- ══════════════ REELS ══════════════ -->
-    <section class="reels section" style="display:none;" id="reelsSection">
-      <h3>Reels</h3>
+    <!-- ══ REELS ══ -->
+    <section class="reels" id="reelsSection" style="display:none;">
+      <h3 style="font-size:18px;font-weight:900;margin-bottom:12px;">Reels</h3>
       <div class="reels-row" id="reelsRow"></div>
     </section>
 
-    <!-- ══════════════ GALLERY ══════════════ -->
+    <!-- ══ GALLERY ══ -->
     <section class="gallery" id="gallerySection" style="display:none;">
-      <h3>Photo Gallery</h3>
+      <h3 style="font-size:18px;font-weight:900;margin-bottom:12px;">Photo Gallery</h3>
       <div class="grid" id="galleryGrid"></div>
     </section>
 
-    <!-- ══════════════ ALL PRODUCTS ══════════════ -->
+    <!-- ══ ALL PRODUCTS ══ -->
     <section class="products" id="productsSection">
-      <h3>All Products</h3>
+      <div class="row-header-flat">
+        <h3>All Products</h3>
+        <div class="nav-controls">
+          <button class="nav-ctrl" id="prevAllProd" aria-label="Previous products">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="nav-ctrl" id="nextAllProd" aria-label="Next products">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
       <div class="products-viewport" id="allProductsViewport">
         <div class="product-row" id="allProductsTrack">
           <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px;">Loading Products...</div>
@@ -942,18 +436,26 @@
       <h4>JERSIFY</h4>
       <p>Premium football jerseys, clubwear, and fan drops designed for people who want style on and off the pitch.</p>
       <div class="footer-links">
-        <a href="index.html">Home</a>
-        <a href="shop.html">Shop</a>
-        <a href="shop.html?filter=country">Countries</a>
-        <a href="shop.html?filter=club">Clubs</a>
-        <a href="checkout.html">Cart</a>
-        <a href="profile.html">Profile</a>
+        <a href="index.html">Home</a><a href="shop.html">Shop</a>
+        <a href="shop.html?filter=country">Countries</a><a href="shop.html?filter=club">Clubs</a>
+        <a href="checkout.html">Cart</a><a href="profile.html">Profile</a>
       </div>
       <div class="copy">© 2025 Jersify. All rights reserved.</div>
     </footer>
+  </div><!-- /.page -->
+
+  <!-- ══ REEL FULLSCREEN TOAST MODAL ══ -->
+  <div id="reelModal" role="dialog" aria-modal="true" aria-label="Reel player">
+    <div class="reel-modal-inner">
+      <video id="reelModalVideo" playsinline loop></video>
+      <!-- ✕ close button — top RIGHT corner -->
+      <button class="reel-close" id="reelClose" aria-label="Close reel">✕</button>
+      <!-- Shop CTA at bottom -->
+      <button class="reel-shop-cta" onclick="window.location.href='shop.html'">Shop Now</button>
+    </div>
   </div>
 
-  <!-- ══════════════ BOTTOM NAV ══════════════ -->
+  <!-- ══ BOTTOM NAV ══ -->
   <nav class="bottom-nav">
     <a href="index.html" class="nav-item active">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
@@ -963,7 +465,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16"/><path d="M5 10l1-5h12l1 5"/><path d="M4 10v8h16v-8"/><path d="M9 18v-4h6v4"/></svg>
       <div>Shop</div>
     </a>
-    <a href="checkout.html" class="nav-item" id="navCart">
+    <a href="checkout.html" class="nav-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
       <div>Cart</div>
     </a>
@@ -975,129 +477,120 @@
 
   <!-- ══════════════ NON-FIREBASE JS ══════════════ -->
   <script>
-    /* ─── HERO SLIDER ─── */
-    let heroIndex = 0;
-    let heroTimer;
-    let heroTotal = 0; // starts at 0 until Firebase populates slides
+    /* ── HERO SLIDER ── */
+    let heroIndex = 0, heroTimer, heroTotal = 0;
 
     function buildDots(count) {
-      const dotsEl = document.getElementById("dots");
-      dotsEl.innerHTML = "";
+      const el = document.getElementById("dots");
+      el.innerHTML = "";
       for (let i = 0; i < count; i++) {
-        const btn = document.createElement("button");
-        btn.className = "dot" + (i === 0 ? " active" : "");
-        btn.addEventListener("click", () => { showHeroSlide(i); restartHero(); });
-        dotsEl.appendChild(btn);
+        const b = document.createElement("button");
+        b.className = "dot" + (i === 0 ? " active" : "");
+        b.addEventListener("click", () => { showHeroSlide(i); restartHero(); });
+        el.appendChild(b);
       }
     }
-
     function showHeroSlide(i) {
       heroIndex = i;
-      const slides = document.getElementById("slides");
-      slides.style.transform = `translateX(-${i * 100}%)`;
+      document.getElementById("slides").style.transform = `translateX(-${i * 100}%)`;
       document.querySelectorAll(".dot").forEach((d, idx) => d.classList.toggle("active", idx === i));
     }
+    function nextHeroSlide() { if (!heroTotal) return; heroIndex = (heroIndex + 1) % heroTotal; showHeroSlide(heroIndex); }
+    function restartHero() { clearInterval(heroTimer); if (heroTotal > 1) heroTimer = setInterval(nextHeroSlide, 3800); }
 
-    function nextHeroSlide() {
-      if (heroTotal === 0) return;
-      heroIndex = (heroIndex + 1) % heroTotal;
-      showHeroSlide(heroIndex);
+    (() => {
+      const el = document.getElementById("slides"); let sx = 0;
+      el.addEventListener("touchstart", e => sx = e.touches[0].clientX, { passive: true });
+      el.addEventListener("touchend", e => {
+        if (!heroTotal) return;
+        const d = sx - e.changedTouches[0].clientX;
+        if (Math.abs(d) > 40) { heroIndex = d > 0 ? (heroIndex + 1) % heroTotal : (heroIndex - 1 + heroTotal) % heroTotal; showHeroSlide(heroIndex); restartHero(); }
+      }, { passive: true });
+    })();
+
+    /* ── GENERIC SCROLL HELPER ── */
+    function bindArrows(prevId, nextId, viewportId, step) {
+      const vp = document.getElementById(viewportId);
+      document.getElementById(prevId).addEventListener("click", () => vp.scrollBy({ left: -step, behavior: "smooth" }));
+      document.getElementById(nextId).addEventListener("click", () => vp.scrollBy({ left:  step, behavior: "smooth" }));
     }
 
-    function restartHero() {
-      clearInterval(heroTimer);
-      if (heroTotal > 1) heroTimer = setInterval(nextHeroSlide, 3800);
+    // WOW Picks: card 170px + gap 12px = 182px per step
+    bindArrows("prevWow", "nextWow", "loopViewport", 182);
+    // All Products: same card dimensions
+    bindArrows("prevAllProd", "nextAllProd", "allProductsViewport", 182);
+    // Promo: card 220px + gap 10px = 230px per step
+    bindArrows("prevPromo", "nextPromo", "promoViewport", 230);
+
+    /* ── REEL MODAL ── */
+    const reelModal    = document.getElementById("reelModal");
+    const reelModalVid = document.getElementById("reelModalVideo");
+    const reelClose    = document.getElementById("reelClose");
+
+    function openReel(src) {
+      reelModalVid.src = src;
+      reelModalVid.muted = false;
+      reelModal.classList.add("open");
+      document.body.style.overflow = "hidden";
+      reelModalVid.play().catch(() => { reelModalVid.muted = true; reelModalVid.play(); });
     }
+    function closeReel() {
+      reelModalVid.pause();
+      reelModalVid.src = "";
+      reelModal.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+    reelClose.addEventListener("click", closeReel);
+    reelModal.addEventListener("click", e => { if (e.target === reelModal) closeReel(); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeReel(); });
 
-    const slidesEl = document.getElementById("slides");
-    let hStartX = 0;
-    slidesEl.addEventListener("touchstart", e => hStartX = e.touches[0].clientX, { passive: true });
-    slidesEl.addEventListener("touchend", e => {
-      if (heroTotal === 0) return;
-      const diff = hStartX - e.changedTouches[0].clientX;
-      if (Math.abs(diff) > 40) {
-        heroIndex = diff > 0 ? (heroIndex + 1) % heroTotal : (heroIndex - 1 + heroTotal) % heroTotal;
-        showHeroSlide(heroIndex);
-        restartHero();
-      }
-    }, { passive: true });
-
-    /* ─── WOW PICKS scroll controls ─── */
-    const loopViewport = document.getElementById("loopViewport");
-    document.getElementById("prevProduct").addEventListener("click", () => loopViewport.scrollBy({ left: -184, behavior: "smooth" }));
-    document.getElementById("nextProduct").addEventListener("click", () => loopViewport.scrollBy({ left: 184, behavior: "smooth" }));
-
-    /* ─── SEARCH ─── */
+    /* ── SEARCH ── */
     const searchInput = document.getElementById("searchInput");
-    let searchTimeout;
+    let sTimeout;
     searchInput.addEventListener("input", () => {
-      clearTimeout(searchTimeout);
+      clearTimeout(sTimeout);
       const q = searchInput.value.trim();
-      if (q.length >= 2) {
-        searchTimeout = setTimeout(() => {
-          window.location.href = `shop.html?q=${encodeURIComponent(q)}`;
-        }, 600);
-      }
+      if (q.length >= 2) sTimeout = setTimeout(() => window.location.href = `shop.html?q=${encodeURIComponent(q)}`, 600);
     });
     searchInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") {
-        const q = searchInput.value.trim();
-        if (q) window.location.href = `shop.html?q=${encodeURIComponent(q)}`;
-      }
+      if (e.key === "Enter" && searchInput.value.trim()) window.location.href = `shop.html?q=${encodeURIComponent(searchInput.value.trim())}`;
     });
 
-    /* ─── COUNTRY CHIPS ─── */
-    const countryRow = document.getElementById("countryRow");
-    const countries = [
-      { name: "Argentina", sub: "National team", page: "argentina.html", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>`) },
-      { name: "Brazil", sub: "National team", page: "brazil.html", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cb"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cb)"><rect width="120" height="120" fill="#1f8f3a"/><polygon points="60,18 98,60 60,102 22,60" fill="#f6d44a"/><circle cx="60" cy="60" r="18" fill="#2a4c9b"/></g></svg>`) },
-      { name: "France", sub: "National team", page: "france.html", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cc"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cc)"><rect width="40" height="120" x="0" fill="#244aa5"/><rect width="40" height="120" x="40" fill="#fff"/><rect width="40" height="120" x="80" fill="#d81e2e"/></g></svg>`) },
-      { name: "Germany", sub: "National team", page: "germany.html", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cd"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cd)"><rect width="120" height="40" y="0" fill="#111"/><rect width="120" height="40" y="40" fill="#d81e2e"/><rect width="120" height="40" y="80" fill="#f3c400"/></g></svg>`) },
-      { name: "Spain", sub: "National team", page: "spain.html", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>`) },
-      { name: "Portugal", sub: "National team", page: "portugal.html", img: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>`) }
-    ];
+    /* ── COUNTRY CHIPS ── */
+    (() => {
+      const countries = [
+        { name: "Argentina", sub: "National team", page: "argentina.html", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>` },
+        { name: "Brazil",    sub: "National team", page: "brazil.html",    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cb"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cb)"><rect width="120" height="120" fill="#1f8f3a"/><polygon points="60,18 98,60 60,102 22,60" fill="#f6d44a"/><circle cx="60" cy="60" r="18" fill="#2a4c9b"/></g></svg>` },
+        { name: "France",    sub: "National team", page: "france.html",    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cc"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cc)"><rect width="40" height="120" x="0" fill="#244aa5"/><rect width="40" height="120" x="40" fill="#fff"/><rect width="40" height="120" x="80" fill="#d81e2e"/></g></svg>` },
+        { name: "Germany",   sub: "National team", page: "germany.html",   svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cd"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cd)"><rect width="120" height="40" y="0" fill="#111"/><rect width="120" height="40" y="40" fill="#d81e2e"/><rect width="120" height="40" y="80" fill="#f3c400"/></g></svg>` },
+        { name: "Spain",     sub: "National team", page: "spain.html",     svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>` },
+        { name: "Portugal",  sub: "National team", page: "portugal.html",  svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>` }
+      ];
+      document.getElementById("countryRow").innerHTML = countries.map(c =>
+        `<a href="${c.page}" class="card-chip"><div class="chip-img"><img src="data:image/svg+xml;charset=UTF-8,${encodeURIComponent(c.svg)}" alt="${c.name}"></div><div class="chip-name">${c.name}</div><div class="chip-sub">${c.sub}</div></a>`
+      ).join("");
+    })();
 
-    countryRow.innerHTML = countries.map(c => `
-      <a href="${c.page}" class="card-chip" style="display:block;">
-        <div class="chip-img"><img src="${c.img}" alt="${c.name} flag"></div>
-        <div class="chip-name">${c.name}</div>
-        <div class="chip-sub">${c.sub}</div>
-      </a>
-    `).join("");
-
-    /* ─── CLUB CHIPS ─── */
-    const clubRow = document.getElementById("clubRow");
-    const clubs = [
-      { name: "Barcelona", sub: "Club crest", page: "barcelona.html", bg: "#a51d2d", fg: "#f2c94c", label: "B" },
-      { name: "Real Madrid", sub: "Club crest", page: "real-madrid.html", bg: "#e8d7a2", fg: "#0f5bd6", label: "R" },
-      { name: "Chelsea", sub: "Club crest", page: "chelsea.html", bg: "#1a4da1", fg: "#fff", label: "C" },
-      { name: "Man City", sub: "Club crest", page: "man-city.html", bg: "#9ed7ff", fg: "#0f4ea2", label: "M" },
-      { name: "Man Utd", sub: "Club crest", page: "man-utd.html", bg: "#c61f2f", fg: "#111", label: "U" },
-      { name: "PSG", sub: "Club crest", page: "psg.html", bg: "#12284c", fg: "#c61f2f", label: "P" }
-    ];
-
-    function clubBadgeSvg(bg, fg, label, name) {
-      return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-          <defs><clipPath id="cl${label}"><circle cx="60" cy="60" r="60"/></clipPath></defs>
-          <g clip-path="url(#cl${label})">
-            <rect width="120" height="120" fill="${bg}"/>
-            <circle cx="60" cy="56" r="30" fill="rgba(255,255,255,.18)"/>
-            <path d="M28 92c10-20 54-20 64 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
-            <text x="60" y="66" text-anchor="middle" font-size="34" font-family="Arial, sans-serif" font-weight="900" fill="${fg}">${label}</text>
-            <text x="60" y="98" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-weight="700" fill="rgba(255,255,255,.90)">${name.toUpperCase()}</text>
-          </g>
-        </svg>
-      `);
-    }
-
-    clubRow.innerHTML = clubs.map(c => `
-      <a href="${c.page}" class="card-chip" style="display:block;">
-        <div class="chip-img"><img src="${clubBadgeSvg(c.bg, c.fg, c.label, c.name)}" alt="${c.name} badge"></div>
-        <div class="chip-name">${c.name}</div>
-        <div class="chip-sub">${c.sub}</div>
-      </a>
-    `).join("");
+    /* ── CLUB CHIPS (incl. Arsenal) ── */
+    (() => {
+      const clubs = [
+        { name: "Barcelona",  page: "barcelona.html",  bg: "#a51d2d", fg: "#f2c94c", l: "B" },
+        { name: "Real Madrid",page: "real-madrid.html",bg: "#e8d7a2", fg: "#0f5bd6", l: "R" },
+        { name: "Arsenal",    page: "arsenal.html",    bg: "#EF0107", fg: "#ffffff", l: "A" },
+        { name: "Chelsea",    page: "chelsea.html",    bg: "#1a4da1", fg: "#fff",    l: "C" },
+        { name: "Man City",   page: "man-city.html",   bg: "#9ed7ff", fg: "#0f4ea2", l: "M" },
+        { name: "Man Utd",    page: "man-utd.html",    bg: "#c61f2f", fg: "#111",    l: "U" },
+        { name: "PSG",        page: "psg.html",        bg: "#12284c", fg: "#c61f2f", l: "P" }
+      ];
+      function badge(c) {
+        return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
+          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cl${c.l}"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cl${c.l})"><rect width="120" height="120" fill="${c.bg}"/><circle cx="60" cy="56" r="30" fill="rgba(255,255,255,.18)"/><path d="M28 92c10-20 54-20 64 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/><text x="60" y="66" text-anchor="middle" font-size="34" font-family="Arial,sans-serif" font-weight="900" fill="${c.fg}">${c.l}</text><text x="60" y="98" text-anchor="middle" font-size="11" font-family="Arial,sans-serif" font-weight="700" fill="rgba(255,255,255,.9)">${c.name.toUpperCase()}</text></g></svg>`
+        );
+      }
+      document.getElementById("clubRow").innerHTML = clubs.map(c =>
+        `<a href="${c.page}" class="card-chip"><div class="chip-img"><img src="${badge(c)}" alt="${c.name}"></div><div class="chip-name">${c.name}</div><div class="chip-sub">Club crest</div></a>`
+      ).join("");
+    })();
   </script>
 
   <!-- ══════════════ FIREBASE MODULE ══════════════ -->
@@ -1116,368 +609,232 @@
       databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
     };
 
-    const app = initializeApp(firebaseConfig);
+    const app  = initializeApp(firebaseConfig);
     const rtdb = getDatabase(app);
     const auth = getAuth(app);
 
-    /* ─── helper: determine if a stored item is a video ─── */
     function isVideo(item) {
       if (!item) return false;
       if (item.mediaType === "video") return true;
-      const url = item.mediaUrl || item.imgUrl || "";
-      return /\.(mp4|mov|webm|ogg|avi|mkv)(\?|$)/i.test(url);
+      return /\.(mp4|mov|webm|ogg|avi|mkv)(\?|$)/i.test(item.mediaUrl || item.imgUrl || "");
     }
+    function getUrl(item) { return item.mediaUrl || item.imgUrl || ""; }
 
-    /* ─── helper: get the best URL from an item ─── */
-    function getUrl(item) {
-      return item.mediaUrl || item.imgUrl || "";
-    }
-
-    /* ════════════════════════════════════════════
-       1. AUTH STATE
-    ════════════════════════════════════════════ */
-    onAuthStateChanged(auth, async (user) => {
-      const profileBtn = document.getElementById("profileBtn");
+    /* ── 1. AUTH ── */
+    onAuthStateChanged(auth, async user => {
+      const profileBtn  = document.getElementById("profileBtn");
       const profileIcon = document.getElementById("profileIcon");
-      const cartBadge = document.getElementById("cartBadge");
+      const cartBadge   = document.getElementById("cartBadge");
+      function showBadge(n) { if (n > 0) { cartBadge.textContent = n > 9 ? "9+" : n; cartBadge.classList.add("show"); } }
 
       if (user) {
         if (user.photoURL) {
           profileIcon.style.display = "none";
-          const img = document.createElement("img");
-          img.src = user.photoURL;
-          img.alt = user.displayName || "Profile";
+          const img = document.createElement("img"); img.src = user.photoURL; img.alt = user.displayName || "Profile";
           profileBtn.appendChild(img);
         } else {
-          const initials = (user.displayName || user.email || "U")
-            .split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
+          const initials = (user.displayName || user.email || "U").split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
           profileIcon.style.display = "none";
-          const span = document.createElement("span");
-          span.className = "profile-initials";
-          span.textContent = initials;
+          const span = document.createElement("span"); span.className = "profile-initials"; span.textContent = initials;
           profileBtn.appendChild(span);
         }
-
         try {
-          const cartSnap = await get(ref(rtdb, `users/${user.uid}/cart`));
-          let cartCount = 0;
-          if (cartSnap.exists()) {
-            cartSnap.forEach(() => cartCount++);
-          } else {
-            const localCart = JSON.parse(localStorage.getItem("jersify_cart") || "[]");
-            cartCount = localCart.length;
-          }
-          if (cartCount > 0) {
-            cartBadge.textContent = cartCount > 9 ? "9+" : cartCount;
-            cartBadge.classList.add("show");
-          }
-        } catch (e) {
-          const localCart = JSON.parse(localStorage.getItem("jersify_cart") || "[]");
-          if (localCart.length > 0) {
-            cartBadge.textContent = localCart.length > 9 ? "9+" : localCart.length;
-            cartBadge.classList.add("show");
-          }
-        }
+          const snap = await get(ref(rtdb, `users/${user.uid}/cart`));
+          let n = 0; if (snap.exists()) snap.forEach(() => n++);
+          showBadge(n || JSON.parse(localStorage.getItem("jersify_cart") || "[]").length);
+        } catch { showBadge(JSON.parse(localStorage.getItem("jersify_cart") || "[]").length); }
       } else {
-        const localCart = JSON.parse(localStorage.getItem("jersify_cart") || "[]");
-        if (localCart.length > 0) {
-          cartBadge.textContent = localCart.length > 9 ? "9+" : localCart.length;
-          cartBadge.classList.add("show");
-        }
+        showBadge(JSON.parse(localStorage.getItem("jersify_cart") || "[]").length);
       }
     });
 
-    /* ════════════════════════════════════════════
-       2. HERO SLIDER
-       Reads from indexMedia where section === "hero"
-       Sorted by .order. Supports image and video.
-       No gradient overlay on media. No kicker/label text.
-    ════════════════════════════════════════════ */
+    /* ── 2. HERO SLIDES ── */
     async function loadHeroes() {
       try {
         const snap = await get(ref(rtdb, "indexMedia"));
         if (!snap.exists()) return;
-
         let heroes = [];
-        snap.forEach(d => {
-          const item = d.val();
-          if (item.section === "hero") heroes.push(item);
-        });
-
-        heroes = heroes
-          .filter(h => getUrl(h))
-          .sort((a, b) => (a.order || 0) - (b.order || 0));
-
-        if (heroes.length === 0) return;
+        snap.forEach(d => { const v = d.val(); if (v.section === "hero") heroes.push(v); });
+        heroes = heroes.filter(h => getUrl(h)).sort((a, b) => (a.order || 0) - (b.order || 0));
+        if (!heroes.length) return;
 
         const slidesEl = document.getElementById("slides");
-        // Remove ghost skeleton before injecting real slides
-        const heroSkeleton = document.getElementById("heroSkeleton");
-        if (heroSkeleton) heroSkeleton.remove();
+        const skeleton = document.getElementById("heroSkeleton");
+        if (skeleton) skeleton.remove();
+
         slidesEl.innerHTML = heroes.map(h => {
-          const url = getUrl(h);
-          const vid = isVideo(h);
-          const link = h.link || "shop.html";
-
-          // Full-cover media — no overlay, no text labels
-          const mediaEl = vid
+          const url = getUrl(h), link = h.link || "shop.html";
+          const media = isVideo(h)
             ? `<video class="slide-media-cover" src="${url}" autoplay muted loop playsinline preload="metadata"></video>`
-            : `<img class="slide-media-cover" src="${url}" alt="Hero banner" loading="lazy"/>`;
-
-          return `
-            <div class="slide" style="cursor:${link ? 'pointer' : 'default'}" onclick="${link ? `window.location.href='${link}'` : ''}">
-              ${mediaEl}
-            </div>
-          `;
+            : `<img class="slide-media-cover" src="${url}" alt="Hero" loading="lazy"/>`;
+          return `<div class="slide" style="cursor:pointer" onclick="window.location.href='${link}'">${media}</div>`;
         }).join("");
 
-        // Update slider state
         heroTotal = heroes.length;
-        buildDots(heroes.length);
+        buildDots(heroTotal);
         showHeroSlide(0);
         restartHero();
-      } catch (err) {
-        console.warn("Hero slides load failed:", err);
-      }
+      } catch (e) { console.warn("Hero load failed", e); }
     }
 
-    /* ════════════════════════════════════════════
-       3. WOW PICKS + ALL PRODUCTS
-    ════════════════════════════════════════════ */
+    /* ── 3. PRODUCTS (WOW Picks: 8, All Products: 10) ── */
     async function loadProducts() {
+      const loopTrack        = document.getElementById("loopTrack");
+      const allProductsTrack = document.getElementById("allProductsTrack");
+      const countLabel       = document.getElementById("productCountLabel");
       try {
         const snap = await get(ref(rtdb, "products"));
-        const loopTrack = document.getElementById("loopTrack");
-        const allProductsTrack = document.getElementById("allProductsTrack");
-        const countLabel = document.getElementById("productCountLabel");
-
         if (!snap.exists()) {
-          loopTrack.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
-          allProductsTrack.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
-          countLabel.textContent = "Coming soon";
-          return;
+          loopTrack.innerHTML = allProductsTrack.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
+          countLabel.textContent = "Coming soon"; return;
+        }
+        let products = [];
+        snap.forEach(d => { const p = d.val(); p._id = d.key; if (!p.status || p.status === "active") products.push(p); });
+        countLabel.innerHTML = `<span style="color:var(--accent);font-weight:800;">${products.length}+</span> jerseys available`;
+        const colors = ["red","white","blue","dark","gold"];
+
+        function card(p, i, btnLabel) {
+          const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
+          return `<article class="loop-card" onclick="window.location.href='shop.html?id=${p._id}'" style="cursor:pointer;">
+            <div class="pic">${p.imgUrl
+              ? `<img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy"/>`
+              : `<div class="mini-jersey ${colors[i%colors.length]}"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`
+            }</div>
+            <div class="loop-info">
+              ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ""}
+              <h4>${p.name||'Jersify Kit'}</h4>
+              <p>${team||(p.type||'Premium jersey')}</p>
+              <div class="price-row">
+                <div class="price">&#8377;${p.price||'1499'}</div>
+                <button class="small-btn" onclick="event.stopPropagation();window.location.href='shop.html?id=${p._id}'">${btnLabel}</button>
+              </div>
+            </div>
+          </article>`;
         }
 
-        let allProducts = [];
-        snap.forEach(d => {
-          const p = d.val();
-          p._id = d.key;
-          if (!p.status || p.status === "active") allProducts.push(p);
-        });
-
-        const total = allProducts.length;
-        countLabel.innerHTML = `<span style="color:var(--accent);font-weight:800;">${total}+</span> jerseys available`;
-
-        const colorClasses = ["red", "white", "blue", "dark", "gold"];
-
-        function buildCard(p, idx, btnLabel) {
-          const colorClass = colorClasses[idx % colorClasses.length];
-          const teamText = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
-          return `
-            <article class="loop-card" onclick="window.location.href='shop.html?id=${p._id}'" style="cursor:pointer;">
-              <div class="pic">
-                ${p.imgUrl
-                  ? `<img src="${p.imgUrl}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
-                  : `<div class="mini-jersey ${colorClass}"><div><span>${10 - (idx % 4)}</span><small>${p.type || 'KIT'}</small></div></div>`
-                }
-              </div>
-              <div class="loop-info">
-                ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ''}
-                <h4>${p.name || 'Jersify Kit'}</h4>
-                <p>${teamText || (p.type || 'Premium jersey')}</p>
-                <div class="price-row">
-                  <div class="price">₹${p.price || '1499'}</div>
-                  <button class="small-btn" onclick="event.stopPropagation();window.location.href='shop.html?id=${p._id}'">${btnLabel}</button>
-                </div>
-              </div>
-            </article>
-          `;
-        }
-
-        // WOW PICKS (first 8)
-        const wowPicks = allProducts.slice(0, 8);
-        loopTrack.innerHTML = wowPicks.length
-          ? wowPicks.map((p, i) => buildCard(p, i, "Shop Now")).join("")
-          : '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
-
-        // ALL PRODUCTS
-        allProductsTrack.innerHTML = allProducts.length
-          ? allProducts.map((p, i) => buildCard(p, i, "View")).join("")
-          : '<div style="color:var(--muted);padding:20px;font-size:13px;width:100%;text-align:center;">No products available.</div>';
-
-      } catch (err) {
-        console.error("Products load failed:", err);
+        loopTrack.innerHTML        = products.slice(0, 8).map((p,i) => card(p,i,"Shop Now")).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
+        allProductsTrack.innerHTML = products.slice(0,10).map((p,i) => card(p,i,"View")).join("")    || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products available.</div>';
+      } catch (e) {
+        console.error("Products load failed", e);
         document.getElementById("loopTrack").innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">Could not load products.</div>';
       }
     }
 
-    /* ════════════════════════════════════════════
-       4. INDEX MEDIA — Featured, Promo, Reels, Gallery
-    ════════════════════════════════════════════ */
+    /* ── 4. INDEX MEDIA ── */
     async function loadIndexMedia() {
       try {
         const snap = await get(ref(rtdb, "indexMedia"));
         if (!snap.exists()) {
-          document.getElementById("mediaSpace").innerHTML =
-            `<div class="placeholder" style="font-size:13px;font-weight:700;color:#999;">No featured media</div>`;
+          document.getElementById("mediaSpace").innerHTML = `<div class="placeholder" style="font-size:13px;font-weight:700;color:#999;">No featured media</div>`;
           return;
         }
-
         let items = [];
-        snap.forEach(d => {
-          const v = d.val();
-          v._key = d.key;
-          items.push(v);
-        });
-        items.sort((a, b) => (a.order || 0) - (b.order || 0));
+        snap.forEach(d => { const v = d.val(); v._key = d.key; items.push(v); });
+        items.sort((a, b) => (a.order||0) - (b.order||0));
 
-        const featuredItems = items.filter(m => m.section === "featured" && getUrl(m));
-        const reelItems    = items.filter(m => m.section === "reels"    && getUrl(m));
-        const galleryItems = items.filter(m => m.section === "gallery"  && getUrl(m));
+        const featured = items.filter(m => m.section === "featured" && getUrl(m));
+        const reels    = items.filter(m => m.section === "reels"    && getUrl(m));
+        const gallery  = items.filter(m => m.section === "gallery"  && getUrl(m));
 
-        /* ── Media Space: first featured item ── */
-        const mediaSpace = document.getElementById("mediaSpace");
-        const firstFeatured = featuredItems[0];
-        if (firstFeatured) {
-          const url  = getUrl(firstFeatured);
-          const link = firstFeatured.link || "shop.html";
-          const vid  = isVideo(firstFeatured);
-          if (vid) {
-            mediaSpace.innerHTML = `
-              <video src="${url}" autoplay muted loop playsinline
-                style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;"
-                onclick="window.location.href='${link}'"
-              ></video>`;
-          } else {
-            mediaSpace.innerHTML = `
-              <img src="${url}" alt="${firstFeatured.label || 'Featured'}"
-                style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;"
-                onclick="window.location.href='${link}'"
-                loading="lazy"/>`;
-          }
+        /* featured_1 → big media space */
+        const ms = document.getElementById("mediaSpace");
+        const f0 = featured[0];
+        if (f0) {
+          const url = getUrl(f0), link = f0.link || "shop.html", vid = isVideo(f0);
+          ms.innerHTML = vid
+            ? `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;" onclick="window.location.href='${link}'"></video>`
+            : `<img src="${url}" alt="${f0.label||'Featured'}" style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;" onclick="window.location.href='${link}'" loading="lazy"/>`;
         } else {
-          mediaSpace.innerHTML = `<div class="placeholder" style="font-size:13px;font-weight:700;color:#999;">No featured media</div>`;
+          ms.innerHTML = `<div class="placeholder" style="font-size:13px;font-weight:700;color:#999;">No featured media</div>`;
         }
 
-        /* ── Promo Strip: featured items 2+ ── */
-        const promoStrip = document.getElementById("promoStrip");
-        const promoBannersWrap = document.getElementById("promoBannersWrap");
-        const promoItems = featuredItems.slice(1);
+        /* featured_2, featured_3 … → insert into promo track BEFORE the 2 blank slots */
+        const promoTrack = document.getElementById("promoTrack");
+        const blank1     = document.getElementById("promoBlank1");
+        const promoItems = featured.slice(1); // skip featured_1
 
-        if (promoItems.length > 0) {
-          promoStrip.innerHTML = promoItems.map(m => {
-            const url  = getUrl(m);
-            const link = m.link || "shop.html";
-            const vid  = isVideo(m);
-            const mediaHtml = vid
-              ? `<video src="${url}" autoplay muted loop playsinline></video>`
-              : `<img src="${url}" alt="${m.label || 'Promo'}" loading="lazy"/>`;
-            return `
-              <div class="promo-card" onclick="window.location.href='${link}'">
-                ${mediaHtml}
-              </div>`;
-          }).join("");
-          promoBannersWrap.style.display = "block";
-        }
+        promoItems.forEach(m => {
+          const url = getUrl(m), link = m.link || "shop.html", vid = isVideo(m);
+          const div = document.createElement("div");
+          div.className = "promo-card";
+          div.onclick   = () => window.location.href = link;
+          if (vid) {
+            div.innerHTML = `<video src="${url}" autoplay muted loop playsinline></video>`;
+          } else {
+            div.innerHTML = `<img src="${url}" alt="${m.label||'Promo'}" loading="lazy"/>
+              <div class="promo-overlay"></div>
+              ${m.label ? `<div class="promo-label">${m.label}</div>` : ""}`;
+          }
+          promoTrack.insertBefore(div, blank1); // prepend before blanks
+        });
+        // After insertion: [featured_2 card][featured_3 card][Blank 1][Blank 2] = 4 cards total ✓
 
-        /* ── Reels: no play button overlay ── */
-        const reelsRow = document.getElementById("reelsRow");
+        /* reels → click opens fullscreen modal (not navigation) */
+        const reelsRow     = document.getElementById("reelsRow");
         const reelsSection = document.getElementById("reelsSection");
-
-        if (reelItems.length > 0) {
-          reelsRow.innerHTML = reelItems.map(m => {
-            const url  = getUrl(m);
-            const link = m.link || "#";
-            const vid  = isVideo(m);
-
-            const mediaContent = vid
+        if (reels.length > 0) {
+          reelsRow.innerHTML = reels.map(m => {
+            const url = getUrl(m), vid = isVideo(m);
+            const media = vid
               ? `<video class="reel-vid" src="${url}" muted loop playsinline preload="metadata"></video>`
               : `<div class="thumb" style="background-image:url('${url}')"></div>`;
-
-            return `
-              <div class="reel-card"
-                onclick="window.location.href='${link}'"
-                onmouseenter="const v=this.querySelector('video');if(v)v.play()"
-                onmouseleave="const v=this.querySelector('video');if(v){v.pause();v.currentTime=0}"
-                ontouchstart="const v=this.querySelector('video');if(v)v.play()"
-              >
-                ${mediaContent}
-              </div>`;
+            return `<div class="reel-card" data-src="${url}"
+              onmouseenter="this.querySelector('video')?.play()"
+              onmouseleave="const v=this.querySelector('video');if(v){v.pause();v.currentTime=0}">
+              ${media}
+              <div class="reel-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+            </div>`;
           }).join("");
 
           reelsSection.style.display = "block";
 
-          // Auto-play visible reels on mobile via IntersectionObserver
-          const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-              const vid = entry.target.querySelector("video");
-              if (!vid) return;
-              if (entry.isIntersecting) {
-                vid.play().catch(() => {});
-              } else {
-                vid.pause();
-                vid.currentTime = 0;
-              }
+          /* clicking reel → toast modal */
+          reelsRow.querySelectorAll(".reel-card").forEach(card => {
+            card.addEventListener("click", () => openReel(card.dataset.src));
+          });
+
+          /* auto-play thumbnail previews on scroll */
+          const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+              const v = e.target.querySelector("video");
+              if (!v) return;
+              e.isIntersecting ? v.play().catch(() => {}) : (v.pause(), v.currentTime = 0);
             });
           }, { threshold: 0.6 });
-
-          reelsRow.querySelectorAll(".reel-card").forEach(card => observer.observe(card));
+          reelsRow.querySelectorAll(".reel-card").forEach(c => obs.observe(c));
         }
 
-        /* ── Gallery ── */
-        const galleryGrid = document.getElementById("galleryGrid");
+        /* gallery — 2:1 large + matching-height small */
+        const galleryGrid    = document.getElementById("galleryGrid");
         const gallerySection = document.getElementById("gallerySection");
-
-        if (galleryItems.length > 0) {
-          const [imgA, imgB] = galleryItems;
+        if (gallery.length > 0) {
+          const [gA, gB] = gallery;
           let html = "";
-
-          if (imgA) {
-            const url  = getUrl(imgA);
-            const link = imgA.link || "#";
-            const vid  = isVideo(imgA);
-            const mediaEl = vid
+          if (gA) {
+            const url = getUrl(gA), link = gA.link || "#", vid = isVideo(gA);
+            const media = vid
               ? `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
-              : `<img src="${url}" alt="${imgA.label || 'Gallery'}" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`;
-            html += `<div class="grid-item-a" onclick="window.location.href='${link}'">${mediaEl}</div>`;
+              : `<img src="${url}" alt="${gA.label||'Gallery'}" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`;
+            html += `<div class="grid-item-a" onclick="window.location.href='${link}'">${media}</div>`;
           }
-
-          if (imgB) {
-            const url  = getUrl(imgB);
-            const link = imgB.link || "#";
-            const vid  = isVideo(imgB);
-            const mediaEl = vid
+          if (gB) {
+            const url = getUrl(gB), link = gB.link || "#", vid = isVideo(gB);
+            const media = vid
               ? `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
-              : `<img src="${url}" alt="${imgB.label || 'Gallery'}" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`;
-            html += `<div class="grid-item-b" onclick="window.location.href='${link}'">${mediaEl}</div>`;
+              : `<img src="${url}" alt="${gB.label||'Gallery'}" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`;
+            html += `<div class="grid-item-b" onclick="window.location.href='${link}'">${media}</div>`;
           }
-
           galleryGrid.innerHTML = html;
           gallerySection.style.display = "block";
         }
 
-      } catch (err) {
-        console.error("Index media load failed:", err);
-      }
+      } catch (e) { console.error("Index media load failed", e); }
     }
 
-    /* ════════════════════════════════════════════
-       INIT
-    ════════════════════════════════════════════ */
     async function init() {
-      await Promise.allSettled([
-        loadHeroes(),
-        loadProducts(),
-        loadIndexMedia()
-      ]);
+      await Promise.allSettled([loadHeroes(), loadProducts(), loadIndexMedia()]);
     }
-
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", init);
-    } else {
-      init();
-    }
+    document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", init) : init();
   </script>
 </body>
-
 </html>
