@@ -45,143 +45,41 @@
 
     /* ── TOPBAR ── */
     .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 10px;
       padding: 16px 16px 10px;
-      position: sticky;
-      top: 0;
+      position: sticky; top: 0;
       background: rgba(255,255,255,.98);
       backdrop-filter: blur(8px);
       z-index: 30;
       border-bottom: 1px solid rgba(0,0,0,.04);
     }
-
-    .logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 44px;
-      letter-spacing: 2.5px;
-      line-height: 1;
-      color: #111;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
+    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 44px; letter-spacing: 2.5px; line-height: 1; color: #111; }
     .header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-
-    .icon-btn {
-      width: 38px;
-      height: 38px;
-      border: none;
-      border-radius: 50%;
-      background: #111;
-      color: #fff;
-      display: grid;
-      place-items: center;
-      box-shadow: var(--shadow-soft);
-      cursor: pointer;
-      flex: 0 0 auto;
-      transition: transform .2s ease;
-      position: relative;
-    }
+    .icon-btn { width: 38px; height: 38px; border: none; border-radius: 50%; background: #111; color: #fff; display: grid; place-items: center; box-shadow: var(--shadow-soft); cursor: pointer; flex: 0 0 auto; transition: transform .2s ease; position: relative; }
     .icon-btn:hover { transform: translateY(-2px) }
     .icon-btn svg { width: 19px; height: 19px }
-
-    .cart-count {
-      position: absolute;
-      top: -4px; right: -4px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 9px;
-      font-weight: 800;
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid #fff;
-    }
+    .cart-count { position: absolute; top: -4px; right: -4px; background: var(--accent); color: #fff; font-size: 9px; font-weight: 800; width: 16px; height: 16px; border-radius: 50%; display: none; align-items: center; justify-content: center; border: 2px solid #fff; }
     .cart-count.show { display: flex; }
-
-    .profile-btn {
-      width: 32px;
-      height: 32px;
-      border: 2px solid #fff;
-      background: linear-gradient(135deg, #f4d8de, #f7f7f7);
-      color: #111;
-    }
+    .profile-btn { width: 32px; height: 32px; border: 2px solid #fff; background: linear-gradient(135deg, #f4d8de, #f7f7f7); color: #111; }
     .profile-btn svg { width: 16px; height: 16px }
 
     /* ── SEARCH ── */
     .search-wrap { padding: 12px 16px 10px; }
-
-    .search {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border: 1.5px solid rgba(17,17,17,.16);
-      background: #fff;
-      border-radius: 999px;
-      padding: 11px 14px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.04);
-    }
+    .search { display: flex; align-items: center; gap: 10px; border: 1.5px solid rgba(17,17,17,.16); background: #fff; border-radius: 999px; padding: 11px 14px; box-shadow: 0 4px 18px rgba(0,0,0,.04); }
     .search svg { width: 18px; height: 18px; opacity: .65; flex: 0 0 auto }
-    .search input {
-      border: none; outline: none; width: 100%;
-      background: transparent; font-size: 14px;
-    }
+    .search input { border: none; outline: none; width: 100%; background: transparent; font-size: 14px; }
     .mic { width: 18px; height: 18px; opacity: .7; flex: 0 0 auto }
 
     /* ── FILTERS ── */
-    .filters {
-      padding: 10px 16px 14px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .filters { padding: 10px 16px 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .filters select { padding: 6px 28px 6px 12px; border-radius: 99px; border: 1px solid var(--line); font-size: 12px; background: #fff; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
 
-    .filters select {
-      padding: 6px 28px 6px 12px;
-      border-radius: 99px;
-      border: 1px solid var(--line);
-      font-size: 12px;
-      background: #fff;
-      cursor: pointer;
-      appearance: none;
-      -webkit-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-    }
-
-    /* ── SKELETON LOADING ── */
-    @keyframes shimmer {
-      0% { background-position: -400px 0; }
-      100% { background-position: 400px 0; }
-    }
-
-    .skeleton {
-      background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
-      background-size: 400px 100%;
-      animation: shimmer 1.4s ease-in-out infinite;
-      border-radius: 8px;
-    }
-
-    .skeleton-card {
-      background: #fff;
-      border-radius: 22px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-    }
-
-    .skeleton-img {
-      height: 180px;
-      width: 100%;
-      border-radius: 0;
-    }
-
+    /* ── SKELETON ── */
+    @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 400px 100%; animation: shimmer 1.4s ease-in-out infinite; border-radius: 8px; }
+    .skeleton-card { background: #fff; border-radius: 22px; overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow); }
+    .skeleton-img { height: 180px; width: 100%; border-radius: 0; }
     .skeleton-body { padding: 14px; }
     .skeleton-title { height: 14px; width: 80%; margin-bottom: 8px; }
     .skeleton-sub { height: 10px; width: 60%; margin-bottom: 14px; }
@@ -189,537 +87,386 @@
     .skeleton-price { height: 18px; width: 35%; }
     .skeleton-btn { height: 34px; width: 60px; border-radius: 999px; }
 
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ── PRODUCTS SECTION ── */
+    /* ── PRODUCTS ── */
     .products { padding: 4px 16px 18px; }
+    .products-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .products-header h3 { font-size: 18px; font-weight: 900; letter-spacing: .2px; }
+    #productCount { font-size: 11px; color: var(--muted); font-weight: 600; }
+    .product-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding-bottom: 8px; }
 
-    .products-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-
-    .products-header h3 {
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: .2px;
-    }
-
-    #productCount {
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .product-row {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      padding-bottom: 8px;
-    }
-
-    .product {
-      background: #fff;
-      border-radius: 22px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--line);
-      cursor: pointer;
-      transition: transform .22s ease, box-shadow .22s ease;
-      animation: fadeInUp .4s ease both;
-    }
+    .product { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); cursor: pointer; transition: transform .22s ease, box-shadow .22s ease; animation: fadeInUp .4s ease both; }
     .product:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,.13); }
 
-    .product .img {
-      height: 180px;
-      background:
-        radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%),
-        linear-gradient(180deg, #131313 0%, #262626 100%);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .product .img img {
-      width: 100%; height: 100%;
-      object-fit: cover; display: block;
-      transition: transform .4s ease;
-    }
+    .product .img { height: 180px; background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .product .img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
     .product:hover .img img { transform: scale(1.05); }
+    .product .img::after { content: ""; position: absolute; inset: 14px; border-radius: 18px; background: linear-gradient(135deg, rgba(255,255,255,.06), transparent); border: 1px solid rgba(255,255,255,.08); pointer-events: none; }
 
-    .product .img::after {
-      content: "";
-      position: absolute;
-      inset: 14px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, rgba(255,255,255,.06), transparent);
-      border: 1px solid rgba(255,255,255,.08);
-      pointer-events: none;
-    }
-
-    .jersey-card {
-      width: 120px; height: 150px;
-      border-radius: 24px;
-      position: relative; z-index: 1;
-      box-shadow: 0 16px 30px rgba(0,0,0,.35);
-      border: 1px solid rgba(255,255,255,.18);
-      display: flex; align-items: flex-end;
-      justify-content: center;
-      padding-bottom: 14px; text-align: center;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)),
-        linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%);
-    }
-
+    .jersey-card { width: 120px; height: 150px; border-radius: 24px; position: relative; z-index: 1; box-shadow: 0 16px 30px rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.18); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 14px; text-align: center; background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)), linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%); }
     .jersey-card strong { font-size: 28px; line-height: 1; display: block; color: #fff; }
     .jersey-card small { font-size: 9px; font-weight: 700; letter-spacing: 1px; opacity: .9; color: #fff; }
 
-    .badge {
-      position: absolute;
-      top: 10px; left: 10px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 9px; font-weight: 800;
-      letter-spacing: .5px;
-      padding: 3px 8px;
-      border-radius: 99px;
-      text-transform: uppercase;
-      z-index: 2;
-    }
+    .badge { position: absolute; top: 10px; left: 10px; background: var(--accent); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: .5px; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; z-index: 2; }
 
     .product-info { padding: 12px 12px 10px; }
     .title { font-size: 13px; font-weight: 800; margin-bottom: 3px; line-height: 1.3; }
     .desc { color: var(--muted); font-size: 11px; line-height: 1.4; margin-bottom: 10px; min-height: 30px; }
-
     .bottom { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
     .price { font-size: 15px; font-weight: 900; color: var(--text); }
-
     .action-btns { display: flex; align-items: center; gap: 6px; }
 
-    .cart-btn {
-      width: 32px; height: 32px;
-      border: 1.5px solid var(--accent);
-      border-radius: 50%;
-      background: transparent;
-      color: var(--accent);
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      transition: all .2s ease;
-      flex-shrink: 0;
-    }
+    .cart-btn { width: 32px; height: 32px; border: 1.5px solid var(--accent); border-radius: 50%; background: transparent; color: var(--accent); display: grid; place-items: center; cursor: pointer; transition: all .2s ease; flex-shrink: 0; }
     .cart-btn svg { width: 14px; height: 14px; }
     .cart-btn:hover { background: var(--accent); color: #fff; transform: scale(1.1); }
     .cart-btn.added { background: var(--accent); color: #fff; }
 
-    .buy-btn {
-      border: none;
-      background: linear-gradient(180deg, var(--accent), var(--accent2));
-      color: #fff;
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 11px; font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 6px 16px rgba(198,31,47,.25);
-      transition: transform .2s ease, box-shadow .2s ease;
-      white-space: nowrap;
-    }
+    .buy-btn { border: none; background: linear-gradient(180deg, var(--accent), var(--accent2)); color: #fff; border-radius: 999px; padding: 8px 12px; font-size: 11px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 16px rgba(198,31,47,.25); transition: transform .2s ease, box-shadow .2s ease; white-space: nowrap; }
     .buy-btn:hover { transform: scale(1.04); box-shadow: 0 8px 20px rgba(198,31,47,.35); }
 
-    /* ── EMPTY / ERROR STATES ── */
-    .loading-state, .empty-state {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 48px 20px; gap: 14px;
-      grid-column: 1 / -1; text-align: center;
-    }
-
+    .loading-state, .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 20px; gap: 14px; grid-column: 1 / -1; text-align: center; }
     .empty-state svg { width: 48px; height: 48px; opacity: .25; }
-    .loading-state p, .empty-state p {
-      font-size: 13px; color: var(--muted); font-weight: 600; line-height: 1.5;
-    }
+    .loading-state p, .empty-state p { font-size: 13px; color: var(--muted); font-weight: 600; line-height: 1.5; }
 
-    /* ── VIEW ALL ── */
     .viewall-wrap { display: flex; justify-content: center; margin-top: 14px; }
-    .viewall {
-      padding: 9px 22px;
-      border: 1.5px solid #222;
-      border-radius: 4px;
-      background: #fff;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-    }
+    .viewall { padding: 9px 22px; border: 1.5px solid #222; border-radius: 4px; background: #fff; font-weight: 700; font-size: 13px; cursor: pointer; }
 
-
-
-    /* ── PRODUCT DETAIL DRAWER ── */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.55);
-      z-index: 100;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .3s ease;
-      backdrop-filter: blur(3px);
-    }
+    /* ── DRAWER ── */
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 100; opacity: 0; pointer-events: none; transition: opacity .3s ease; backdrop-filter: blur(3px); }
     .overlay.open { opacity: 1; pointer-events: all; }
 
-    .drawer {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%) translateY(100%);
-      width: min(100%, var(--maxw));
-      max-height: 92vh;
-      background: #fff;
-      border-radius: 28px 28px 0 0;
-      z-index: 101;
-      transition: transform .35s cubic-bezier(0.32, 0.72, 0, 1);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
+    .drawer { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%); width: min(100%, var(--maxw)); max-height: 92vh; background: #fff; border-radius: 28px 28px 0 0; z-index: 101; transition: transform .35s cubic-bezier(0.32, 0.72, 0, 1); overflow: hidden; display: flex; flex-direction: column; }
     .drawer.open { transform: translateX(-50%) translateY(0); }
-
-    .drawer-handle {
-      width: 40px; height: 4px;
-      background: #ddd;
-      border-radius: 99px;
-      margin: 12px auto 0;
-      flex-shrink: 0;
-    }
-
+    .drawer-handle { width: 40px; height: 4px; background: #ddd; border-radius: 99px; margin: 12px auto 0; flex-shrink: 0; }
     .drawer-scroll { overflow-y: auto; flex: 1; }
 
-    .drawer-img {
-      height: 260px;
-      background: linear-gradient(180deg, #131313 0%, #262626 100%);
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
+    /* ── DRAWER IMAGE GALLERY (3:4 ratio, slidable) ── */
+    .drawer-img-gallery {
       position: relative;
+      width: 100%;
+      /* 3:4 ratio = height is 133.33% of width */
+      padding-top: 133.33%;
+      background: linear-gradient(180deg, #131313 0%, #262626 100%);
+      overflow: hidden;
     }
-    .drawer-img img { width: 100%; height: 100%; object-fit: cover; }
 
-    .drawer-close {
+    .drawer-slides {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      transition: transform .35s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+    }
+
+    .drawer-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      cursor: zoom-in;
+    }
+
+    .drawer-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .drawer-slide-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Prev / Next nav arrows */
+    .drawer-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      width: 34px; height: 34px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(0,0,0,.45);
+      color: #fff;
+      display: grid; place-items: center;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .drawer-arrow:hover { background: rgba(0,0,0,.75); }
+    .drawer-arrow svg { width: 16px; height: 16px; }
+    .drawer-arrow.prev { left: 10px; }
+    .drawer-arrow.next { right: 10px; }
+    .drawer-arrow:disabled { opacity: 0; pointer-events: none; }
+
+    /* Dot indicators */
+    .drawer-dots {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 5px;
+      z-index: 10;
+    }
+    .drawer-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.45);
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+      border: none; padding: 0;
+    }
+    .drawer-dot.active { background: #fff; transform: scale(1.35); }
+
+    /* Image counter badge */
+    .drawer-img-counter {
       position: absolute;
       top: 12px; right: 12px;
+      background: rgba(0,0,0,.55);
+      color: #fff;
+      font-size: 11px; font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 99px;
+      z-index: 10;
+      backdrop-filter: blur(4px);
+      letter-spacing: .3px;
+    }
+
+    /* Close button */
+    .drawer-close {
+      position: absolute;
+      top: 12px; left: 12px;
       width: 36px; height: 36px;
       border: none;
-      background: rgba(255,255,255,.15);
+      background: rgba(0,0,0,.4);
       color: #fff;
       border-radius: 50%;
-      display: grid;
-      place-items: center;
+      display: grid; place-items: center;
       cursor: pointer;
       backdrop-filter: blur(4px);
-      z-index: 2;
+      z-index: 10;
     }
     .drawer-close svg { width: 18px; height: 18px; }
 
-    .drawer-body { padding: 20px 20px 0; }
-
-    .drawer-badge-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .d-badge {
-      font-size: 10px; font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 99px;
-      background: rgba(198,31,47,.1);
-      color: var(--accent);
-      text-transform: uppercase;
+    /* Touch swipe hint */
+    .swipe-hint {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: rgba(255,255,255,.6);
+      font-weight: 600;
       letter-spacing: .5px;
+      z-index: 10;
+      pointer-events: none;
+      white-space: nowrap;
     }
 
+    .drawer-body { padding: 20px 20px 0; }
+    .drawer-badge-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .d-badge { font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 99px; background: rgba(198,31,47,.1); color: var(--accent); text-transform: uppercase; letter-spacing: .5px; }
     .drawer-name { font-size: 22px; font-weight: 900; margin-bottom: 4px; line-height: 1.2; }
     .drawer-team { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
-
     .drawer-price-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
     .drawer-price { font-size: 28px; font-weight: 900; color: var(--accent); font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
-    .drawer-free-ship {
-      font-size: 10px; font-weight: 700;
-      background: #e8f5e9; color: #2e7d32;
-      padding: 4px 10px; border-radius: 99px;
-      letter-spacing: .4px;
-    }
-
-    .drawer-section-label {
-      font-size: 11px; font-weight: 800;
-      text-transform: uppercase; letter-spacing: 1px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .size-grid {
-      display: flex; gap: 8px; flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .size-pill {
-      width: 46px; height: 40px;
-      border: 1.5px solid var(--line);
-      border-radius: 10px;
-      background: #fff;
-      font-size: 13px; font-weight: 700;
-      cursor: pointer;
-      display: grid; place-items: center;
-      transition: all .2s ease;
-      color: var(--text);
-    }
+    .drawer-free-ship { font-size: 10px; font-weight: 700; background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 99px; letter-spacing: .4px; }
+    .drawer-section-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; }
+    .size-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .size-pill { width: 46px; height: 40px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; font-size: 13px; font-weight: 700; cursor: pointer; display: grid; place-items: center; transition: all .2s ease; color: var(--text); }
     .size-pill:hover { border-color: var(--accent); color: var(--accent); }
     .size-pill.selected { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(198,31,47,.3); }
     .size-pill.oos { opacity: .35; cursor: not-allowed; text-decoration: line-through; }
 
-    .drawer-actions {
-      display: flex; gap: 10px;
-      padding: 16px 20px 20px;
-      background: #fff;
-      flex-shrink: 0;
-    }
-
-    .d-cart-btn {
-      flex: 1;
-      border: 2px solid var(--accent);
-      border-radius: 14px;
-      background: transparent;
-      color: var(--accent);
-      font-size: 13px; font-weight: 800;
-      padding: 14px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: all .2s ease;
-    }
+    .drawer-actions { display: flex; gap: 10px; padding: 16px 20px 20px; background: #fff; flex-shrink: 0; }
+    .d-cart-btn { flex: 1; border: 2px solid var(--accent); border-radius: 14px; background: transparent; color: var(--accent); font-size: 13px; font-weight: 800; padding: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all .2s ease; }
     .d-cart-btn:hover { background: rgba(198,31,47,.06); }
     .d-cart-btn svg { width: 16px; height: 16px; }
-
-    .d-buy-btn {
-      flex: 2;
-      border: none;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff;
-      font-size: 14px; font-weight: 800;
-      padding: 14px;
-      cursor: pointer;
-      box-shadow: 0 8px 24px rgba(198,31,47,.28);
-      transition: transform .2s ease, box-shadow .2s ease;
-      letter-spacing: .3px;
-    }
+    .d-buy-btn { flex: 2; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-size: 14px; font-weight: 800; padding: 14px; cursor: pointer; box-shadow: 0 8px 24px rgba(198,31,47,.28); transition: transform .2s ease, box-shadow .2s ease; letter-spacing: .3px; }
     .d-buy-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(198,31,47,.38); }
 
-    /* ── BROWSE MORE (inside drawer) ── */
-    .browse-section {
-      padding: 0 20px 32px;
-      background: #fff;
-    }
-
-    .browse-divider {
-      height: 1px;
-      background: var(--line);
-      margin-bottom: 20px;
-    }
-
-    .browse-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-
-    .browse-header-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .browse-title {
-      font-size: 14px;
-      font-weight: 900;
-      letter-spacing: .2px;
-      color: var(--text);
-    }
-
-    .browse-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      display: inline-block;
-    }
-
-    .browse-count {
-      font-size: 10px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .browse-track {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      padding-bottom: 4px;
-    }
+    /* ── BROWSE MORE ── */
+    .browse-section { padding: 0 20px 32px; background: #fff; }
+    .browse-divider { height: 1px; background: var(--line); margin-bottom: 20px; }
+    .browse-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .browse-header-left { display: flex; align-items: center; gap: 8px; }
+    .browse-title { font-size: 14px; font-weight: 900; letter-spacing: .2px; color: var(--text); }
+    .browse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
+    .browse-count { font-size: 10px; color: var(--muted); font-weight: 600; }
+    .browse-track { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 4px; }
     .browse-track::-webkit-scrollbar { display: none; }
 
-    @keyframes browseCardIn {
-      from { opacity: 0; transform: translateX(12px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    .browse-card {
-      flex: 0 0 130px;
-      scroll-snap-align: start;
-      background: #fafafa;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
-      animation: browseCardIn .35s ease both;
-    }
-    .browse-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 24px rgba(0,0,0,.10);
-      border-color: rgba(198,31,47,.25);
-    }
-
-    .browse-card-img {
-      height: 110px;
-      background: linear-gradient(180deg, #151515 0%, #252525 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      position: relative;
-    }
-    .browse-card-img img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      transition: transform .3s ease;
-    }
+    @keyframes browseCardIn { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
+    .browse-card { flex: 0 0 130px; scroll-snap-align: start; background: #fafafa; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; animation: browseCardIn .35s ease both; }
+    .browse-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,.10); border-color: rgba(198,31,47,.25); }
+    .browse-card-img { height: 110px; background: linear-gradient(180deg, #151515 0%, #252525 100%); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+    .browse-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
     .browse-card:hover .browse-card-img img { transform: scale(1.06); }
-
-    .browse-mini-jersey {
-      width: 72px; height: 88px;
-      border-radius: 14px;
-      display: flex; align-items: flex-end;
-      justify-content: center;
-      padding-bottom: 8px; text-align: center;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0)),
-        linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%);
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: 0 8px 20px rgba(0,0,0,.3);
-    }
+    .browse-mini-jersey { width: 72px; height: 88px; border-radius: 14px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; text-align: center; background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0)), linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 8px 20px rgba(0,0,0,.3); }
     .browse-mini-jersey strong { font-size: 18px; line-height: 1; display: block; color: #fff; }
     .browse-mini-jersey small { font-size: 7px; font-weight: 700; letter-spacing: .8px; opacity: .85; color: #fff; }
-
-    .browse-card-active-dot {
-      position: absolute;
-      top: 8px; right: 8px;
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: #4caf50;
-      border: 1.5px solid #fff;
-      box-shadow: 0 1px 4px rgba(0,0,0,.2);
-    }
-
-    .browse-card-info {
-      padding: 9px 10px 10px;
-    }
-
-    .browse-card-name {
-      font-size: 11px;
-      font-weight: 800;
-      margin-bottom: 2px;
-      line-height: 1.3;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .browse-card-team {
-      font-size: 10px;
-      color: var(--muted);
-      margin-bottom: 6px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .browse-card-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 4px;
-    }
-
-    .browse-card-price {
-      font-size: 12px;
-      font-weight: 900;
-      color: var(--accent);
-    }
-
-    .browse-card-add {
-      width: 22px; height: 22px;
-      border: 1.5px solid var(--accent);
-      border-radius: 50%;
-      background: transparent;
-      color: var(--accent);
-      display: grid; place-items: center;
-      cursor: pointer;
-      transition: all .18s ease;
-      flex-shrink: 0;
-    }
+    .browse-card-active-dot { position: absolute; top: 8px; right: 8px; width: 7px; height: 7px; border-radius: 50%; background: #4caf50; border: 1.5px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+    .browse-card-info { padding: 9px 10px 10px; }
+    .browse-card-name { font-size: 11px; font-weight: 800; margin-bottom: 2px; line-height: 1.3; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .browse-card-team { font-size: 10px; color: var(--muted); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .browse-card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+    .browse-card-price { font-size: 12px; font-weight: 900; color: var(--accent); }
+    .browse-card-add { width: 22px; height: 22px; border: 1.5px solid var(--accent); border-radius: 50%; background: transparent; color: var(--accent); display: grid; place-items: center; cursor: pointer; transition: all .18s ease; flex-shrink: 0; }
     .browse-card-add svg { width: 10px; height: 10px; }
     .browse-card-add:hover { background: var(--accent); color: #fff; }
+    .browse-empty { text-align: center; padding: 20px 0; font-size: 12px; color: var(--muted); font-weight: 600; }
 
-    /* ── BROWSE EMPTY ── */
-    .browse-empty {
-      text-align: center;
-      padding: 20px 0;
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    /* ── TOAST ── */
-    .toast {
+    /* ── LIGHTBOX (fullscreen image viewer) ── */
+    .lightbox-overlay {
       position: fixed;
-      bottom: 90px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: #111;
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 99px;
-      font-size: 12px; font-weight: 700;
+      inset: 0;
+      background: rgba(0,0,0,.95);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: all .3s ease;
-      white-space: nowrap;
-      z-index: 200;
+      transition: opacity .25s ease;
     }
+    .lightbox-overlay.open { opacity: 1; pointer-events: all; }
+
+    .lightbox-slides {
+      position: relative;
+      width: 100%;
+      max-width: var(--maxw);
+      /* Maintain 3:4 ratio */
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+    }
+
+    .lightbox-track {
+      display: flex;
+      height: 100%;
+      transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .lightbox-slide {
+      flex: 0 0 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox-slide img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 40px; height: 40px;
+      border: 1.5px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      background: rgba(255,255,255,.1);
+      color: #fff;
+      display: grid; place-items: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: background .2s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,.25); }
+    .lightbox-close svg { width: 18px; height: 18px; }
+
+    .lightbox-counter {
+      position: absolute;
+      top: 16px; left: 16px;
+      color: rgba(255,255,255,.8);
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 10;
+    }
+
+    .lightbox-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px; height: 40px;
+      border: 1.5px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      background: rgba(255,255,255,.1);
+      color: #fff;
+      display: grid; place-items: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: background .2s;
+    }
+    .lightbox-arrow:hover { background: rgba(255,255,255,.25); }
+    .lightbox-arrow svg { width: 18px; height: 18px; }
+    .lightbox-arrow.prev { left: 12px; }
+    .lightbox-arrow.next { right: 12px; }
+    .lightbox-arrow:disabled { opacity: .25; pointer-events: none; }
+
+    .lightbox-dots {
+      margin-top: 16px;
+      display: flex;
+      gap: 6px;
+      z-index: 10;
+    }
+    .lightbox-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.35);
+      border: none; padding: 0; cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+    .lightbox-dot.active { background: #fff; transform: scale(1.3); }
+
+    /* Thumbnail strip in lightbox */
+    .lightbox-thumbs {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      z-index: 10;
+      overflow-x: auto;
+      max-width: min(100%, var(--maxw));
+      padding: 0 16px 4px;
+      scrollbar-width: none;
+    }
+    .lightbox-thumbs::-webkit-scrollbar { display: none; }
+    .lightbox-thumb {
+      flex: 0 0 52px;
+      height: 66px; /* 3:4 ratio */
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: border-color .2s, opacity .2s;
+      opacity: .55;
+    }
+    .lightbox-thumb.active { border-color: #fff; opacity: 1; }
+    .lightbox-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── TOAST ── */
+    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 10px 20px; border-radius: 99px; font-size: 12px; font-weight: 700; opacity: 0; pointer-events: none; transition: all .3s ease; white-space: nowrap; z-index: 200; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* ── FOOTER ── */
-    .footer {
-      margin-top: 6px;
-      background: linear-gradient(180deg, #111, #1a1a1a);
-      color: #fff;
-      padding: 22px 16px 24px;
-      border-radius: 24px 24px 0 0;
-    }
+    .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0; }
     .footer h4 { font-size: 18px; margin-bottom: 8px; font-weight: 900; }
     .footer p { font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: 12px; }
     .footer-links { display: flex; flex-wrap: wrap; gap: 10px 14px; font-size: 12px; color: rgba(255,255,255,.9); margin-bottom: 14px; }
@@ -727,37 +474,13 @@
     .copy { font-size: 11px; color: rgba(255,255,255,.55); border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; }
 
     /* ── BOTTOM NAV ── */
-    .bottom-nav {
-      position: fixed;
-      left: 50%; transform: translateX(-50%);
-      bottom: 12px;
-      width: min(100%, calc(var(--maxw) - 16px));
-      background: rgba(255,255,255,.96);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0,0,0,.06);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 8px;
-      z-index: 50;
-    }
-
-    .nav-item {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 4px;
-      font-size: 10px; color: #555;
-      min-width: 56px; cursor: pointer;
-      text-decoration: none;
-      transition: color .2s ease;
-    }
+    .bottom-nav { position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px; width: min(100%, calc(var(--maxw) - 16px)); background: rgba(255,255,255,.96); backdrop-filter: blur(10px); border: 1px solid rgba(0,0,0,.06); border-radius: 22px; box-shadow: var(--shadow); display: flex; justify-content: space-around; padding: 10px 8px; z-index: 50; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: #555; min-width: 56px; cursor: pointer; text-decoration: none; transition: color .2s ease; }
     .nav-item svg { width: 19px; height: 19px }
     .nav-item.active { color: var(--accent); font-weight: 800; }
     .nav-item:hover:not(.active) { color: #111; }
 
-    @media (max-width: 380px) {
-      .logo { font-size: 40px }
-    }
+    @media (max-width: 380px) { .logo { font-size: 40px } }
   </style>
 </head>
 
@@ -770,8 +493,7 @@
       <div class="header-actions">
         <a href="checkout.html" class="icon-btn" aria-label="Cart">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="9" cy="20" r="1"></circle>
-            <circle cx="17" cy="20" r="1"></circle>
+            <circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle>
             <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path>
           </svg>
           <span class="cart-count" id="cartCountBadge">0</span>
@@ -788,16 +510,12 @@
     <!-- SEARCH -->
     <div class="search-wrap">
       <div class="search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="7"></circle>
-          <path d="M21 21l-4.3-4.3"></path>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
         <input type="text" id="searchInput" placeholder="Search jerseys, clubs, countries…" />
         <svg class="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 1a3 3 0 0 0-3 3v7a3 3 0 1 0 6 0V4a3 3 0 0 0-3-3z"></path>
           <path d="M5 11a7 7 0 0 0 14 0"></path>
-          <path d="M12 18v4"></path>
-          <path d="M8 22h8"></path>
+          <path d="M12 18v4"></path><path d="M8 22h8"></path>
         </svg>
       </div>
     </div>
@@ -806,38 +524,24 @@
     <section class="filters">
       <select id="filterTeam">
         <option value="">All Teams & Clubs</option>
-        <option value="argentina">Argentina</option>
-        <option value="brazil">Brazil</option>
-        <option value="france">France</option>
-        <option value="germany">Germany</option>
-        <option value="spain">Spain</option>
-        <option value="portugal">Portugal</option>
-        <option value="barcelona">Barcelona</option>
-        <option value="real madrid">Real Madrid</option>
-        <option value="chelsea">Chelsea</option>
-        <option value="man city">Man City</option>
-        <option value="man utd">Man Utd</option>
-        <option value="psg">PSG</option>
+        <option value="argentina">Argentina</option><option value="brazil">Brazil</option>
+        <option value="france">France</option><option value="germany">Germany</option>
+        <option value="spain">Spain</option><option value="portugal">Portugal</option>
+        <option value="barcelona">Barcelona</option><option value="real madrid">Real Madrid</option>
+        <option value="chelsea">Chelsea</option><option value="man city">Man City</option>
+        <option value="man utd">Man Utd</option><option value="psg">PSG</option>
       </select>
       <select id="filterSize">
-        <option value="">All Sizes</option>
-        <option value="xs">XS</option>
-        <option value="s">S</option>
-        <option value="m">M</option>
-        <option value="l">L</option>
-        <option value="xl">XL</option>
+        <option value="">All Sizes</option><option value="xs">XS</option><option value="s">S</option>
+        <option value="m">M</option><option value="l">L</option><option value="xl">XL</option>
       </select>
       <select id="filterPrice">
-        <option value="">Any Price</option>
-        <option value="under1000">Under ₹1000</option>
-        <option value="1000to1500">₹1000 – ₹1500</option>
-        <option value="above1500">Above ₹1500</option>
+        <option value="">Any Price</option><option value="under1000">Under ₹1000</option>
+        <option value="1000to1500">₹1000 – ₹1500</option><option value="above1500">Above ₹1500</option>
       </select>
       <select id="filterSort">
-        <option value="">Sort: Default</option>
-        <option value="price_asc">Price: Low to High</option>
-        <option value="price_desc">Price: High to Low</option>
-        <option value="newest">Newest First</option>
+        <option value="">Sort: Default</option><option value="price_asc">Price: Low to High</option>
+        <option value="price_desc">Price: High to Low</option><option value="newest">Newest First</option>
       </select>
     </section>
 
@@ -848,51 +552,10 @@
         <span id="productCount"></span>
       </div>
       <div class="product-row" id="productTrack">
-        <!-- Skeleton placeholders -->
-        <div class="skeleton-card">
-          <div class="skeleton skeleton-img"></div>
-          <div class="skeleton-body">
-            <div class="skeleton skeleton-title"></div>
-            <div class="skeleton skeleton-sub"></div>
-            <div class="skeleton-bottom">
-              <div class="skeleton skeleton-price"></div>
-              <div class="skeleton skeleton-btn"></div>
-            </div>
-          </div>
-        </div>
-        <div class="skeleton-card">
-          <div class="skeleton skeleton-img"></div>
-          <div class="skeleton-body">
-            <div class="skeleton skeleton-title"></div>
-            <div class="skeleton skeleton-sub"></div>
-            <div class="skeleton-bottom">
-              <div class="skeleton skeleton-price"></div>
-              <div class="skeleton skeleton-btn"></div>
-            </div>
-          </div>
-        </div>
-        <div class="skeleton-card">
-          <div class="skeleton skeleton-img"></div>
-          <div class="skeleton-body">
-            <div class="skeleton skeleton-title"></div>
-            <div class="skeleton skeleton-sub"></div>
-            <div class="skeleton-bottom">
-              <div class="skeleton skeleton-price"></div>
-              <div class="skeleton skeleton-btn"></div>
-            </div>
-          </div>
-        </div>
-        <div class="skeleton-card">
-          <div class="skeleton skeleton-img"></div>
-          <div class="skeleton-body">
-            <div class="skeleton skeleton-title"></div>
-            <div class="skeleton skeleton-sub"></div>
-            <div class="skeleton-bottom">
-              <div class="skeleton skeleton-price"></div>
-              <div class="skeleton skeleton-btn"></div>
-            </div>
-          </div>
-        </div>
+        <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
       </div>
       <div class="viewall-wrap" id="viewAllWrap" style="display:none;">
         <button class="viewall" id="viewAllBtn">View All</button>
@@ -904,47 +567,29 @@
       <h4>JERSIFY</h4>
       <p>Premium football jerseys, clubwear, and fan drops designed for people who want style on and off the pitch.</p>
       <div class="footer-links">
-        <a href="index.html">Home</a>
-        <a href="shop.html">Shop</a>
-        <a href="checkout.html">Cart</a>
-        <a href="profile.html">Profile</a>
+        <a href="index.html">Home</a><a href="shop.html">Shop</a>
+        <a href="checkout.html">Cart</a><a href="profile.html">Profile</a>
       </div>
       <div class="copy">© 2025 Jersify. All rights reserved.</div>
     </footer>
-
   </div>
 
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <a href="index.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 12l9-9 9 9"></path>
-        <path d="M5 10v10h14V10"></path>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"></path><path d="M5 10v10h14V10"></path></svg>
       <div>Home</div>
     </a>
     <a href="shop.html" class="nav-item active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M4 10h16"></path>
-        <path d="M5 10l1-5h12l1 5"></path>
-        <path d="M4 10v8h16v-8"></path>
-        <path d="M9 18v-4h6v4"></path>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16"></path><path d="M5 10l1-5h12l1 5"></path><path d="M4 10v8h16v-8"></path><path d="M9 18v-4h6v4"></path></svg>
       <div>Shop</div>
     </a>
     <a href="checkout.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M6 6h15l-1.5 9h-12z"></path>
-        <circle cx="9" cy="20" r="1"></circle>
-        <circle cx="18" cy="20" r="1"></circle>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"></path><circle cx="9" cy="20" r="1"></circle><circle cx="18" cy="20" r="1"></circle></svg>
       <div>Cart</div>
     </a>
     <a href="profile.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
       <div>Profile</div>
     </a>
   </nav>
@@ -953,22 +598,34 @@
   <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
   <div class="drawer" id="drawer">
     <div class="drawer-handle"></div>
-    <div class="drawer-scroll">
-      <div class="drawer-img" id="drawerImg">
+    <div class="drawer-scroll" id="drawerScroll">
+
+      <!-- ── 3:4 IMAGE GALLERY ── -->
+      <div class="drawer-img-gallery" id="drawerImgGallery">
         <button class="drawer-close" onclick="closeDrawer()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M18 6L6 18M6 6l12 12"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
-        <img id="drawerImgEl" src="" alt="" style="display:none"/>
-        <div id="drawerImgPlaceholder" class="jersey-card">
-          <div><strong id="drawerNum">10</strong><small id="drawerType">KIT</small></div>
+        <div class="drawer-img-counter" id="drawerImgCounter" style="display:none">1 / 1</div>
+
+        <div class="drawer-slides" id="drawerSlides">
+          <!-- slides injected by JS -->
         </div>
+
+        <!-- Prev / Next (shown only if >1 image) -->
+        <button class="drawer-arrow prev" id="drawerPrev" onclick="slideDrawer(-1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="drawer-arrow next" id="drawerNext" onclick="slideDrawer(1)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+
+        <div class="drawer-dots" id="drawerDots"></div>
+        <div class="swipe-hint" id="swipeHint" style="display:none">← Swipe to browse images →</div>
       </div>
+
+      <!-- BODY -->
       <div class="drawer-body">
-        <div class="drawer-badge-row">
-          <span class="d-badge" id="drawerBadge">Home Kit</span>
-        </div>
+        <div class="drawer-badge-row"><span class="d-badge" id="drawerBadge">Home Kit</span></div>
         <div class="drawer-name" id="drawerName">Jersey Name</div>
         <div class="drawer-team" id="drawerTeam">Team Name</div>
         <div class="drawer-price-row">
@@ -979,19 +636,15 @@
         <div class="size-grid" id="drawerSizeGrid"></div>
       </div>
 
-      <!-- ACTION BUTTONS (inside scroll so they scroll with content) -->
       <div class="drawer-actions" id="drawerActionsInner">
         <button class="d-cart-btn" id="drawerCartBtn" onclick="addToCartFromDrawer()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle>
-            <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
           Add to Cart
         </button>
         <button class="d-buy-btn" id="drawerBuyBtn">Buy Now →</button>
       </div>
 
-      <!-- BROWSE MORE SECTION -->
+      <!-- BROWSE MORE -->
       <div class="browse-section" id="browseSection">
         <div class="browse-divider"></div>
         <div class="browse-header">
@@ -1001,12 +654,31 @@
           </div>
           <span class="browse-count" id="browseCount"></span>
         </div>
-        <div class="browse-track" id="browseTrack">
-          <!-- populated by JS -->
-        </div>
+        <div class="browse-track" id="browseTrack"></div>
       </div>
 
-    </div><!-- /drawer-scroll -->
+    </div>
+  </div>
+
+  <!-- ── LIGHTBOX ── -->
+  <div class="lightbox-overlay" id="lightboxOverlay">
+    <button class="lightbox-close" onclick="closeLightbox()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="lightbox-counter" id="lightboxCounter"></div>
+
+    <div class="lightbox-slides" id="lightboxSlides">
+      <button class="lightbox-arrow prev" id="lightboxPrev" onclick="slideLightbox(-1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="lightbox-arrow next" id="lightboxNext" onclick="slideLightbox(1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div class="lightbox-track" id="lightboxTrack"></div>
+    </div>
+
+    <div class="lightbox-dots" id="lightboxDots"></div>
+    <div class="lightbox-thumbs" id="lightboxThumbs"></div>
   </div>
 
   <!-- TOAST -->
@@ -1015,7 +687,7 @@
   <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
@@ -1033,14 +705,9 @@
     let showAll = false;
     const PAGE_SIZE = 6;
 
-    // ── CART (localStorage) ──
-    function getCart() {
-      try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; }
-    }
-    function saveCart(cart) {
-      localStorage.setItem('jersify_cart', JSON.stringify(cart));
-      updateCartBadge();
-    }
+    /* ── CART ── */
+    function getCart() { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } }
+    function saveCart(cart) { localStorage.setItem('jersify_cart', JSON.stringify(cart)); updateCartBadge(); }
     function updateCartBadge() {
       const cart = getCart();
       const badge = document.getElementById('cartCountBadge');
@@ -1053,13 +720,11 @@
       const cart = getCart();
       const key = `${id}_${size}`;
       const existing = cart.find(i => i.key === key);
-      if (existing) { existing.qty += 1; }
-      else { cart.push({ key, id, name, price, imgUrl, team, size, qty: 1, emoji: '👕' }); }
+      if (existing) { existing.qty += 1; } else { cart.push({ key, id, name, price, imgUrl, team, size, qty: 1, emoji: '👕' }); }
       saveCart(cart);
       showToast(`✓ Added to cart`);
     };
 
-    // ── TOAST ──
     window.showToast = function(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -1067,11 +732,211 @@
       setTimeout(() => t.classList.remove('show'), 2200);
     };
 
-    // ── DRAWER STATE ──
+    /* ── DRAWER GALLERY STATE ── */
     let drawerProduct = null;
-    let drawerSelectedSize = '';
+    let drawerCurrentSlide = 0;
+    let drawerImages = [];
 
-    // ── RENDER BROWSE SECTION ──
+    /* ── LIGHTBOX STATE ── */
+    let lightboxImages = [];
+    let lightboxCurrentSlide = 0;
+
+    /* ── HELPERS ── */
+    function getProductImages(p) {
+      // Prefer images array, fall back to single imgUrl
+      if (p.images && p.images.length > 0) return p.images.filter(Boolean);
+      if (p.imgUrl) return [p.imgUrl];
+      return [];
+    }
+
+    /* ── BUILD DRAWER GALLERY ── */
+    function buildDrawerGallery(images) {
+      drawerImages = images;
+      drawerCurrentSlide = 0;
+
+      const slidesEl = document.getElementById('drawerSlides');
+      const dotsEl = document.getElementById('drawerDots');
+      const counter = document.getElementById('drawerImgCounter');
+      const prevBtn = document.getElementById('drawerPrev');
+      const nextBtn = document.getElementById('drawerNext');
+      const swipeHint = document.getElementById('swipeHint');
+
+      // Build slides
+      if (images.length === 0) {
+        // Placeholder
+        slidesEl.innerHTML = `
+          <div class="drawer-slide">
+            <div class="drawer-slide-placeholder">
+              <div class="jersey-card">
+                <div><strong id="drawerNum">10</strong><small id="drawerType">KIT</small></div>
+              </div>
+            </div>
+          </div>`;
+        dotsEl.innerHTML = '';
+        counter.style.display = 'none';
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+        swipeHint.style.display = 'none';
+      } else {
+        slidesEl.innerHTML = images.map((url, i) => `
+          <div class="drawer-slide" onclick="openLightbox(${i})" title="Click to view fullscreen">
+            <img src="${url}" alt="Product image ${i+1}" loading="${i === 0 ? 'eager' : 'lazy'}" draggable="false"/>
+          </div>`).join('');
+
+        // Dots
+        dotsEl.innerHTML = images.length > 1
+          ? images.map((_, i) => `<button class="drawer-dot${i===0?' active':''}" onclick="goToDrawerSlide(${i})"></button>`).join('')
+          : '';
+
+        // Counter
+        if (images.length > 1) {
+          counter.style.display = 'block';
+          counter.textContent = `1 / ${images.length}`;
+        } else {
+          counter.style.display = 'none';
+        }
+
+        // Arrows
+        const multi = images.length > 1;
+        prevBtn.style.display = multi ? 'grid' : 'none';
+        nextBtn.style.display = multi ? 'grid' : 'none';
+        swipeHint.style.display = images.length > 1 ? 'block' : 'none';
+
+        updateDrawerSlideUI();
+      }
+
+      slidesEl.style.transform = 'translateX(0%)';
+    }
+
+    function updateDrawerSlideUI() {
+      const slidesEl = document.getElementById('drawerSlides');
+      slidesEl.style.transform = `translateX(-${drawerCurrentSlide * 100}%)`;
+
+      const counter = document.getElementById('drawerImgCounter');
+      if (drawerImages.length > 1) counter.textContent = `${drawerCurrentSlide + 1} / ${drawerImages.length}`;
+
+      document.querySelectorAll('#drawerDots .drawer-dot').forEach((d, i) => d.classList.toggle('active', i === drawerCurrentSlide));
+
+      const prevBtn = document.getElementById('drawerPrev');
+      const nextBtn = document.getElementById('drawerNext');
+      if (prevBtn) prevBtn.disabled = drawerCurrentSlide === 0;
+      if (nextBtn) nextBtn.disabled = drawerCurrentSlide === drawerImages.length - 1;
+    }
+
+    window.slideDrawer = function(dir) {
+      drawerCurrentSlide = Math.max(0, Math.min(drawerImages.length - 1, drawerCurrentSlide + dir));
+      updateDrawerSlideUI();
+    };
+
+    window.goToDrawerSlide = function(idx) {
+      drawerCurrentSlide = idx;
+      updateDrawerSlideUI();
+    };
+
+    /* ── TOUCH SWIPE on drawer ── */
+    let touchStartX = 0, touchStartY = 0;
+    document.getElementById('drawerImgGallery').addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    document.getElementById('drawerImgGallery').addEventListener('touchend', e => {
+      if (!drawerImages.length) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+        slideDrawer(dx < 0 ? 1 : -1);
+      }
+    }, { passive: true });
+
+    /* ── LIGHTBOX ── */
+    window.openLightbox = function(startIndex) {
+      if (drawerImages.length === 0) return;
+      lightboxImages = [...drawerImages];
+      lightboxCurrentSlide = startIndex || 0;
+
+      const track = document.getElementById('lightboxTrack');
+      const dots = document.getElementById('lightboxDots');
+      const thumbs = document.getElementById('lightboxThumbs');
+
+      track.innerHTML = lightboxImages.map((url, i) => `
+        <div class="lightbox-slide">
+          <img src="${url}" alt="Image ${i+1}" draggable="false"/>
+        </div>`).join('');
+
+      dots.innerHTML = lightboxImages.length > 1
+        ? lightboxImages.map((_, i) => `<button class="lightbox-dot" onclick="slideLightbox(0, ${i})"></button>`).join('')
+        : '';
+
+      thumbs.innerHTML = lightboxImages.length > 1
+        ? lightboxImages.map((url, i) => `
+            <div class="lightbox-thumb" onclick="slideLightbox(0, ${i})">
+              <img src="${url}" alt="Thumb ${i+1}" loading="lazy"/>
+            </div>`).join('')
+        : '';
+
+      document.getElementById('lightboxOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      updateLightboxUI();
+    };
+
+    window.closeLightbox = function() {
+      document.getElementById('lightboxOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    window.slideLightbox = function(dir, targetIdx) {
+      if (targetIdx !== undefined) {
+        lightboxCurrentSlide = targetIdx;
+      } else {
+        lightboxCurrentSlide = Math.max(0, Math.min(lightboxImages.length - 1, lightboxCurrentSlide + dir));
+      }
+      updateLightboxUI();
+    };
+
+    function updateLightboxUI() {
+      const track = document.getElementById('lightboxTrack');
+      track.style.transform = `translateX(-${lightboxCurrentSlide * 100}%)`;
+
+      document.getElementById('lightboxCounter').textContent = lightboxImages.length > 1
+        ? `${lightboxCurrentSlide + 1} / ${lightboxImages.length}` : '';
+
+      document.querySelectorAll('#lightboxDots .lightbox-dot').forEach((d, i) => d.classList.toggle('active', i === lightboxCurrentSlide));
+      document.querySelectorAll('.lightbox-thumb').forEach((t, i) => t.classList.toggle('active', i === lightboxCurrentSlide));
+
+      const prev = document.getElementById('lightboxPrev');
+      const next = document.getElementById('lightboxNext');
+      if (prev) prev.disabled = lightboxCurrentSlide === 0;
+      if (next) next.disabled = lightboxCurrentSlide === lightboxImages.length - 1;
+
+      // Scroll thumbnail into view
+      const activethumb = document.querySelectorAll('.lightbox-thumb')[lightboxCurrentSlide];
+      if (activethumb) activethumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    /* Touch swipe in lightbox */
+    let lbTouchX = 0;
+    document.getElementById('lightboxOverlay').addEventListener('touchstart', e => { lbTouchX = e.touches[0].clientX; }, { passive: true });
+    document.getElementById('lightboxOverlay').addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - lbTouchX;
+      if (Math.abs(dx) > 40) slideLightbox(dx < 0 ? 1 : -1);
+    }, { passive: true });
+
+    /* Close lightbox on overlay click (not on image) */
+    document.getElementById('lightboxOverlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('lightboxOverlay')) closeLightbox();
+    });
+
+    /* Keyboard navigation */
+    document.addEventListener('keydown', e => {
+      const lb = document.getElementById('lightboxOverlay');
+      if (lb.classList.contains('open')) {
+        if (e.key === 'ArrowLeft') slideLightbox(-1);
+        if (e.key === 'ArrowRight') slideLightbox(1);
+        if (e.key === 'Escape') closeLightbox();
+      }
+    });
+
+    /* ── BROWSE SECTION ── */
     function renderBrowse(currentId) {
       const others = allProducts.filter(p => p.id !== currentId);
       const track = document.getElementById('browseTrack');
@@ -1088,23 +953,17 @@
       track.innerHTML = others.map(({ id, data: p }, i) => {
         const teamLabel = Array.isArray(p.team) ? p.team.join(', ') : (p.team || '');
         const shortTeam = teamLabel.length > 14 ? teamLabel.slice(0, 13) + '…' : teamLabel;
-        const shortName = (p.name || 'Jersify Kit').length > 14
-          ? (p.name || 'Jersify Kit').slice(0, 13) + '…'
-          : (p.name || 'Jersify Kit');
+        const shortName = (p.name || 'Jersify Kit').length > 14 ? (p.name || 'Jersify Kit').slice(0, 13) + '…' : (p.name || 'Jersify Kit');
+        const imgs = getProductImages(p);
+        const thumb = imgs[0] || '';
 
         return `
           <div class="browse-card" style="animation-delay:${i * 0.06}s" onclick="switchDrawer('${id}')">
             <div class="browse-card-img">
               <div class="browse-card-active-dot"></div>
-              ${p.imgUrl
-                ? `<img src="${p.imgUrl}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
-                : `<div class="browse-mini-jersey">
-                    <div>
-                      <strong>${p.number || '10'}</strong>
-                      <small>${(p.type || 'KIT').toUpperCase()}</small>
-                    </div>
-                   </div>`
-              }
+              ${thumb
+                ? `<img src="${thumb}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
+                : `<div class="browse-mini-jersey"><div><strong>${p.number || '10'}</strong><small>${(p.type || 'KIT').toUpperCase()}</small></div></div>`}
             </div>
             <div class="browse-card-info">
               <div class="browse-card-name">${shortName}</div>
@@ -1112,9 +971,7 @@
               <div class="browse-card-bottom">
                 <div class="browse-card-price">₹${Number(p.price || 1499).toLocaleString('en-IN')}</div>
                 <button class="browse-card-add" title="Quick add" onclick="event.stopPropagation(); quickAddToCart('${id}')">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M12 5v14M5 12h14"/>
-                  </svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
                 </button>
               </div>
             </div>
@@ -1122,41 +979,29 @@
       }).join('');
     }
 
-    // Switch to another product inside the drawer (no close/reopen flicker)
-    window.switchDrawer = function(id) {
-      const found = allProducts.find(p => p.id === id);
-      if (!found) return;
-
-      // Scroll drawer back to top smoothly
-      const scroll = document.querySelector('.drawer-scroll');
-      scroll.scrollTo({ top: 0, behavior: 'smooth' });
-
+    /* ── POPULATE DRAWER ── */
+    function populateDrawer(found) {
       drawerProduct = found;
-      drawerSelectedSize = '';
-
-      const { data: p } = found;
+      drawerCurrentSlide = 0;
+      const { id, data: p } = found;
       const teamLabel = Array.isArray(p.team) ? p.team.join(', ') : (p.team || 'Premium Kit');
 
       document.getElementById('drawerName').textContent = p.name || 'Jersify Kit';
       document.getElementById('drawerTeam').textContent = teamLabel;
       document.getElementById('drawerPrice').textContent = '₹' + Number(p.price || 1499).toLocaleString('en-IN');
       document.getElementById('drawerBadge').textContent = p.type || 'Kit';
-      document.getElementById('drawerNum').textContent = p.number || '10';
-      document.getElementById('drawerType').textContent = (p.type || 'KIT').toUpperCase();
 
-      const imgEl = document.getElementById('drawerImgEl');
-      const placeholder = document.getElementById('drawerImgPlaceholder');
-      if (p.imgUrl) {
-        imgEl.src = p.imgUrl;
-        imgEl.alt = p.name;
-        imgEl.style.display = 'block';
-        placeholder.style.display = 'none';
-      } else {
-        imgEl.style.display = 'none';
-        placeholder.style.display = 'flex';
-      }
+      // Update jersey-card num/type inside placeholder if no images
+      const numEl = document.getElementById('drawerNum');
+      const typeEl = document.getElementById('drawerType');
+      if (numEl) numEl.textContent = p.number || '10';
+      if (typeEl) typeEl.textContent = (p.type || 'KIT').toUpperCase();
 
-      // sizes
+      // Build image gallery
+      const imgs = getProductImages(p);
+      buildDrawerGallery(imgs);
+
+      // Sizes
       const sizes = ['xs','s','m','l','xl'];
       const sizeGrid = document.getElementById('drawerSizeGrid');
       sizeGrid.innerHTML = sizes.map(sz => {
@@ -1164,64 +1009,28 @@
         return `<button class="size-pill${avail ? '' : ' oos'}" data-size="${sz}" onclick="selectSize('${sz}', ${avail})">${sz.toUpperCase()}</button>`;
       }).join('');
 
+      // Buy button
       document.getElementById('drawerBuyBtn').onclick = () => {
         const sel = document.querySelector('.size-pill.selected');
         if (!sel) { showToast('Please select a size'); return; }
         window.location.href = `checkout.html?id=${id}&size=${sel.dataset.size}`;
       };
 
-      // Refresh browse section
       renderBrowse(id);
+    }
+
+    window.switchDrawer = function(id) {
+      const found = allProducts.find(p => p.id === id);
+      if (!found) return;
+      document.getElementById('drawerScroll').scrollTo({ top: 0, behavior: 'smooth' });
+      populateDrawer(found);
     };
 
     window.openDrawer = function(id) {
       const found = allProducts.find(p => p.id === id);
       if (!found) return;
-      drawerProduct = found;
-      drawerSelectedSize = '';
-
-      const { data: p } = found;
-      const teamLabel = Array.isArray(p.team) ? p.team.join(', ') : (p.team || 'Premium Kit');
-
-      document.getElementById('drawerName').textContent = p.name || 'Jersify Kit';
-      document.getElementById('drawerTeam').textContent = teamLabel;
-      document.getElementById('drawerPrice').textContent = '₹' + Number(p.price || 1499).toLocaleString('en-IN');
-      document.getElementById('drawerBadge').textContent = p.type || 'Kit';
-      document.getElementById('drawerNum').textContent = p.number || '10';
-      document.getElementById('drawerType').textContent = (p.type || 'KIT').toUpperCase();
-
-      const imgEl = document.getElementById('drawerImgEl');
-      const placeholder = document.getElementById('drawerImgPlaceholder');
-      if (p.imgUrl) {
-        imgEl.src = p.imgUrl;
-        imgEl.alt = p.name;
-        imgEl.style.display = 'block';
-        placeholder.style.display = 'none';
-      } else {
-        imgEl.style.display = 'none';
-        placeholder.style.display = 'flex';
-      }
-
-      // sizes
-      const sizes = ['xs','s','m','l','xl'];
-      const sizeGrid = document.getElementById('drawerSizeGrid');
-      sizeGrid.innerHTML = sizes.map(sz => {
-        const avail = p.sizes && p.sizes[sz] > 0;
-        return `<button class="size-pill${avail ? '' : ' oos'}" data-size="${sz}" onclick="selectSize('${sz}', ${avail})">${sz.toUpperCase()}</button>`;
-      }).join('');
-
-      document.getElementById('drawerBuyBtn').onclick = () => {
-        const sel = document.querySelector('.size-pill.selected');
-        if (!sel) { showToast('Please select a size'); return; }
-        window.location.href = `checkout.html?id=${id}&size=${sel.dataset.size}`;
-      };
-
-      // Render the browse section excluding current product
-      renderBrowse(id);
-
-      // Reset scroll position
-      document.querySelector('.drawer-scroll').scrollTop = 0;
-
+      populateDrawer(found);
+      document.getElementById('drawerScroll').scrollTop = 0;
       document.getElementById('overlay').classList.add('open');
       document.getElementById('drawer').classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -1237,7 +1046,6 @@
       if (!avail) return;
       document.querySelectorAll('.size-pill').forEach(p => p.classList.remove('selected'));
       document.querySelector(`.size-pill[data-size="${sz}"]`).classList.add('selected');
-      drawerSelectedSize = sz;
     };
 
     window.addToCartFromDrawer = function() {
@@ -1245,10 +1053,11 @@
       const sel = document.querySelector('.size-pill.selected');
       if (!sel) { showToast('Please select a size first'); return; }
       const { id, data: p } = drawerProduct;
-      addToCart(id, p.name || 'Jersify Kit', p.price || 1499, p.imgUrl || '', Array.isArray(p.team) ? p.team.join(', ') : (p.team || ''), sel.dataset.size);
+      const imgs = getProductImages(p);
+      addToCart(id, p.name || 'Jersify Kit', p.price || 1499, imgs[0] || '', Array.isArray(p.team) ? p.team.join(', ') : (p.team || ''), sel.dataset.size);
     };
 
-    // ── FILTERS & SORTING ──
+    /* ── FILTERS ── */
     function applyFiltersAndSort() {
       const teamFilter  = document.getElementById('filterTeam').value.toLowerCase();
       const sizeFilter  = document.getElementById('filterSize').value;
@@ -1293,9 +1102,7 @@
       if (filtered.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
             <p>No jerseys found.<br>Try adjusting your filters.</p>
           </div>`;
         viewAllWrap.style.display = 'none';
@@ -1307,20 +1114,18 @@
       container.innerHTML = toShow.map(({ id, data: p }, i) => {
         const teamLabel = Array.isArray(p.team) ? p.team.join(', ') : (p.team || 'Premium Kit');
         const isNew = p.createdAt && (Date.now() - p.createdAt) < 7 * 24 * 60 * 60 * 1000;
+        const imgs = getProductImages(p);
+        const primaryImg = imgs[0] || '';
+        const imgCount = imgs.length;
 
         return `
           <article class="product" style="animation-delay:${i * 0.07}s" onclick="openDrawer('${id}')">
             <div class="img">
               ${isNew ? '<span class="badge">New</span>' : ''}
-              ${p.imgUrl
-                ? `<img src="${p.imgUrl}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
-                : `<div class="jersey-card">
-                    <div>
-                      <strong>${p.number || '10'}</strong>
-                      <small>${(p.type || 'KIT').toUpperCase()}</small>
-                    </div>
-                   </div>`
-              }
+              ${imgCount > 1 ? `<span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;z-index:2;backdrop-filter:blur(4px)">📷 ${imgCount}</span>` : ''}
+              ${primaryImg
+                ? `<img src="${primaryImg}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
+                : `<div class="jersey-card"><div><strong>${p.number || '10'}</strong><small>${(p.type || 'KIT').toUpperCase()}</small></div></div>`}
             </div>
             <div class="product-info">
               <div class="title">${p.name || 'Jersify Kit'}</div>
@@ -1329,10 +1134,7 @@
                 <div class="price">₹${Number(p.price || 1499).toLocaleString('en-IN')}</div>
                 <div class="action-btns" onclick="event.stopPropagation()">
                   <button class="cart-btn" title="Add to Cart" onclick="quickAddToCart('${id}')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle>
-                      <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path>
-                    </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
                   </button>
                   <button class="buy-btn" onclick="window.location.href='checkout.html?id=${id}'">Buy</button>
                 </div>
@@ -1350,20 +1152,25 @@
     }
 
     window.quickAddToCart = function(id) {
-      const found = allProducts.find(p => p.id === id);
-      if (!found) return;
       openDrawer(id);
       showToast('Pick a size to add to cart');
     };
 
+    /* ── REAL-TIME DB LISTENER ── */
     window.addEventListener('DOMContentLoaded', async () => {
       updateCartBadge();
+
       try {
-        const snap = await get(ref(rtdb, 'products'));
-        allProducts = [];
-        if (snap.exists()) {
-          snap.forEach(child => allProducts.push({ id: child.key, data: child.val() }));
-        }
+        // Use onValue for real-time sync
+        onValue(ref(rtdb, 'products'), (snap) => {
+          allProducts = [];
+          if (snap.exists()) {
+            snap.forEach(child => allProducts.push({ id: child.key, data: child.val() }));
+          }
+          renderProducts();
+          // If drawer is open, refresh browse section
+          if (drawerProduct) renderBrowse(drawerProduct.id);
+        });
 
         ['filterTeam', 'filterSize', 'filterPrice', 'filterSort'].forEach(id => {
           document.getElementById(id).addEventListener('change', () => { showAll = false; renderProducts(); });
@@ -1377,15 +1184,11 @@
 
         document.getElementById('viewAllBtn').addEventListener('click', () => { showAll = true; renderProducts(); });
 
-        renderProducts();
-
       } catch (err) {
         console.error('Firebase error:', err);
         document.getElementById('productTrack').innerHTML = `
           <div class="empty-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01"/></svg>
             <p>Could not load products.<br>Please check your connection.</p>
           </div>`;
       }
