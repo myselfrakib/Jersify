@@ -141,140 +141,30 @@
     .drawer-handle { width: 40px; height: 4px; background: #ddd; border-radius: 99px; margin: 12px auto 0; flex-shrink: 0; }
     .drawer-scroll { overflow-y: auto; flex: 1; }
 
-    /* ── DRAWER IMAGE GALLERY (3:4 ratio, slidable) ── */
+    /* ── DRAWER IMAGE GALLERY ── */
     .drawer-img-gallery {
-      position: relative;
-      width: 100%;
-      /* 3:4 ratio = height is 133.33% of width */
+      position: relative; width: 100%;
       padding-top: 133.33%;
       background: linear-gradient(180deg, #131313 0%, #262626 100%);
       overflow: hidden;
     }
-
-    .drawer-slides {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      transition: transform .35s cubic-bezier(0.4, 0, 0.2, 1);
-      will-change: transform;
-    }
-
-    .drawer-slide {
-      flex: 0 0 100%;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      cursor: zoom-in;
-    }
-
-    .drawer-slide img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      user-select: none;
-      -webkit-user-drag: none;
-    }
-
-    .drawer-slide-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Prev / Next nav arrows */
-    .drawer-arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 10;
-      width: 34px; height: 34px;
-      border: none;
-      border-radius: 50%;
-      background: rgba(0,0,0,.45);
-      color: #fff;
-      display: grid; place-items: center;
-      cursor: pointer;
-      backdrop-filter: blur(6px);
-      transition: background .2s;
-      flex-shrink: 0;
-    }
+    .drawer-slides { position: absolute; inset: 0; display: flex; transition: transform .35s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
+    .drawer-slide { flex: 0 0 100%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; cursor: zoom-in; }
+    .drawer-slide img { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; }
+    .drawer-slide-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .drawer-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; width: 34px; height: 34px; border: none; border-radius: 50%; background: rgba(0,0,0,.45); color: #fff; display: grid; place-items: center; cursor: pointer; backdrop-filter: blur(6px); transition: background .2s; flex-shrink: 0; }
     .drawer-arrow:hover { background: rgba(0,0,0,.75); }
     .drawer-arrow svg { width: 16px; height: 16px; }
     .drawer-arrow.prev { left: 10px; }
     .drawer-arrow.next { right: 10px; }
     .drawer-arrow:disabled { opacity: 0; pointer-events: none; }
-
-    /* Dot indicators */
-    .drawer-dots {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 5px;
-      z-index: 10;
-    }
-    .drawer-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.45);
-      cursor: pointer;
-      transition: background .2s, transform .2s;
-      border: none; padding: 0;
-    }
+    .drawer-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10; }
+    .drawer-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.45); cursor: pointer; transition: background .2s, transform .2s; border: none; padding: 0; }
     .drawer-dot.active { background: #fff; transform: scale(1.35); }
-
-    /* Image counter badge */
-    .drawer-img-counter {
-      position: absolute;
-      top: 12px; right: 12px;
-      background: rgba(0,0,0,.55);
-      color: #fff;
-      font-size: 11px; font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 99px;
-      z-index: 10;
-      backdrop-filter: blur(4px);
-      letter-spacing: .3px;
-    }
-
-    /* Close button */
-    .drawer-close {
-      position: absolute;
-      top: 12px; left: 12px;
-      width: 36px; height: 36px;
-      border: none;
-      background: rgba(0,0,0,.4);
-      color: #fff;
-      border-radius: 50%;
-      display: grid; place-items: center;
-      cursor: pointer;
-      backdrop-filter: blur(4px);
-      z-index: 10;
-    }
+    .drawer-img-counter { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,.55); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; z-index: 10; backdrop-filter: blur(4px); letter-spacing: .3px; }
+    .drawer-close { position: absolute; top: 12px; left: 12px; width: 36px; height: 36px; border: none; background: rgba(0,0,0,.4); color: #fff; border-radius: 50%; display: grid; place-items: center; cursor: pointer; backdrop-filter: blur(4px); z-index: 10; }
     .drawer-close svg { width: 18px; height: 18px; }
-
-    /* Touch swipe hint */
-    .swipe-hint {
-      position: absolute;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 10px;
-      color: rgba(255,255,255,.6);
-      font-weight: 600;
-      letter-spacing: .5px;
-      z-index: 10;
-      pointer-events: none;
-      white-space: nowrap;
-    }
+    .swipe-hint { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); font-size: 10px; color: rgba(255,255,255,.6); font-weight: 600; letter-spacing: .5px; z-index: 10; pointer-events: none; white-space: nowrap; }
 
     .drawer-body { padding: 20px 20px 0; }
     .drawer-badge-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
@@ -329,135 +219,29 @@
     .browse-card-add:hover { background: var(--accent); color: #fff; }
     .browse-empty { text-align: center; padding: 20px 0; font-size: 12px; color: var(--muted); font-weight: 600; }
 
-    /* ── LIGHTBOX (fullscreen image viewer) ── */
-    .lightbox-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.95);
-      z-index: 300;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .25s ease;
-    }
+    /* ── LIGHTBOX ── */
+    .lightbox-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.95); z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
     .lightbox-overlay.open { opacity: 1; pointer-events: all; }
-
-    .lightbox-slides {
-      position: relative;
-      width: 100%;
-      max-width: var(--maxw);
-      /* Maintain 3:4 ratio */
-      aspect-ratio: 3 / 4;
-      overflow: hidden;
-    }
-
-    .lightbox-track {
-      display: flex;
-      height: 100%;
-      transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .lightbox-slide {
-      flex: 0 0 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .lightbox-slide img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      user-select: none;
-      -webkit-user-drag: none;
-    }
-
-    .lightbox-close {
-      position: absolute;
-      top: 16px; right: 16px;
-      width: 40px; height: 40px;
-      border: 1.5px solid rgba(255,255,255,.3);
-      border-radius: 50%;
-      background: rgba(255,255,255,.1);
-      color: #fff;
-      display: grid; place-items: center;
-      cursor: pointer;
-      z-index: 10;
-      transition: background .2s;
-    }
+    .lightbox-slides { position: relative; width: 100%; max-width: var(--maxw); aspect-ratio: 3 / 4; overflow: hidden; }
+    .lightbox-track { display: flex; height: 100%; transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .lightbox-slide { flex: 0 0 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .lightbox-slide img { max-width: 100%; max-height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+    .lightbox-close { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border: 1.5px solid rgba(255,255,255,.3); border-radius: 50%; background: rgba(255,255,255,.1); color: #fff; display: grid; place-items: center; cursor: pointer; z-index: 10; transition: background .2s; }
     .lightbox-close:hover { background: rgba(255,255,255,.25); }
     .lightbox-close svg { width: 18px; height: 18px; }
-
-    .lightbox-counter {
-      position: absolute;
-      top: 16px; left: 16px;
-      color: rgba(255,255,255,.8);
-      font-size: 13px;
-      font-weight: 700;
-      z-index: 10;
-    }
-
-    .lightbox-arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 40px; height: 40px;
-      border: 1.5px solid rgba(255,255,255,.3);
-      border-radius: 50%;
-      background: rgba(255,255,255,.1);
-      color: #fff;
-      display: grid; place-items: center;
-      cursor: pointer;
-      z-index: 10;
-      transition: background .2s;
-    }
+    .lightbox-counter { position: absolute; top: 16px; left: 16px; color: rgba(255,255,255,.8); font-size: 13px; font-weight: 700; z-index: 10; }
+    .lightbox-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border: 1.5px solid rgba(255,255,255,.3); border-radius: 50%; background: rgba(255,255,255,.1); color: #fff; display: grid; place-items: center; cursor: pointer; z-index: 10; transition: background .2s; }
     .lightbox-arrow:hover { background: rgba(255,255,255,.25); }
     .lightbox-arrow svg { width: 18px; height: 18px; }
     .lightbox-arrow.prev { left: 12px; }
     .lightbox-arrow.next { right: 12px; }
     .lightbox-arrow:disabled { opacity: .25; pointer-events: none; }
-
-    .lightbox-dots {
-      margin-top: 16px;
-      display: flex;
-      gap: 6px;
-      z-index: 10;
-    }
-    .lightbox-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.35);
-      border: none; padding: 0; cursor: pointer;
-      transition: background .2s, transform .2s;
-    }
+    .lightbox-dots { margin-top: 16px; display: flex; gap: 6px; z-index: 10; }
+    .lightbox-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.35); border: none; padding: 0; cursor: pointer; transition: background .2s, transform .2s; }
     .lightbox-dot.active { background: #fff; transform: scale(1.3); }
-
-    /* Thumbnail strip in lightbox */
-    .lightbox-thumbs {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-      z-index: 10;
-      overflow-x: auto;
-      max-width: min(100%, var(--maxw));
-      padding: 0 16px 4px;
-      scrollbar-width: none;
-    }
+    .lightbox-thumbs { display: flex; gap: 8px; margin-top: 12px; z-index: 10; overflow-x: auto; max-width: min(100%, var(--maxw)); padding: 0 16px 4px; scrollbar-width: none; }
     .lightbox-thumbs::-webkit-scrollbar { display: none; }
-    .lightbox-thumb {
-      flex: 0 0 52px;
-      height: 66px; /* 3:4 ratio */
-      border-radius: 8px;
-      overflow: hidden;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: border-color .2s, opacity .2s;
-      opacity: .55;
-    }
+    .lightbox-thumb { flex: 0 0 52px; height: 66px; border-radius: 8px; overflow: hidden; border: 2px solid transparent; cursor: pointer; transition: border-color .2s, opacity .2s; opacity: .55; }
     .lightbox-thumb.active { border-color: #fff; opacity: 1; }
     .lightbox-thumb img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -479,6 +263,11 @@
     .nav-item svg { width: 19px; height: 19px }
     .nav-item.active { color: var(--accent); font-weight: 800; }
     .nav-item:hover:not(.active) { color: #111; }
+
+    /* ── RETRY BANNER ── */
+    .retry-banner { background: #fff3cd; color: #856404; padding: 10px 16px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .retry-banner button { background: #856404; color: #fff; border: none; border-radius: 99px; padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .retry-banner.hidden { display: none; }
 
     @media (max-width: 380px) { .logo { font-size: 40px } }
   </style>
@@ -507,6 +296,11 @@
       </div>
     </header>
 
+    <!-- RETRY BANNER (hidden by default) -->
+    <div class="retry-banner hidden" id="retryBanner">
+      ⚠️ Could not reach database. <button onclick="retryFetch()">Retry</button>
+    </div>
+
     <!-- SEARCH -->
     <div class="search-wrap">
       <div class="search">
@@ -524,12 +318,6 @@
     <section class="filters">
       <select id="filterTeam">
         <option value="">All Teams & Clubs</option>
-        <option value="argentina">Argentina</option><option value="brazil">Brazil</option>
-        <option value="france">France</option><option value="germany">Germany</option>
-        <option value="spain">Spain</option><option value="portugal">Portugal</option>
-        <option value="barcelona">Barcelona</option><option value="real madrid">Real Madrid</option>
-        <option value="chelsea">Chelsea</option><option value="man city">Man City</option>
-        <option value="man utd">Man Utd</option><option value="psg">PSG</option>
       </select>
       <select id="filterSize">
         <option value="">All Sizes</option><option value="xs">XS</option><option value="s">S</option>
@@ -552,6 +340,7 @@
         <span id="productCount"></span>
       </div>
       <div class="product-row" id="productTrack">
+        <!-- Skeletons -->
         <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
         <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
         <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
@@ -600,25 +389,19 @@
     <div class="drawer-handle"></div>
     <div class="drawer-scroll" id="drawerScroll">
 
-      <!-- ── 3:4 IMAGE GALLERY ── -->
+      <!-- IMAGE GALLERY -->
       <div class="drawer-img-gallery" id="drawerImgGallery">
         <button class="drawer-close" onclick="closeDrawer()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
         <div class="drawer-img-counter" id="drawerImgCounter" style="display:none">1 / 1</div>
-
-        <div class="drawer-slides" id="drawerSlides">
-          <!-- slides injected by JS -->
-        </div>
-
-        <!-- Prev / Next (shown only if >1 image) -->
+        <div class="drawer-slides" id="drawerSlides"></div>
         <button class="drawer-arrow prev" id="drawerPrev" onclick="slideDrawer(-1)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
         <button class="drawer-arrow next" id="drawerNext" onclick="slideDrawer(1)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
         </button>
-
         <div class="drawer-dots" id="drawerDots"></div>
         <div class="swipe-hint" id="swipeHint" style="display:none"></div>
       </div>
@@ -656,17 +439,15 @@
         </div>
         <div class="browse-track" id="browseTrack"></div>
       </div>
-
     </div>
   </div>
 
-  <!-- ── LIGHTBOX ── -->
+  <!-- LIGHTBOX -->
   <div class="lightbox-overlay" id="lightboxOverlay">
     <button class="lightbox-close" onclick="closeLightbox()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
     <div class="lightbox-counter" id="lightboxCounter"></div>
-
     <div class="lightbox-slides" id="lightboxSlides">
       <button class="lightbox-arrow prev" id="lightboxPrev" onclick="slideLightbox(-1)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
@@ -676,7 +457,6 @@
       </button>
       <div class="lightbox-track" id="lightboxTrack"></div>
     </div>
-
     <div class="lightbox-dots" id="lightboxDots"></div>
     <div class="lightbox-thumbs" id="lightboxThumbs"></div>
   </div>
@@ -684,45 +464,58 @@
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
-  <!-- FIREBASE -->
+  <!-- FIREBASE + SHOP LOGIC -->
   <script type="module">
+    /* ════════════════════════════════════════════════
+       FIREBASE CONFIG
+       databaseURL is REQUIRED for Realtime Database
+    ════════════════════════════════════════════════ */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getDatabase, ref, get }
+                             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
-      authDomain: "jersify-f9b5e.firebaseapp.com",
-      projectId: "jersify-f9b5e",
-      storageBucket: "jersify-f9b5e.firebasestorage.app",
+    const FIREBASE_CONFIG = {
+      apiKey:            "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
+      authDomain:        "jersify-f9b5e.firebaseapp.com",
+      databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com",
+      projectId:         "jersify-f9b5e",
+      storageBucket:     "jersify-f9b5e.firebasestorage.app",
       messagingSenderId: "461181023878",
-      appId: "1:461181023878:web:6ebfbae603baf4a873c307"
+      appId:             "1:461181023878:web:6ebfbae603baf4a873c307"
     };
 
-    const app = initializeApp(firebaseConfig);
+    // Direct REST endpoint — no SDK cold-start issues, always reliable
+    const RTDB_REST = "https://jersify-f9b5e-default-rtdb.firebaseio.com/products.json";
+
+    const app  = initializeApp(FIREBASE_CONFIG);
     const rtdb = getDatabase(app);
 
-    let allProducts = [];
-    let showAll = false;
-    const PAGE_SIZE = 6;
+    /* ══ STATE ══ */
+    let allProducts  = [];   // [{ id, data }]
+    let showAll      = false;
+    let bgRefreshTimer = null;
+    const PAGE_SIZE  = 200; // effectively show all
 
-    /* ── CART ── */
-    function getCart() { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } }
+    /* ══════════════════════════════════════════
+       CART
+    ══════════════════════════════════════════ */
+    function getCart()      { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } }
     function saveCart(cart) { localStorage.setItem('jersify_cart', JSON.stringify(cart)); updateCartBadge(); }
+
     function updateCartBadge() {
-      const cart = getCart();
+      const total = getCart().reduce((s, i) => s + (i.qty || 1), 0);
       const badge = document.getElementById('cartCountBadge');
-      const total = cart.reduce((s, i) => s + i.qty, 0);
       badge.textContent = total;
       badge.classList.toggle('show', total > 0);
     }
 
     window.addToCart = function(id, name, price, imgUrl, team, size) {
       const cart = getCart();
-      const key = `${id}_${size}`;
-      const existing = cart.find(i => i.key === key);
-      if (existing) { existing.qty += 1; } else { cart.push({ key, id, name, price, imgUrl, team, size, qty: 1, emoji: '👕' }); }
+      const key  = `${id}_${size}`;
+      const hit  = cart.find(i => i.key === key);
+      if (hit) { hit.qty += 1; } else { cart.push({ key, id, name, price, imgUrl, team, size, qty: 1, emoji: '👕' }); }
       saveCart(cart);
-      showToast(`✓ Added to cart`);
+      showToast('✓ Added to cart');
     };
 
     window.showToast = function(msg) {
@@ -732,38 +525,289 @@
       setTimeout(() => t.classList.remove('show'), 2200);
     };
 
-    /* ── DRAWER GALLERY STATE ── */
-    let drawerProduct = null;
-    let drawerCurrentSlide = 0;
-    let drawerImages = [];
-
-    /* ── LIGHTBOX STATE ── */
-    let lightboxImages = [];
-    let lightboxCurrentSlide = 0;
-
-    /* ── HELPERS ── */
+    /* ══════════════════════════════════════════
+       HELPERS
+    ══════════════════════════════════════════ */
     function getProductImages(p) {
-      // Prefer images array, fall back to single imgUrl
-      if (p.images && p.images.length > 0) return p.images.filter(Boolean);
+      if (Array.isArray(p.images) && p.images.length > 0) return p.images.filter(Boolean);
       if (p.imgUrl) return [p.imgUrl];
       return [];
     }
 
-    /* ── BUILD DRAWER GALLERY ── */
+    function teamLabel(p) {
+      return Array.isArray(p.team) ? p.team.join(', ') : (p.team || 'Premium Kit');
+    }
+
+    /* ══════════════════════════════════════════
+       FETCH PRODUCTS
+       Strategy:
+         1. REST fetch (fastest, no SDK overhead)
+         2. Firebase SDK get() as fallback
+         3. Background silent refresh every 90s
+            — only updates UI if new data differs
+    ══════════════════════════════════════════ */
+    async function fetchViaREST() {
+      const res  = await fetch(RTDB_REST, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data || typeof data !== 'object') return [];
+      return Object.entries(data).map(([id, val]) => ({ id, data: val }));
+    }
+
+    async function fetchViaSDK() {
+      const snap = await get(ref(rtdb, 'products'));
+      if (!snap.exists()) return [];
+      const list = [];
+      snap.forEach(child => list.push({ id: child.key, data: child.val() }));
+      return list;
+    }
+
+    // Apply new products ONLY if count >= what we already have (never shrink display)
+    function applyProducts(fresh) {
+      if (fresh.length === 0 && allProducts.length > 0) return; // guard: never clear working data
+      allProducts = fresh;
+      buildTeamFilter();
+      renderProducts();
+      if (drawerProduct) renderBrowse(drawerProduct.id);
+      document.getElementById('retryBanner').classList.add('hidden');
+    }
+
+    async function loadProducts(isBackground = false) {
+      if (!isBackground) showSkeletons();
+
+      let fetched = null;
+
+      // 1️⃣ REST fetch
+      try {
+        fetched = await fetchViaREST();
+      } catch (e) {
+        console.warn('[Jersify] REST fetch failed:', e.message);
+      }
+
+      // 2️⃣ SDK get() fallback
+      if (fetched === null) {
+        try {
+          fetched = await fetchViaSDK();
+        } catch (e) {
+          console.warn('[Jersify] SDK get() failed:', e.message);
+        }
+      }
+
+      if (fetched === null) {
+        // Both failed
+        if (!isBackground) {
+          showError();
+          document.getElementById('retryBanner').classList.remove('hidden');
+        }
+        return;
+      }
+
+      applyProducts(fetched);
+    }
+
+    // Silent background refresh — keeps data fresh without listener race conditions
+    function startBackgroundRefresh() {
+      clearInterval(bgRefreshTimer);
+      bgRefreshTimer = setInterval(() => loadProducts(true), 90_000); // every 90s
+    }
+
+    window.retryFetch = async function() {
+      document.getElementById('retryBanner').classList.add('hidden');
+      await loadProducts(false);
+    };
+
+    function showSkeletons() {
+      document.getElementById('productTrack').innerHTML = `
+        <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>`;
+    }
+
+    function showError() {
+      document.getElementById('productTrack').innerHTML = `
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01"/></svg>
+          <p>Could not load products.<br>Check your connection and retry.</p>
+        </div>`;
+    }
+
+    /* ══════════════════════════════════════════
+       DYNAMIC TEAM FILTER  (built from real data)
+    ══════════════════════════════════════════ */
+    function buildTeamFilter() {
+      const sel = document.getElementById('filterTeam');
+      const current = sel.value;
+
+      // Collect unique team names
+      const teams = new Set();
+      allProducts.forEach(({ data: p }) => {
+        const t = Array.isArray(p.team) ? p.team : [p.team || ''];
+        t.forEach(name => { if (name) teams.add(name.trim()); });
+      });
+
+      // Rebuild options
+      sel.innerHTML = '<option value="">All Teams & Clubs</option>' +
+        [...teams].sort().map(t => `<option value="${t.toLowerCase()}">${t}</option>`).join('');
+
+      // Restore selection if it still applies
+      if (current) {
+        const opt = [...sel.options].find(o => o.value === current);
+        if (opt) sel.value = current;
+      }
+    }
+
+    /* ══════════════════════════════════════════
+       FILTERS & SORTING
+    ══════════════════════════════════════════ */
+    function isActive(p) {
+      // Show product if status is 'active' OR status field is absent
+      return !p.status || p.status === 'active';
+    }
+
+    function applyFiltersAndSort() {
+      const teamFilter  = document.getElementById('filterTeam').value.toLowerCase();
+      const sizeFilter  = document.getElementById('filterSize').value.toLowerCase();
+      const priceFilter = document.getElementById('filterPrice').value;
+      const sortVal     = document.getElementById('filterSort').value;
+      const searchVal   = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+
+      let filtered = allProducts.filter(({ data: p }) => {
+        if (!isActive(p)) return false;
+
+        // Team filter
+        if (teamFilter) {
+          const pt = (Array.isArray(p.team) ? p.team.join(' ') : (p.team || '')).toLowerCase();
+          if (!pt.includes(teamFilter)) return false;
+        }
+
+        // Size filter  (a product passes if the size key exists with qty > 0 OR sizes not set at all)
+        if (sizeFilter) {
+          if (p.sizes) {
+            const qty = Number(p.sizes[sizeFilter] ?? 0);
+            if (qty <= 0) return false;
+          }
+          // If no sizes object at all → still show (stock unknown, don't hide)
+        }
+
+        // Price filter
+        const price = parseFloat(p.price || 0);
+        if (priceFilter === 'under1000'  && price >= 1000) return false;
+        if (priceFilter === '1000to1500' && (price < 1000 || price > 1500)) return false;
+        if (priceFilter === 'above1500'  && price <= 1500) return false;
+
+        // Search
+        if (searchVal) {
+          const hay = [p.name || '', teamLabel(p), p.type || '', p.badge || ''].join(' ').toLowerCase();
+          if (!hay.includes(searchVal)) return false;
+        }
+
+        return true;
+      });
+
+      // Sorting
+      if (sortVal === 'price_asc')  filtered.sort((a, b) => parseFloat(a.data.price || 0) - parseFloat(b.data.price || 0));
+      if (sortVal === 'price_desc') filtered.sort((a, b) => parseFloat(b.data.price || 0) - parseFloat(a.data.price || 0));
+      if (sortVal === 'newest') {
+        filtered.sort((a, b) => {
+          const ta = a.data.createdAt || a.data.updatedAt || 0;
+          const tb = b.data.createdAt || b.data.updatedAt || 0;
+          return tb - ta;
+        });
+      }
+
+      return filtered;
+    }
+
+    /* ══════════════════════════════════════════
+       RENDER PRODUCTS
+    ══════════════════════════════════════════ */
+    function renderProducts() {
+      const container   = document.getElementById('productTrack');
+      const viewAllWrap = document.getElementById('viewAllWrap');
+      const countEl     = document.getElementById('productCount');
+      if (!container) return;
+
+      const filtered = applyFiltersAndSort();
+      countEl.textContent = filtered.length ? `${filtered.length} item${filtered.length !== 1 ? 's' : ''}` : '';
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <p>No jerseys found.<br>Try adjusting your filters.</p>
+          </div>`;
+        viewAllWrap.style.display = 'none';
+        return;
+      }
+
+      const toShow = showAll ? filtered : filtered.slice(0, PAGE_SIZE);
+
+      container.innerHTML = toShow.map(({ id, data: p }, i) => {
+        const tLabel  = teamLabel(p);
+        const isNew   = p.createdAt && (Date.now() - p.createdAt) < 7 * 24 * 60 * 60 * 1000;
+        const imgs    = getProductImages(p);
+        const primary = imgs[0] || '';
+        const imgCount = imgs.length;
+        const badgeText = p.badge || (isNew ? 'New' : '');
+
+        return `
+          <article class="product" style="animation-delay:${i * 0.07}s" onclick="openDrawer('${id}')">
+            <div class="img">
+              ${badgeText ? `<span class="badge">${badgeText}</span>` : ''}
+              ${imgCount > 1 ? `<span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;z-index:2;backdrop-filter:blur(4px)">📷 ${imgCount}</span>` : ''}
+              ${primary
+                ? `<img src="${primary}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
+                : `<div class="jersey-card"><div><strong>${p.number || '10'}</strong><small>${(p.type || 'KIT').toUpperCase()}</small></div></div>`}
+            </div>
+            <div class="product-info">
+              <div class="title">${p.name || 'Jersify Kit'}</div>
+              <div class="desc">${tLabel}</div>
+              <div class="bottom">
+                <div class="price">₹${Number(p.price || 1499).toLocaleString('en-IN')}</div>
+                <div class="action-btns" onclick="event.stopPropagation()">
+                  <button class="cart-btn" title="Add to Cart" onclick="quickAddToCart('${id}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
+                  </button>
+                  <button class="buy-btn" onclick="window.location.href='checkout.html?id=${id}'">Buy</button>
+                </div>
+              </div>
+            </div>
+          </article>`;
+      }).join('');
+
+      if (!showAll && filtered.length > PAGE_SIZE) {
+        viewAllWrap.style.display = 'flex';
+        document.getElementById('viewAllBtn').textContent = `View All (${filtered.length})`;
+      } else {
+        viewAllWrap.style.display = 'none';
+      }
+    }
+
+    window.quickAddToCart = function(id) {
+      openDrawer(id);
+      showToast('Pick a size to add to cart');
+    };
+
+    /* ══════════════════════════════════════════
+       DRAWER GALLERY
+    ══════════════════════════════════════════ */
+    let drawerProduct      = null;
+    let drawerCurrentSlide = 0;
+    let drawerImages       = [];
+
     function buildDrawerGallery(images) {
-      drawerImages = images;
+      drawerImages       = images;
       drawerCurrentSlide = 0;
 
-      const slidesEl = document.getElementById('drawerSlides');
-      const dotsEl = document.getElementById('drawerDots');
-      const counter = document.getElementById('drawerImgCounter');
-      const prevBtn = document.getElementById('drawerPrev');
-      const nextBtn = document.getElementById('drawerNext');
+      const slidesEl  = document.getElementById('drawerSlides');
+      const dotsEl    = document.getElementById('drawerDots');
+      const counter   = document.getElementById('drawerImgCounter');
+      const prevBtn   = document.getElementById('drawerPrev');
+      const nextBtn   = document.getElementById('drawerNext');
       const swipeHint = document.getElementById('swipeHint');
 
-      // Build slides
       if (images.length === 0) {
-        // Placeholder
         slidesEl.innerHTML = `
           <div class="drawer-slide">
             <div class="drawer-slide-placeholder">
@@ -772,35 +816,26 @@
               </div>
             </div>
           </div>`;
-        dotsEl.innerHTML = '';
-        counter.style.display = 'none';
-        prevBtn.style.display = 'none';
-        nextBtn.style.display = 'none';
-        swipeHint.style.display = 'none';
+        dotsEl.innerHTML         = '';
+        counter.style.display    = 'none';
+        prevBtn.style.display    = 'none';
+        nextBtn.style.display    = 'none';
+        swipeHint.style.display  = 'none';
       } else {
         slidesEl.innerHTML = images.map((url, i) => `
           <div class="drawer-slide" onclick="openLightbox(${i})" title="Click to view fullscreen">
             <img src="${url}" alt="Product image ${i+1}" loading="${i === 0 ? 'eager' : 'lazy'}" draggable="false"/>
           </div>`).join('');
 
-        // Dots
-        dotsEl.innerHTML = images.length > 1
+        const multi = images.length > 1;
+        dotsEl.innerHTML = multi
           ? images.map((_, i) => `<button class="drawer-dot${i===0?' active':''}" onclick="goToDrawerSlide(${i})"></button>`).join('')
           : '';
 
-        // Counter
-        if (images.length > 1) {
-          counter.style.display = 'block';
-          counter.textContent = `1 / ${images.length}`;
-        } else {
-          counter.style.display = 'none';
-        }
-
-        // Arrows
-        const multi = images.length > 1;
-        prevBtn.style.display = multi ? 'grid' : 'none';
-        nextBtn.style.display = multi ? 'grid' : 'none';
-        swipeHint.style.display = images.length > 1 ? 'block' : 'none';
+        counter.style.display   = multi ? 'block' : 'none';
+        prevBtn.style.display   = multi ? 'grid'  : 'none';
+        nextBtn.style.display   = multi ? 'grid'  : 'none';
+        swipeHint.style.display = multi ? 'block' : 'none';
 
         updateDrawerSlideUI();
       }
@@ -817,23 +852,19 @@
 
       document.querySelectorAll('#drawerDots .drawer-dot').forEach((d, i) => d.classList.toggle('active', i === drawerCurrentSlide));
 
-      const prevBtn = document.getElementById('drawerPrev');
-      const nextBtn = document.getElementById('drawerNext');
-      if (prevBtn) prevBtn.disabled = drawerCurrentSlide === 0;
-      if (nextBtn) nextBtn.disabled = drawerCurrentSlide === drawerImages.length - 1;
+      const prev = document.getElementById('drawerPrev');
+      const next = document.getElementById('drawerNext');
+      if (prev) prev.disabled = drawerCurrentSlide === 0;
+      if (next) next.disabled = drawerCurrentSlide === drawerImages.length - 1;
     }
 
     window.slideDrawer = function(dir) {
       drawerCurrentSlide = Math.max(0, Math.min(drawerImages.length - 1, drawerCurrentSlide + dir));
       updateDrawerSlideUI();
     };
+    window.goToDrawerSlide = function(idx) { drawerCurrentSlide = idx; updateDrawerSlideUI(); };
 
-    window.goToDrawerSlide = function(idx) {
-      drawerCurrentSlide = idx;
-      updateDrawerSlideUI();
-    };
-
-    /* ── TOUCH SWIPE on drawer ── */
+    // Touch swipe on drawer gallery
     let touchStartX = 0, touchStartY = 0;
     document.getElementById('drawerImgGallery').addEventListener('touchstart', e => {
       touchStartX = e.touches[0].clientX;
@@ -843,36 +874,31 @@
       if (!drawerImages.length) return;
       const dx = e.changedTouches[0].clientX - touchStartX;
       const dy = e.changedTouches[0].clientY - touchStartY;
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-        slideDrawer(dx < 0 ? 1 : -1);
-      }
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) slideDrawer(dx < 0 ? 1 : -1);
     }, { passive: true });
 
-    /* ── LIGHTBOX ── */
+    /* ══════════════════════════════════════════
+       LIGHTBOX
+    ══════════════════════════════════════════ */
+    let lightboxImages       = [];
+    let lightboxCurrentSlide = 0;
+
     window.openLightbox = function(startIndex) {
-      if (drawerImages.length === 0) return;
-      lightboxImages = [...drawerImages];
+      if (!drawerImages.length) return;
+      lightboxImages       = [...drawerImages];
       lightboxCurrentSlide = startIndex || 0;
 
-      const track = document.getElementById('lightboxTrack');
-      const dots = document.getElementById('lightboxDots');
-      const thumbs = document.getElementById('lightboxThumbs');
+      document.getElementById('lightboxTrack').innerHTML = lightboxImages.map(url => `
+        <div class="lightbox-slide"><img src="${url}" alt="" draggable="false"/></div>`).join('');
 
-      track.innerHTML = lightboxImages.map((url, i) => `
-        <div class="lightbox-slide">
-          <img src="${url}" alt="Image ${i+1}" draggable="false"/>
-        </div>`).join('');
+      document.getElementById('lightboxDots').innerHTML = lightboxImages.length > 1
+        ? lightboxImages.map((_, i) => `<button class="lightbox-dot" onclick="slideLightbox(0, ${i})"></button>`).join('') : '';
 
-      dots.innerHTML = lightboxImages.length > 1
-        ? lightboxImages.map((_, i) => `<button class="lightbox-dot" onclick="slideLightbox(0, ${i})"></button>`).join('')
-        : '';
-
-      thumbs.innerHTML = lightboxImages.length > 1
+      document.getElementById('lightboxThumbs').innerHTML = lightboxImages.length > 1
         ? lightboxImages.map((url, i) => `
             <div class="lightbox-thumb" onclick="slideLightbox(0, ${i})">
-              <img src="${url}" alt="Thumb ${i+1}" loading="lazy"/>
-            </div>`).join('')
-        : '';
+              <img src="${url}" alt="" loading="lazy"/>
+            </div>`).join('') : '';
 
       document.getElementById('lightboxOverlay').classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -885,61 +911,49 @@
     };
 
     window.slideLightbox = function(dir, targetIdx) {
-      if (targetIdx !== undefined) {
-        lightboxCurrentSlide = targetIdx;
-      } else {
-        lightboxCurrentSlide = Math.max(0, Math.min(lightboxImages.length - 1, lightboxCurrentSlide + dir));
-      }
+      lightboxCurrentSlide = targetIdx !== undefined
+        ? targetIdx
+        : Math.max(0, Math.min(lightboxImages.length - 1, lightboxCurrentSlide + dir));
       updateLightboxUI();
     };
 
     function updateLightboxUI() {
-      const track = document.getElementById('lightboxTrack');
-      track.style.transform = `translateX(-${lightboxCurrentSlide * 100}%)`;
-
+      document.getElementById('lightboxTrack').style.transform = `translateX(-${lightboxCurrentSlide * 100}%)`;
       document.getElementById('lightboxCounter').textContent = lightboxImages.length > 1
         ? `${lightboxCurrentSlide + 1} / ${lightboxImages.length}` : '';
-
       document.querySelectorAll('#lightboxDots .lightbox-dot').forEach((d, i) => d.classList.toggle('active', i === lightboxCurrentSlide));
       document.querySelectorAll('.lightbox-thumb').forEach((t, i) => t.classList.toggle('active', i === lightboxCurrentSlide));
-
       const prev = document.getElementById('lightboxPrev');
       const next = document.getElementById('lightboxNext');
       if (prev) prev.disabled = lightboxCurrentSlide === 0;
       if (next) next.disabled = lightboxCurrentSlide === lightboxImages.length - 1;
-
-      // Scroll thumbnail into view
-      const activethumb = document.querySelectorAll('.lightbox-thumb')[lightboxCurrentSlide];
-      if (activethumb) activethumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      const thumb = document.querySelectorAll('.lightbox-thumb')[lightboxCurrentSlide];
+      if (thumb) thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
 
-    /* Touch swipe in lightbox */
     let lbTouchX = 0;
     document.getElementById('lightboxOverlay').addEventListener('touchstart', e => { lbTouchX = e.touches[0].clientX; }, { passive: true });
     document.getElementById('lightboxOverlay').addEventListener('touchend', e => {
       const dx = e.changedTouches[0].clientX - lbTouchX;
       if (Math.abs(dx) > 40) slideLightbox(dx < 0 ? 1 : -1);
     }, { passive: true });
-
-    /* Close lightbox on overlay click (not on image) */
     document.getElementById('lightboxOverlay').addEventListener('click', e => {
       if (e.target === document.getElementById('lightboxOverlay')) closeLightbox();
     });
-
-    /* Keyboard navigation */
     document.addEventListener('keydown', e => {
-      const lb = document.getElementById('lightboxOverlay');
-      if (lb.classList.contains('open')) {
-        if (e.key === 'ArrowLeft') slideLightbox(-1);
+      if (document.getElementById('lightboxOverlay').classList.contains('open')) {
+        if (e.key === 'ArrowLeft')  slideLightbox(-1);
         if (e.key === 'ArrowRight') slideLightbox(1);
-        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'Escape')     closeLightbox();
       }
     });
 
-    /* ── BROWSE SECTION ── */
+    /* ══════════════════════════════════════════
+       BROWSE MORE SECTION
+    ══════════════════════════════════════════ */
     function renderBrowse(currentId) {
-      const others = allProducts.filter(p => p.id !== currentId);
-      const track = document.getElementById('browseTrack');
+      const others  = allProducts.filter(p => p.id !== currentId && isActive(p.data));
+      const track   = document.getElementById('browseTrack');
       const countEl = document.getElementById('browseCount');
 
       if (others.length === 0) {
@@ -949,14 +963,11 @@
       }
 
       countEl.textContent = `${others.length} more kit${others.length !== 1 ? 's' : ''}`;
-
       track.innerHTML = others.map(({ id, data: p }, i) => {
-        const teamLabel = Array.isArray(p.team) ? p.team.join(', ') : (p.team || '');
-        const shortTeam = teamLabel.length > 14 ? teamLabel.slice(0, 13) + '…' : teamLabel;
-        const shortName = (p.name || 'Jersify Kit').length > 14 ? (p.name || 'Jersify Kit').slice(0, 13) + '…' : (p.name || 'Jersify Kit');
-        const imgs = getProductImages(p);
+        const tl    = teamLabel(p);
+        const short = s => s.length > 14 ? s.slice(0,13) + '…' : s;
+        const imgs  = getProductImages(p);
         const thumb = imgs[0] || '';
-
         return `
           <div class="browse-card" style="animation-delay:${i * 0.06}s" onclick="switchDrawer('${id}')">
             <div class="browse-card-img">
@@ -966,8 +977,8 @@
                 : `<div class="browse-mini-jersey"><div><strong>${p.number || '10'}</strong><small>${(p.type || 'KIT').toUpperCase()}</small></div></div>`}
             </div>
             <div class="browse-card-info">
-              <div class="browse-card-name">${shortName}</div>
-              <div class="browse-card-team">${shortTeam}</div>
+              <div class="browse-card-name">${short(p.name || 'Jersify Kit')}</div>
+              <div class="browse-card-team">${short(tl)}</div>
               <div class="browse-card-bottom">
                 <div class="browse-card-price">₹${Number(p.price || 1499).toLocaleString('en-IN')}</div>
                 <button class="browse-card-add" title="Quick add" onclick="event.stopPropagation(); quickAddToCart('${id}')">
@@ -979,37 +990,37 @@
       }).join('');
     }
 
-    /* ── POPULATE DRAWER ── */
+    /* ══════════════════════════════════════════
+       DRAWER  OPEN / CLOSE / POPULATE
+    ══════════════════════════════════════════ */
     function populateDrawer(found) {
-      drawerProduct = found;
+      drawerProduct      = found;
       drawerCurrentSlide = 0;
       const { id, data: p } = found;
-      const teamLabel = Array.isArray(p.team) ? p.team.join(', ') : (p.team || 'Premium Kit');
+      const tl = teamLabel(p);
 
-      document.getElementById('drawerName').textContent = p.name || 'Jersify Kit';
-      document.getElementById('drawerTeam').textContent = teamLabel;
+      document.getElementById('drawerName').textContent  = p.name || 'Jersify Kit';
+      document.getElementById('drawerTeam').textContent  = tl;
       document.getElementById('drawerPrice').textContent = '₹' + Number(p.price || 1499).toLocaleString('en-IN');
-      document.getElementById('drawerBadge').textContent = p.type || 'Kit';
+      document.getElementById('drawerBadge').textContent = p.badge || p.type || 'Kit';
 
-      // Update jersey-card num/type inside placeholder if no images
-      const numEl = document.getElementById('drawerNum');
+      // Jersey placeholder fallback numbers
+      const numEl  = document.getElementById('drawerNum');
       const typeEl = document.getElementById('drawerType');
-      if (numEl) numEl.textContent = p.number || '10';
+      if (numEl)  numEl.textContent  = p.number || '10';
       if (typeEl) typeEl.textContent = (p.type || 'KIT').toUpperCase();
 
-      // Build image gallery
-      const imgs = getProductImages(p);
-      buildDrawerGallery(imgs);
+      buildDrawerGallery(getProductImages(p));
 
-      // Sizes
-      const sizes = ['xs','s','m','l','xl'];
+      // Sizes  (xs s m l xl)
       const sizeGrid = document.getElementById('drawerSizeGrid');
-      sizeGrid.innerHTML = sizes.map(sz => {
-        const avail = p.sizes && p.sizes[sz] > 0;
+      sizeGrid.innerHTML = ['xs','s','m','l','xl'].map(sz => {
+        // avail = true if sizes not defined (stock unknown) OR qty > 0
+        const avail = !p.sizes || Number(p.sizes[sz] || 0) > 0;
         return `<button class="size-pill${avail ? '' : ' oos'}" data-size="${sz}" onclick="selectSize('${sz}', ${avail})">${sz.toUpperCase()}</button>`;
       }).join('');
 
-      // Buy button
+      // Buy Now button
       document.getElementById('drawerBuyBtn').onclick = () => {
         const sel = document.querySelector('.size-pill.selected');
         if (!sel) { showToast('Please select a size'); return; }
@@ -1054,144 +1065,34 @@
       if (!sel) { showToast('Please select a size first'); return; }
       const { id, data: p } = drawerProduct;
       const imgs = getProductImages(p);
-      addToCart(id, p.name || 'Jersify Kit', p.price || 1499, imgs[0] || '', Array.isArray(p.team) ? p.team.join(', ') : (p.team || ''), sel.dataset.size);
+      addToCart(id, p.name || 'Jersify Kit', p.price || 1499, imgs[0] || '', teamLabel(p), sel.dataset.size);
     };
 
-    /* ── FILTERS ── */
-    function applyFiltersAndSort() {
-      const teamFilter  = document.getElementById('filterTeam').value.toLowerCase();
-      const sizeFilter  = document.getElementById('filterSize').value;
-      const priceFilter = document.getElementById('filterPrice').value;
-      const sortVal     = document.getElementById('filterSort').value;
-      const searchVal   = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-
-      let filtered = allProducts.filter(({ data: p }) => {
-        if (p.status !== 'active') return false;
-        if (teamFilter) {
-          const pt = (Array.isArray(p.team) ? p.team.join(' ') : (p.team || '')).toLowerCase();
-          if (!pt.includes(teamFilter)) return false;
-        }
-        if (sizeFilter && (!p.sizes || !p.sizes[sizeFilter] || p.sizes[sizeFilter] <= 0)) return false;
-        const price = parseFloat(p.price || 0);
-        if (priceFilter === 'under1000'  && price >= 1000) return false;
-        if (priceFilter === '1000to1500' && (price < 1000 || price > 1500)) return false;
-        if (priceFilter === 'above1500'  && price <= 1500) return false;
-        if (searchVal) {
-          const hay = [p.name || '', Array.isArray(p.team) ? p.team.join(' ') : (p.team || ''), p.type || ''].join(' ').toLowerCase();
-          if (!hay.includes(searchVal)) return false;
-        }
-        return true;
-      });
-
-      if (sortVal === 'price_asc')  filtered.sort((a, b) => parseFloat(a.data.price || 0) - parseFloat(b.data.price || 0));
-      if (sortVal === 'price_desc') filtered.sort((a, b) => parseFloat(b.data.price || 0) - parseFloat(a.data.price || 0));
-      if (sortVal === 'newest')     filtered.sort((a, b) => (b.data.createdAt || 0) - (a.data.createdAt || 0));
-
-      return filtered;
-    }
-
-    function renderProducts() {
-      const container   = document.getElementById('productTrack');
-      const viewAllWrap = document.getElementById('viewAllWrap');
-      const countEl     = document.getElementById('productCount');
-      if (!container) return;
-
-      const filtered = applyFiltersAndSort();
-      countEl.textContent = filtered.length ? `${filtered.length} item${filtered.length !== 1 ? 's' : ''}` : '';
-
-      if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-            <p>No jerseys found.<br>Try adjusting your filters.</p>
-          </div>`;
-        viewAllWrap.style.display = 'none';
-        return;
-      }
-
-      const toShow = showAll ? filtered : filtered.slice(0, PAGE_SIZE);
-
-      container.innerHTML = toShow.map(({ id, data: p }, i) => {
-        const teamLabel = Array.isArray(p.team) ? p.team.join(', ') : (p.team || 'Premium Kit');
-        const isNew = p.createdAt && (Date.now() - p.createdAt) < 7 * 24 * 60 * 60 * 1000;
-        const imgs = getProductImages(p);
-        const primaryImg = imgs[0] || '';
-        const imgCount = imgs.length;
-
-        return `
-          <article class="product" style="animation-delay:${i * 0.07}s" onclick="openDrawer('${id}')">
-            <div class="img">
-              ${isNew ? '<span class="badge">New</span>' : ''}
-              ${imgCount > 1 ? `<span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;z-index:2;backdrop-filter:blur(4px)">📷 ${imgCount}</span>` : ''}
-              ${primaryImg
-                ? `<img src="${primaryImg}" alt="${p.name || 'Jersey'}" loading="lazy"/>`
-                : `<div class="jersey-card"><div><strong>${p.number || '10'}</strong><small>${(p.type || 'KIT').toUpperCase()}</small></div></div>`}
-            </div>
-            <div class="product-info">
-              <div class="title">${p.name || 'Jersify Kit'}</div>
-              <div class="desc">${teamLabel}</div>
-              <div class="bottom">
-                <div class="price">₹${Number(p.price || 1499).toLocaleString('en-IN')}</div>
-                <div class="action-btns" onclick="event.stopPropagation()">
-                  <button class="cart-btn" title="Add to Cart" onclick="quickAddToCart('${id}')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
-                  </button>
-                  <button class="buy-btn" onclick="window.location.href='checkout.html?id=${id}'">Buy</button>
-                </div>
-              </div>
-            </div>
-          </article>`;
-      }).join('');
-
-      if (!showAll && filtered.length > PAGE_SIZE) {
-        viewAllWrap.style.display = 'flex';
-        document.getElementById('viewAllBtn').textContent = `View All (${filtered.length})`;
-      } else {
-        viewAllWrap.style.display = 'none';
-      }
-    }
-
-    window.quickAddToCart = function(id) {
-      openDrawer(id);
-      showToast('Pick a size to add to cart');
-    };
-
-    /* ── REAL-TIME DB LISTENER ── */
+    /* ══════════════════════════════════════════
+       EVENT LISTENERS & BOOT
+    ══════════════════════════════════════════ */
     window.addEventListener('DOMContentLoaded', async () => {
       updateCartBadge();
 
-      try {
-        // Use onValue for real-time sync
-        onValue(ref(rtdb, 'products'), (snap) => {
-          allProducts = [];
-          if (snap.exists()) {
-            snap.forEach(child => allProducts.push({ id: child.key, data: child.val() }));
-          }
-          renderProducts();
-          // If drawer is open, refresh browse section
-          if (drawerProduct) renderBrowse(drawerProduct.id);
-        });
+      // Load products — REST first, SDK fallback, no onValue listener
+      await loadProducts(false);
 
-        ['filterTeam', 'filterSize', 'filterPrice', 'filterSort'].forEach(id => {
-          document.getElementById(id).addEventListener('change', () => { showAll = false; renderProducts(); });
-        });
+      // Keep data fresh silently in the background (no flicker, no race)
+      startBackgroundRefresh();
 
-        let timer;
-        document.getElementById('searchInput').addEventListener('input', () => {
-          clearTimeout(timer);
-          timer = setTimeout(() => { showAll = false; renderProducts(); }, 280);
-        });
+      // Filter change listeners
+      ['filterTeam','filterSize','filterPrice','filterSort'].forEach(fid => {
+        document.getElementById(fid).addEventListener('change', () => { showAll = false; renderProducts(); });
+      });
 
-        document.getElementById('viewAllBtn').addEventListener('click', () => { showAll = true; renderProducts(); });
+      // Search with debounce
+      let timer;
+      document.getElementById('searchInput').addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { showAll = false; renderProducts(); }, 280);
+      });
 
-      } catch (err) {
-        console.error('Firebase error:', err);
-        document.getElementById('productTrack').innerHTML = `
-          <div class="empty-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01"/></svg>
-            <p>Could not load products.<br>Please check your connection.</p>
-          </div>`;
-      }
+      document.getElementById('viewAllBtn').addEventListener('click', () => { showAll = true; renderProducts(); });
     });
   </script>
 
