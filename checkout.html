@@ -334,70 +334,6 @@
     .nav-item.active { color: var(--accent); font-weight: 800; }
     .nav-item:hover:not(.active) { color: #111; }
 
-    /* ══════════════════════════════════════════════
-       AUTH TOAST — slides up from bottom, above nav
-       ══════════════════════════════════════════════ */
-    #authToast {
-      position: fixed;
-      left: 50%; transform: translateX(-50%) translateY(120%);
-      bottom: 84px; /* sit just above the bottom nav */
-      width: min(calc(var(--maxw) - 24px), calc(100% - 24px));
-      background: #111;
-      border-radius: 20px;
-      padding: 20px 18px 18px;
-      z-index: 200;
-      box-shadow: 0 20px 60px rgba(0,0,0,.45);
-      transition: transform .4s cubic-bezier(.34,1.3,.64,1), opacity .3s ease;
-      opacity: 0;
-      pointer-events: none;
-    }
-    #authToast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .auth-toast-close {
-      position: absolute; top: 12px; right: 12px;
-      width: 26px; height: 26px; border: none; border-radius: 50%;
-      background: rgba(255,255,255,.1); color: rgba(255,255,255,.7);
-      font-size: 14px; cursor: pointer; display: grid; place-items: center;
-      transition: background .2s;
-    }
-    .auth-toast-close:hover { background: rgba(255,255,255,.2); }
-    .auth-toast-icon { font-size: 32px; margin-bottom: 8px; display: block; }
-    .auth-toast-title {
-      font-family: 'Bebas Neue', sans-serif; font-size: 26px;
-      color: #fff; letter-spacing: 1.5px; margin-bottom: 4px;
-    }
-    .auth-toast-sub {
-      font-size: 12px; color: rgba(255,255,255,.6); line-height: 1.6; margin-bottom: 16px;
-    }
-    .auth-toast-sub strong { color: rgba(255,255,255,.9); }
-    .auth-toast-actions { display: flex; gap: 10px; }
-    .auth-toast-signin {
-      flex: 1; border: none; border-radius: 12px; padding: 13px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; font-size: 13px; font-weight: 800; cursor: pointer;
-      box-shadow: 0 6px 20px rgba(198,31,47,.4);
-      transition: transform .2s, box-shadow .2s;
-    }
-    .auth-toast-signin:hover { transform: translateY(-1px); box-shadow: 0 10px 26px rgba(198,31,47,.5); }
-    .auth-toast-signup {
-      flex: 1; border: 1.5px solid rgba(255,255,255,.2); border-radius: 12px; padding: 13px;
-      background: rgba(255,255,255,.07); color: #fff;
-      font-size: 13px; font-weight: 700; cursor: pointer;
-      transition: background .2s, border-color .2s;
-    }
-    .auth-toast-signup:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.35); }
-
-    /* backdrop dim */
-    #authBackdrop {
-      position: fixed; inset: 0; background: rgba(0,0,0,0);
-      z-index: 190; pointer-events: none;
-      transition: background .3s ease;
-    }
-    #authBackdrop.show { background: rgba(0,0,0,.35); pointer-events: auto; }
-
     /* user badge in topbar */
     .user-badge {
       display: none; align-items: center; gap: 6px;
@@ -415,6 +351,234 @@
 
     @media (max-width: 380px) { .form-row { grid-template-columns: 1fr; gap: 0; } .logo { font-size: 40px } }
     @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
+
+    /* ════════════════════════════════════════════════════════
+       INLINE AUTH MODAL — completely redesigned
+       ════════════════════════════════════════════════════════ */
+
+    /* Backdrop */
+    #authBackdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0);
+      z-index: 190; pointer-events: none;
+      transition: background .35s ease;
+    }
+    #authBackdrop.show { background: rgba(0,0,0,.55); pointer-events: auto; }
+
+    /* Modal sheet */
+    #authModal {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%) translateY(100%);
+      width: min(100%, var(--maxw));
+      background: #fff;
+      border-radius: 28px 28px 0 0;
+      z-index: 200;
+      box-shadow: 0 -20px 60px rgba(0,0,0,.18);
+      transition: transform .42s cubic-bezier(.34,1.15,.64,1);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      overflow: hidden;
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+    #authModal.show { transform: translateX(-50%) translateY(0); }
+
+    /* Drag handle */
+    .auth-modal-handle {
+      width: 40px; height: 4px; background: #e0e0e0; border-radius: 99px;
+      margin: 14px auto 0;
+    }
+
+    /* Modal Header */
+    .auth-modal-header {
+      padding: 18px 20px 0;
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+    .auth-modal-branding { display: flex; flex-direction: column; gap: 2px; }
+    .auth-modal-logo {
+      font-family: 'Bebas Neue', sans-serif; font-size: 36px;
+      color: #111; letter-spacing: 2px; line-height: 1;
+    }
+    .auth-modal-logo span { color: var(--accent); }
+    .auth-modal-tagline { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+    .auth-modal-close {
+      width: 32px; height: 32px; border: none; border-radius: 50%;
+      background: #f3f3f3; color: #555; font-size: 15px;
+      cursor: pointer; display: grid; place-items: center;
+      transition: background .2s, color .2s; flex-shrink: 0;
+    }
+    .auth-modal-close:hover { background: #111; color: #fff; }
+
+    /* Tab switcher */
+    .auth-tabs {
+      display: flex; margin: 20px 20px 0; gap: 0;
+      background: #f5f5f5; border-radius: 14px; padding: 4px;
+    }
+    .auth-tab {
+      flex: 1; border: none; border-radius: 10px; padding: 10px;
+      font-size: 13px; font-weight: 700; cursor: pointer; transition: all .25s;
+      background: transparent; color: var(--muted);
+    }
+    .auth-tab.active {
+      background: #fff; color: var(--text);
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    }
+
+    /* Auth body */
+    .auth-body { padding: 20px 20px 28px; }
+
+    /* Auth welcome text */
+    .auth-welcome { margin-bottom: 18px; }
+    .auth-welcome-title { font-size: 20px; font-weight: 900; margin-bottom: 4px; }
+    .auth-welcome-sub { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    /* Auth form inputs */
+    .auth-form-group { margin-bottom: 12px; position: relative; }
+    .auth-form-group label { display: block; font-size: 10px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1.2px; }
+    .auth-input {
+      width: 100%; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px;
+      padding: 12px 14px; font-size: 13px; font-weight: 500;
+      background: #fafafa; color: var(--text); outline: none; transition: all .22s;
+    }
+    .auth-input::placeholder { color: #bbb; }
+    .auth-input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(198,31,47,.08); }
+    .auth-input.has-icon { padding-right: 44px; }
+
+    /* Password toggle */
+    .pw-toggle {
+      position: absolute; right: 12px; bottom: 12px;
+      background: none; border: none; cursor: pointer; color: var(--muted);
+      padding: 0; display: grid; place-items: center;
+      transition: color .2s;
+    }
+    .pw-toggle:hover { color: var(--text); }
+    .pw-toggle svg { width: 17px; height: 17px; }
+
+    /* Error message */
+    .auth-error {
+      background: rgba(198,31,47,.06); border: 1px solid rgba(198,31,47,.2);
+      border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--accent);
+      font-weight: 600; margin-bottom: 14px; display: none; line-height: 1.5;
+    }
+    .auth-error.show { display: block; }
+
+    /* Success message */
+    .auth-success-msg {
+      background: rgba(30,140,74,.06); border: 1px solid rgba(30,140,74,.2);
+      border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--success);
+      font-weight: 600; margin-bottom: 14px; display: none; line-height: 1.5;
+    }
+    .auth-success-msg.show { display: block; }
+
+    /* Submit button */
+    .auth-submit-btn {
+      width: 100%; border: none; border-radius: 14px; padding: 15px;
+      font-size: 14px; font-weight: 800; letter-spacing: .4px; color: #fff; cursor: pointer;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      box-shadow: 0 8px 24px rgba(198,31,47,.28); transition: transform .2s ease, box-shadow .2s ease;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .auth-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(198,31,47,.36); }
+    .auth-submit-btn:disabled { opacity: .6; pointer-events: none; }
+    .auth-btn-spinner {
+      width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: none;
+    }
+    .auth-submit-btn.loading .auth-btn-spinner { display: block; }
+    .auth-submit-btn.loading .auth-btn-text { opacity: .7; }
+
+    /* Divider */
+    .auth-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+    .auth-divider span { font-size: 11px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+
+    /* Google sign-in */
+    .auth-google-btn {
+      width: 100%; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 13px;
+      background: #fff; color: var(--text); font-size: 13px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: all .22s;
+    }
+    .auth-google-btn:hover { background: #f8f8f8; border-color: rgba(0,0,0,.2); box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+    .auth-google-btn:disabled { opacity: .6; pointer-events: none; }
+    .google-icon { width: 18px; height: 18px; }
+
+    /* Forgot password link */
+    .auth-forgot {
+      display: block; text-align: right; font-size: 11px; font-weight: 700;
+      color: var(--accent); margin-top: -4px; margin-bottom: 12px; cursor: pointer;
+    }
+    .auth-forgot:hover { text-decoration: underline; }
+
+    /* Reset password panel */
+    #resetPanel { display: none; }
+    #resetPanel.show { display: block; }
+    #signinPanel.hidden { display: none; }
+
+    /* Terms note */
+    .auth-terms {
+      font-size: 10px; color: var(--muted); text-align: center; line-height: 1.6; margin-top: 14px;
+    }
+    .auth-terms a { color: var(--accent); font-weight: 700; }
+
+    /* Decorative gradient bar at top of modal */
+    .auth-gradient-bar {
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #ff6b35, var(--gold), var(--accent));
+      background-size: 200% 100%;
+      animation: gradientShift 3s linear infinite;
+    }
+    @keyframes gradientShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+
+    /* Signed-in banner on checkout page */
+    #authSignedInBanner {
+      display: none;
+      align-items: center; gap: 12px;
+      background: rgba(30,140,74,.06); border: 1.5px solid rgba(30,140,74,.2);
+      border-radius: 16px; padding: 12px 16px; margin-bottom: 14px;
+      animation: fadeInUp .3s ease both;
+    }
+    #authSignedInBanner.show { display: flex; }
+    .signed-in-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
+    .signed-in-info { flex: 1; }
+    .signed-in-info strong { font-size: 13px; font-weight: 800; color: var(--success); display: block; }
+    .signed-in-info span { font-size: 11px; color: var(--muted); }
+    .sign-out-btn {
+      border: 1px solid rgba(0,0,0,.12); border-radius: 8px; padding: 5px 12px;
+      background: #fff; color: var(--muted); font-size: 11px; font-weight: 700;
+      cursor: pointer; transition: all .2s; flex-shrink: 0;
+    }
+    .sign-out-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Auth prompt card (shown when not signed in) */
+    #authPromptCard {
+      display: none;
+      border: 1.5px dashed rgba(198,31,47,.3); border-radius: 18px; padding: 16px;
+      margin-bottom: 14px; background: rgba(198,31,47,.02);
+      animation: fadeInUp .3s ease both;
+    }
+    #authPromptCard.show { display: block; }
+    .auth-prompt-inner { display: flex; align-items: center; gap: 14px; }
+    .auth-prompt-icon { font-size: 28px; line-height: 1; flex-shrink: 0; }
+    .auth-prompt-text { flex: 1; }
+    .auth-prompt-text strong { font-size: 13px; font-weight: 900; display: block; margin-bottom: 3px; }
+    .auth-prompt-text span { font-size: 11px; color: var(--muted); line-height: 1.5; }
+    .auth-prompt-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .auth-prompt-signin {
+      flex: 1; border: none; border-radius: 10px; padding: 11px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-size: 12px; font-weight: 800; cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 14px rgba(198,31,47,.25);
+    }
+    .auth-prompt-signin:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(198,31,47,.35); }
+    .auth-prompt-signup {
+      flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 10px; padding: 11px;
+      background: #fff; color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer;
+      transition: all .2s;
+    }
+    .auth-prompt-signup:hover { border-color: var(--accent); color: var(--accent); }
   </style>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
@@ -430,7 +594,6 @@
       </button>
       <div class="logo">Jersify</div>
     </div>
-    <!-- user badge shows when signed in -->
     <div class="user-badge" id="userBadge">
       <div class="user-avatar" id="userAvatar">?</div>
       <span class="user-name" id="userNameBadge"></span>
@@ -447,6 +610,31 @@
   <!-- CHECKOUT CONTENT -->
   <div id="checkoutContent" style="display:none">
     <div class="content">
+
+      <!-- Auth signed-in banner -->
+      <div id="authSignedInBanner">
+        <span class="signed-in-icon">✅</span>
+        <div class="signed-in-info">
+          <strong id="signedInName">Signed in</strong>
+          <span id="signedInEmail"></span>
+        </div>
+        <button class="sign-out-btn" onclick="handleSignOut()">Sign Out</button>
+      </div>
+
+      <!-- Auth prompt card (shown when guest) -->
+      <div id="authPromptCard">
+        <div class="auth-prompt-inner">
+          <span class="auth-prompt-icon">🔒</span>
+          <div class="auth-prompt-text">
+            <strong>Sign in to place your order</strong>
+            <span>Track orders, save addresses & enjoy a faster checkout next time.</span>
+          </div>
+        </div>
+        <div class="auth-prompt-actions">
+          <button class="auth-prompt-signin" onclick="openAuthModal('signin')">Sign In</button>
+          <button class="auth-prompt-signup" onclick="openAuthModal('signup')">Create Account</button>
+        </div>
+      </div>
 
       <!-- Payment failed banner -->
       <div class="pay-failed-banner" id="payFailedBanner">
@@ -637,26 +825,151 @@
 </nav>
 
 <!-- AUTH BACKDROP -->
-<div id="authBackdrop" onclick="closeAuthToast()"></div>
+<div id="authBackdrop" onclick="closeAuthModal()"></div>
 
-<!-- AUTH TOAST -->
-<div id="authToast" role="dialog" aria-modal="true" aria-label="Sign in required">
-  <button class="auth-toast-close" onclick="closeAuthToast()" aria-label="Close">✕</button>
-  <span class="auth-toast-icon">🔒</span>
-  <div class="auth-toast-title">Sign in to Order</div>
-  <div class="auth-toast-sub">
-    You need to be signed in to place an order.<br>
-    <strong>It only takes a few seconds!</strong>
+<!-- ═══════════════════════════════════════════════════
+     INLINE AUTH MODAL
+     ═══════════════════════════════════════════════════ -->
+<div id="authModal" role="dialog" aria-modal="true" aria-label="Sign in or Create Account">
+  <div class="auth-gradient-bar"></div>
+  <div class="auth-modal-handle"></div>
+
+  <div class="auth-modal-header">
+    <div class="auth-modal-branding">
+      <div class="auth-modal-logo">JERS<span>IFY</span></div>
+      <div class="auth-modal-tagline">Your kit. Your game.</div>
+    </div>
+    <button class="auth-modal-close" onclick="closeAuthModal()" aria-label="Close">✕</button>
   </div>
-  <div class="auth-toast-actions">
-    <button class="auth-toast-signin" onclick="goToAuth('signin')">Sign In</button>
-    <button class="auth-toast-signup" onclick="goToAuth('signup')">Create Account</button>
+
+  <!-- Tab Switcher -->
+  <div class="auth-tabs">
+    <button class="auth-tab active" id="tabSignin" onclick="switchAuthTab('signin')">Sign In</button>
+    <button class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Create Account</button>
+  </div>
+
+  <div class="auth-body">
+
+    <!-- Error / Success messages -->
+    <div class="auth-error" id="authError"></div>
+    <div class="auth-success-msg" id="authSuccess"></div>
+
+    <!-- ── SIGN IN PANEL ── -->
+    <div id="signinPanel">
+      <div class="auth-welcome">
+        <div class="auth-welcome-title">Welcome back 👋</div>
+        <div class="auth-welcome-sub">Sign in to continue to your order.</div>
+      </div>
+
+      <div class="auth-form-group">
+        <label>Email Address</label>
+        <input type="email" id="siEmail" class="auth-input" placeholder="you@email.com" autocomplete="email">
+      </div>
+      <div class="auth-form-group">
+        <label>Password</label>
+        <input type="password" id="siPassword" class="auth-input has-icon" placeholder="Your password" autocomplete="current-password">
+        <button type="button" class="pw-toggle" onclick="togglePw('siPassword',this)" tabindex="-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <a class="auth-forgot" onclick="showResetPanel()">Forgot password?</a>
+
+      <button class="auth-submit-btn" id="siBtn" onclick="doSignIn()">
+        <div class="auth-btn-spinner"></div>
+        <span class="auth-btn-text">Sign In & Continue</span>
+      </button>
+
+      <div class="auth-divider"><span>or continue with</span></div>
+
+      <button class="auth-google-btn" id="siGoogleBtn" onclick="doGoogleSignIn()">
+        <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="auth-terms">
+        By signing in you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.
+      </div>
+    </div>
+
+    <!-- ── SIGN UP PANEL ── -->
+    <div id="signupPanel" style="display:none;">
+      <div class="auth-welcome">
+        <div class="auth-welcome-title">Create account 🎽</div>
+        <div class="auth-welcome-sub">Join Jersify and get exclusive drops & offers.</div>
+      </div>
+
+      <div class="auth-form-group">
+        <label>Full Name</label>
+        <input type="text" id="suName" class="auth-input" placeholder="Your full name" autocomplete="name">
+      </div>
+      <div class="auth-form-group">
+        <label>Email Address</label>
+        <input type="email" id="suEmail" class="auth-input" placeholder="you@email.com" autocomplete="email">
+      </div>
+      <div class="auth-form-group">
+        <label>Password</label>
+        <input type="password" id="suPassword" class="auth-input has-icon" placeholder="Min. 6 characters" autocomplete="new-password">
+        <button type="button" class="pw-toggle" onclick="togglePw('suPassword',this)" tabindex="-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div class="auth-form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="suConfirm" class="auth-input has-icon" placeholder="Repeat password" autocomplete="new-password">
+        <button type="button" class="pw-toggle" onclick="togglePw('suConfirm',this)" tabindex="-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+
+      <button class="auth-submit-btn" id="suBtn" onclick="doSignUp()">
+        <div class="auth-btn-spinner"></div>
+        <span class="auth-btn-text">Create Account & Continue</span>
+      </button>
+
+      <div class="auth-divider"><span>or continue with</span></div>
+
+      <button class="auth-google-btn" id="suGoogleBtn" onclick="doGoogleSignIn()">
+        <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+        Continue with Google
+      </button>
+
+      <div class="auth-terms">
+        By creating an account you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.
+      </div>
+    </div>
+
+    <!-- ── RESET PASSWORD PANEL ── -->
+    <div id="resetPanel">
+      <div class="auth-welcome">
+        <div class="auth-welcome-title">Reset Password 🔑</div>
+        <div class="auth-welcome-sub">Enter your email and we'll send a reset link.</div>
+      </div>
+
+      <div class="auth-form-group">
+        <label>Email Address</label>
+        <input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com">
+      </div>
+
+      <button class="auth-submit-btn" id="resetBtn" onclick="doResetPassword()">
+        <div class="auth-btn-spinner"></div>
+        <span class="auth-btn-text">Send Reset Link</span>
+      </button>
+
+      <div style="text-align:center;margin-top:14px;">
+        <a onclick="hideResetPanel()" style="font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;">← Back to Sign In</a>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <script type="module">
   import { initializeApp }                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged }      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import {
+    getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+    createUserWithEmailAndPassword, sendPasswordResetEmail,
+    GoogleAuthProvider, signInWithPopup, signOut, updateProfile
+  }                                           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import {
     getDatabase, ref, get, child, set
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -671,10 +984,11 @@
     databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
   };
 
-  const app   = initializeApp(firebaseConfig);
-  const auth  = getAuth(app);
-  const db    = getDatabase(app);
-  const dbRef = ref(db);
+  const app      = initializeApp(firebaseConfig);
+  const auth     = getAuth(app);
+  const db       = getDatabase(app);
+  const dbRef    = ref(db);
+  const gProvider = new GoogleAuthProvider();
 
   /* ── state ── */
   let orderPrice        = 0;
@@ -685,24 +999,193 @@
   let selectedSavedAddr = null;
   let newAddrVisible    = true;
   let couponsMap        = {};
-  let currentUser       = null;  // Firebase Auth user — null = not signed in
+  let currentUser       = null;
 
-  /* ── Auth Toast helpers ── */
-  window.showAuthToast = () => {
-    document.getElementById('authToast').classList.add('show');
+  /* ════════════════════════════════════
+     AUTH MODAL helpers
+     ════════════════════════════════════ */
+  window.openAuthModal = (tab = 'signin') => {
+    switchAuthTab(tab);
+    clearAuthMessages();
+    document.getElementById('authModal').classList.add('show');
     document.getElementById('authBackdrop').classList.add('show');
-    // pulse the confirm button to draw attention back after toast closes
+    document.body.style.overflow = 'hidden';
   };
-  window.closeAuthToast = () => {
-    document.getElementById('authToast').classList.remove('show');
+  window.closeAuthModal = () => {
+    document.getElementById('authModal').classList.remove('show');
     document.getElementById('authBackdrop').classList.remove('show');
+    document.body.style.overflow = '';
   };
-  window.goToAuth = mode => {
-    // Save the current checkout URL so we can return after login
-    sessionStorage.setItem('jersify_redirect_after_auth', window.location.href);
-    // Navigate to your login/signup page — adjust URLs to match your project
-    window.location.href = mode === 'signup' ? 'signup.html' : 'login.html';
+  window.switchAuthTab = (tab) => {
+    const isSignin = tab === 'signin';
+    document.getElementById('tabSignin').classList.toggle('active', isSignin);
+    document.getElementById('tabSignup').classList.toggle('active', !isSignin);
+    document.getElementById('signinPanel').style.display  = (isSignin && !document.getElementById('resetPanel').classList.contains('show')) ? 'block' : 'none';
+    document.getElementById('signupPanel').style.display  = !isSignin ? 'block' : 'none';
+    document.getElementById('resetPanel').style.display   = 'none';
+    if (isSignin) document.getElementById('signinPanel').style.display = 'block';
+    clearAuthMessages();
   };
+  window.showResetPanel = () => {
+    document.getElementById('signinPanel').style.display = 'none';
+    document.getElementById('resetPanel').style.display  = 'block';
+    clearAuthMessages();
+  };
+  window.hideResetPanel = () => {
+    document.getElementById('resetPanel').style.display  = 'none';
+    document.getElementById('signinPanel').style.display = 'block';
+    clearAuthMessages();
+  };
+  window.togglePw = (id, btn) => {
+    const inp = document.getElementById(id);
+    const showing = inp.type === 'text';
+    inp.type = showing ? 'password' : 'text';
+    btn.innerHTML = showing
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  };
+
+  function setAuthLoading(btnId, loading) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.classList.toggle('loading', loading);
+    btn.disabled = loading;
+  }
+  function showAuthError(msg) {
+    const el = document.getElementById('authError');
+    el.textContent = msg; el.classList.add('show');
+    document.getElementById('authSuccess').classList.remove('show');
+  }
+  function showAuthSuccess(msg) {
+    const el = document.getElementById('authSuccess');
+    el.textContent = msg; el.classList.add('show');
+    document.getElementById('authError').classList.remove('show');
+  }
+  function clearAuthMessages() {
+    document.getElementById('authError').classList.remove('show');
+    document.getElementById('authSuccess').classList.remove('show');
+  }
+
+  /* ── Sign In ── */
+  window.doSignIn = async () => {
+    const email = document.getElementById('siEmail').value.trim();
+    const pw    = document.getElementById('siPassword').value;
+    if (!email || !pw) { showAuthError('Please enter your email and password.'); return; }
+    setAuthLoading('siBtn', true);
+    clearAuthMessages();
+    try {
+      await signInWithEmailAndPassword(auth, email, pw);
+      // onAuthStateChanged will fire and close the modal
+    } catch (err) {
+      setAuthLoading('siBtn', false);
+      showAuthError(friendlyAuthError(err.code));
+    }
+  };
+
+  /* ── Sign Up ── */
+  window.doSignUp = async () => {
+    const name    = document.getElementById('suName').value.trim();
+    const email   = document.getElementById('suEmail').value.trim();
+    const pw      = document.getElementById('suPassword').value;
+    const confirm = document.getElementById('suConfirm').value;
+    if (!name)           { showAuthError('Please enter your full name.'); return; }
+    if (!email)          { showAuthError('Please enter your email.'); return; }
+    if (pw.length < 6)   { showAuthError('Password must be at least 6 characters.'); return; }
+    if (pw !== confirm)  { showAuthError('Passwords do not match.'); return; }
+    setAuthLoading('suBtn', true);
+    clearAuthMessages();
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, pw);
+      await updateProfile(cred.user, { displayName: name });
+      // Save to DB
+      try {
+        await set(ref(db, `users/${cred.user.uid}/profile`), { name, email });
+      } catch (_) {}
+      // onAuthStateChanged fires
+    } catch (err) {
+      setAuthLoading('suBtn', false);
+      showAuthError(friendlyAuthError(err.code));
+    }
+  };
+
+  /* ── Google ── */
+  window.doGoogleSignIn = async () => {
+    setAuthLoading('siGoogleBtn', true);
+    setAuthLoading('suGoogleBtn', true);
+    clearAuthMessages();
+    try {
+      await signInWithPopup(auth, gProvider);
+    } catch (err) {
+      setAuthLoading('siGoogleBtn', false);
+      setAuthLoading('suGoogleBtn', false);
+      showAuthError(friendlyAuthError(err.code));
+    }
+  };
+
+  /* ── Reset password ── */
+  window.doResetPassword = async () => {
+    const email = document.getElementById('resetEmail').value.trim();
+    if (!email) { showAuthError('Please enter your email address.'); return; }
+    setAuthLoading('resetBtn', true);
+    clearAuthMessages();
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setAuthLoading('resetBtn', false);
+      showAuthSuccess('Reset link sent! Check your inbox.');
+    } catch (err) {
+      setAuthLoading('resetBtn', false);
+      showAuthError(friendlyAuthError(err.code));
+    }
+  };
+
+  /* ── Sign Out ── */
+  window.handleSignOut = async () => {
+    if (!confirm('Sign out?')) return;
+    await signOut(auth);
+  };
+
+  function friendlyAuthError(code) {
+    const map = {
+      'auth/user-not-found':       'No account found with this email.',
+      'auth/wrong-password':       'Incorrect password. Please try again.',
+      'auth/invalid-email':        'Please enter a valid email address.',
+      'auth/email-already-in-use': 'An account with this email already exists.',
+      'auth/weak-password':        'Password must be at least 6 characters.',
+      'auth/too-many-requests':    'Too many attempts. Please try again later.',
+      'auth/popup-closed-by-user': 'Sign-in popup was closed.',
+      'auth/network-request-failed': 'Network error. Check your connection.',
+      'auth/invalid-credential':   'Incorrect email or password.',
+    };
+    return map[code] || 'Something went wrong. Please try again.';
+  }
+
+  /* ════════════════════════════════════
+     Auth state watcher
+     ════════════════════════════════════ */
+  onAuthStateChanged(auth, user => {
+    currentUser = user;
+    updateUserBadge(user);
+    updateAuthBanners(user);
+    if (user) {
+      prefillUserInfo(user);
+      closeAuthModal(); // close modal when signed in
+    }
+  });
+
+  function updateAuthBanners(user) {
+    const signedInBanner = document.getElementById('authSignedInBanner');
+    const promptCard     = document.getElementById('authPromptCard');
+    if (user) {
+      const name  = user.displayName || user.email || 'User';
+      document.getElementById('signedInName').textContent  = `Signed in as ${name.split(' ')[0]}`;
+      document.getElementById('signedInEmail').textContent = user.email || '';
+      signedInBanner.classList.add('show');
+      promptCard.classList.remove('show');
+    } else {
+      signedInBanner.classList.remove('show');
+      promptCard.classList.add('show');
+    }
+  }
 
   /* ── User badge in topbar ── */
   function updateUserBadge(user) {
@@ -710,16 +1193,11 @@
     const avatar  = document.getElementById('userAvatar');
     const nameEl  = document.getElementById('userNameBadge');
     const titleEl = document.getElementById('topbarTitle');
-
     if (user) {
       const initials = (user.displayName || user.email || '?').slice(0, 2).toUpperCase();
       badge.classList.add('visible');
-      titleEl.style.display = 'none'; // hide "Checkout" label when badge is shown
-      if (user.photoURL) {
-        avatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
-      } else {
-        avatar.textContent = initials;
-      }
+      titleEl.style.display = 'none';
+      avatar.innerHTML = user.photoURL ? `<img src="${user.photoURL}" alt="avatar">` : initials;
       nameEl.textContent = (user.displayName || user.email || '').split(' ')[0];
     } else {
       badge.classList.remove('visible');
@@ -737,9 +1215,7 @@
     localStorage.setItem('jersify_addresses', JSON.stringify(addrs.slice(0, 5)));
   };
 
-  /* ════════════════════════════════════
-     Fetch coupons from /coupons in RTDB
-     ════════════════════════════════════ */
+  /* ── Coupons ── */
   async function loadCoupons() {
     const tagsEl = document.getElementById('couponTagsContainer');
     try {
@@ -750,11 +1226,7 @@
         Object.entries(data).forEach(([key, val]) => {
           if (val.active !== false) {
             const code = key.toUpperCase();
-            couponsMap[code] = {
-              type:  val.type  || 'percent',
-              value: Number(val.value) || 0,
-              desc:  val.desc  || `${val.value}${val.type === 'flat' ? '₹' : '%'} OFF`
-            };
+            couponsMap[code] = { type: val.type || 'percent', value: Number(val.value) || 0, desc: val.desc || `${val.value}${val.type === 'flat' ? '₹' : '%'} OFF` };
             activeCodes.push(code);
           }
         });
@@ -764,71 +1236,43 @@
       } else {
         tagsEl.innerHTML = '<span class="coupon-loading-text">No coupons available.</span>';
       }
-    } catch {
-      tagsEl.innerHTML = '<span class="coupon-loading-text">Could not load coupons.</span>';
-    }
+    } catch { tagsEl.innerHTML = '<span class="coupon-loading-text">Could not load coupons.</span>'; }
   }
 
-  /* ════════════════════════════════════════════════════════
-     Pre-fill name / email / phone from /users/{uid}
-     ════════════════════════════════════════════════════════ */
+  /* ── Prefill user info ── */
   async function prefillUserInfo(user) {
-    let name  = user.displayName || '';
-    let email = user.email       || '';
-    let phone = user.phoneNumber || '';
-
+    let name = user.displayName || '', email = user.email || '', phone = user.phoneNumber || '';
     try {
       const snap = await get(child(dbRef, `users/${user.uid}`));
       if (snap.exists()) {
-        const u = snap.val();
-        const p = u.profile || {};
-        name  = p.name        || u.name        || u.displayName || name;
-        email = p.email       || u.email       || email;
-        phone = p.phone       || p.phoneNumber || u.phone || u.phoneNumber || u.mobile || phone;
+        const u = snap.val(), p = u.profile || {};
+        name  = p.name || u.name || u.displayName || name;
+        email = p.email || u.email || email;
+        phone = p.phone || p.phoneNumber || u.phone || u.phoneNumber || u.mobile || phone;
       }
     } catch (_) {}
-
-    if (!phone) {
-      try {
-        const aSnap = await get(child(dbRef, `admins/${user.uid}`));
-        if (aSnap.exists()) {
-          const a = aSnap.val();
-          name  = name  || a.name  || '';
-          email = email || a.email || '';
-          phone = phone || a.phone || '';
-        }
-      } catch (_) {}
-    }
-
-    const setIfEmpty = (id, val) => {
-      const el = document.getElementById(id);
-      if (el && !el.value && val) el.value = val;
-    };
-    setIfEmpty('custName',  name);
-    setIfEmpty('custEmail', email);
-    setIfEmpty('custPhone', phone);
+    const setIfEmpty = (id, val) => { const el = document.getElementById(id); if (el && !el.value && val) el.value = val; };
+    setIfEmpty('custName', name); setIfEmpty('custEmail', email); setIfEmpty('custPhone', phone);
   }
 
-  /* ── saved addresses ── */
+  /* ── Saved addresses ── */
   function renderSavedAddresses() {
-    const addrs   = getSavedAddresses();
+    const addrs = getSavedAddresses();
     const section = document.getElementById('savedAddressesSection');
     if (!addrs.length) { section.style.display = 'none'; newAddrVisible = true; return; }
-
     section.style.display = 'block';
     document.getElementById('savedAddressList').innerHTML = addrs.map((a, i) => `
-      <div class="saved-addr${i === 0 ? ' selected' : ''}" onclick="selectSavedAddr(${i},'${encodeURIComponent(JSON.stringify(a))}')" id="savedAddr_${i}">
+      <div class="saved-addr${i===0?' selected':''}" onclick="selectSavedAddr(${i},'${encodeURIComponent(JSON.stringify(a))}')" id="savedAddr_${i}">
         <div class="saved-addr-radio"></div>
         <div class="addr-info">
-          <span class="addr-tag">${a.tag || 'Home'}</span>
+          <span class="addr-tag">${a.tag||'Home'}</span>
           <div class="addr-name">${a.name}</div>
           <div class="addr-text">${a.address}, ${a.city}, ${a.state} – ${a.pincode}</div>
         </div>
       </div>`).join('');
-
     selectSavedAddr(0, encodeURIComponent(JSON.stringify(addrs[0])));
-    document.getElementById('addressForm').style.display  = 'none';
-    document.getElementById('saveAddrRow').style.display  = 'none';
+    document.getElementById('addressForm').style.display = 'none';
+    document.getElementById('saveAddrRow').style.display = 'none';
     newAddrVisible = false;
   }
 
@@ -840,33 +1284,26 @@
     document.getElementById('saveAddrRow').style.display = 'none';
     newAddrVisible = false;
   };
-
   window.toggleNewAddress = () => {
     newAddrVisible = !newAddrVisible;
     document.getElementById('addressForm').style.display = newAddrVisible ? 'block' : 'none';
     document.getElementById('saveAddrRow').style.display = newAddrVisible ? 'flex'  : 'none';
-    if (newAddrVisible) {
-      selectedSavedAddr = null;
-      document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected'));
-    }
+    if (newAddrVisible) { selectedSavedAddr = null; document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected')); }
   };
 
   window.selectSize = btn => {
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   };
-
   window.selPay = method => {
     document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
     document.getElementById(method === 'razorpay' ? 'pay_rzp' : 'pay_cod').parentElement.classList.add('active');
   };
 
   window.getLocation = () => {
-    const btn  = document.getElementById('locationBtn');
-    const text = document.getElementById('locationText');
+    const btn = document.getElementById('locationBtn'), text = document.getElementById('locationText');
     if (!navigator.geolocation) { text.textContent = 'Geolocation not supported'; return; }
-    btn.classList.add('loading');
-    text.textContent = 'Detecting your location…';
+    btn.classList.add('loading'); text.textContent = 'Detecting your location…';
     navigator.geolocation.getCurrentPosition(
       async pos => {
         try {
@@ -881,8 +1318,7 @@
             document.getElementById('custPincode').value = a.postcode || '';
             document.getElementById('custCountry').value = a.country || 'India';
             text.textContent = 'Location detected!';
-            btn.classList.remove('loading');
-            btn.classList.add('success');
+            btn.classList.remove('loading'); btn.classList.add('success');
           }
         } catch { text.textContent = 'Could not fetch address.'; btn.classList.remove('loading'); }
       },
@@ -891,26 +1327,20 @@
     );
   };
 
-  window.useCoupon = code => {
-    document.getElementById('couponInput').value = code;
-    applyCoupon();
-  };
-
+  window.useCoupon = code => { document.getElementById('couponInput').value = code; applyCoupon(); };
   window.applyCoupon = () => {
-    const code  = document.getElementById('couponInput').value.trim().toUpperCase();
+    const code = document.getElementById('couponInput').value.trim().toUpperCase();
     const msgEl = document.getElementById('couponMsg');
     if (!code)         { msgEl.textContent = 'Please enter a coupon code.'; msgEl.className = 'coupon-msg error'; return; }
     if (couponApplied) { msgEl.textContent = 'A coupon is already applied.'; msgEl.className = 'coupon-msg error'; return; }
-    if (!Object.keys(couponsMap).length) { msgEl.textContent = 'Coupons are still loading, please wait.'; msgEl.className = 'coupon-msg error'; return; }
+    if (!Object.keys(couponsMap).length) { msgEl.textContent = 'Coupons still loading…'; msgEl.className = 'coupon-msg error'; return; }
     const coupon = couponsMap[code];
     if (!coupon) { msgEl.textContent = 'Invalid coupon code.'; msgEl.className = 'coupon-msg error'; return; }
-    discountAmount = coupon.type === 'percent'
-      ? Math.round(orderPrice * coupon.value / 100)
-      : coupon.value;
+    discountAmount = coupon.type === 'percent' ? Math.round(orderPrice * coupon.value / 100) : coupon.value;
     if (discountAmount > orderPrice) discountAmount = orderPrice;
     couponApplied = true;
     msgEl.textContent = `${coupon.desc} applied! You save ₹${discountAmount}`;
-    msgEl.className   = 'coupon-msg success';
+    msgEl.className = 'coupon-msg success';
     document.getElementById('discountRow').style.display = 'flex';
     document.getElementById('discountVal').textContent   = `-₹${discountAmount}`;
     updateTotal();
@@ -921,105 +1351,66 @@
   }
 
   window.changeQty = (key, delta) => {
-    const cart = getCart();
-    const item = cart.find(i => i.key === key);
+    const cart = getCart(), item = cart.find(i => i.key === key);
     if (!item) return;
     item.qty = Math.max(1, item.qty + delta);
-    saveCart(cart);
-    recalcCartTotal();
+    saveCart(cart); recalcCartTotal();
     const el = document.getElementById(`qty_${key.replace(/[^a-zA-Z0-9]/g, '_')}`);
     if (el) el.textContent = item.qty;
   };
 
   function recalcCartTotal() {
-    const cart     = getCart();
-    orderPrice     = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const cart = getCart();
+    orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
     discountAmount = 0; couponApplied = false;
     document.getElementById('subTotal').textContent   = `₹${orderPrice.toLocaleString('en-IN')}`;
     document.getElementById('finalTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('couponMsg').className    = 'coupon-msg';
+    document.getElementById('couponMsg').className = 'coupon-msg';
     document.getElementById('discountRow').style.display = 'none';
   }
 
-  /* ── Payment failure helpers ── */
   function showPaymentFailed(reason) {
     const banner = document.getElementById('payFailedBanner');
-    document.getElementById('payFailedDesc').textContent =
-      (reason || 'Payment could not be processed.') +
-      ' Your items are still here — try again or switch to Cash on Delivery.';
+    document.getElementById('payFailedDesc').textContent = (reason || 'Payment could not be processed.') + ' Your items are still here — try again or switch to Cash on Delivery.';
     banner.classList.add('visible');
     banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
     const btn = document.getElementById('confirmBtn');
-    btn.disabled = false;
-    btn.textContent = 'Confirm Order →';
+    btn.disabled = false; btn.textContent = 'Confirm Order →';
   }
-
   window.retryPayment = () => {
     document.getElementById('payFailedBanner').classList.remove('visible');
     document.getElementById('confirmBtn').scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
-
   window.switchToCOD = () => {
     document.getElementById('payFailedBanner').classList.remove('visible');
     selPay('cod');
     document.getElementById('pay_cod').parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
-  /* ════════════════════════════════════════════════════════
-     Save order to Firebase RTDB
-     ════════════════════════════════════════════════════════ */
+  /* ── Save order to DB ── */
   async function saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId, paymentMethod }) {
     const items = orderItems.map(item => ({
-      id:       item.id   || item.key || '',
-      name:     item.name || '',
-      price:    item.price || 0,
-      qty:      item.qty  || 1,
-      size:     item.size || selectedSize || 'M',
-      team:     item.team || '',
-      imgUrl:   item.imgUrl || item.imageUrl || '',
-      emoji:    item.emoji || '👕'
+      id: item.id || item.key || '', name: item.name || '', price: item.price || 0,
+      qty: item.qty || 1, size: item.size || selectedSize || 'M',
+      team: item.team || '', imgUrl: item.imgUrl || item.imageUrl || '', emoji: item.emoji || '👕'
     }));
-
     const orderData = {
-      orderId,
-      customerName: name,
-      phone,
-      email,
-      address:     `${address}, ${city}, ${state} ${pincode}`,
-      country:     country || 'India',
-      items,
-      subtotal:    orderPrice,
-      discount:    discountAmount,
-      total:       finalPrice,
-      paymentMethod,
-      paymentId:   paymentId || '',
-      status:      'processing',
-      createdAt:   Date.now(),
-      updatedAt:   Date.now(),
-      userId:      currentUser ? currentUser.uid : 'guest'
+      orderId, customerName: name, phone, email,
+      address: `${address}, ${city}, ${state} ${pincode}`, country: country || 'India',
+      items, subtotal: orderPrice, discount: discountAmount, total: finalPrice,
+      paymentMethod, paymentId: paymentId || '', status: 'processing',
+      createdAt: Date.now(), updatedAt: Date.now(), userId: currentUser ? currentUser.uid : 'guest'
     };
-
     try {
       await set(ref(db, `orders/${orderId}`), orderData);
-      if (currentUser) {
-        await set(ref(db, `users/${currentUser.uid}/orders/${orderId}`), true);
-      }
-    } catch (err) {
-      console.error('Failed to save order to DB:', err);
-    }
+      if (currentUser) await set(ref(db, `users/${currentUser.uid}/orders/${orderId}`), true);
+    } catch (err) { console.error('Failed to save order:', err); }
   }
 
   /* ── DOMContentLoaded ── */
   window.addEventListener('DOMContentLoaded', async () => {
     loadCoupons();
     renderSavedAddresses();
-
-    // Watch auth state
-    onAuthStateChanged(auth, user => {
-      currentUser = user;
-      updateUserBadge(user);
-      if (user) prefillUserInfo(user);
-    });
 
     const params    = new URLSearchParams(window.location.search);
     const pid       = params.get('id');
@@ -1028,7 +1419,6 @@
     const orderBody = document.getElementById('orderItemsBody');
 
     if (pid) {
-      /* ── Single product mode (Buy Now) ── */
       try {
         const snap = await get(child(dbRef, `products/${pid}`));
         if (snap.exists()) {
@@ -1036,7 +1426,6 @@
           const name = p.name || 'Jersify Kit';
           orderPrice = p.price ? parseInt(p.price) : 1499;
           orderItems = [{ id: pid, name, price: orderPrice, size: paramSize || 'M', team: p.team || '', imgUrl: p.imgUrl || '', qty: 1 }];
-
           orderBody.innerHTML = `
             <div class="product-row">
               <div class="product-img">
@@ -1048,7 +1437,6 @@
                 <div class="product-price">₹${orderPrice.toLocaleString('en-IN')}</div>
               </div>
             </div>`;
-
           document.getElementById('sizeCard').style.display = 'block';
           const sizes = ['XS','S','M','L','XL','XXL'];
           document.getElementById('sizeGrid').innerHTML = sizes.map(sz =>
@@ -1060,21 +1448,15 @@
       } catch {
         orderBody.innerHTML = `<p style="color:var(--accent);font-size:13px;text-align:center;padding:12px 0">Error loading product.</p>`;
       }
-
     } else if (cart.length > 0) {
-      /* ── Cart mode ── */
-      isCartMode = true;
-      orderItems = cart;
+      isCartMode = true; orderItems = cart;
       orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
-
       orderBody.innerHTML = cart.map(item => {
         const safeKey = item.key.replace(/[^a-zA-Z0-9]/g, '_');
         return `
           <div class="cart-item">
             <div class="ci-img">
-              ${item.imageUrl || item.imgUrl
-                ? `<img src="${item.imageUrl || item.imgUrl}" alt="${item.name}">`
-                : `<span class="ci-img-placeholder">👕</span>`}
+              ${item.imageUrl || item.imgUrl ? `<img src="${item.imageUrl || item.imgUrl}" alt="${item.name}">` : `<span class="ci-img-placeholder">👕</span>`}
             </div>
             <div class="ci-info">
               <div class="ci-name">${item.name}</div>
@@ -1088,15 +1470,10 @@
             </div>
           </div>`;
       }).join('');
-
     } else {
-      /* ── Empty cart ── */
       orderBody.innerHTML = `
         <div class="empty-cart-hint">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/>
-            <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"/></svg>
           <p>Your cart is empty.<br>Browse our jerseys and add items.</p>
           <a href="shop.html" class="browse-btn">Browse Jerseys →</a>
         </div>`;
@@ -1109,25 +1486,23 @@
   });
 
   /* ════════════════════════════════════════════════
-     Process Order  ← AUTH GATE IS HERE
+     Process Order
      ════════════════════════════════════════════════ */
   window.processOrder = () => {
-    if (orderPrice === 0) { alert('Your cart is empty. Please add items first.'); return; }
+    if (orderPrice === 0) { alert('Your cart is empty.'); return; }
 
-    /* ── AUTH CHECK: block guests ── */
+    /* AUTH CHECK */
     if (!currentUser) {
-      showAuthToast();
-      // Visually shake the confirm button
+      openAuthModal('signin');
       const btn = document.getElementById('confirmBtn');
       btn.style.animation = 'shake .4s ease';
       setTimeout(() => btn.style.animation = '', 500);
-      return;   // ← stop here, no order processed
+      return;
     }
 
     document.getElementById('payFailedBanner').classList.remove('visible');
 
     let name, phone, email, address, city, state, pincode, country;
-
     if (selectedSavedAddr) {
       ({ name, phone, email, address, city, state, pincode } = selectedSavedAddr);
       country = selectedSavedAddr.country || 'India';
@@ -1140,44 +1515,33 @@
       state   = document.getElementById('custState').value.trim();
       pincode = document.getElementById('custPincode').value.trim();
       country = document.getElementById('custCountry').value.trim() || 'India';
-
-      if (!name)                          { shakeField('custName');    alert('Please enter your name.');            return; }
-      if (!phone || phone.length < 10)    { shakeField('custPhone');   alert('Please enter a valid phone number.'); return; }
-      if (!address)                       { shakeField('custAddress'); alert('Please enter your address.');         return; }
-      if (!city)                          { shakeField('custCity');    alert('Please enter your city.');            return; }
-      if (!pincode || pincode.length < 4) { shakeField('custPincode'); alert('Please enter a valid pincode.');      return; }
-
-      if (document.getElementById('saveAddrCheck').checked) {
-        saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
-      }
+      if (!name)                         { shakeField('custName');    alert('Please enter your name.'); return; }
+      if (!phone || phone.length < 10)   { shakeField('custPhone');   alert('Please enter a valid phone number.'); return; }
+      if (!address)                      { shakeField('custAddress'); alert('Please enter your address.'); return; }
+      if (!city)                         { shakeField('custCity');    alert('Please enter your city.'); return; }
+      if (!pincode || pincode.length < 4){ shakeField('custPincode'); alert('Please enter a valid pincode.'); return; }
+      if (document.getElementById('saveAddrCheck').checked) saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
     }
 
-    const isRzp        = document.getElementById('pay_rzp').checked;
-    const finalPrice   = orderPrice - discountAmount;
+    const isRzp      = document.getElementById('pay_rzp').checked;
+    const finalPrice = orderPrice - discountAmount;
     const selectedSize = document.querySelector('.size-btn.active')?.textContent || 'M';
-    const itemDesc     = isCartMode
-      ? `${orderItems.length} item${orderItems.length > 1 ? 's' : ''} from Jersify`
-      : `${orderItems[0]?.name || 'Jersify Kit'} (Size: ${selectedSize})`;
+    const itemDesc   = isCartMode ? `${orderItems.length} item${orderItems.length > 1 ? 's' : ''} from Jersify` : `${orderItems[0]?.name || 'Jersify Kit'} (Size: ${selectedSize})`;
 
     const btn = document.getElementById('confirmBtn');
-    btn.disabled = true;
-    btn.textContent = 'Processing…';
-
+    btn.disabled = true; btn.textContent = 'Processing…';
     const orderId = `JRS-${Date.now()}`;
 
     if (isRzp) {
       const options = {
-        key:         "rzp_test_YourKeyHere",
-        amount:      finalPrice * 100,
-        currency:    "INR",
-        name:        "JERSIFY",
-        description: itemDesc,
-        image:       "https://dummyimage.com/100x100/111/fff&text=J",
+        key: "rzp_test_YourKeyHere",
+        amount: finalPrice * 100, currency: "INR",
+        name: "JERSIFY", description: itemDesc,
+        image: "https://dummyimage.com/100x100/111/fff&text=J",
         handler: async r => {
           await saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: r.razorpay_payment_id, paymentMethod: 'razorpay' });
           localStorage.removeItem('jersify_cart');
-          btn.disabled = false;
-          btn.textContent = 'Confirm Order →';
+          btn.disabled = false; btn.textContent = 'Confirm Order →';
           showSuccess(orderId, name, finalPrice, selectedSize, 'Online Payment');
         },
         prefill: { name, email, contact: phone },
@@ -1186,22 +1550,17 @@
         modal:   { ondismiss: () => { showPaymentFailed('Payment was cancelled.'); } }
       };
       const rzp = new Razorpay(options);
-      rzp.on('payment.failed', r => {
-        const reason = r?.error?.description || r?.error?.reason || 'Unknown error';
-        showPaymentFailed(`Payment failed: ${reason}`);
-      });
+      rzp.on('payment.failed', r => { showPaymentFailed(`Payment failed: ${r?.error?.description || 'Unknown error'}`); });
       rzp.open();
     } else {
       saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: '', paymentMethod: 'cod' }).then(() => {
         localStorage.removeItem('jersify_cart');
-        btn.disabled = false;
-        btn.textContent = 'Confirm Order →';
+        btn.disabled = false; btn.textContent = 'Confirm Order →';
         showSuccess(orderId, name, finalPrice, selectedSize, 'Cash on Delivery');
       });
     }
   };
 
-  /* ── Success screen ── */
   function showSuccess(orderId, name, total, size, payMethod) {
     let countdown = 5;
     document.querySelector('.content').innerHTML = `
@@ -1215,15 +1574,10 @@
           <div class="success-detail-row"><span>Payment</span><span>${payMethod}</span></div>
           ${!isCartMode ? `<div class="success-detail-row"><span>Size</span><span>${size}</span></div>` : ''}
         </div>
-        <div class="success-msg">
-          Thank you for shopping with Jersify! Your kit is being packed and will be on its way soon. You can track your order from your profile.
-        </div>
+        <div class="success-msg">Thank you for shopping with Jersify! Your kit is being packed and will be on its way soon.</div>
         <button class="success-btn" onclick="window.location.href='profile.html'">View My Orders →</button>
-        <div class="success-redirect" id="successRedirect">
-          Redirecting to your profile in <span id="countdownNum">${countdown}</span>s…
-        </div>
+        <div class="success-redirect" id="successRedirect">Redirecting in <span id="countdownNum">${countdown}</span>s…</div>
       </div>`;
-
     const interval = setInterval(() => {
       countdown--;
       const el = document.getElementById('countdownNum');
@@ -1235,8 +1589,7 @@
   function shakeField(id) {
     const el = document.getElementById(id);
     if (!el) return;
-    el.style.borderColor = 'var(--accent)';
-    el.style.animation   = 'shake .4s ease';
+    el.style.borderColor = 'var(--accent)'; el.style.animation = 'shake .4s ease';
     setTimeout(() => { el.style.animation = ''; el.style.borderColor = ''; }, 500);
   }
 </script>
