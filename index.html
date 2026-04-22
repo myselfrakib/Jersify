@@ -117,9 +117,21 @@
 
     /* ── WOW PICKS / PRODUCT CARDS ── */
     .loop-section { padding: 0 0 12px; }
-    .loop-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; width: 100%; padding: 2px 0 6px; touch-action: pan-y; }
+    .loop-viewport {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      width: 100%;
+      padding: 2px 0 6px;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+    }
     .loop-viewport::-webkit-scrollbar { display: none; }
+    .loop-viewport.is-dragging { cursor: grabbing; scroll-behavior: auto; }
     .loop-track { display: flex; gap: 12px; width: max-content; padding: 0 16px; }
+    .loop-viewport.is-dragging .loop-card { pointer-events: none; }
     .loop-card { flex: 0 0 170px; scroll-snap-align: start; border-radius: 22px; background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow-soft); overflow: hidden; }
     .loop-card .pic { height: 150px; background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%); display: grid; place-items: center; position: relative; overflow: hidden; }
     .loop-card .pic::after { content: ""; position: absolute; inset: 14px; border-radius: 18px; border: 1px solid rgba(255,255,255,.08); background: linear-gradient(135deg, rgba(255,255,255,.05), transparent); pointer-events: none; }
@@ -154,22 +166,17 @@
     .media-space img, .media-space video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .media-space .placeholder { font-size: 13px; font-weight: 700; text-align: center; padding: 0 14px; }
 
-    /* ── PROMOTIONS SECTION — 4-card scrollable strip with arrows ──
-       Firebase injects featured_2, featured_3 … BEFORE the 2 blank slots.
-       Total visible = Firebase promo cards + 2 blank = always ≥ 2, up to 4+ depending on DB.
-    ── */
+    /* ── PROMOTIONS ── */
     .promo-section { padding: 0 16px 16px; }
     .promo-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; touch-action: pan-y; }
     .promo-viewport::-webkit-scrollbar { display: none; }
     .promo-track { display: flex; gap: 10px; width: max-content; padding: 2px 0 6px; }
 
-    /* filled card */
     .promo-card { flex: 0 0 220px; height: 100px; border-radius: 16px; overflow: hidden; position: relative; cursor: pointer; background: #111; box-shadow: var(--shadow-soft); scroll-snap-align: start; }
     .promo-card img, .promo-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .promo-card .promo-overlay { position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(0,0,0,.65)); }
     .promo-card .promo-label { position: absolute; bottom: 8px; left: 10px; right: 10px; color: #fff; font-size: 11px; font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* blank placeholder card */
     .promo-card-blank { flex: 0 0 220px; height: 100px; border-radius: 16px; overflow: hidden; position: relative; background: #f7f7f7; border: 2px dashed rgba(17,17,17,.14); box-shadow: var(--shadow-soft); scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
     .promo-card-blank svg { width: 26px; height: 26px; opacity: .22; }
     .promo-card-blank span { font-size: 10px; font-weight: 700; color: #bbb; letter-spacing: .3px; }
@@ -182,16 +189,14 @@
     .reel-card video.reel-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
     .reel-card .thumb { position: absolute; inset: 0; background: center/cover; filter: saturate(1.15); }
     .reel-card::before { content: ""; position: absolute; inset: 0; z-index: 1; background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.15), transparent 20%), linear-gradient(180deg, rgba(198,31,47,.15), rgba(0,0,0,.3)); }
-    /* play icon */
     .reel-play { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; pointer-events: none; }
     .reel-play svg { width: 36px; height: 36px; opacity: .82; filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); }
 
-    /* ── REEL FULLSCREEN TOAST MODAL ── */
+    /* ── REEL FULLSCREEN MODAL ── */
     #reelModal { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.94); align-items: center; justify-content: center; }
     #reelModal.open { display: flex; }
     #reelModal .reel-modal-inner { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
     #reelModal video { max-width: 100vw; max-height: 100vh; width: 100%; height: 100%; object-fit: contain; display: block; }
-    /* ✕ close button — top right corner */
     #reelModal .reel-close {
       position: absolute; top: 18px; right: 18px; z-index: 10;
       width: 44px; height: 44px; border-radius: 50%;
@@ -202,7 +207,6 @@
       cursor: pointer; transition: background .2s; line-height: 1;
     }
     #reelModal .reel-close:hover { background: rgba(255,255,255,.26); }
-    /* Shop Now CTA inside modal */
     #reelModal .reel-shop-cta {
       position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%);
       background: linear-gradient(180deg, var(--accent), var(--accent2));
@@ -215,7 +219,6 @@
     /* ── GALLERY ── */
     .gallery { padding: 0 16px 18px; }
     .grid { display: flex; gap: 8px; align-items: stretch; }
-    /* 2:1 ratio first image fills 2/3 of row; second takes remaining 1/3, same height */
     .grid-item-a { flex: 2 1 0; aspect-ratio: 2/1; border-radius: 18px; overflow: hidden; background: #ddd; box-shadow: var(--shadow-soft); position: relative; cursor: pointer; min-width: 0; }
     .grid-item-b { flex: 1 1 0; border-radius: 18px; overflow: hidden; background: #ddd; box-shadow: var(--shadow-soft); position: relative; cursor: pointer; min-width: 0; }
     .grid-item-a img, .grid-item-a video, .grid-item-b img, .grid-item-b video { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -359,7 +362,7 @@
       </div>
     </section>
 
-    <!-- ══ PROMOTIONS — 4 slidable blocks (featured_2 + featured_3 from Firebase + 2 blank) ══ -->
+    <!-- ══ PROMOTIONS ══ -->
     <section class="section" style="padding-bottom:16px;">
       <div class="row-header-flat" style="margin:0 0 10px;padding:0;">
         <h3 style="font-size:18px;font-weight:900;margin:0;">Promotions</h3>
@@ -373,10 +376,6 @@
         </div>
       </div>
       <div class="promo-viewport" id="promoViewport">
-        <!--
-          Firebase JS will prepend featured_2, featured_3 cards BEFORE the 2 blank slots below.
-          Result = up to 4 cards total: [FB card 1] [FB card 2] [Blank 1] [Blank 2]
-        -->
         <div class="promo-track" id="promoTrack">
           <div class="promo-card-blank" id="promoBlank1">
             <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
@@ -448,9 +447,7 @@
   <div id="reelModal" role="dialog" aria-modal="true" aria-label="Reel player">
     <div class="reel-modal-inner">
       <video id="reelModalVideo" playsinline loop></video>
-      <!-- ✕ close button — top RIGHT corner -->
       <button class="reel-close" id="reelClose" aria-label="Close reel">✕</button>
-      <!-- Shop CTA at bottom -->
       <button class="reel-shop-cta" onclick="window.location.href='shop.html'">Shop Now</button>
     </div>
   </div>
@@ -515,12 +512,50 @@
       document.getElementById(nextId).addEventListener("click", () => vp.scrollBy({ left:  step, behavior: "smooth" }));
     }
 
-    // WOW Picks: card 170px + gap 12px = 182px per step
     bindArrows("prevWow", "nextWow", "loopViewport", 182);
-    // All Products: same card dimensions
     bindArrows("prevAllProd", "nextAllProd", "allProductsViewport", 182);
-    // Promo: card 220px + gap 10px = 230px per step
     bindArrows("prevPromo", "nextPromo", "promoViewport", 230);
+
+    /* ── WOW PICKS: MOUSE DRAG TO SCROLL ── */
+    (() => {
+      const vp = document.getElementById("loopViewport");
+      let isDown = false, startX = 0, scrollLeft = 0, moved = false;
+
+      vp.addEventListener("mousedown", e => {
+        isDown = true;
+        moved = false;
+        startX = e.pageX - vp.offsetLeft;
+        scrollLeft = vp.scrollLeft;
+        vp.classList.add("is-dragging");
+      });
+
+      vp.addEventListener("mouseleave", () => {
+        isDown = false;
+        vp.classList.remove("is-dragging");
+      });
+
+      vp.addEventListener("mouseup", () => {
+        isDown = false;
+        vp.classList.remove("is-dragging");
+      });
+
+      vp.addEventListener("mousemove", e => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - vp.offsetLeft;
+        const walk = (x - startX) * 1.2;
+        if (Math.abs(walk) > 4) moved = true;
+        vp.scrollLeft = scrollLeft - walk;
+      });
+
+      vp.addEventListener("click", e => {
+        if (moved) {
+          e.stopPropagation();
+          e.preventDefault();
+          moved = false;
+        }
+      }, true);
+    })();
 
     /* ── REEL MODAL ── */
     const reelModal    = document.getElementById("reelModal");
@@ -556,7 +591,7 @@
       if (e.key === "Enter" && searchInput.value.trim()) window.location.href = `shop.html?q=${encodeURIComponent(searchInput.value.trim())}`;
     });
 
-    /* ── COUNTRY CHIPS ── */
+    /* ── COUNTRY CHIPS (unchanged — SVG flags) ── */
     (() => {
       const countries = [
         { name: "Argentina", sub: "National team", page: "argentina.html", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>` },
@@ -571,25 +606,100 @@
       ).join("");
     })();
 
-    /* ── CLUB CHIPS (incl. Arsenal) ── */
+    /* ── CLUB CHIPS ── */
+    /* ================================================================
+       HOW TO USE:
+       - Set `img` to any direct image URL (https://...) or a local path (images/barcelona.png)
+       - If `img` is empty ("") or omitted, a coloured letter-badge fallback is shown automatically
+       - Recommended image size: 120x120px, square, PNG with transparent bg
+       ================================================================ */
     (() => {
       const clubs = [
-        { name: "Barcelona",  page: "barcelona.html",  bg: "#a51d2d", fg: "#f2c94c", l: "B" },
-        { name: "Real Madrid",page: "real-madrid.html",bg: "#e8d7a2", fg: "#0f5bd6", l: "R" },
-        { name: "Arsenal",    page: "arsenal.html",    bg: "#EF0107", fg: "#ffffff", l: "A" },
-        { name: "Chelsea",    page: "chelsea.html",    bg: "#1a4da1", fg: "#fff",    l: "C" },
-        { name: "Man City",   page: "man-city.html",   bg: "#9ed7ff", fg: "#0f4ea2", l: "M" },
-        { name: "Man Utd",    page: "man-utd.html",    bg: "#c61f2f", fg: "#111",    l: "U" },
-        { name: "PSG",        page: "psg.html",        bg: "#12284c", fg: "#c61f2f", l: "P" }
+        
+        {
+          name: "Barcelona",
+          page: "barcelona.html",
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG_3654.avif?alt=media&token=3f893a85-687b-4ea9-8d99-cc7503ed794a",           // ← paste your image URL here, e.g. "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg"
+          bg:   "#a51d2d",    // fallback badge bg colour (used only when img is empty)
+          fg:   "#f2c94c",    // fallback badge letter colour
+          l:    "B"           // fallback badge letter
+        },
+        {
+          name: "Real Madrid",
+          page: "real-madrid.html",
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b",           // ← paste your image URL here
+          bg:   "#e8d7a2",
+          fg:   "#0f5bd6",
+          l:    "R"
+        },
+        {
+          name: "Arsenal",
+          page: "arsenal.html",
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee",           // ← paste your image URL here
+          bg:   "#EF0107",
+          fg:   "#ffffff",
+          l:    "A"
+        },
+        {
+          name: "Chelsea",
+          page: "chelsea.html",
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a",           // ← paste your image URL here
+          bg:   "#1a4da1",
+          fg:   "#fff",
+          l:    "C"
+        },
+         {
+          name: "Liverpool",
+          page: "liverpool.html",
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9",           // ← paste your image URL here
+          bg:   "#c61f2f",
+          fg:   "#111",
+          l:    "M"
+        },
+        {
+          name: "Man City",
+          page: "man-city.html",
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7",           // ← paste your image URL here
+          bg:   "#9ed7ff",
+          fg:   "#0f4ea2",
+          l:    "M"
+        },
+        {
+          name: "Man Utd",
+          page: "man-utd.html",
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b",           // ← paste your image URL here
+          bg:   "#c61f2f",
+          fg:   "#111",
+          l:    "U"
+        },
+        {
+          name: "PSG",
+          page: "psg.html",
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6",           // ← paste your image URL here
+          bg:   "#12284c",
+          fg:   "#c61f2f",
+          l:    "P"
+        }
       ];
-      function badge(c) {
+
+      function fallbackBadge(c) {
         return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
           `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cl${c.l}"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cl${c.l})"><rect width="120" height="120" fill="${c.bg}"/><circle cx="60" cy="56" r="30" fill="rgba(255,255,255,.18)"/><path d="M28 92c10-20 54-20 64 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/><text x="60" y="66" text-anchor="middle" font-size="34" font-family="Arial,sans-serif" font-weight="900" fill="${c.fg}">${c.l}</text><text x="60" y="98" text-anchor="middle" font-size="11" font-family="Arial,sans-serif" font-weight="700" fill="rgba(255,255,255,.9)">${c.name.toUpperCase()}</text></g></svg>`
         );
       }
-      document.getElementById("clubRow").innerHTML = clubs.map(c =>
-        `<a href="${c.page}" class="card-chip"><div class="chip-img"><img src="${badge(c)}" alt="${c.name}"></div><div class="chip-name">${c.name}</div><div class="chip-sub">Club crest</div></a>`
-      ).join("");
+
+      document.getElementById("clubRow").innerHTML = clubs.map(c => {
+        const imgSrc = c.img && c.img.trim() !== "" ? c.img.trim() : fallbackBadge(c);
+        return `<a href="${c.page}" class="card-chip">
+          <div class="chip-img">
+            <img src="${imgSrc}" alt="${c.name}" loading="lazy"
+              onerror="this.src='${fallbackBadge(c)}'"
+            />
+          </div>
+          <div class="chip-name">${c.name}</div>
+          <div class="chip-sub">Club crest</div>
+        </a>`;
+      }).join("");
     })();
   </script>
 
@@ -677,7 +787,7 @@
       } catch (e) { console.warn("Hero load failed", e); }
     }
 
-    /* ── 3. PRODUCTS (WOW Picks: 8, All Products: 10) ── */
+    /* ── 3. PRODUCTS ── */
     async function loadProducts() {
       const loopTrack        = document.getElementById("loopTrack");
       const allProductsTrack = document.getElementById("allProductsTrack");
@@ -751,7 +861,7 @@
         /* featured_2, featured_3 … → insert into promo track BEFORE the 2 blank slots */
         const promoTrack = document.getElementById("promoTrack");
         const blank1     = document.getElementById("promoBlank1");
-        const promoItems = featured.slice(1); // skip featured_1
+        const promoItems = featured.slice(1);
 
         promoItems.forEach(m => {
           const url = getUrl(m), link = m.link || "shop.html", vid = isVideo(m);
@@ -765,11 +875,10 @@
               <div class="promo-overlay"></div>
               ${m.label ? `<div class="promo-label">${m.label}</div>` : ""}`;
           }
-          promoTrack.insertBefore(div, blank1); // prepend before blanks
+          promoTrack.insertBefore(div, blank1);
         });
-        // After insertion: [featured_2 card][featured_3 card][Blank 1][Blank 2] = 4 cards total ✓
 
-        /* reels → click opens fullscreen modal (not navigation) */
+        /* reels */
         const reelsRow     = document.getElementById("reelsRow");
         const reelsSection = document.getElementById("reelsSection");
         if (reels.length > 0) {
@@ -788,12 +897,10 @@
 
           reelsSection.style.display = "block";
 
-          /* clicking reel → toast modal */
           reelsRow.querySelectorAll(".reel-card").forEach(card => {
             card.addEventListener("click", () => openReel(card.dataset.src));
           });
 
-          /* auto-play thumbnail previews on scroll */
           const obs = new IntersectionObserver(entries => {
             entries.forEach(e => {
               const v = e.target.querySelector("video");
@@ -804,7 +911,7 @@
           reelsRow.querySelectorAll(".reel-card").forEach(c => obs.observe(c));
         }
 
-        /* gallery — 2:1 large + matching-height small */
+        /* gallery */
         const galleryGrid    = document.getElementById("galleryGrid");
         const gallerySection = document.getElementById("gallerySection");
         if (gallery.length > 0) {
