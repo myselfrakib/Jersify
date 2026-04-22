@@ -519,18 +519,22 @@
     /* ── WOW PICKS: MOUSE DRAG TO SCROLL ── */
     (() => {
       const vp = document.getElementById("loopViewport");
-      let isDown = false, startX = 0, scrollLeft = 0, moved = false;
+      let isDown = false, startX = 0, startPageX = 0, scrollLeft = 0, moved = false;
+      const DRAG_THRESHOLD = 8;
 
       vp.addEventListener("mousedown", e => {
+        if (e.target.closest("button") || e.target.closest("a")) return;
         isDown = true;
         moved = false;
         startX = e.pageX - vp.offsetLeft;
+        startPageX = e.pageX;
         scrollLeft = vp.scrollLeft;
         vp.classList.add("is-dragging");
       });
 
       vp.addEventListener("mouseleave", () => {
         isDown = false;
+        moved = false;
         vp.classList.remove("is-dragging");
       });
 
@@ -544,11 +548,12 @@
         e.preventDefault();
         const x = e.pageX - vp.offsetLeft;
         const walk = (x - startX) * 1.2;
-        if (Math.abs(walk) > 4) moved = true;
+        if (Math.abs(e.pageX - startPageX) > DRAG_THRESHOLD) moved = true;
         vp.scrollLeft = scrollLeft - walk;
       });
 
       vp.addEventListener("click", e => {
+        if (e.target.closest("button") || e.target.closest("a")) return;
         if (moved) {
           e.stopPropagation();
           e.preventDefault();
@@ -607,27 +612,20 @@
     })();
 
     /* ── CLUB CHIPS ── */
-    /* ================================================================
-       HOW TO USE:
-       - Set `img` to any direct image URL (https://...) or a local path (images/barcelona.png)
-       - If `img` is empty ("") or omitted, a coloured letter-badge fallback is shown automatically
-       - Recommended image size: 120x120px, square, PNG with transparent bg
-       ================================================================ */
     (() => {
       const clubs = [
-        
         {
           name: "Barcelona",
           page: "barcelona.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG_3654.avif?alt=media&token=3f893a85-687b-4ea9-8d99-cc7503ed794a",           // ← paste your image URL here, e.g. "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg"
-          bg:   "#a51d2d",    // fallback badge bg colour (used only when img is empty)
-          fg:   "#f2c94c",    // fallback badge letter colour
-          l:    "B"           // fallback badge letter
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab",
+          bg:   "#a51d2d",
+          fg:   "#f2c94c",
+          l:    "B"
         },
         {
           name: "Real Madrid",
           page: "real-madrid.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b",           // ← paste your image URL here
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b",
           bg:   "#e8d7a2",
           fg:   "#0f5bd6",
           l:    "R"
@@ -635,7 +633,7 @@
         {
           name: "Arsenal",
           page: "arsenal.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee",           // ← paste your image URL here
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee",
           bg:   "#EF0107",
           fg:   "#ffffff",
           l:    "A"
@@ -643,23 +641,15 @@
         {
           name: "Chelsea",
           page: "chelsea.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a",           // ← paste your image URL here
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a",
           bg:   "#1a4da1",
           fg:   "#fff",
           l:    "C"
         },
-         {
-          name: "Liverpool",
-          page: "liverpool.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9",           // ← paste your image URL here
-          bg:   "#c61f2f",
-          fg:   "#111",
-          l:    "M"
-        },
         {
           name: "Man City",
           page: "man-city.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7",           // ← paste your image URL here
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7",
           bg:   "#9ed7ff",
           fg:   "#0f4ea2",
           l:    "M"
@@ -667,7 +657,7 @@
         {
           name: "Man Utd",
           page: "man-utd.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b",           // ← paste your image URL here
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b",
           bg:   "#c61f2f",
           fg:   "#111",
           l:    "U"
@@ -675,7 +665,7 @@
         {
           name: "PSG",
           page: "psg.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6",           // ← paste your image URL here
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6",
           bg:   "#12284c",
           fg:   "#c61f2f",
           l:    "P"
@@ -683,8 +673,9 @@
       ];
 
       function fallbackBadge(c) {
+        const safeName = c.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
-          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cl${c.l}"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cl${c.l})"><rect width="120" height="120" fill="${c.bg}"/><circle cx="60" cy="56" r="30" fill="rgba(255,255,255,.18)"/><path d="M28 92c10-20 54-20 64 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/><text x="60" y="66" text-anchor="middle" font-size="34" font-family="Arial,sans-serif" font-weight="900" fill="${c.fg}">${c.l}</text><text x="60" y="98" text-anchor="middle" font-size="11" font-family="Arial,sans-serif" font-weight="700" fill="rgba(255,255,255,.9)">${c.name.toUpperCase()}</text></g></svg>`
+          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cl${c.l}"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cl${c.l})"><rect width="120" height="120" fill="${c.bg}"/><circle cx="60" cy="56" r="30" fill="rgba(255,255,255,.18)"/><path d="M28 92c10-20 54-20 64 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/><text x="60" y="66" text-anchor="middle" font-size="34" font-family="Arial,sans-serif" font-weight="900" fill="${c.fg}">${c.l}</text><text x="60" y="98" text-anchor="middle" font-size="11" font-family="Arial,sans-serif" font-weight="700" fill="rgba(255,255,255,.9)">${safeName.toUpperCase()}</text></g></svg>`
         );
       }
 
@@ -805,7 +796,7 @@
 
         function card(p, i, btnLabel) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
-          return `<article class="loop-card" onclick="window.location.href='shop.html?id=${p._id}'" style="cursor:pointer;">
+          return `<article class="loop-card" data-pid="${p._id}" style="cursor:pointer;">
             <div class="pic">${p.imgUrl
               ? `<img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy"/>`
               : `<div class="mini-jersey ${colors[i%colors.length]}"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`
@@ -816,7 +807,7 @@
               <p>${team||(p.type||'Premium jersey')}</p>
               <div class="price-row">
                 <div class="price">&#8377;${p.price||'1499'}</div>
-                <button class="small-btn" onclick="event.stopPropagation();window.location.href='shop.html?id=${p._id}'">${btnLabel}</button>
+                <button class="small-btn" data-pid="${p._id}">${btnLabel}</button>
               </div>
             </div>
           </article>`;
@@ -824,6 +815,24 @@
 
         loopTrack.innerHTML        = products.slice(0, 8).map((p,i) => card(p,i,"Shop Now")).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
         allProductsTrack.innerHTML = products.slice(0,10).map((p,i) => card(p,i,"View")).join("")    || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products available.</div>';
+
+        /* ── Event delegation: handles card + button clicks reliably ── */
+        function attachCardNav(container) {
+          container.addEventListener("click", function(e) {
+            const btn = e.target.closest(".small-btn");
+            const article = e.target.closest(".loop-card");
+            if (btn && btn.dataset.pid) {
+              e.stopPropagation();
+              window.location.href = "shop.html?id=" + btn.dataset.pid;
+              return;
+            }
+            if (article && article.dataset.pid) {
+              window.location.href = "shop.html?id=" + article.dataset.pid;
+            }
+          });
+        }
+        attachCardNav(loopTrack);
+        attachCardNav(allProductsTrack);
       } catch (e) {
         console.error("Products load failed", e);
         document.getElementById("loopTrack").innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">Could not load products.</div>';
