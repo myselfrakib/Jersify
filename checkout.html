@@ -1172,7 +1172,20 @@
     }
   });
 
-
+  function updateAuthBanners(user) {
+    const signedInBanner = document.getElementById('authSignedInBanner');
+    const promptCard     = document.getElementById('authPromptCard');
+    if (user) {
+      const name  = user.displayName || user.email || 'User';
+      document.getElementById('signedInName').textContent  = `Signed in as ${name.split(' ')[0]}`;
+      document.getElementById('signedInEmail').textContent = user.email || '';
+      signedInBanner.classList.add('show');
+      promptCard.classList.remove('show');
+    } else {
+      signedInBanner.classList.remove('show');
+      promptCard.classList.add('show');
+    }
+  }
 
   /* ── User badge in topbar ── */
   function updateUserBadge(user) {
