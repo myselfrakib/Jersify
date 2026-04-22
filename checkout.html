@@ -334,6 +334,85 @@
     .nav-item.active { color: var(--accent); font-weight: 800; }
     .nav-item:hover:not(.active) { color: #111; }
 
+    /* ══════════════════════════════════════════════
+       AUTH TOAST — slides up from bottom, above nav
+       ══════════════════════════════════════════════ */
+    #authToast {
+      position: fixed;
+      left: 50%; transform: translateX(-50%) translateY(120%);
+      bottom: 84px; /* sit just above the bottom nav */
+      width: min(calc(var(--maxw) - 24px), calc(100% - 24px));
+      background: #111;
+      border-radius: 20px;
+      padding: 20px 18px 18px;
+      z-index: 200;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      transition: transform .4s cubic-bezier(.34,1.3,.64,1), opacity .3s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+    #authToast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .auth-toast-close {
+      position: absolute; top: 12px; right: 12px;
+      width: 26px; height: 26px; border: none; border-radius: 50%;
+      background: rgba(255,255,255,.1); color: rgba(255,255,255,.7);
+      font-size: 14px; cursor: pointer; display: grid; place-items: center;
+      transition: background .2s;
+    }
+    .auth-toast-close:hover { background: rgba(255,255,255,.2); }
+    .auth-toast-icon { font-size: 32px; margin-bottom: 8px; display: block; }
+    .auth-toast-title {
+      font-family: 'Bebas Neue', sans-serif; font-size: 26px;
+      color: #fff; letter-spacing: 1.5px; margin-bottom: 4px;
+    }
+    .auth-toast-sub {
+      font-size: 12px; color: rgba(255,255,255,.6); line-height: 1.6; margin-bottom: 16px;
+    }
+    .auth-toast-sub strong { color: rgba(255,255,255,.9); }
+    .auth-toast-actions { display: flex; gap: 10px; }
+    .auth-toast-signin {
+      flex: 1; border: none; border-radius: 12px; padding: 13px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-size: 13px; font-weight: 800; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(198,31,47,.4);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .auth-toast-signin:hover { transform: translateY(-1px); box-shadow: 0 10px 26px rgba(198,31,47,.5); }
+    .auth-toast-signup {
+      flex: 1; border: 1.5px solid rgba(255,255,255,.2); border-radius: 12px; padding: 13px;
+      background: rgba(255,255,255,.07); color: #fff;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: background .2s, border-color .2s;
+    }
+    .auth-toast-signup:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.35); }
+
+    /* backdrop dim */
+    #authBackdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0);
+      z-index: 190; pointer-events: none;
+      transition: background .3s ease;
+    }
+    #authBackdrop.show { background: rgba(0,0,0,.35); pointer-events: auto; }
+
+    /* user badge in topbar */
+    .user-badge {
+      display: none; align-items: center; gap: 6px;
+      background: rgba(198,31,47,.08); border: 1px solid rgba(198,31,47,.18);
+      border-radius: 99px; padding: 4px 10px 4px 5px;
+    }
+    .user-badge.visible { display: flex; }
+    .user-avatar {
+      width: 24px; height: 24px; border-radius: 50%; background: var(--accent);
+      color: #fff; font-size: 10px; font-weight: 900; display: grid; place-items: center;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .user-name { font-size: 11px; font-weight: 700; color: var(--accent); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
     @media (max-width: 380px) { .form-row { grid-template-columns: 1fr; gap: 0; } .logo { font-size: 40px } }
     @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
   </style>
@@ -351,7 +430,12 @@
       </button>
       <div class="logo">Jersify</div>
     </div>
-    <div class="topbar-title">Checkout</div>
+    <!-- user badge shows when signed in -->
+    <div class="user-badge" id="userBadge">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <span class="user-name" id="userNameBadge"></span>
+    </div>
+    <div class="topbar-title" id="topbarTitle">Checkout</div>
   </header>
 
   <!-- LOADING -->
@@ -552,11 +636,29 @@
   <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div>Profile</div></a>
 </nav>
 
+<!-- AUTH BACKDROP -->
+<div id="authBackdrop" onclick="closeAuthToast()"></div>
+
+<!-- AUTH TOAST -->
+<div id="authToast" role="dialog" aria-modal="true" aria-label="Sign in required">
+  <button class="auth-toast-close" onclick="closeAuthToast()" aria-label="Close">✕</button>
+  <span class="auth-toast-icon">🔒</span>
+  <div class="auth-toast-title">Sign in to Order</div>
+  <div class="auth-toast-sub">
+    You need to be signed in to place an order.<br>
+    <strong>It only takes a few seconds!</strong>
+  </div>
+  <div class="auth-toast-actions">
+    <button class="auth-toast-signin" onclick="goToAuth('signin')">Sign In</button>
+    <button class="auth-toast-signup" onclick="goToAuth('signup')">Create Account</button>
+  </div>
+</div>
+
 <script type="module">
   import { initializeApp }                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged }      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import {
-    getDatabase, ref, get, child, set, update, push
+    getDatabase, ref, get, child, set
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
@@ -583,7 +685,47 @@
   let selectedSavedAddr = null;
   let newAddrVisible    = true;
   let couponsMap        = {};
-  let currentUser       = null;  // Firebase Auth user
+  let currentUser       = null;  // Firebase Auth user — null = not signed in
+
+  /* ── Auth Toast helpers ── */
+  window.showAuthToast = () => {
+    document.getElementById('authToast').classList.add('show');
+    document.getElementById('authBackdrop').classList.add('show');
+    // pulse the confirm button to draw attention back after toast closes
+  };
+  window.closeAuthToast = () => {
+    document.getElementById('authToast').classList.remove('show');
+    document.getElementById('authBackdrop').classList.remove('show');
+  };
+  window.goToAuth = mode => {
+    // Save the current checkout URL so we can return after login
+    sessionStorage.setItem('jersify_redirect_after_auth', window.location.href);
+    // Navigate to your login/signup page — adjust URLs to match your project
+    window.location.href = mode === 'signup' ? 'signup.html' : 'login.html';
+  };
+
+  /* ── User badge in topbar ── */
+  function updateUserBadge(user) {
+    const badge   = document.getElementById('userBadge');
+    const avatar  = document.getElementById('userAvatar');
+    const nameEl  = document.getElementById('userNameBadge');
+    const titleEl = document.getElementById('topbarTitle');
+
+    if (user) {
+      const initials = (user.displayName || user.email || '?').slice(0, 2).toUpperCase();
+      badge.classList.add('visible');
+      titleEl.style.display = 'none'; // hide "Checkout" label when badge is shown
+      if (user.photoURL) {
+        avatar.innerHTML = `<img src="${user.photoURL}" alt="avatar">`;
+      } else {
+        avatar.textContent = initials;
+      }
+      nameEl.textContent = (user.displayName || user.email || '').split(' ')[0];
+    } else {
+      badge.classList.remove('visible');
+      titleEl.style.display = '';
+    }
+  }
 
   /* ── localStorage helpers ── */
   const getCart   = () => { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } };
@@ -622,19 +764,13 @@
       } else {
         tagsEl.innerHTML = '<span class="coupon-loading-text">No coupons available.</span>';
       }
-    } catch (err) {
+    } catch {
       tagsEl.innerHTML = '<span class="coupon-loading-text">Could not load coupons.</span>';
     }
   }
 
   /* ════════════════════════════════════════════════════════
      Pre-fill name / email / phone from /users/{uid}
-     Handles:
-       Shape A  /users/{uid}  → { displayName, photoURL }
-       Shape B  /users/{uid}  → { profile: { name, email, phone } }
-       Also reads phone/dob from top-level fields
-     Falls back to /admins/{uid} for admin accounts.
-     Always uses Firebase Auth fields as additional fallback.
      ════════════════════════════════════════════════════════ */
   async function prefillUserInfo(user) {
     let name  = user.displayName || '';
@@ -645,7 +781,6 @@
       const snap = await get(child(dbRef, `users/${user.uid}`));
       if (snap.exists()) {
         const u = snap.val();
-        // Shape B: nested profile
         const p = u.profile || {};
         name  = p.name        || u.name        || u.displayName || name;
         email = p.email       || u.email       || email;
@@ -653,7 +788,6 @@
       }
     } catch (_) {}
 
-    // Fallback to /admins if phone still missing
     if (!phone) {
       try {
         const aSnap = await get(child(dbRef, `admins/${user.uid}`));
@@ -833,10 +967,6 @@
 
   /* ════════════════════════════════════════════════════════
      Save order to Firebase RTDB
-     Writes to:
-       /orders/{orderId}             — full order record
-       /users/{uid}/orders/{orderId} — true  (index for profile page)
-     For guests: only writes to /orders
      ════════════════════════════════════════════════════════ */
   async function saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId, paymentMethod }) {
     const items = orderItems.map(item => ({
@@ -850,7 +980,6 @@
       emoji:    item.emoji || '👕'
     }));
 
-    const subtotal = orderPrice;
     const orderData = {
       orderId,
       customerName: name,
@@ -859,7 +988,7 @@
       address:     `${address}, ${city}, ${state} ${pincode}`,
       country:     country || 'India',
       items,
-      subtotal,
+      subtotal:    orderPrice,
       discount:    discountAmount,
       total:       finalPrice,
       paymentMethod,
@@ -871,16 +1000,12 @@
     };
 
     try {
-      // Write the full order to /orders/{orderId}
       await set(ref(db, `orders/${orderId}`), orderData);
-
-      // If logged in, add index entry to /users/{uid}/orders/{orderId}
       if (currentUser) {
         await set(ref(db, `users/${currentUser.uid}/orders/${orderId}`), true);
       }
     } catch (err) {
       console.error('Failed to save order to DB:', err);
-      // Don't block the success screen — order confirmed on payment side
     }
   }
 
@@ -889,9 +1014,10 @@
     loadCoupons();
     renderSavedAddresses();
 
-    // Watch auth state → prefill from /users/{uid}
+    // Watch auth state
     onAuthStateChanged(auth, user => {
       currentUser = user;
+      updateUserBadge(user);
       if (user) prefillUserInfo(user);
     });
 
@@ -931,7 +1057,7 @@
         } else {
           orderBody.innerHTML = `<p style="color:var(--muted);font-size:13px;text-align:center;padding:12px 0">Product not found.</p>`;
         }
-      } catch (err) {
+      } catch {
         orderBody.innerHTML = `<p style="color:var(--accent);font-size:13px;text-align:center;padding:12px 0">Error loading product.</p>`;
       }
 
@@ -983,10 +1109,20 @@
   });
 
   /* ════════════════════════════════════════════════
-     Process Order
+     Process Order  ← AUTH GATE IS HERE
      ════════════════════════════════════════════════ */
   window.processOrder = () => {
     if (orderPrice === 0) { alert('Your cart is empty. Please add items first.'); return; }
+
+    /* ── AUTH CHECK: block guests ── */
+    if (!currentUser) {
+      showAuthToast();
+      // Visually shake the confirm button
+      const btn = document.getElementById('confirmBtn');
+      btn.style.animation = 'shake .4s ease';
+      setTimeout(() => btn.style.animation = '', 500);
+      return;   // ← stop here, no order processed
+    }
 
     document.getElementById('payFailedBanner').classList.remove('visible');
 
@@ -1027,19 +1163,17 @@
     btn.disabled = true;
     btn.textContent = 'Processing…';
 
-    // Generate order ID matching existing pattern: JRS-{timestamp}
     const orderId = `JRS-${Date.now()}`;
 
     if (isRzp) {
       const options = {
-        key:         "rzp_test_YourKeyHere",  // ← replace with your live key
+        key:         "rzp_test_YourKeyHere",
         amount:      finalPrice * 100,
         currency:    "INR",
         name:        "JERSIFY",
         description: itemDesc,
         image:       "https://dummyimage.com/100x100/111/fff&text=J",
         handler: async r => {
-          // Payment successful — save to DB then show success
           await saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: r.razorpay_payment_id, paymentMethod: 'razorpay' });
           localStorage.removeItem('jersify_cart');
           btn.disabled = false;
@@ -1049,11 +1183,7 @@
         prefill: { name, email, contact: phone },
         notes:   { address: `${address}, ${city}, ${state} - ${pincode}`, size: selectedSize },
         theme:   { color: "#c61f2f" },
-        modal:   {
-          ondismiss: () => {
-            showPaymentFailed('Payment was cancelled.');
-          }
-        }
+        modal:   { ondismiss: () => { showPaymentFailed('Payment was cancelled.'); } }
       };
       const rzp = new Razorpay(options);
       rzp.on('payment.failed', r => {
@@ -1062,7 +1192,6 @@
       });
       rzp.open();
     } else {
-      // COD — save immediately
       saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: '', paymentMethod: 'cod' }).then(() => {
         localStorage.removeItem('jersify_cart');
         btn.disabled = false;
@@ -1072,47 +1201,34 @@
     }
   };
 
-  /* ════════════════════════════════════════════════
-     Success screen — redirects to profile.html after 5s
-     ════════════════════════════════════════════════ */
+  /* ── Success screen ── */
   function showSuccess(orderId, name, total, size, payMethod) {
     let countdown = 5;
-
     document.querySelector('.content').innerHTML = `
       <div class="success-screen">
         <span class="success-emoji">🎉</span>
         <div class="success-title">Order Confirmed!</div>
         <div class="success-order-id">Order ID: ${orderId}</div>
-
         <div class="success-details">
           <div class="success-detail-row"><span>Customer</span><span>${name}</span></div>
           <div class="success-detail-row"><span>Amount Paid</span><span>₹${total.toLocaleString('en-IN')}</span></div>
           <div class="success-detail-row"><span>Payment</span><span>${payMethod}</span></div>
           ${!isCartMode ? `<div class="success-detail-row"><span>Size</span><span>${size}</span></div>` : ''}
         </div>
-
         <div class="success-msg">
           Thank you for shopping with Jersify! Your kit is being packed and will be on its way soon. You can track your order from your profile.
         </div>
-
-        <button class="success-btn" onclick="window.location.href='profile.html'">
-          View My Orders →
-        </button>
-
+        <button class="success-btn" onclick="window.location.href='profile.html'">View My Orders →</button>
         <div class="success-redirect" id="successRedirect">
           Redirecting to your profile in <span id="countdownNum">${countdown}</span>s…
         </div>
       </div>`;
 
-    // Countdown + auto-redirect
     const interval = setInterval(() => {
       countdown--;
       const el = document.getElementById('countdownNum');
       if (el) el.textContent = countdown;
-      if (countdown <= 0) {
-        clearInterval(interval);
-        window.location.href = 'profile.html';
-      }
+      if (countdown <= 0) { clearInterval(interval); window.location.href = 'profile.html'; }
     }, 1000);
   }
 
