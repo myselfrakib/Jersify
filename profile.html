@@ -153,7 +153,6 @@
     .avatar-ring img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .avatar-initials { font-size: 28px; font-weight: 900; color: var(--accent); }
 
-    /* Camera overlay on hover */
     .avatar-edit-overlay {
       position: absolute;
       inset: 0;
@@ -174,7 +173,6 @@
     }
     .avatar-edit-overlay:hover svg { opacity: 1; }
 
-    /* Spinning upload ring */
     .avatar-upload-ring {
       position: absolute; inset: -3px;
       border-radius: 50%;
@@ -210,7 +208,7 @@
     .p-badge.dark { background: #111; color: #fff; }
     .p-badge.line { background: #f5f5f5; color: #555; border: 1px solid var(--line); }
 
-    /* ── STATS ROW – 2 columns ── */
+    /* ── STATS ROW ── */
     .stats-row {
       display: grid; grid-template-columns: repeat(2,1fr);
       gap: 0; margin: 20px 16px 0;
@@ -463,6 +461,15 @@
       font-size: 14px; font-weight: 700; cursor: pointer;
     }
 
+    /* ── SKELETON LOADER ── */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
     /* ── BOTTOM NAV ── */
     .bottom-nav {
       position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px;
@@ -526,7 +533,6 @@
         <div class="profile-hero-bg"></div>
         <div class="profile-avatar-wrap">
 
-          <!-- Avatar with upload overlay -->
           <div class="avatar-ring" id="avatarRing">
             <span class="avatar-initials" id="avatarInitials">??</span>
             <div class="avatar-edit-overlay" id="avatarEditOverlay" title="Change photo">
@@ -549,7 +555,7 @@
         </div>
       </div>
 
-      <!-- STATS – 2 columns (Orders + Wishlist) -->
+      <!-- STATS -->
       <div class="stats-row">
         <div class="stat">
           <div class="stat-num" id="statOrders">–</div>
@@ -601,17 +607,17 @@
           <div class="info-row">
             <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
             <div class="info-body"><div class="info-label">Email Notifications</div><div class="info-val">Order updates & offers</div></div>
-            <button class="info-toggle on" id="toggleEmail" onclick="toggleSwitch(this)"></button>
+            <button class="info-toggle on" id="toggleEmail" onclick="toggleSwitch(this, 'emailNotif')"></button>
           </div>
           <div class="info-row">
             <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.119.837.28 1.667.48 2.47a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.08 6.08l1.95-1.95a2 2 0 0 1 2.11-.45c.803.2 1.633.361 2.47.48A2 2 0 0 1 22 16.92z"/></svg></div>
             <div class="info-body"><div class="info-label">SMS Notifications</div><div class="info-val">Delivery alerts</div></div>
-            <button class="info-toggle" id="toggleSms" onclick="toggleSwitch(this)"></button>
+            <button class="info-toggle" id="toggleSms" onclick="toggleSwitch(this, 'smsNotif')"></button>
           </div>
           <div class="info-row">
             <div class="info-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
             <div class="info-body"><div class="info-label">Push Notifications</div><div class="info-val">New drops & flash sales</div></div>
-            <button class="info-toggle on" id="togglePush" onclick="toggleSwitch(this)"></button>
+            <button class="info-toggle on" id="togglePush" onclick="toggleSwitch(this, 'pushNotif')"></button>
           </div>
         </div>
       </div>
@@ -623,7 +629,7 @@
           My Orders
         </div>
         <div id="ordersContainer">
-          <div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">No orders yet</div>
+          <div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">Loading orders…</div>
         </div>
         <div style="display:flex;justify-content:center;margin-top:4px;margin-bottom:16px;">
           <button onclick="window.location.href='shop.html'" style="min-width:140px;padding:10px 20px;border:1.5px solid #222;border-radius:4px;background:#fff;font-weight:700;cursor:pointer;">Shop Now</button>
@@ -737,7 +743,7 @@
   <!-- FIREBASE -->
   <script type="module">
     import { initializeApp }        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref as dbRef, get, set, update, push, remove }
+    import { getDatabase, ref as dbRef, get, set, update, push, remove, query, orderByChild, equalTo }
                                     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
     import { getStorage, ref as stRef, uploadBytesResumable, getDownloadURL }
                                     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
@@ -764,20 +770,29 @@
     try { getAnalytics(app); } catch(e) {}
 
     /* ── HELPERS ── */
-    const toast = (msg) => {
+    const showToast = (msg) => {
       const el = document.getElementById("toast");
       el.textContent = msg; el.classList.add("show");
       setTimeout(() => el.classList.remove("show"), 2600);
     };
     const openModal  = id => document.getElementById(id).classList.add("open");
     const closeModal = id => document.getElementById(id).classList.remove("open");
+
     ["editModal","authModal","addressModal"].forEach(id =>
       document.getElementById(id).addEventListener("click", e => {
         if (e.target === document.getElementById(id)) closeModal(id);
       })
     );
 
-    window.toggleSwitch = btn => btn.classList.toggle("on");
+    /* ── NOTIFICATION TOGGLES – persist to DB ── */
+    window.toggleSwitch = async (btn, key) => {
+      btn.classList.toggle("on");
+      if (currentUser && key) {
+        try {
+          await update(dbRef(rtdb, `users/${currentUser.uid}/notifications`), { [key]: btn.classList.contains("on") });
+        } catch(e) { /* non-critical, ignore */ }
+      }
+    };
 
     /* ── CART BADGE ── */
     function updateCartBadge() {
@@ -802,113 +817,152 @@
       updateCartBadge();
     });
 
-    /* ── AVATAR DISPLAY HELPER ── */
+    /* ── AVATAR DISPLAY ── */
     function setAvatarDisplay(photoURL, initials) {
       const ring    = document.getElementById("avatarRing");
       const overlay = document.getElementById("avatarEditOverlay");
-      const upRing  = document.getElementById("avatarUploadRing");
-      // Clear previous img/initials but keep overlay + upload ring
       ring.querySelectorAll("img, .avatar-initials").forEach(n => n.remove());
       if (photoURL) {
         const img = Object.assign(document.createElement("img"), { src: photoURL, alt: "Avatar" });
         ring.insertBefore(img, overlay);
       } else {
-        const span = Object.assign(document.createElement("span"), { className: "avatar-initials", id: "avatarInitials", textContent: initials || "??" });
+        const span = Object.assign(document.createElement("span"), {
+          className: "avatar-initials", id: "avatarInitials", textContent: initials || "??"
+        });
         ring.insertBefore(span, overlay);
       }
     }
 
     /* ── LOAD PROFILE ── */
     async function loadUserProfile(user) {
-      const name     = user.displayName || "";
-      const email    = user.email || "";
-      const initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2) || "??";
+      const email = user.email || "";
 
+      // 1. Populate from Auth first (instant)
+      let name = user.displayName || "";
       document.getElementById("profileName").textContent  = name || "User";
       document.getElementById("profileEmail").textContent = email;
+      document.getElementById("infoEmail").textContent    = email || "–";
       document.getElementById("infoName").textContent     = name || "–";
-      document.getElementById("infoEmail").textContent    = email;
+
+      const initials = name.split(" ").filter(Boolean).map(w => w[0]).join("").toUpperCase().slice(0,2) || "??";
       setAvatarDisplay(user.photoURL, initials);
 
       const created = user.metadata?.creationTime;
       if (created) {
         document.getElementById("memberSince").textContent =
-          "Since " + new Date(created).toLocaleString("en",{month:"short",year:"numeric"});
+          "Since " + new Date(created).toLocaleString("en", { month: "short", year: "numeric" });
       }
 
-      // Extra DB data
+      // 2. Load extra profile data from users/{uid}
       try {
         const snap = await get(dbRef(rtdb, `users/${user.uid}`));
         if (snap.exists()) {
           userData = snap.val();
-          if (userData.phone) document.getElementById("infoPhone").textContent = userData.phone;
-          if (userData.dob)   document.getElementById("infoDob").textContent   = userData.dob;
-          // If photo stored in DB and auth photoURL not set yet
-          if (!user.photoURL && userData.photoURL) setAvatarDisplay(userData.photoURL, initials);
+
+          // Prefer displayName from DB if Auth name is empty
+          const dbName = userData.displayName || userData.profile?.name || "";
+          if (!name && dbName) {
+            name = dbName;
+            document.getElementById("profileName").textContent = dbName;
+            document.getElementById("infoName").textContent    = dbName;
+          }
+
+          if (userData.phone) {
+            document.getElementById("infoPhone").textContent = userData.phone;
+          }
+          if (userData.dob) {
+            document.getElementById("infoDob").textContent = userData.dob;
+          }
+
+          // Photo: DB field takes priority if Auth photoURL not set
+          const photo = user.photoURL || userData.photoURL;
+          const finalInitials = name.split(" ").filter(Boolean).map(w=>w[0]).join("").toUpperCase().slice(0,2) || "??";
+          setAvatarDisplay(photo || null, finalInitials);
+
+          // Restore notification prefs
+          const notif = userData.notifications || {};
+          if (notif.emailNotif === false) document.getElementById("toggleEmail").classList.remove("on");
+          if (notif.smsNotif   === true)  document.getElementById("toggleSms").classList.add("on");
+          if (notif.pushNotif  === false) document.getElementById("togglePush").classList.remove("on");
         }
-      } catch(e) {}
+      } catch(e) { console.warn("Could not load extra user data:", e); }
 
-      // Orders
-      try {
-        const snap = await get(dbRef(rtdb, `users/${user.uid}/orders`));
-        let orders = [];
-        if (snap.exists()) snap.forEach(d => { const o = d.val(); o._id = d.key; orders.push(o); });
-        orders.sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
-        renderOrders(orders);
-        document.getElementById("statOrders").textContent = orders.length;
-        document.getElementById("loyaltyBadge").textContent = `${orders.length} Order${orders.length!==1?"s":""}`;
-      } catch(e) { document.getElementById("statOrders").textContent = "0"; }
+      // 3. Load orders — DB stores orders globally at /orders/{orderId}
+      //    users/{uid}/orders is a map of { orderId: true }
+      //    We fetch each order from /orders/{orderId}
+      await loadOrders(user.uid, email);
 
-      // Wishlist
+      // 4. Load wishlist
       try {
         const snap = await get(dbRef(rtdb, `users/${user.uid}/wishlist`));
-        let wc = 0; if (snap.exists()) snap.forEach(() => wc++);
+        let wc = 0;
+        if (snap.exists()) snap.forEach(() => wc++);
         document.getElementById("statWishlist").textContent = wc;
       } catch(e) { document.getElementById("statWishlist").textContent = "0"; }
 
+      // 5. Load addresses
       loadAddresses(user.uid);
     }
 
-    /* ── AVATAR UPLOAD ── */
-    const fileInput = document.getElementById("avatarFileInput");
-    document.getElementById("avatarEditOverlay").addEventListener("click", () => {
-      if (currentUser) fileInput.click();
-    });
-
-    fileInput.addEventListener("change", async e => {
-      const file = e.target.files[0];
-      if (!file || !currentUser) return;
-      if (!file.type.startsWith("image/"))   { toast("Please select an image file"); return; }
-      if (file.size > 5 * 1024 * 1024)       { toast("Image must be under 5MB");     return; }
-
-      const ring = document.getElementById("avatarRing");
-      ring.classList.add("uploading");
+    /* ── LOAD ORDERS ──
+     * Strategy:
+     *   1. Check users/{uid}/orders (map of orderId → true) for this user's order IDs
+     *   2. Fetch each full order from /orders/{orderId}
+     *   3. Fallback: query /orders where userId == uid (covers orders placed before the flag was written)
+     */
+    async function loadOrders(uid, email) {
+      const container = document.getElementById("ordersContainer");
+      container.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">Loading orders…</div>`;
 
       try {
-        const ext      = file.name.split(".").pop() || "jpg";
-        const sRef     = stRef(storage, `users/${currentUser.uid}/profile.${ext}`);
-        const task     = uploadBytesResumable(sRef, file);
+        let orders = [];
+        const seen = new Set();
 
-        await new Promise((res, rej) => task.on("state_changed", null, rej, res));
+        // Path 1: users/{uid}/orders flags
+        const flagSnap = await get(dbRef(rtdb, `users/${uid}/orders`));
+        if (flagSnap.exists()) {
+          const flags = flagSnap.val(); // { "JRS-xxx": true, ... }
+          const orderIds = Object.keys(flags).filter(k => flags[k] === true || flags[k]);
+          const fetches  = orderIds.map(id => get(dbRef(rtdb, `orders/${id}`)));
+          const results  = await Promise.allSettled(fetches);
+          results.forEach((r, i) => {
+            if (r.status === "fulfilled" && r.value.exists()) {
+              const o = r.value.val();
+              o._id = orderIds[i];
+              if (!seen.has(o._id)) { seen.add(o._id); orders.push(o); }
+            }
+          });
+        }
 
-        const url = await getDownloadURL(task.snapshot.ref);
+        // Path 2: query /orders by userId (catches any orders not flagged)
+        try {
+          const q    = query(dbRef(rtdb, "orders"), orderByChild("userId"), equalTo(uid));
+          const snap = await get(q);
+          if (snap.exists()) {
+            snap.forEach(d => {
+              if (!seen.has(d.key)) {
+                const o = d.val(); o._id = d.key;
+                seen.add(d.key); orders.push(o);
+                // Back-fill the flag so future loads are faster
+                update(dbRef(rtdb, `users/${uid}/orders`), { [d.key]: true }).catch(() => {});
+              }
+            });
+          }
+        } catch(e) { /* index may not exist, that's OK */ }
 
-        // Update Auth + RTDB
-        await updateProfile(currentUser, { photoURL: url });
-        await update(dbRef(rtdb, `users/${currentUser.uid}`), { photoURL: url });
+        // Sort newest first
+        orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-        const name     = currentUser.displayName || "";
-        const initials = name.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2) || "??";
-        setAvatarDisplay(url, initials);
-        toast("Profile photo updated ✓");
-      } catch(err) {
-        console.error(err);
-        toast("Upload failed – " + (err.message || "try again"));
-      } finally {
-        ring.classList.remove("uploading");
-        fileInput.value = "";
+        renderOrders(orders);
+        document.getElementById("statOrders").textContent   = orders.length;
+        document.getElementById("loyaltyBadge").textContent = `${orders.length} Order${orders.length !== 1 ? "s" : ""}`;
+
+      } catch(e) {
+        console.error("loadOrders failed:", e);
+        container.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">Could not load orders</div>`;
+        document.getElementById("statOrders").textContent = "–";
       }
-    });
+    }
 
     /* ── RENDER ORDERS ── */
     function renderOrders(orders) {
@@ -918,21 +972,39 @@
         return;
       }
       const labels = { delivered:"Delivered", processing:"Processing", shipped:"Shipped", cancelled:"Cancelled", pending:"Processing" };
-      container.innerHTML = orders.slice(0,5).map(o => {
-        const sk   = (o.status||"processing").toLowerCase();
-        const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}) : "—";
-        const item = (o.items&&o.items[0]) || {};
+
+      container.innerHTML = orders.slice(0, 5).map(o => {
+        const sk   = (o.status || "processing").toLowerCase();
+        const date = o.createdAt
+          ? new Date(o.createdAt).toLocaleDateString("en-IN", { day:"numeric", month:"short", year:"numeric" })
+          : "—";
+
+        // items can be an array or object (Firebase array quirk)
+        const itemsArr = Array.isArray(o.items)
+          ? o.items
+          : (o.items ? Object.values(o.items) : []);
+        const item = itemsArr[0] || {};
+        const imgSrc = item.imgUrl || item.imageUrl || "";
+        const displayId = (o.orderId || o._id || "JRF000").replace("JRS-","").slice(-6).toUpperCase();
+
         return `<div class="order-card" onclick="window.location.href='checkout.html'">
           <div class="order-header">
-            <div><div class="order-id">#${o._id?.slice(-6)?.toUpperCase()||"JRF000"}</div><div class="order-date">${date}</div></div>
-            <div class="order-status ${sk}">${labels[sk]||sk}</div>
+            <div>
+              <div class="order-id">#${displayId}</div>
+              <div class="order-date">${date}</div>
+            </div>
+            <div class="order-status ${sk}">${labels[sk] || sk}</div>
           </div>
           <div class="order-body">
-            <div class="order-thumb">${item.imgUrl?`<img src="${item.imgUrl}" alt="${item.name||""}"/>`:`<div class="order-thumb-placeholder">${(item.name||"J")[0]}</div>`}</div>
+            <div class="order-thumb">
+              ${imgSrc
+                ? `<img src="${imgSrc}" alt="${item.name || ""}" />`
+                : `<div class="order-thumb-placeholder">${(item.name || "J")[0]}</div>`}
+            </div>
             <div class="order-info">
-              <div class="order-name">${item.name||"Jersify Jersey"}</div>
-              <div class="order-meta">${o.items?.length||1} item${(o.items?.length||1)>1?"s":""} · Size ${item.size||"M"}</div>
-              <div class="order-price">₹${o.total||item.price||"1499"}</div>
+              <div class="order-name">${item.name || "Jersify Jersey"}</div>
+              <div class="order-meta">${itemsArr.length} item${itemsArr.length !== 1 ? "s" : ""} · Size ${item.size || "M"}</div>
+              <div class="order-price">₹${o.total || item.price || "–"}</div>
             </div>
           </div>
         </div>`;
@@ -947,12 +1019,12 @@
         if (!snap.exists()) { container.innerHTML = ""; return; }
         let addrs = [];
         snap.forEach(d => { const a = d.val(); a._key = d.key; addrs.push(a); });
-        container.innerHTML = addrs.map((a,i) => `
+        container.innerHTML = addrs.map((a, i) => `
           <div class="address-card">
-            <div class="address-tag ${i===0?"default":""}">${i===0?"Default":"Other"}</div>
-            <div class="address-name">${a.name||""}</div>
-            <div class="address-text">${a.street||""}, ${a.city||""}, ${a.state||""} – ${a.pin||""}</div>
-            ${a.phone?`<div style="font-size:11px;color:var(--muted);margin-top:4px;">${a.phone}</div>`:""}
+            <div class="address-tag ${i === 0 ? "default" : ""}">${i === 0 ? "Default" : "Other"}</div>
+            <div class="address-name">${a.name || ""}</div>
+            <div class="address-text">${[a.street, a.city, a.state].filter(Boolean).join(", ")}${a.pin ? " – " + a.pin : ""}</div>
+            ${a.phone ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;">${a.phone}</div>` : ""}
             <div class="address-actions">
               <button class="address-btn red" onclick="deleteAddress('${uid}','${a._key}')">Remove</button>
             </div>
@@ -961,16 +1033,58 @@
     }
 
     window.deleteAddress = async (uid, key) => {
-      try { await remove(dbRef(rtdb,`users/${uid}/addresses/${key}`)); toast("Address removed"); loadAddresses(uid); }
-      catch(e) { toast("Could not remove address"); }
+      try {
+        await remove(dbRef(rtdb, `users/${uid}/addresses/${key}`));
+        showToast("Address removed");
+        loadAddresses(uid);
+      } catch(e) { showToast("Could not remove address"); }
     };
+
+    /* ── AVATAR UPLOAD ── */
+    const fileInput = document.getElementById("avatarFileInput");
+    document.getElementById("avatarEditOverlay").addEventListener("click", () => {
+      if (currentUser) fileInput.click();
+    });
+
+    fileInput.addEventListener("change", async e => {
+      const file = e.target.files[0];
+      if (!file || !currentUser) return;
+      if (!file.type.startsWith("image/"))   { showToast("Please select an image file"); return; }
+      if (file.size > 5 * 1024 * 1024)       { showToast("Image must be under 5MB");     return; }
+
+      const ring = document.getElementById("avatarRing");
+      ring.classList.add("uploading");
+
+      try {
+        const ext  = file.name.split(".").pop() || "jpg";
+        const sRef = stRef(storage, `users/${currentUser.uid}/profile.${ext}`);
+        const task = uploadBytesResumable(sRef, file);
+
+        await new Promise((res, rej) => task.on("state_changed", null, rej, res));
+        const url = await getDownloadURL(task.snapshot.ref);
+
+        await updateProfile(currentUser, { photoURL: url });
+        await update(dbRef(rtdb, `users/${currentUser.uid}`), { photoURL: url });
+
+        const name     = currentUser.displayName || "";
+        const initials = name.split(" ").filter(Boolean).map(w=>w[0]).join("").toUpperCase().slice(0,2) || "??";
+        setAvatarDisplay(url, initials);
+        showToast("Profile photo updated ✓");
+      } catch(err) {
+        console.error(err);
+        showToast("Upload failed – " + (err.message || "try again"));
+      } finally {
+        ring.classList.remove("uploading");
+        fileInput.value = "";
+      }
+    });
 
     /* ── EDIT MODAL ── */
     const editCfg = {
-      name:  { title:"Edit Name",     fields:[{id:"editName", label:"Full Name",     type:"text",  ph:"Your name"}] },
-      email: { title:"Edit Email",    fields:[{id:"editEmail",label:"Email Address", type:"email", ph:"you@example.com"}] },
-      phone: { title:"Edit Phone",    fields:[{id:"editPhone",label:"Phone Number",  type:"tel",   ph:"+91 XXXXX XXXXX"}] },
-      dob:   { title:"Date of Birth", fields:[{id:"editDob",  label:"Date of Birth", type:"date",  ph:""}] },
+      name:  { title:"Edit Name",     fields:[{id:"editName",  label:"Full Name",     type:"text",  ph:"Your name"}] },
+      email: { title:"Edit Email",    fields:[{id:"editEmail", label:"Email Address", type:"email", ph:"you@example.com"}] },
+      phone: { title:"Edit Phone",    fields:[{id:"editPhone", label:"Phone Number",  type:"tel",   ph:"+91 XXXXX XXXXX"}] },
+      dob:   { title:"Date of Birth", fields:[{id:"editDob",   label:"Date of Birth", type:"date",  ph:""}] },
     };
     let currentEditKey = "";
 
@@ -980,44 +1094,50 @@
       const cfg = editCfg[key];
       document.getElementById("editModalTitle").textContent = cfg.title;
       document.getElementById("editModalBody").innerHTML = cfg.fields.map(f =>
-        `<div class="form-field"><label class="form-label">${f.label}</label><input type="${f.type}" class="form-input" id="${f.id}" placeholder="${f.ph}"/></div>`
+        `<div class="form-field"><label class="form-label">${f.label}</label>
+         <input type="${f.type}" class="form-input" id="${f.id}" placeholder="${f.ph}"/></div>`
       ).join("");
-      if (key==="name")  document.getElementById("editName").value  = currentUser.displayName||"";
-      if (key==="email") document.getElementById("editEmail").value = currentUser.email||"";
-      if (key==="phone") document.getElementById("editPhone").value = userData.phone||"";
-      if (key==="dob")   document.getElementById("editDob").value   = userData.dob||"";
+
+      if (key === "name")  document.getElementById("editName").value  = currentUser.displayName || userData.displayName || "";
+      if (key === "email") document.getElementById("editEmail").value = currentUser.email || "";
+      if (key === "phone") document.getElementById("editPhone").value = userData.phone || "";
+      if (key === "dob")   document.getElementById("editDob").value   = userData.dob   || "";
       openModal("editModal");
     };
 
     document.getElementById("saveEditBtn").addEventListener("click", async () => {
       if (!currentUser) return;
       try {
-        if (currentEditKey==="name") {
+        if (currentEditKey === "name") {
           const val = document.getElementById("editName").value.trim();
           if (!val) return;
           await updateProfile(currentUser, { displayName: val });
+          // Save name to DB as well so it survives across sessions
+          await update(dbRef(rtdb, `users/${currentUser.uid}`), { displayName: val });
+          userData.displayName = val;
           document.getElementById("profileName").textContent = val;
           document.getElementById("infoName").textContent    = val;
           if (!currentUser.photoURL) {
-            const initials = val.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2);
+            const initials = val.split(" ").filter(Boolean).map(w=>w[0]).join("").toUpperCase().slice(0,2);
             const el = document.getElementById("avatarInitials");
             if (el) el.textContent = initials;
           }
         }
-        if (currentEditKey==="phone") {
+        if (currentEditKey === "phone") {
           const val = document.getElementById("editPhone").value.trim();
-          await update(dbRef(rtdb,`users/${currentUser.uid}`), { phone: val });
+          await update(dbRef(rtdb, `users/${currentUser.uid}`), { phone: val });
           userData.phone = val;
-          document.getElementById("infoPhone").textContent = val||"Add phone number";
+          document.getElementById("infoPhone").textContent = val || "Add phone number";
         }
-        if (currentEditKey==="dob") {
+        if (currentEditKey === "dob") {
           const val = document.getElementById("editDob").value;
-          await update(dbRef(rtdb,`users/${currentUser.uid}`), { dob: val });
+          await update(dbRef(rtdb, `users/${currentUser.uid}`), { dob: val });
           userData.dob = val;
-          document.getElementById("infoDob").textContent = val||"Not set";
+          document.getElementById("infoDob").textContent = val || "Not set";
         }
-        closeModal("editModal"); toast("Saved successfully ✓");
-      } catch(e) { toast("Could not save: "+(e.message||"error")); }
+        closeModal("editModal");
+        showToast("Saved successfully ✓");
+      } catch(e) { showToast("Could not save: " + (e.message || "error")); }
     });
 
     /* ── ADDRESS MODAL ── */
@@ -1033,13 +1153,16 @@
         pin:    document.getElementById("addrPin").value.trim(),
         state:  document.getElementById("addrState").value.trim(),
       };
-      if (!addr.street||!addr.city) { toast("Please fill required fields"); return; }
+      if (!addr.street || !addr.city) { showToast("Please fill required fields"); return; }
       try {
-        await push(dbRef(rtdb,`users/${currentUser.uid}/addresses`), addr);
-        closeModal("addressModal"); toast("Address saved ✓");
+        await push(dbRef(rtdb, `users/${currentUser.uid}/addresses`), addr);
+        closeModal("addressModal");
+        showToast("Address saved ✓");
         loadAddresses(currentUser.uid);
-        ["addrName","addrPhone","addrStreet","addrCity","addrPin","addrState"].forEach(id => document.getElementById(id).value="");
-      } catch(e) { toast("Could not save address"); }
+        ["addrName","addrPhone","addrStreet","addrCity","addrPin","addrState"].forEach(id => {
+          document.getElementById(id).value = "";
+        });
+      } catch(e) { showToast("Could not save address"); }
     });
 
     /* ── AUTH MODAL ── */
@@ -1054,9 +1177,9 @@
       document.getElementById("authError").style.display     = "none";
     }
 
-    document.getElementById("showSignInBtn").addEventListener("click", () => { isSignUp=false; setupAuthModal(); openModal("authModal"); });
-    document.getElementById("showSignUpBtn").addEventListener("click", () => { isSignUp=true;  setupAuthModal(); openModal("authModal"); });
-    document.getElementById("authToggleBtn").addEventListener("click", () => { isSignUp=!isSignUp; setupAuthModal(); });
+    document.getElementById("showSignInBtn").addEventListener("click", () => { isSignUp = false; setupAuthModal(); openModal("authModal"); });
+    document.getElementById("showSignUpBtn").addEventListener("click", () => { isSignUp = true;  setupAuthModal(); openModal("authModal"); });
+    document.getElementById("authToggleBtn").addEventListener("click", () => { isSignUp = !isSignUp; setupAuthModal(); });
 
     document.getElementById("authSubmitBtn").addEventListener("click", async () => {
       const email    = document.getElementById("authEmail").value.trim();
@@ -1068,21 +1191,27 @@
         if (isSignUp) {
           const cred = await createUserWithEmailAndPassword(auth, email, password);
           if (name) await updateProfile(cred.user, { displayName: name });
-          await set(dbRef(rtdb,`users/${cred.user.uid}/profile`), { email, name, createdAt: Date.now() });
+          // Store profile node with consistent field names
+          await set(dbRef(rtdb, `users/${cred.user.uid}`), {
+            displayName: name,
+            email,
+            createdAt: Date.now(),
+            notifications: { emailNotif: true, smsNotif: false, pushNotif: true }
+          });
         } else {
           await signInWithEmailAndPassword(auth, email, password);
         }
         closeModal("authModal");
-        toast(isSignUp ? "Account created! Welcome 🎉" : "Welcome back!");
+        showToast(isSignUp ? "Account created! Welcome 🎉" : "Welcome back!");
       } catch(e) {
-        errEl.textContent   = e.message?.replace("Firebase: ","") || "Authentication failed";
+        errEl.textContent   = e.message?.replace("Firebase: ", "") || "Authentication failed";
         errEl.style.display = "block";
       }
     });
 
     /* ── LOGOUT ── */
     document.getElementById("logoutBtn").addEventListener("click", async () => {
-      try { await signOut(auth); toast("Signed out"); } catch(e) {}
+      try { await signOut(auth); showToast("Signed out"); } catch(e) {}
     });
 
     /* ── DELETE ACCOUNT ── */
@@ -1090,10 +1219,10 @@
       if (!currentUser) return;
       if (!confirm("Delete your account? This cannot be undone.")) return;
       try {
-        await remove(dbRef(rtdb,`users/${currentUser.uid}`));
+        await remove(dbRef(rtdb, `users/${currentUser.uid}`));
         await deleteUser(currentUser);
-        toast("Account deleted");
-      } catch(e) { toast("Please sign out and sign back in before deleting"); }
+        showToast("Account deleted");
+      } catch(e) { showToast("Please sign out and sign back in before deleting"); }
     });
   </script>
 </body>
