@@ -38,7 +38,6 @@
       padding-bottom: 120px;
     }
 
-    /* ── TOPBAR ── */
     .topbar {
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
       padding: 16px 16px 10px;
@@ -61,10 +60,8 @@
     }
     .topbar-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-left: auto; }
 
-    /* ── CONTENT ── */
     .content { padding: 12px 16px; }
 
-    /* ── CARD ── */
     .card {
       background: #fff; border-radius: 22px; border: 1px solid var(--line);
       padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow);
@@ -82,13 +79,11 @@
     }
     .card-header svg { width: 14px; height: 14px; opacity: .8 }
 
-    /* ── LOADING ── */
     #loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 14px; }
     .spinner { width: 36px; height: 36px; border: 3px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg) } }
     #loading p { font-size: 13px; color: var(--muted); font-weight: 600; }
 
-    /* ── ORDER ITEMS ── */
     .cart-item { display: flex; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
     .cart-item:last-child { border-bottom: none; padding-bottom: 0; }
     .ci-img {
@@ -134,7 +129,6 @@
     }
     .browse-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-    /* ── SIZE SELECTOR ── */
     .size-grid { display: flex; gap: 8px; flex-wrap: wrap; }
     .size-btn {
       width: 46px; height: 40px; border-radius: 10px; border: 1.5px solid var(--line);
@@ -144,7 +138,6 @@
     .size-btn:hover { border-color: var(--accent); color: var(--accent); }
     .size-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(198,31,47,.25); }
 
-    /* ── SAVED ADDRESSES ── */
     .saved-addr {
       border: 1.5px solid var(--line); border-radius: 14px; padding: 12px 14px;
       margin-bottom: 10px; cursor: pointer; transition: all .22s;
@@ -168,7 +161,6 @@
     .new-addr-toggle:hover { border-color: var(--accent); color: var(--accent); }
     .new-addr-toggle svg { width: 15px; height: 15px; }
 
-    /* ── FORM ── */
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 10px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1.2px; }
     .form-input {
@@ -181,7 +173,6 @@
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     textarea.form-input { resize: none; min-height: 68px; line-height: 1.5; }
 
-    /* ── LOCATION BTN ── */
     .location-btn {
       display: flex; align-items: center; gap: 9px;
       border: 1.5px dashed rgba(30,140,74,.35); border-radius: 12px; padding: 10px 14px;
@@ -196,7 +187,6 @@
     .save-addr-checkbox { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
     .save-addr-row label { font-size: 12px; color: var(--muted); cursor: pointer; }
 
-    /* ── COUPON ── */
     .coupon-row { display: flex; gap: 8px; }
     .coupon-input {
       flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 11px 13px;
@@ -224,7 +214,6 @@
     .coupon-tag:hover { background: rgba(196,154,0,.15); border-color: rgba(196,154,0,.45); }
     .coupon-loading-text { font-size: 11px; color: var(--muted); font-style: italic; }
 
-    /* ── PAYMENT OPTIONS ── */
     .pay-opt {
       display: flex; align-items: center; gap: 13px;
       border: 1.5px solid var(--line); border-radius: 14px; padding: 13px 15px;
@@ -238,7 +227,6 @@
     .pay-opt-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
     .pay-opt-icon { width: 38px; height: 38px; border-radius: 10px; background: #f4f4f4; display: grid; place-items: center; font-size: 18px; }
 
-    /* ── PAYMENT FAILED BANNER ── */
     .pay-failed-banner {
       display: none;
       background: rgba(198,31,47,.05);
@@ -266,7 +254,6 @@
     }
     .pay-failed-cod:hover { border-color: var(--text); }
 
-    /* ── ORDER SUMMARY ── */
     .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 13px; font-weight: 500; color: var(--muted); }
     .summary-row span:last-child { color: var(--text); font-weight: 700; }
     .discount-row span { color: var(--success) !important; }
@@ -275,7 +262,6 @@
     .summary-total-label { font-size: 16px; font-weight: 900; }
     .summary-total-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--accent); letter-spacing: 1px; }
 
-    /* ── CONFIRM BUTTON ── */
     .confirm-btn {
       width: 100%; border: none; border-radius: 14px; padding: 16px;
       font-size: 14px; font-weight: 800; letter-spacing: .5px; color: #fff; cursor: pointer;
@@ -289,7 +275,6 @@
     .secure-badge { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 14px; padding: 10px; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .4px; }
     .secure-badge svg { width: 13px; height: 13px; opacity: .5; }
 
-    /* ── SUCCESS SCREEN ── */
     .success-screen { text-align: center; padding: 60px 16px 40px; }
     .success-emoji { font-size: 64px; margin-bottom: 16px; display: block; animation: popIn .5s cubic-bezier(.34,1.56,.64,1) both; }
     @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -313,7 +298,20 @@
     }
     .success-btn:hover { transform: translateY(-2px); }
 
-    /* ── FOOTER ── */
+    /* notification status toast */
+    .notif-status {
+      font-size: 11px; color: var(--muted); margin-top: 12px;
+      display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
+    }
+    .notif-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #f3f3f3; border-radius: 99px; padding: 3px 10px;
+      font-size: 10px; font-weight: 700;
+    }
+    .notif-badge.sent  { background: rgba(30,140,74,.1); color: var(--success); }
+    .notif-badge.fail  { background: rgba(198,31,47,.08); color: var(--accent); }
+    .notif-badge.wait  { background: #f3f3f3; color: #999; }
+
     .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0; }
     .footer h4 { font-size: 18px; margin-bottom: 8px; font-weight: 900; }
     .footer p { font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: 12px; }
@@ -321,7 +319,6 @@
     .footer-links a { color: rgba(255,255,255,.9); }
     .copy { font-size: 11px; color: rgba(255,255,255,.55); border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; }
 
-    /* ── BOTTOM NAV ── */
     .bottom-nav {
       position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px;
       width: min(100%, calc(var(--maxw) - 16px));
@@ -334,7 +331,6 @@
     .nav-item.active { color: var(--accent); font-weight: 800; }
     .nav-item:hover:not(.active) { color: #111; }
 
-    /* user badge in topbar */
     .user-badge {
       display: none; align-items: center; gap: 6px;
       background: rgba(198,31,47,.08); border: 1px solid rgba(198,31,47,.18);
@@ -352,11 +348,6 @@
     @media (max-width: 380px) { .form-row { grid-template-columns: 1fr; gap: 0; } .logo { font-size: 40px } }
     @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
 
-    /* ════════════════════════════════════════════════════════
-       INLINE AUTH MODAL — completely redesigned
-       ════════════════════════════════════════════════════════ */
-
-    /* Backdrop */
     #authBackdrop {
       position: fixed; inset: 0;
       background: rgba(0,0,0,0);
@@ -365,7 +356,6 @@
     }
     #authBackdrop.show { background: rgba(0,0,0,.55); pointer-events: auto; }
 
-    /* Modal sheet */
     #authModal {
       position: fixed;
       left: 50%;
@@ -384,180 +374,65 @@
     }
     #authModal.show { transform: translateX(-50%) translateY(0); }
 
-    /* Drag handle */
-    .auth-modal-handle {
-      width: 40px; height: 4px; background: #e0e0e0; border-radius: 99px;
-      margin: 14px auto 0;
-    }
-
-    /* Modal Header */
-    .auth-modal-header {
-      padding: 18px 20px 0;
-      display: flex; align-items: flex-start; justify-content: space-between;
-    }
+    .auth-modal-handle { width: 40px; height: 4px; background: #e0e0e0; border-radius: 99px; margin: 14px auto 0; }
+    .auth-modal-header { padding: 18px 20px 0; display: flex; align-items: flex-start; justify-content: space-between; }
     .auth-modal-branding { display: flex; flex-direction: column; gap: 2px; }
-    .auth-modal-logo {
-      font-family: 'Bebas Neue', sans-serif; font-size: 36px;
-      color: #111; letter-spacing: 2px; line-height: 1;
-    }
+    .auth-modal-logo { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: #111; letter-spacing: 2px; line-height: 1; }
     .auth-modal-logo span { color: var(--accent); }
     .auth-modal-tagline { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
-    .auth-modal-close {
-      width: 32px; height: 32px; border: none; border-radius: 50%;
-      background: #f3f3f3; color: #555; font-size: 15px;
-      cursor: pointer; display: grid; place-items: center;
-      transition: background .2s, color .2s; flex-shrink: 0;
-    }
+    .auth-modal-close { width: 32px; height: 32px; border: none; border-radius: 50%; background: #f3f3f3; color: #555; font-size: 15px; cursor: pointer; display: grid; place-items: center; transition: background .2s, color .2s; flex-shrink: 0; }
     .auth-modal-close:hover { background: #111; color: #fff; }
-
-    /* Tab switcher */
-    .auth-tabs {
-      display: flex; margin: 20px 20px 0; gap: 0;
-      background: #f5f5f5; border-radius: 14px; padding: 4px;
-    }
-    .auth-tab {
-      flex: 1; border: none; border-radius: 10px; padding: 10px;
-      font-size: 13px; font-weight: 700; cursor: pointer; transition: all .25s;
-      background: transparent; color: var(--muted);
-    }
-    .auth-tab.active {
-      background: #fff; color: var(--text);
-      box-shadow: 0 2px 10px rgba(0,0,0,.08);
-    }
-
-    /* Auth body */
+    .auth-tabs { display: flex; margin: 20px 20px 0; gap: 0; background: #f5f5f5; border-radius: 14px; padding: 4px; }
+    .auth-tab { flex: 1; border: none; border-radius: 10px; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .25s; background: transparent; color: var(--muted); }
+    .auth-tab.active { background: #fff; color: var(--text); box-shadow: 0 2px 10px rgba(0,0,0,.08); }
     .auth-body { padding: 20px 20px 28px; }
-
-    /* Auth welcome text */
     .auth-welcome { margin-bottom: 18px; }
     .auth-welcome-title { font-size: 20px; font-weight: 900; margin-bottom: 4px; }
     .auth-welcome-sub { font-size: 12px; color: var(--muted); line-height: 1.6; }
-
-    /* Auth form inputs */
     .auth-form-group { margin-bottom: 12px; position: relative; }
     .auth-form-group label { display: block; font-size: 10px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1.2px; }
-    .auth-input {
-      width: 100%; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px;
-      padding: 12px 14px; font-size: 13px; font-weight: 500;
-      background: #fafafa; color: var(--text); outline: none; transition: all .22s;
-    }
+    .auth-input { width: 100%; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 12px 14px; font-size: 13px; font-weight: 500; background: #fafafa; color: var(--text); outline: none; transition: all .22s; }
     .auth-input::placeholder { color: #bbb; }
     .auth-input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(198,31,47,.08); }
     .auth-input.has-icon { padding-right: 44px; }
-
-    /* Password toggle */
-    .pw-toggle {
-      position: absolute; right: 12px; bottom: 12px;
-      background: none; border: none; cursor: pointer; color: var(--muted);
-      padding: 0; display: grid; place-items: center;
-      transition: color .2s;
-    }
+    .pw-toggle { position: absolute; right: 12px; bottom: 12px; background: none; border: none; cursor: pointer; color: var(--muted); padding: 0; display: grid; place-items: center; transition: color .2s; }
     .pw-toggle:hover { color: var(--text); }
     .pw-toggle svg { width: 17px; height: 17px; }
-
-    /* Error message */
-    .auth-error {
-      background: rgba(198,31,47,.06); border: 1px solid rgba(198,31,47,.2);
-      border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--accent);
-      font-weight: 600; margin-bottom: 14px; display: none; line-height: 1.5;
-    }
+    .auth-error { background: rgba(198,31,47,.06); border: 1px solid rgba(198,31,47,.2); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 14px; display: none; line-height: 1.5; }
     .auth-error.show { display: block; }
-
-    /* Success message */
-    .auth-success-msg {
-      background: rgba(30,140,74,.06); border: 1px solid rgba(30,140,74,.2);
-      border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--success);
-      font-weight: 600; margin-bottom: 14px; display: none; line-height: 1.5;
-    }
+    .auth-success-msg { background: rgba(30,140,74,.06); border: 1px solid rgba(30,140,74,.2); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--success); font-weight: 600; margin-bottom: 14px; display: none; line-height: 1.5; }
     .auth-success-msg.show { display: block; }
-
-    /* Submit button */
-    .auth-submit-btn {
-      width: 100%; border: none; border-radius: 14px; padding: 15px;
-      font-size: 14px; font-weight: 800; letter-spacing: .4px; color: #fff; cursor: pointer;
-      background: linear-gradient(180deg, var(--accent), var(--accent2));
-      box-shadow: 0 8px 24px rgba(198,31,47,.28); transition: transform .2s ease, box-shadow .2s ease;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
+    .auth-submit-btn { width: 100%; border: none; border-radius: 14px; padding: 15px; font-size: 14px; font-weight: 800; letter-spacing: .4px; color: #fff; cursor: pointer; background: linear-gradient(180deg, var(--accent), var(--accent2)); box-shadow: 0 8px 24px rgba(198,31,47,.28); transition: transform .2s ease, box-shadow .2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .auth-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(198,31,47,.36); }
     .auth-submit-btn:disabled { opacity: .6; pointer-events: none; }
-    .auth-btn-spinner {
-      width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4);
-      border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: none;
-    }
+    .auth-btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: none; }
     .auth-submit-btn.loading .auth-btn-spinner { display: block; }
     .auth-submit-btn.loading .auth-btn-text { opacity: .7; }
-
-    /* Divider */
     .auth-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
     .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
     .auth-divider span { font-size: 11px; color: var(--muted); font-weight: 600; white-space: nowrap; }
-
-    /* Google sign-in */
-    .auth-google-btn {
-      width: 100%; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 13px;
-      background: #fff; color: var(--text); font-size: 13px; font-weight: 700;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-      transition: all .22s;
-    }
+    .auth-google-btn { width: 100%; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 13px; background: #fff; color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .22s; }
     .auth-google-btn:hover { background: #f8f8f8; border-color: rgba(0,0,0,.2); box-shadow: 0 2px 10px rgba(0,0,0,.06); }
     .auth-google-btn:disabled { opacity: .6; pointer-events: none; }
     .google-icon { width: 18px; height: 18px; }
-
-    /* Forgot password link */
-    .auth-forgot {
-      display: block; text-align: right; font-size: 11px; font-weight: 700;
-      color: var(--accent); margin-top: -4px; margin-bottom: 12px; cursor: pointer;
-    }
+    .auth-forgot { display: block; text-align: right; font-size: 11px; font-weight: 700; color: var(--accent); margin-top: -4px; margin-bottom: 12px; cursor: pointer; }
     .auth-forgot:hover { text-decoration: underline; }
-
-    /* Reset password panel */
     #resetPanel { display: none; }
     #resetPanel.show { display: block; }
     #signinPanel.hidden { display: none; }
-
-    /* Terms note */
-    .auth-terms {
-      font-size: 10px; color: var(--muted); text-align: center; line-height: 1.6; margin-top: 14px;
-    }
+    .auth-terms { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.6; margin-top: 14px; }
     .auth-terms a { color: var(--accent); font-weight: 700; }
-
-    /* Decorative gradient bar at top of modal */
-    .auth-gradient-bar {
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent), #ff6b35, var(--gold), var(--accent));
-      background-size: 200% 100%;
-      animation: gradientShift 3s linear infinite;
-    }
+    .auth-gradient-bar { height: 3px; background: linear-gradient(90deg, var(--accent), #ff6b35, var(--gold), var(--accent)); background-size: 200% 100%; animation: gradientShift 3s linear infinite; }
     @keyframes gradientShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-
-    /* Signed-in banner on checkout page */
-    #authSignedInBanner {
-      display: none;
-      align-items: center; gap: 12px;
-      background: rgba(30,140,74,.06); border: 1.5px solid rgba(30,140,74,.2);
-      border-radius: 16px; padding: 12px 16px; margin-bottom: 14px;
-      animation: fadeInUp .3s ease both;
-    }
+    #authSignedInBanner { display: none; align-items: center; gap: 12px; background: rgba(30,140,74,.06); border: 1.5px solid rgba(30,140,74,.2); border-radius: 16px; padding: 12px 16px; margin-bottom: 14px; animation: fadeInUp .3s ease both; }
     #authSignedInBanner.show { display: flex; }
     .signed-in-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
     .signed-in-info { flex: 1; }
     .signed-in-info strong { font-size: 13px; font-weight: 800; color: var(--success); display: block; }
     .signed-in-info span { font-size: 11px; color: var(--muted); }
-    .sign-out-btn {
-      border: 1px solid rgba(0,0,0,.12); border-radius: 8px; padding: 5px 12px;
-      background: #fff; color: var(--muted); font-size: 11px; font-weight: 700;
-      cursor: pointer; transition: all .2s; flex-shrink: 0;
-    }
+    .sign-out-btn { border: 1px solid rgba(0,0,0,.12); border-radius: 8px; padding: 5px 12px; background: #fff; color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer; transition: all .2s; flex-shrink: 0; }
     .sign-out-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* Auth prompt card (shown when not signed in) */
-    #authPromptCard {
-      display: none;
-      border: 1.5px dashed rgba(198,31,47,.3); border-radius: 18px; padding: 16px;
-      margin-bottom: 14px; background: rgba(198,31,47,.02);
-      animation: fadeInUp .3s ease both;
-    }
+    #authPromptCard { display: none; border: 1.5px dashed rgba(198,31,47,.3); border-radius: 18px; padding: 16px; margin-bottom: 14px; background: rgba(198,31,47,.02); animation: fadeInUp .3s ease both; }
     #authPromptCard.show { display: block; }
     .auth-prompt-inner { display: flex; align-items: center; gap: 14px; }
     .auth-prompt-icon { font-size: 28px; line-height: 1; flex-shrink: 0; }
@@ -565,28 +440,25 @@
     .auth-prompt-text strong { font-size: 13px; font-weight: 900; display: block; margin-bottom: 3px; }
     .auth-prompt-text span { font-size: 11px; color: var(--muted); line-height: 1.5; }
     .auth-prompt-actions { display: flex; gap: 8px; margin-top: 12px; }
-    .auth-prompt-signin {
-      flex: 1; border: none; border-radius: 10px; padding: 11px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; font-size: 12px; font-weight: 800; cursor: pointer;
-      transition: transform .2s, box-shadow .2s;
-      box-shadow: 0 4px 14px rgba(198,31,47,.25);
-    }
+    .auth-prompt-signin { flex: 1; border: none; border-radius: 10px; padding: 11px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-size: 12px; font-weight: 800; cursor: pointer; transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 14px rgba(198,31,47,.25); }
     .auth-prompt-signin:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(198,31,47,.35); }
-    .auth-prompt-signup {
-      flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 10px; padding: 11px;
-      background: #fff; color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer;
-      transition: all .2s;
-    }
+    .auth-prompt-signup { flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 10px; padding: 11px; background: #fff; color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer; transition: all .2s; }
     .auth-prompt-signup:hover { border-color: var(--accent); color: var(--accent); }
   </style>
+
+  <!-- ── EmailJS SDK ── -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    // Replace YOUR_EMAILJS_PUBLIC_KEY with your key from emailjs.com → Account → API Keys
+    emailjs.init({ publicKey: "YOUR_EMAILJS_PUBLIC_KEY" });
+  </script>
+
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
 <body>
 <div class="page">
 
-  <!-- TOPBAR -->
   <header class="topbar">
     <div class="topbar-left">
       <button class="back-btn" onclick="history.back()">
@@ -601,17 +473,14 @@
     <div class="topbar-title" id="topbarTitle">Checkout</div>
   </header>
 
-  <!-- LOADING -->
   <div id="loading">
     <div class="spinner"></div>
     <p>Loading your order…</p>
   </div>
 
-  <!-- CHECKOUT CONTENT -->
   <div id="checkoutContent" style="display:none">
     <div class="content">
 
-      <!-- Auth signed-in banner -->
       <div id="authSignedInBanner">
         <span class="signed-in-icon">✅</span>
         <div class="signed-in-info">
@@ -621,7 +490,6 @@
         <button class="sign-out-btn" onclick="handleSignOut()">Sign Out</button>
       </div>
 
-      <!-- Auth prompt card (shown when guest) -->
       <div id="authPromptCard">
         <div class="auth-prompt-inner">
           <span class="auth-prompt-icon">🔒</span>
@@ -635,7 +503,6 @@
         </div>
       </div>
 
-      <!-- Payment failed banner -->
       <div class="pay-failed-banner" id="payFailedBanner">
         <div class="pay-failed-header">
           <span class="pay-failed-icon">⚠️</span>
@@ -650,7 +517,6 @@
         </div>
       </div>
 
-      <!-- ORDER ITEMS -->
       <div class="card" id="orderItemsCard">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
@@ -659,7 +525,6 @@
         <div id="orderItemsBody"></div>
       </div>
 
-      <!-- SIZE (single product only) -->
       <div class="card" id="sizeCard" style="display:none;">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
@@ -668,7 +533,6 @@
         <div class="size-grid" id="sizeGrid"></div>
       </div>
 
-      <!-- SHIPPING ADDRESS -->
       <div class="card">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -734,7 +598,6 @@
         </div>
       </div>
 
-      <!-- COUPON -->
       <div class="card">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5" rx="1"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
@@ -750,7 +613,6 @@
         </div>
       </div>
 
-      <!-- PAYMENT METHOD -->
       <div class="card">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
@@ -774,7 +636,6 @@
         </label>
       </div>
 
-      <!-- ORDER SUMMARY -->
       <div class="card">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -815,7 +676,6 @@
 
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg><div>Home</div></a>
   <a href="shop.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16"/><path d="M5 10l1-5h12l1 5"/><path d="M4 10v8h16v-8"/><path d="M9 18v-4h6v4"/></svg><div>Shop</div></a>
@@ -823,16 +683,11 @@
   <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div>Profile</div></a>
 </nav>
 
-<!-- AUTH BACKDROP -->
 <div id="authBackdrop" onclick="closeAuthModal()"></div>
 
-<!-- ═══════════════════════════════════════════════════
-     INLINE AUTH MODAL
-     ═══════════════════════════════════════════════════ -->
 <div id="authModal" role="dialog" aria-modal="true" aria-label="Sign in or Create Account">
   <div class="auth-gradient-bar"></div>
   <div class="auth-modal-handle"></div>
-
   <div class="auth-modal-header">
     <div class="auth-modal-branding">
       <div class="auth-modal-logo">JERS<span>IFY</span></div>
@@ -840,26 +695,19 @@
     </div>
     <button class="auth-modal-close" onclick="closeAuthModal()" aria-label="Close">✕</button>
   </div>
-
-  <!-- Tab Switcher -->
   <div class="auth-tabs">
     <button class="auth-tab active" id="tabSignin" onclick="switchAuthTab('signin')">Sign In</button>
     <button class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Create Account</button>
   </div>
-
   <div class="auth-body">
-
-    <!-- Error / Success messages -->
     <div class="auth-error" id="authError"></div>
     <div class="auth-success-msg" id="authSuccess"></div>
 
-    <!-- ── SIGN IN PANEL ── -->
     <div id="signinPanel">
       <div class="auth-welcome">
         <div class="auth-welcome-title">Welcome back 👋</div>
         <div class="auth-welcome-sub">Sign in to continue to your order.</div>
       </div>
-
       <div class="auth-form-group">
         <label>Email Address</label>
         <input type="email" id="siEmail" class="auth-input" placeholder="you@email.com" autocomplete="email">
@@ -872,31 +720,23 @@
         </button>
       </div>
       <a class="auth-forgot" onclick="showResetPanel()">Forgot password?</a>
-
       <button class="auth-submit-btn" id="siBtn" onclick="doSignIn()">
         <div class="auth-btn-spinner"></div>
         <span class="auth-btn-text">Sign In & Continue</span>
       </button>
-
       <div class="auth-divider"><span>or continue with</span></div>
-
       <button class="auth-google-btn" id="siGoogleBtn" onclick="doGoogleSignIn()">
         <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
         Continue with Google
       </button>
-
-      <div class="auth-terms">
-        By signing in you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.
-      </div>
+      <div class="auth-terms">By signing in you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
     </div>
 
-    <!-- ── SIGN UP PANEL ── -->
     <div id="signupPanel" style="display:none;">
       <div class="auth-welcome">
         <div class="auth-welcome-title">Create account 🎽</div>
         <div class="auth-welcome-sub">Join Jersify and get exclusive drops & offers.</div>
       </div>
-
       <div class="auth-form-group">
         <label>Full Name</label>
         <input type="text" id="suName" class="auth-input" placeholder="Your full name" autocomplete="name">
@@ -919,46 +759,35 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
-
       <button class="auth-submit-btn" id="suBtn" onclick="doSignUp()">
         <div class="auth-btn-spinner"></div>
         <span class="auth-btn-text">Create Account & Continue</span>
       </button>
-
       <div class="auth-divider"><span>or continue with</span></div>
-
       <button class="auth-google-btn" id="suGoogleBtn" onclick="doGoogleSignIn()">
         <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
         Continue with Google
       </button>
-
-      <div class="auth-terms">
-        By creating an account you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.
-      </div>
+      <div class="auth-terms">By creating an account you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
     </div>
 
-    <!-- ── RESET PASSWORD PANEL ── -->
     <div id="resetPanel">
       <div class="auth-welcome">
         <div class="auth-welcome-title">Reset Password 🔑</div>
         <div class="auth-welcome-sub">Enter your email and we'll send a reset link.</div>
       </div>
-
       <div class="auth-form-group">
         <label>Email Address</label>
         <input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com">
       </div>
-
       <button class="auth-submit-btn" id="resetBtn" onclick="doResetPassword()">
         <div class="auth-btn-spinner"></div>
         <span class="auth-btn-text">Send Reset Link</span>
       </button>
-
       <div style="text-align:center;margin-top:14px;">
         <a onclick="hideResetPanel()" style="font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;">← Back to Sign In</a>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -983,11 +812,55 @@
     databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
   };
 
-  const app      = initializeApp(firebaseConfig);
-  const auth     = getAuth(app);
-  const db       = getDatabase(app);
-  const dbRef    = ref(db);
+  const app       = initializeApp(firebaseConfig);
+  const auth      = getAuth(app);
+  const db        = getDatabase(app);
+  const dbRef     = ref(db);
   const gProvider = new GoogleAuthProvider();
+
+  /* ─────────────────────────────────────────────────────────
+     ★ NOTIFICATION CONFIG — fill in your keys here
+     ─────────────────────────────────────────────────────────
+     HOW TO GET EACH KEY (takes ~5 min total):
+
+     EMAIL (EmailJS):
+       1. Sign up free at https://emailjs.com
+       2. Add Email Service → connect Gmail (2 clicks)
+       3. Email Templates → New Template → use the variables:
+            {{to_name}}, {{to_email}}, {{order_id}},
+            {{total}}, {{payment_method}}, {{items_summary}}
+          Set "To Email" field to: {{to_email}}
+       4. Account → API Keys → copy Public Key (already in <head>)
+       5. Paste your Service ID and Template ID below
+
+     SMS (Fast2SMS — India):
+       1. Sign up at https://fast2sms.com (free ₹50 trial credit)
+       2. Dashboard → Dev API → copy API Key
+       3. Paste below
+
+     WHATSAPP (CallMeBot — alerts YOU as store owner):
+       1. Save +34 644 44 44 91 in your contacts as "CallMeBot"
+       2. Send this exact message on WhatsApp to that number:
+            I allow callmebot to send me messages
+       3. You'll get an API key back in ~60 seconds
+       4. Paste your phone (with country code, no +) and key below
+  ───────────────────────────────────────────────────────── */
+  const NOTIFY = {
+    email: {
+      enabled:    true,
+      serviceId:  "YOUR_EMAILJS_SERVICE_ID",   // e.g. "service_abc123"
+      templateId: "YOUR_EMAILJS_TEMPLATE_ID",  // e.g. "template_xyz789"
+    },
+    sms: {
+      enabled: true,
+      apiKey:  "SMfl0W8NsrI9ZGiUoK3YCTjxBbdvQcmheOyFJ1P4A2D6tnpkLqNYvE0eBwcRJqXSdbUxzilGt5C4A1Oj",
+    },
+    whatsapp: {
+      enabled:    true,
+      ownerPhone: "91XXXXXXXXXX",  // Your WhatsApp number — country code + number, no +
+      apiKey:     "YOUR_CALLMEBOT_API_KEY",
+    },
+  };
 
   /* ── state ── */
   let orderPrice        = 0;
@@ -999,6 +872,78 @@
   let newAddrVisible    = true;
   let couponsMap        = {};
   let currentUser       = null;
+
+  /* ════════════════════════════════════
+     NOTIFICATION FUNCTIONS
+     ════════════════════════════════════ */
+
+  async function sendOrderConfirmations({ orderId, name, email, phone, total, payMethod, items }) {
+    const jobs = [];
+    if (NOTIFY.email.enabled)    jobs.push({ label: 'Email',     fn: () => sendEmailConfirmation({ orderId, name, email, total, payMethod, items }) });
+    if (NOTIFY.sms.enabled)      jobs.push({ label: 'SMS',       fn: () => sendSMSConfirmation({ orderId, name, phone, total }) });
+    if (NOTIFY.whatsapp.enabled) jobs.push({ label: 'WhatsApp',  fn: () => sendWhatsAppAlert({ orderId, name, phone, total, payMethod, items }) });
+
+    const results = await Promise.allSettled(jobs.map(j => j.fn()));
+    results.forEach((r, i) => {
+      if (r.status === 'rejected') console.warn(`${jobs[i].label} notification failed:`, r.reason);
+      else                          console.log(`${jobs[i].label} notification sent ✓`);
+    });
+    return jobs.map((j, i) => ({ label: j.label, ok: results[i].status === 'fulfilled' }));
+  }
+
+  async function sendEmailConfirmation({ orderId, name, email, total, payMethod, items }) {
+    if (!email) { console.warn('Email skipped: no email address'); return; }
+    const itemsSummary = items.map(i => `${i.name} × ${i.qty || 1}  —  ₹${(i.price * (i.qty || 1)).toLocaleString('en-IN')}`).join('\n');
+    await emailjs.send(
+      NOTIFY.email.serviceId,
+      NOTIFY.email.templateId,
+      {
+        to_name:        name,
+        to_email:       email,
+        order_id:       orderId,
+        total:          `₹${total.toLocaleString('en-IN')}`,
+        payment_method: payMethod,
+        items_summary:  itemsSummary,
+        year:           new Date().getFullYear(),
+      }
+    );
+  }
+
+  async function sendSMSConfirmation({ orderId, name, phone, total }) {
+    const cleanPhone = String(phone).replace(/\D/g, '').slice(-10);
+    if (cleanPhone.length !== 10) { console.warn('SMS skipped: invalid phone'); return; }
+    const message =
+      `Hi ${name.split(' ')[0]}! Your JERSIFY order ${orderId} ` +
+      `worth Rs.${total.toLocaleString('en-IN')} is CONFIRMED. ` +
+      `We will ship it soon!`;
+    const resp = await fetch('https://www.fast2sms.com/dev/bulkV2', {
+      method: 'POST',
+      headers: { 'authorization': NOTIFY.sms.apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ route: 'q', message, language: 'english', flash: 0, numbers: cleanPhone }),
+    });
+    const data = await resp.json();
+    if (!data.return) throw new Error(data.message || 'Fast2SMS error');
+  }
+
+  async function sendWhatsAppAlert({ orderId, name, phone, total, payMethod, items }) {
+    const itemLines = items.map(i => `  • ${i.name} x${i.qty || 1}  Rs.${(i.price * (i.qty || 1)).toLocaleString('en-IN')}`).join('\n');
+    const text =
+      `*New JERSIFY Order!*\n\n` +
+      `Order: *${orderId}*\n` +
+      `Customer: ${name}\n` +
+      `Phone: ${phone}\n\n` +
+      `Items:\n${itemLines}\n\n` +
+      `*Total: Rs.${total.toLocaleString('en-IN')}*\n` +
+      `Payment: ${payMethod}\n` +
+      `Time: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`;
+    const url =
+      `https://api.callmebot.com/whatsapp.php` +
+      `?phone=${NOTIFY.whatsapp.ownerPhone}` +
+      `&text=${encodeURIComponent(text)}` +
+      `&apikey=${NOTIFY.whatsapp.apiKey}`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`CallMeBot HTTP ${resp.status}`);
+  }
 
   /* ════════════════════════════════════
      AUTH MODAL helpers
@@ -1019,10 +964,9 @@
     const isSignin = tab === 'signin';
     document.getElementById('tabSignin').classList.toggle('active', isSignin);
     document.getElementById('tabSignup').classList.toggle('active', !isSignin);
-    document.getElementById('signinPanel').style.display  = (isSignin && !document.getElementById('resetPanel').classList.contains('show')) ? 'block' : 'none';
+    document.getElementById('signinPanel').style.display  = isSignin ? 'block' : 'none';
     document.getElementById('signupPanel').style.display  = !isSignin ? 'block' : 'none';
     document.getElementById('resetPanel').style.display   = 'none';
-    if (isSignin) document.getElementById('signinPanel').style.display = 'block';
     clearAuthMessages();
   };
   window.showResetPanel = () => {
@@ -1065,49 +1009,39 @@
     document.getElementById('authSuccess').classList.remove('show');
   }
 
-  /* ── Sign In ── */
   window.doSignIn = async () => {
     const email = document.getElementById('siEmail').value.trim();
     const pw    = document.getElementById('siPassword').value;
     if (!email || !pw) { showAuthError('Please enter your email and password.'); return; }
-    setAuthLoading('siBtn', true);
-    clearAuthMessages();
+    setAuthLoading('siBtn', true); clearAuthMessages();
     try {
       await signInWithEmailAndPassword(auth, email, pw);
-      // onAuthStateChanged will fire and close the modal
     } catch (err) {
       setAuthLoading('siBtn', false);
       showAuthError(friendlyAuthError(err.code));
     }
   };
 
-  /* ── Sign Up ── */
   window.doSignUp = async () => {
     const name    = document.getElementById('suName').value.trim();
     const email   = document.getElementById('suEmail').value.trim();
     const pw      = document.getElementById('suPassword').value;
     const confirm = document.getElementById('suConfirm').value;
-    if (!name)           { showAuthError('Please enter your full name.'); return; }
-    if (!email)          { showAuthError('Please enter your email.'); return; }
-    if (pw.length < 6)   { showAuthError('Password must be at least 6 characters.'); return; }
-    if (pw !== confirm)  { showAuthError('Passwords do not match.'); return; }
-    setAuthLoading('suBtn', true);
-    clearAuthMessages();
+    if (!name)          { showAuthError('Please enter your full name.'); return; }
+    if (!email)         { showAuthError('Please enter your email.'); return; }
+    if (pw.length < 6)  { showAuthError('Password must be at least 6 characters.'); return; }
+    if (pw !== confirm) { showAuthError('Passwords do not match.'); return; }
+    setAuthLoading('suBtn', true); clearAuthMessages();
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, pw);
       await updateProfile(cred.user, { displayName: name });
-      // Save to DB
-      try {
-        await set(ref(db, `users/${cred.user.uid}/profile`), { name, email });
-      } catch (_) {}
-      // onAuthStateChanged fires
+      try { await set(ref(db, `users/${cred.user.uid}/profile`), { name, email }); } catch (_) {}
     } catch (err) {
       setAuthLoading('suBtn', false);
       showAuthError(friendlyAuthError(err.code));
     }
   };
 
-  /* ── Google ── */
   window.doGoogleSignIn = async () => {
     setAuthLoading('siGoogleBtn', true);
     setAuthLoading('suGoogleBtn', true);
@@ -1121,12 +1055,10 @@
     }
   };
 
-  /* ── Reset password ── */
   window.doResetPassword = async () => {
     const email = document.getElementById('resetEmail').value.trim();
     if (!email) { showAuthError('Please enter your email address.'); return; }
-    setAuthLoading('resetBtn', true);
-    clearAuthMessages();
+    setAuthLoading('resetBtn', true); clearAuthMessages();
     try {
       await sendPasswordResetEmail(auth, email);
       setAuthLoading('resetBtn', false);
@@ -1137,7 +1069,6 @@
     }
   };
 
-  /* ── Sign Out ── */
   window.handleSignOut = async () => {
     if (!confirm('Sign out?')) return;
     await signOut(auth);
@@ -1145,37 +1076,31 @@
 
   function friendlyAuthError(code) {
     const map = {
-      'auth/user-not-found':       'No account found with this email.',
-      'auth/wrong-password':       'Incorrect password. Please try again.',
-      'auth/invalid-email':        'Please enter a valid email address.',
-      'auth/email-already-in-use': 'An account with this email already exists.',
-      'auth/weak-password':        'Password must be at least 6 characters.',
-      'auth/too-many-requests':    'Too many attempts. Please try again later.',
-      'auth/popup-closed-by-user': 'Sign-in popup was closed.',
+      'auth/user-not-found':         'No account found with this email.',
+      'auth/wrong-password':         'Incorrect password. Please try again.',
+      'auth/invalid-email':          'Please enter a valid email address.',
+      'auth/email-already-in-use':   'An account with this email already exists.',
+      'auth/weak-password':          'Password must be at least 6 characters.',
+      'auth/too-many-requests':      'Too many attempts. Please try again later.',
+      'auth/popup-closed-by-user':   'Sign-in popup was closed.',
       'auth/network-request-failed': 'Network error. Check your connection.',
-      'auth/invalid-credential':   'Incorrect email or password.',
+      'auth/invalid-credential':     'Incorrect email or password.',
     };
     return map[code] || 'Something went wrong. Please try again.';
   }
 
-  /* ════════════════════════════════════
-     Auth state watcher
-     ════════════════════════════════════ */
   onAuthStateChanged(auth, user => {
     currentUser = user;
     updateUserBadge(user);
     updateAuthBanners(user);
-    if (user) {
-      prefillUserInfo(user);
-      closeAuthModal(); // close modal when signed in
-    }
+    if (user) { prefillUserInfo(user); closeAuthModal(); }
   });
 
   function updateAuthBanners(user) {
     const signedInBanner = document.getElementById('authSignedInBanner');
     const promptCard     = document.getElementById('authPromptCard');
     if (user) {
-      const name  = user.displayName || user.email || 'User';
+      const name = user.displayName || user.email || 'User';
       document.getElementById('signedInName').textContent  = `Signed in as ${name.split(' ')[0]}`;
       document.getElementById('signedInEmail').textContent = user.email || '';
       signedInBanner.classList.add('show');
@@ -1186,7 +1111,6 @@
     }
   }
 
-  /* ── User badge in topbar ── */
   function updateUserBadge(user) {
     const badge   = document.getElementById('userBadge');
     const avatar  = document.getElementById('userAvatar');
@@ -1204,7 +1128,6 @@
     }
   }
 
-  /* ── localStorage helpers ── */
   const getCart   = () => { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } };
   const saveCart  = c  => localStorage.setItem('jersify_cart', JSON.stringify(c));
   const getSavedAddresses = () => { try { return JSON.parse(localStorage.getItem('jersify_addresses') || '[]'); } catch { return []; } };
@@ -1214,7 +1137,6 @@
     localStorage.setItem('jersify_addresses', JSON.stringify(addrs.slice(0, 5)));
   };
 
-  /* ── Coupons ── */
   async function loadCoupons() {
     const tagsEl = document.getElementById('couponTagsContainer');
     try {
@@ -1238,14 +1160,13 @@
     } catch { tagsEl.innerHTML = '<span class="coupon-loading-text">Could not load coupons.</span>'; }
   }
 
-  /* ── Prefill user info ── */
   async function prefillUserInfo(user) {
     let name = user.displayName || '', email = user.email || '', phone = user.phoneNumber || '';
     try {
       const snap = await get(child(dbRef, `users/${user.uid}`));
       if (snap.exists()) {
         const u = snap.val(), p = u.profile || {};
-        name  = p.name || u.name || u.displayName || name;
+        name  = p.name  || u.name  || u.displayName || name;
         email = p.email || u.email || email;
         phone = p.phone || p.phoneNumber || u.phone || u.phoneNumber || u.mobile || phone;
       }
@@ -1254,7 +1175,6 @@
     setIfEmpty('custName', name); setIfEmpty('custEmail', email); setIfEmpty('custPhone', phone);
   }
 
-  /* ── Saved addresses ── */
   function renderSavedAddresses() {
     const addrs = getSavedAddresses();
     const section = document.getElementById('savedAddressesSection');
@@ -1328,7 +1248,7 @@
 
   window.useCoupon = code => { document.getElementById('couponInput').value = code; applyCoupon(); };
   window.applyCoupon = () => {
-    const code = document.getElementById('couponInput').value.trim().toUpperCase();
+    const code  = document.getElementById('couponInput').value.trim().toUpperCase();
     const msgEl = document.getElementById('couponMsg');
     if (!code)         { msgEl.textContent = 'Please enter a coupon code.'; msgEl.className = 'coupon-msg error'; return; }
     if (couponApplied) { msgEl.textContent = 'A coupon is already applied.'; msgEl.className = 'coupon-msg error'; return; }
@@ -1386,7 +1306,6 @@
     document.getElementById('pay_cod').parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
-  /* ── Save order to DB ── */
   async function saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId, paymentMethod }) {
     const items = orderItems.map(item => ({
       id: item.id || item.key || '', name: item.name || '', price: item.price || 0,
@@ -1406,7 +1325,6 @@
     } catch (err) { console.error('Failed to save order:', err); }
   }
 
-  /* ── DOMContentLoaded ── */
   window.addEventListener('DOMContentLoaded', async () => {
     loadCoupons();
     renderSavedAddresses();
@@ -1489,8 +1407,6 @@
      ════════════════════════════════════════════════ */
   window.processOrder = () => {
     if (orderPrice === 0) { alert('Your cart is empty.'); return; }
-
-    /* AUTH CHECK */
     if (!currentUser) {
       openAuthModal('signin');
       const btn = document.getElementById('confirmBtn');
@@ -1514,18 +1430,20 @@
       state   = document.getElementById('custState').value.trim();
       pincode = document.getElementById('custPincode').value.trim();
       country = document.getElementById('custCountry').value.trim() || 'India';
-      if (!name)                         { shakeField('custName');    alert('Please enter your name.'); return; }
-      if (!phone || phone.length < 10)   { shakeField('custPhone');   alert('Please enter a valid phone number.'); return; }
-      if (!address)                      { shakeField('custAddress'); alert('Please enter your address.'); return; }
-      if (!city)                         { shakeField('custCity');    alert('Please enter your city.'); return; }
-      if (!pincode || pincode.length < 4){ shakeField('custPincode'); alert('Please enter a valid pincode.'); return; }
+      if (!name)                        { shakeField('custName');    alert('Please enter your name.'); return; }
+      if (!phone || phone.length < 10)  { shakeField('custPhone');   alert('Please enter a valid phone number.'); return; }
+      if (!address)                     { shakeField('custAddress'); alert('Please enter your address.'); return; }
+      if (!city)                        { shakeField('custCity');    alert('Please enter your city.'); return; }
+      if (!pincode || pincode.length<4) { shakeField('custPincode'); alert('Please enter a valid pincode.'); return; }
       if (document.getElementById('saveAddrCheck').checked) saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
     }
 
-    const isRzp      = document.getElementById('pay_rzp').checked;
-    const finalPrice = orderPrice - discountAmount;
+    const isRzp       = document.getElementById('pay_rzp').checked;
+    const finalPrice  = orderPrice - discountAmount;
     const selectedSize = document.querySelector('.size-btn.active')?.textContent || 'M';
-    const itemDesc   = isCartMode ? `${orderItems.length} item${orderItems.length > 1 ? 's' : ''} from Jersify` : `${orderItems[0]?.name || 'Jersify Kit'} (Size: ${selectedSize})`;
+    const itemDesc    = isCartMode
+      ? `${orderItems.length} item${orderItems.length > 1 ? 's' : ''} from Jersify`
+      : `${orderItems[0]?.name || 'Jersify Kit'} (Size: ${selectedSize})`;
 
     const btn = document.getElementById('confirmBtn');
     btn.disabled = true; btn.textContent = 'Processing…';
@@ -1533,12 +1451,16 @@
 
     if (isRzp) {
       const options = {
-        key: "rzp_test_YourKeyHere",
-        amount: finalPrice * 100, currency: "INR",
-        name: "JERSIFY", description: itemDesc,
-        image: "https://dummyimage.com/100x100/111/fff&text=J",
+        key:         "rzp_test_YourKeyHere",
+        amount:      finalPrice * 100,
+        currency:    "INR",
+        name:        "JERSIFY",
+        description: itemDesc,
+        image:       "https://dummyimage.com/100x100/111/fff&text=J",
         handler: async r => {
           await saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: r.razorpay_payment_id, paymentMethod: 'razorpay' });
+          // ── Send all notifications ──
+          await sendOrderConfirmations({ orderId, name, email, phone, total: finalPrice, payMethod: 'Online Payment', items: orderItems });
           localStorage.removeItem('jersify_cart');
           btn.disabled = false; btn.textContent = 'Confirm Order →';
           showSuccess(orderId, name, finalPrice, selectedSize, 'Online Payment');
@@ -1552,7 +1474,10 @@
       rzp.on('payment.failed', r => { showPaymentFailed(`Payment failed: ${r?.error?.description || 'Unknown error'}`); });
       rzp.open();
     } else {
-      saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: '', paymentMethod: 'cod' }).then(() => {
+      saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: '', paymentMethod: 'cod' })
+      .then(async () => {
+        // ── Send all notifications ──
+        await sendOrderConfirmations({ orderId, name, email, phone, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems });
         localStorage.removeItem('jersify_cart');
         btn.disabled = false; btn.textContent = 'Confirm Order →';
         showSuccess(orderId, name, finalPrice, selectedSize, 'Cash on Delivery');
