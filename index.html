@@ -35,6 +35,63 @@
     a { text-decoration: none; color: inherit }
     button, input { font: inherit }
 
+    /* ══ SPLASH / INIT SCREEN ══ */
+    #initScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      transition: opacity .45s ease, visibility .45s ease;
+    }
+    #initScreen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .splash-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 64px;
+      letter-spacing: 4px;
+      color: #fff;
+      line-height: 1;
+    }
+    .splash-logo span { color: var(--accent); }
+    .splash-tagline {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,.45);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: -18px;
+    }
+    .splash-bar-wrap {
+      width: 160px;
+      height: 3px;
+      background: rgba(255,255,255,.12);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .splash-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #ff6b7a);
+      border-radius: 999px;
+      transition: width .3s ease;
+    }
+    .splash-status {
+      font-size: 11px;
+      color: rgba(255,255,255,.35);
+      font-weight: 500;
+      letter-spacing: .5px;
+      min-height: 16px;
+    }
+
+    /* ══ PAGE (hidden until init done) ══ */
     .page {
       width: min(100%, var(--maxw));
       margin: 0 auto;
@@ -45,7 +102,10 @@
       border-left: 1px solid rgba(0,0,0,.04);
       border-right: 1px solid rgba(0,0,0,.04);
       padding-bottom: 110px;
+      opacity: 0;
+      transition: opacity .4s ease;
     }
+    .page.visible { opacity: 1; }
 
     /* ── HEADER ── */
     .topbar {
@@ -261,7 +321,18 @@
 </head>
 
 <body>
-  <div class="page">
+
+  <!-- ══ INIT / SPLASH SCREEN ══ -->
+  <div id="initScreen">
+    <div class="splash-logo">Jersi<span>fy</span></div>
+    <div class="splash-tagline">Premium Football Jerseys</div>
+    <div class="splash-bar-wrap">
+      <div class="splash-bar" id="splashBar"></div>
+    </div>
+    <div class="splash-status" id="splashStatus">Loading…</div>
+  </div>
+
+  <div class="page" id="mainPage">
 
     <!-- ══ HEADER ══ -->
     <header class="topbar">
@@ -296,10 +367,6 @@
         <div class="slides" id="slides">
           <div class="slide" id="heroSkeleton" style="flex:0 0 100%;width:100%;height:100%;position:relative;overflow:hidden;">
             <div style="position:absolute;inset:0;background:linear-gradient(90deg,#e8e8e8 25%,#f5f5f5 50%,#e8e8e8 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
-            <div style="position:absolute;bottom:18px;left:18px;right:18px;display:flex;flex-direction:column;gap:10px;">
-              <div style="width:64px;height:14px;border-radius:999px;background:rgba(0,0,0,.08);animation:shimmer 1.5s infinite;background-size:200% 100%;"></div>
-              <div style="width:55%;height:22px;border-radius:8px;background:rgba(0,0,0,.06);animation:shimmer 1.5s infinite;background-size:200% 100%;"></div>
-            </div>
           </div>
         </div>
         <div class="dots" id="dots"></div>
@@ -340,6 +407,7 @@
       </div>
       <div class="loop-viewport" id="loopViewport">
         <div class="loop-track" id="loopTrack">
+          <!-- skeleton cards while loading -->
           <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
           <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
           <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
@@ -474,6 +542,30 @@
 
   <!-- ══════════════ NON-FIREBASE JS ══════════════ -->
   <script>
+    /* ── SPLASH PROGRESS ── */
+    const splashBar    = document.getElementById("splashBar");
+    const splashStatus = document.getElementById("splashStatus");
+    const initScreen   = document.getElementById("initScreen");
+    const mainPage     = document.getElementById("mainPage");
+
+    let _progress = 0;
+    function setProgress(pct, label) {
+      _progress = Math.max(_progress, pct);
+      splashBar.style.width = _progress + "%";
+      if (label) splashStatus.textContent = label;
+    }
+
+    function revealPage() {
+      setProgress(100, "Ready!");
+      setTimeout(() => {
+        initScreen.classList.add("hidden");
+        mainPage.classList.add("visible");
+      }, 320);
+    }
+
+    /* safety fallback — never stay on splash > 6s */
+    const splashTimeout = setTimeout(revealPage, 6000);
+
     /* ── HERO SLIDER ── */
     let heroIndex = 0, heroTimer, heroTotal = 0;
 
@@ -524,41 +616,22 @@
 
       vp.addEventListener("mousedown", e => {
         if (e.target.closest("button") || e.target.closest("a")) return;
-        isDown = true;
-        moved = false;
-        startX = e.pageX - vp.offsetLeft;
-        startPageX = e.pageX;
-        scrollLeft = vp.scrollLeft;
-        vp.classList.add("is-dragging");
+        isDown = true; moved = false;
+        startX = e.pageX - vp.offsetLeft; startPageX = e.pageX;
+        scrollLeft = vp.scrollLeft; vp.classList.add("is-dragging");
       });
-
-      vp.addEventListener("mouseleave", () => {
-        isDown = false;
-        moved = false;
-        vp.classList.remove("is-dragging");
-      });
-
-      vp.addEventListener("mouseup", () => {
-        isDown = false;
-        vp.classList.remove("is-dragging");
-      });
-
+      vp.addEventListener("mouseleave", () => { isDown = false; moved = false; vp.classList.remove("is-dragging"); });
+      vp.addEventListener("mouseup", () => { isDown = false; vp.classList.remove("is-dragging"); });
       vp.addEventListener("mousemove", e => {
-        if (!isDown) return;
-        e.preventDefault();
+        if (!isDown) return; e.preventDefault();
         const x = e.pageX - vp.offsetLeft;
         const walk = (x - startX) * 1.2;
         if (Math.abs(e.pageX - startPageX) > DRAG_THRESHOLD) moved = true;
         vp.scrollLeft = scrollLeft - walk;
       });
-
       vp.addEventListener("click", e => {
         if (e.target.closest("button") || e.target.closest("a")) return;
-        if (moved) {
-          e.stopPropagation();
-          e.preventDefault();
-          moved = false;
-        }
+        if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; }
       }, true);
     })();
 
@@ -568,17 +641,13 @@
     const reelClose    = document.getElementById("reelClose");
 
     function openReel(src) {
-      reelModalVid.src = src;
-      reelModalVid.muted = false;
-      reelModal.classList.add("open");
-      document.body.style.overflow = "hidden";
+      reelModalVid.src = src; reelModalVid.muted = false;
+      reelModal.classList.add("open"); document.body.style.overflow = "hidden";
       reelModalVid.play().catch(() => { reelModalVid.muted = true; reelModalVid.play(); });
     }
     function closeReel() {
-      reelModalVid.pause();
-      reelModalVid.src = "";
-      reelModal.classList.remove("open");
-      document.body.style.overflow = "";
+      reelModalVid.pause(); reelModalVid.src = "";
+      reelModal.classList.remove("open"); document.body.style.overflow = "";
     }
     reelClose.addEventListener("click", closeReel);
     reelModal.addEventListener("click", e => { if (e.target === reelModal) closeReel(); });
@@ -596,7 +665,7 @@
       if (e.key === "Enter" && searchInput.value.trim()) window.location.href = `shop.html?q=${encodeURIComponent(searchInput.value.trim())}`;
     });
 
-    /* ── COUNTRY CHIPS (unchanged — SVG flags) ── */
+    /* ── COUNTRY CHIPS ── */
     (() => {
       const countries = [
         { name: "Argentina", sub: "National team", page: "argentina.html", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>` },
@@ -618,57 +687,49 @@
           name: "Barcelona",
           page: "barcelona.html",
           img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab",
-          bg:   "#a51d2d",
-          fg:   "#f2c94c",
-          l:    "B"
+          bg: "#a51d2d", fg: "#f2c94c", l: "B"
         },
         {
           name: "Real Madrid",
           page: "real-madrid.html",
           img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b",
-          bg:   "#e8d7a2",
-          fg:   "#0f5bd6",
-          l:    "R"
+          bg: "#e8d7a2", fg: "#0f5bd6", l: "R"
         },
         {
           name: "Arsenal",
           page: "arsenal.html",
           img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee",
-          bg:   "#EF0107",
-          fg:   "#ffffff",
-          l:    "A"
+          bg: "#EF0107", fg: "#ffffff", l: "A"
         },
         {
           name: "Chelsea",
           page: "chelsea.html",
           img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a",
-          bg:   "#1a4da1",
-          fg:   "#fff",
-          l:    "C"
+          bg: "#1a4da1", fg: "#fff", l: "C"
         },
         {
           name: "Man City",
           page: "man-city.html",
           img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7",
-          bg:   "#9ed7ff",
-          fg:   "#0f4ea2",
-          l:    "M"
+          bg: "#9ed7ff", fg: "#0f4ea2", l: "M"
         },
         {
           name: "Man Utd",
           page: "man-utd.html",
           img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b",
-          bg:   "#c61f2f",
-          fg:   "#111",
-          l:    "U"
+          bg: "#c61f2f", fg: "#111", l: "U"
         },
         {
           name: "PSG",
           page: "psg.html",
           img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6",
-          bg:   "#12284c",
-          fg:   "#c61f2f",
-          l:    "P"
+          bg: "#12284c", fg: "#c61f2f", l: "P"
+        },
+        {
+          name: "Liverpool",
+          page: "liverpool.html",
+          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9",
+          bg: "#c8102e", fg: "#f6eb61", l: "L"
         }
       ];
 
@@ -751,6 +812,7 @@
 
     /* ── 2. HERO SLIDES ── */
     async function loadHeroes() {
+      setProgress(15, "Loading hero…");
       try {
         const snap = await get(ref(rtdb, "indexMedia"));
         if (!snap.exists()) return;
@@ -767,7 +829,7 @@
           const url = getUrl(h), link = h.link || "shop.html";
           const media = isVideo(h)
             ? `<video class="slide-media-cover" src="${url}" autoplay muted loop playsinline preload="metadata"></video>`
-            : `<img class="slide-media-cover" src="${url}" alt="Hero" loading="lazy"/>`;
+            : `<img class="slide-media-cover" src="${url}" alt="Hero" loading="eager"/>`;
           return `<div class="slide" style="cursor:pointer" onclick="window.location.href='${link}'">${media}</div>`;
         }).join("");
 
@@ -775,7 +837,14 @@
         buildDots(heroTotal);
         showHeroSlide(0);
         restartHero();
+
+        /* preload first hero image for speed */
+        const firstHero = heroes[0];
+        if (!isVideo(firstHero)) {
+          const pre = new Image(); pre.src = getUrl(firstHero);
+        }
       } catch (e) { console.warn("Hero load failed", e); }
+      setProgress(40, "Loading products…");
     }
 
     /* ── 3. PRODUCTS ── */
@@ -816,19 +885,12 @@
         loopTrack.innerHTML        = products.slice(0, 8).map((p,i) => card(p,i,"Shop Now")).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
         allProductsTrack.innerHTML = products.slice(0,10).map((p,i) => card(p,i,"View")).join("")    || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products available.</div>';
 
-        /* ── Event delegation: handles card + button clicks reliably ── */
         function attachCardNav(container) {
           container.addEventListener("click", function(e) {
             const btn = e.target.closest(".small-btn");
             const article = e.target.closest(".loop-card");
-            if (btn && btn.dataset.pid) {
-              e.stopPropagation();
-              window.location.href = "shop.html?id=" + btn.dataset.pid;
-              return;
-            }
-            if (article && article.dataset.pid) {
-              window.location.href = "shop.html?id=" + article.dataset.pid;
-            }
+            if (btn && btn.dataset.pid) { e.stopPropagation(); window.location.href = "shop.html?id=" + btn.dataset.pid; return; }
+            if (article && article.dataset.pid) window.location.href = "shop.html?id=" + article.dataset.pid;
           });
         }
         attachCardNav(loopTrack);
@@ -837,6 +899,7 @@
         console.error("Products load failed", e);
         document.getElementById("loopTrack").innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">Could not load products.</div>';
       }
+      setProgress(70, "Loading media…");
     }
 
     /* ── 4. INDEX MEDIA ── */
@@ -867,23 +930,17 @@
           ms.innerHTML = `<div class="placeholder" style="font-size:13px;font-weight:700;color:#999;">No featured media</div>`;
         }
 
-        /* featured_2, featured_3 … → insert into promo track BEFORE the 2 blank slots */
+        /* featured_2+ → promo track */
         const promoTrack = document.getElementById("promoTrack");
         const blank1     = document.getElementById("promoBlank1");
-        const promoItems = featured.slice(1);
-
-        promoItems.forEach(m => {
+        featured.slice(1).forEach(m => {
           const url = getUrl(m), link = m.link || "shop.html", vid = isVideo(m);
           const div = document.createElement("div");
           div.className = "promo-card";
           div.onclick   = () => window.location.href = link;
-          if (vid) {
-            div.innerHTML = `<video src="${url}" autoplay muted loop playsinline></video>`;
-          } else {
-            div.innerHTML = `<img src="${url}" alt="${m.label||'Promo'}" loading="lazy"/>
-              <div class="promo-overlay"></div>
-              ${m.label ? `<div class="promo-label">${m.label}</div>` : ""}`;
-          }
+          div.innerHTML = vid
+            ? `<video src="${url}" autoplay muted loop playsinline></video>`
+            : `<img src="${url}" alt="${m.label||'Promo'}" loading="lazy"/><div class="promo-overlay"></div>${m.label ? `<div class="promo-label">${m.label}</div>` : ""}`;
           promoTrack.insertBefore(div, blank1);
         });
 
@@ -903,13 +960,10 @@
               <div class="reel-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
             </div>`;
           }).join("");
-
           reelsSection.style.display = "block";
-
           reelsRow.querySelectorAll(".reel-card").forEach(card => {
             card.addEventListener("click", () => openReel(card.dataset.src));
           });
-
           const obs = new IntersectionObserver(entries => {
             entries.forEach(e => {
               const v = e.target.querySelector("video");
@@ -928,27 +982,31 @@
           let html = "";
           if (gA) {
             const url = getUrl(gA), link = gA.link || "#", vid = isVideo(gA);
-            const media = vid
+            html += `<div class="grid-item-a" onclick="window.location.href='${link}'">${vid
               ? `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
-              : `<img src="${url}" alt="${gA.label||'Gallery'}" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`;
-            html += `<div class="grid-item-a" onclick="window.location.href='${link}'">${media}</div>`;
+              : `<img src="${url}" alt="${gA.label||'Gallery'}" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`
+            }</div>`;
           }
           if (gB) {
             const url = getUrl(gB), link = gB.link || "#", vid = isVideo(gB);
-            const media = vid
+            html += `<div class="grid-item-b" onclick="window.location.href='${link}'">${vid
               ? `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
-              : `<img src="${url}" alt="${gB.label||'Gallery'}" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`;
-            html += `<div class="grid-item-b" onclick="window.location.href='${link}'">${media}</div>`;
+              : `<img src="${url}" alt="${gB.label||'Gallery'}" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`
+            }</div>`;
           }
           galleryGrid.innerHTML = html;
           gallerySection.style.display = "block";
         }
 
       } catch (e) { console.error("Index media load failed", e); }
+      setProgress(95, "Almost ready…");
     }
 
     async function init() {
+      setProgress(5, "Connecting…");
       await Promise.allSettled([loadHeroes(), loadProducts(), loadIndexMedia()]);
+      clearTimeout(splashTimeout);
+      revealPage();
     }
     document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", init) : init();
   </script>
