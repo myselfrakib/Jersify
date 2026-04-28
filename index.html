@@ -18,6 +18,7 @@
       --line: #ececec;
       --shadow: 0 12px 28px rgba(0,0,0,.08);
       --shadow-soft: 0 8px 18px rgba(0,0,0,.06);
+      --shadow-card: 0 6px 24px rgba(0,0,0,.11), 0 1.5px 4px rgba(0,0,0,.07);
       --radius: 22px;
       --maxw: 430px;
     }
@@ -91,7 +92,7 @@
       min-height: 16px;
     }
 
-    /* ══ PAGE (hidden until init done) ══ */
+    /* ══ PAGE ══ */
     .page {
       width: min(100%, var(--maxw));
       margin: 0 auto;
@@ -175,7 +176,7 @@
     .feature p { font-size: 9px; color: var(--muted); line-height: 1.1; }
     .feature-bar { height: 6px; background: linear-gradient(90deg, #f1f1f1 0%, #ca2534 100%); }
 
-    /* ── WOW PICKS / PRODUCT CARDS ── */
+    /* ── WOW PICKS ── */
     .loop-section { padding: 0 0 12px; }
     .loop-viewport {
       overflow-x: auto;
@@ -192,10 +193,40 @@
     .loop-viewport.is-dragging { cursor: grabbing; scroll-behavior: auto; }
     .loop-track { display: flex; gap: 12px; width: max-content; padding: 0 16px; }
     .loop-viewport.is-dragging .loop-card { pointer-events: none; }
-    .loop-card { flex: 0 0 170px; scroll-snap-align: start; border-radius: 22px; background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow-soft); overflow: hidden; }
-    .loop-card .pic { height: 150px; background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%); display: grid; place-items: center; position: relative; overflow: hidden; }
-    .loop-card .pic::after { content: ""; position: absolute; inset: 14px; border-radius: 18px; border: 1px solid rgba(255,255,255,.08); background: linear-gradient(135deg, rgba(255,255,255,.05), transparent); pointer-events: none; }
-    .loop-card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; }
+
+    /* loop-card: shadow enhanced, NO ::after overlay on .pic */
+    .loop-card {
+      flex: 0 0 170px;
+      scroll-snap-align: start;
+      border-radius: 22px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      transition: box-shadow .22s ease, transform .22s ease;
+    }
+    .loop-card:hover {
+      box-shadow: 0 18px 42px rgba(0,0,0,.16), 0 3px 8px rgba(0,0,0,.1);
+      transform: translateY(-3px);
+    }
+    .loop-card .pic {
+      height: 150px;
+      background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%),
+                  linear-gradient(180deg, #131313 0%, #262626 100%);
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* ✅ NO ::after pseudo-element — overlay layer removed */
+    .loop-card .pic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      position: absolute;
+      inset: 0;
+    }
     .mini-jersey { width: 86px; height: 104px; border-radius: 22px; position: relative; z-index: 1; box-shadow: 0 14px 24px rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.16); display: grid; place-items: center; color: #fff; font-weight: 900; text-align: center; overflow: hidden; }
     .mini-jersey.red   { background: linear-gradient(135deg, #c61f2f 0%, #101010 45%, #c61f2f 100%); }
     .mini-jersey.white { background: linear-gradient(135deg, #ffffff 0%, #f1f1f1 45%, #ffffff 100%); color: #111; }
@@ -215,7 +246,21 @@
     /* ── CHIPS ── */
     .chip-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
     .chip-row::-webkit-scrollbar { display: none }
-    .card-chip { flex: 0 0 auto; width: 96px; background: #fff; border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-soft); padding: 8px 8px 10px; text-align: center; }
+    .card-chip {
+      flex: 0 0 auto;
+      width: 96px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow-card);
+      padding: 8px 8px 10px;
+      text-align: center;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .card-chip:hover {
+      box-shadow: 0 14px 32px rgba(0,0,0,.14);
+      transform: translateY(-2px);
+    }
     .card-chip .chip-img { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; margin: 0 auto 8px; border: 2px solid #f1f1f1; background: #f8f8f8; display: grid; place-items: center; }
     .card-chip .chip-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .card-chip .chip-name { font-size: 11px; font-weight: 800; line-height: 1.15; }
@@ -227,16 +272,25 @@
     .media-space .placeholder { font-size: 13px; font-weight: 700; text-align: center; padding: 0 14px; }
 
     /* ── PROMOTIONS ── */
-    .promo-section { padding: 0 16px 16px; }
     .promo-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; touch-action: pan-y; }
     .promo-viewport::-webkit-scrollbar { display: none; }
     .promo-track { display: flex; gap: 10px; width: max-content; padding: 2px 0 6px; }
-
-    .promo-card { flex: 0 0 220px; height: 100px; border-radius: 16px; overflow: hidden; position: relative; cursor: pointer; background: #111; box-shadow: var(--shadow-soft); scroll-snap-align: start; }
+    .promo-card {
+      flex: 0 0 220px;
+      height: 100px;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      background: #111;
+      box-shadow: var(--shadow-card);
+      scroll-snap-align: start;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .promo-card:hover { box-shadow: 0 16px 36px rgba(0,0,0,.18); transform: translateY(-2px); }
     .promo-card img, .promo-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .promo-card .promo-overlay { position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(0,0,0,.65)); }
     .promo-card .promo-label { position: absolute; bottom: 8px; left: 10px; right: 10px; color: #fff; font-size: 11px; font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
     .promo-card-blank { flex: 0 0 220px; height: 100px; border-radius: 16px; overflow: hidden; position: relative; background: #f7f7f7; border: 2px dashed rgba(17,17,17,.14); box-shadow: var(--shadow-soft); scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
     .promo-card-blank svg { width: 26px; height: 26px; opacity: .22; }
     .promo-card-blank span { font-size: 10px; font-weight: 700; color: #bbb; letter-spacing: .3px; }
@@ -245,7 +299,20 @@
     .reels { padding: 0 16px 18px; }
     .reels-row { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 6px; scroll-snap-type: x mandatory; }
     .reels-row::-webkit-scrollbar { display: none }
-    .reel-card { flex: 0 0 150px; height: 240px; border-radius: 22px; overflow: hidden; background: #111; box-shadow: var(--shadow); position: relative; border: 1px solid rgba(0,0,0,.05); scroll-snap-align: center; cursor: pointer; }
+    .reel-card {
+      flex: 0 0 150px;
+      height: 240px;
+      border-radius: 22px;
+      overflow: hidden;
+      background: #111;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      border: 1px solid rgba(0,0,0,.05);
+      scroll-snap-align: center;
+      cursor: pointer;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .reel-card:hover { box-shadow: 0 18px 42px rgba(0,0,0,.22); transform: translateY(-3px); }
     .reel-card video.reel-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
     .reel-card .thumb { position: absolute; inset: 0; background: center/cover; filter: saturate(1.15); }
     .reel-card::before { content: ""; position: absolute; inset: 0; z-index: 1; background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.15), transparent 20%), linear-gradient(180deg, rgba(198,31,47,.15), rgba(0,0,0,.3)); }
@@ -257,39 +324,70 @@
     #reelModal.open { display: flex; }
     #reelModal .reel-modal-inner { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
     #reelModal video { max-width: 100vw; max-height: 100vh; width: 100%; height: 100%; object-fit: contain; display: block; }
-    #reelModal .reel-close {
-      position: absolute; top: 18px; right: 18px; z-index: 10;
-      width: 44px; height: 44px; border-radius: 50%;
-      background: rgba(255,255,255,.14); backdrop-filter: blur(8px);
-      border: 1.5px solid rgba(255,255,255,.28);
-      color: #fff; font-size: 18px; font-weight: 900;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: background .2s; line-height: 1;
-    }
+    #reelModal .reel-close { position: absolute; top: 18px; right: 18px; z-index: 10; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.14); backdrop-filter: blur(8px); border: 1.5px solid rgba(255,255,255,.28); color: #fff; font-size: 18px; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; line-height: 1; }
     #reelModal .reel-close:hover { background: rgba(255,255,255,.26); }
-    #reelModal .reel-shop-cta {
-      position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%);
-      background: linear-gradient(180deg, var(--accent), var(--accent2));
-      color: #fff; border: none; border-radius: 999px;
-      padding: 13px 32px; font-size: 14px; font-weight: 800;
-      box-shadow: 0 10px 28px rgba(198,31,47,.4); cursor: pointer;
-      letter-spacing: .3px; white-space: nowrap;
-    }
+    #reelModal .reel-shop-cta { position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); background: linear-gradient(180deg, var(--accent), var(--accent2)); color: #fff; border: none; border-radius: 999px; padding: 13px 32px; font-size: 14px; font-weight: 800; box-shadow: 0 10px 28px rgba(198,31,47,.4); cursor: pointer; letter-spacing: .3px; white-space: nowrap; }
 
     /* ── GALLERY ── */
     .gallery { padding: 0 16px 18px; }
     .grid { display: flex; gap: 8px; align-items: stretch; }
-    .grid-item-a { flex: 2 1 0; aspect-ratio: 2/1; border-radius: 18px; overflow: hidden; background: #ddd; box-shadow: var(--shadow-soft); position: relative; cursor: pointer; min-width: 0; }
-    .grid-item-b { flex: 1 1 0; border-radius: 18px; overflow: hidden; background: #ddd; box-shadow: var(--shadow-soft); position: relative; cursor: pointer; min-width: 0; }
+    .grid-item-a { flex: 2 1 0; aspect-ratio: 2/1; border-radius: 18px; overflow: hidden; background: #ddd; box-shadow: var(--shadow-card); position: relative; cursor: pointer; min-width: 0; transition: box-shadow .2s, transform .2s; }
+    .grid-item-a:hover { box-shadow: 0 16px 36px rgba(0,0,0,.18); transform: translateY(-2px); }
+    .grid-item-b { flex: 1 1 0; border-radius: 18px; overflow: hidden; background: #ddd; box-shadow: var(--shadow-card); position: relative; cursor: pointer; min-width: 0; transition: box-shadow .2s, transform .2s; }
+    .grid-item-b:hover { box-shadow: 0 16px 36px rgba(0,0,0,.18); transform: translateY(-2px); }
     .grid-item-a img, .grid-item-a video, .grid-item-b img, .grid-item-b video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    /* ── ALL PRODUCTS ── */
+    /* ══ ALL PRODUCTS — 2 cols × 5 rows grid ══ */
     .products { padding: 0 16px 18px; }
-    .products-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; touch-action: pan-y; }
-    .products-viewport::-webkit-scrollbar { display: none; }
-    .product-row { display: flex; gap: 12px; padding: 0 0 8px; }
-    .viewall-wrap { display: flex; justify-content: center; margin-top: 10px; }
-    .viewall { min-width: 110px; padding: 8px 18px; border: 1.5px solid #222; border-radius: 4px; background: #fff; font-weight: 700; cursor: pointer; }
+
+    .all-products-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* grid product card — same look as loop-card, NO overlay on pic */
+    .grid-product-card {
+      border-radius: 22px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow .22s ease, transform .22s ease;
+    }
+    .grid-product-card:hover {
+      box-shadow: 0 18px 44px rgba(0,0,0,.16), 0 3px 8px rgba(0,0,0,.09);
+      transform: translateY(-3px);
+    }
+    .grid-product-card .pic {
+      height: 150px;
+      background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%),
+                  linear-gradient(180deg, #131313 0%, #262626 100%);
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+      /* NO ::after overlay */
+    }
+    .grid-product-card .pic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      position: absolute;
+      inset: 0;
+    }
+    .grid-product-card .loop-info { padding: 10px 12px 12px; }
+    .grid-product-card .loop-info h4 { font-size: 12px; font-weight: 900; margin-bottom: 4px; }
+    .grid-product-card .loop-info p { font-size: 10px; color: var(--muted); line-height: 1.35; min-height: 28px; }
+    .grid-product-card .loop-badge { display: inline-block; font-size: 8px; font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 999px; background: var(--accent); color: #fff; margin-bottom: 4px; letter-spacing: .5px; }
+    .grid-product-card .price-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+    .grid-product-card .price { font-size: 13px; font-weight: 900; }
+
+    .viewall-wrap { display: flex; justify-content: center; margin-top: 16px; }
+    .viewall { min-width: 120px; padding: 10px 24px; border: 1.5px solid #222; border-radius: 6px; background: #fff; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.08); transition: box-shadow .2s, transform .2s; }
+    .viewall:hover { box-shadow: 0 10px 28px rgba(0,0,0,.14); transform: translateY(-1px); }
 
     /* ── FOOTER ── */
     .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0; }
@@ -316,6 +414,8 @@
       .logo { font-size: 40px }
       .loop-card { flex-basis: 160px }
       .promo-card, .promo-card-blank { flex-basis: 190px }
+      .all-products-grid { gap: 10px; }
+      .grid-product-card .pic { height: 130px; }
     }
   </style>
 </head>
@@ -407,7 +507,6 @@
       </div>
       <div class="loop-viewport" id="loopViewport">
         <div class="loop-track" id="loopTrack">
-          <!-- skeleton cards while loading -->
           <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
           <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
           <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
@@ -476,26 +575,20 @@
       <div class="grid" id="galleryGrid"></div>
     </section>
 
-    <!-- ══ ALL PRODUCTS ══ -->
+    <!-- ══ ALL PRODUCTS — 2 columns × 5 rows ══ -->
     <section class="products" id="productsSection">
       <div class="row-header-flat">
         <h3>All Products</h3>
-        <div class="nav-controls">
-          <button class="nav-ctrl" id="prevAllProd" aria-label="Previous products">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <button class="nav-ctrl" id="nextAllProd" aria-label="Next products">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-        </div>
       </div>
-      <div class="products-viewport" id="allProductsViewport">
-        <div class="product-row" id="allProductsTrack">
-          <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px;">Loading Products...</div>
-        </div>
+      <div class="all-products-grid" id="allProductsGrid">
+        <!-- skeleton placeholders -->
+        <div class="grid-product-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div class="price-row"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:28px;width:60px;border-radius:999px;"></div></div></div></div>
+        <div class="grid-product-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div class="price-row"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:28px;width:60px;border-radius:999px;"></div></div></div></div>
+        <div class="grid-product-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div class="price-row"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:28px;width:60px;border-radius:999px;"></div></div></div></div>
+        <div class="grid-product-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div class="price-row"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:28px;width:60px;border-radius:999px;"></div></div></div></div>
       </div>
-      <div class="viewall-wrap" style="margin-top:14px;">
-        <button class="viewall" onclick="window.location.href='shop.html'">View All in Shop</button>
+      <div class="viewall-wrap">
+        <button class="viewall" onclick="window.location.href='shop.html'">View All in Shop →</button>
       </div>
     </section>
 
@@ -511,7 +604,7 @@
     </footer>
   </div><!-- /.page -->
 
-  <!-- ══ REEL FULLSCREEN TOAST MODAL ══ -->
+  <!-- ══ REEL FULLSCREEN MODAL ══ -->
   <div id="reelModal" role="dialog" aria-modal="true" aria-label="Reel player">
     <div class="reel-modal-inner">
       <video id="reelModalVideo" playsinline loop></video>
@@ -542,7 +635,6 @@
 
   <!-- ══════════════ NON-FIREBASE JS ══════════════ -->
   <script>
-    /* ── SPLASH PROGRESS ── */
     const splashBar    = document.getElementById("splashBar");
     const splashStatus = document.getElementById("splashStatus");
     const initScreen   = document.getElementById("initScreen");
@@ -554,7 +646,6 @@
       splashBar.style.width = _progress + "%";
       if (label) splashStatus.textContent = label;
     }
-
     function revealPage() {
       setProgress(100, "Ready!");
       setTimeout(() => {
@@ -562,13 +653,10 @@
         mainPage.classList.add("visible");
       }, 320);
     }
-
-    /* safety fallback — never stay on splash > 6s */
     const splashTimeout = setTimeout(revealPage, 6000);
 
     /* ── HERO SLIDER ── */
     let heroIndex = 0, heroTimer, heroTotal = 0;
-
     function buildDots(count) {
       const el = document.getElementById("dots");
       el.innerHTML = "";
@@ -597,23 +685,20 @@
       }, { passive: true });
     })();
 
-    /* ── GENERIC SCROLL HELPER ── */
+    /* ── SCROLL HELPERS ── */
     function bindArrows(prevId, nextId, viewportId, step) {
       const vp = document.getElementById(viewportId);
       document.getElementById(prevId).addEventListener("click", () => vp.scrollBy({ left: -step, behavior: "smooth" }));
       document.getElementById(nextId).addEventListener("click", () => vp.scrollBy({ left:  step, behavior: "smooth" }));
     }
-
-    bindArrows("prevWow", "nextWow", "loopViewport", 182);
-    bindArrows("prevAllProd", "nextAllProd", "allProductsViewport", 182);
+    bindArrows("prevWow",   "nextWow",   "loopViewport",  182);
     bindArrows("prevPromo", "nextPromo", "promoViewport", 230);
 
-    /* ── WOW PICKS: MOUSE DRAG TO SCROLL ── */
+    /* ── WOW PICKS DRAG ── */
     (() => {
       const vp = document.getElementById("loopViewport");
       let isDown = false, startX = 0, startPageX = 0, scrollLeft = 0, moved = false;
       const DRAG_THRESHOLD = 8;
-
       vp.addEventListener("mousedown", e => {
         if (e.target.closest("button") || e.target.closest("a")) return;
         isDown = true; moved = false;
@@ -621,13 +706,12 @@
         scrollLeft = vp.scrollLeft; vp.classList.add("is-dragging");
       });
       vp.addEventListener("mouseleave", () => { isDown = false; moved = false; vp.classList.remove("is-dragging"); });
-      vp.addEventListener("mouseup", () => { isDown = false; vp.classList.remove("is-dragging"); });
-      vp.addEventListener("mousemove", e => {
+      vp.addEventListener("mouseup",    () => { isDown = false; vp.classList.remove("is-dragging"); });
+      vp.addEventListener("mousemove",  e => {
         if (!isDown) return; e.preventDefault();
         const x = e.pageX - vp.offsetLeft;
-        const walk = (x - startX) * 1.2;
         if (Math.abs(e.pageX - startPageX) > DRAG_THRESHOLD) moved = true;
-        vp.scrollLeft = scrollLeft - walk;
+        vp.scrollLeft = scrollLeft - (x - startX) * 1.2;
       });
       vp.addEventListener("click", e => {
         if (e.target.closest("button") || e.target.closest("a")) return;
@@ -639,7 +723,6 @@
     const reelModal    = document.getElementById("reelModal");
     const reelModalVid = document.getElementById("reelModalVideo");
     const reelClose    = document.getElementById("reelClose");
-
     function openReel(src) {
       reelModalVid.src = src; reelModalVid.muted = false;
       reelModal.classList.add("open"); document.body.style.overflow = "hidden";
@@ -683,71 +766,25 @@
     /* ── CLUB CHIPS ── */
     (() => {
       const clubs = [
-        {
-          name: "Barcelona",
-          page: "barcelona.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab",
-          bg: "#a51d2d", fg: "#f2c94c", l: "B"
-        },
-        {
-          name: "Real Madrid",
-          page: "real-madrid.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b",
-          bg: "#e8d7a2", fg: "#0f5bd6", l: "R"
-        },
-        {
-          name: "Arsenal",
-          page: "arsenal.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee",
-          bg: "#EF0107", fg: "#ffffff", l: "A"
-        },
-        {
-          name: "Chelsea",
-          page: "chelsea.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a",
-          bg: "#1a4da1", fg: "#fff", l: "C"
-        },
-        {
-          name: "Man City",
-          page: "man-city.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7",
-          bg: "#9ed7ff", fg: "#0f4ea2", l: "M"
-        },
-        {
-          name: "Man Utd",
-          page: "man-utd.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b",
-          bg: "#c61f2f", fg: "#111", l: "U"
-        },
-        {
-          name: "PSG",
-          page: "psg.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6",
-          bg: "#12284c", fg: "#c61f2f", l: "P"
-        },
-        {
-          name: "Liverpool",
-          page: "liverpool.html",
-          img:  "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9",
-          bg: "#c8102e", fg: "#f6eb61", l: "L"
-        }
+        { name: "Barcelona", page: "barcelona.html",  img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab", bg: "#a51d2d", fg: "#f2c94c", l: "B" },
+        { name: "Real Madrid", page: "real-madrid.html", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b", bg: "#e8d7a2", fg: "#0f5bd6", l: "R" },
+        { name: "Arsenal",    page: "arsenal.html",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee", bg: "#EF0107", fg: "#ffffff", l: "A" },
+        { name: "Chelsea",    page: "chelsea.html",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a", bg: "#1a4da1", fg: "#fff", l: "C" },
+        { name: "Man City",   page: "man-city.html",  img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7", bg: "#9ed7ff", fg: "#0f4ea2", l: "M" },
+        { name: "Man Utd",    page: "man-utd.html",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b", bg: "#c61f2f", fg: "#111", l: "U" },
+        { name: "PSG",        page: "psg.html",       img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6", bg: "#12284c", fg: "#c61f2f", l: "P" },
+        { name: "Liverpool",  page: "liverpool.html", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9", bg: "#c8102e", fg: "#f6eb61", l: "L" }
       ];
-
       function fallbackBadge(c) {
-        const safeName = c.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const safeName = c.name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
           `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cl${c.l}"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cl${c.l})"><rect width="120" height="120" fill="${c.bg}"/><circle cx="60" cy="56" r="30" fill="rgba(255,255,255,.18)"/><path d="M28 92c10-20 54-20 64 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/><text x="60" y="66" text-anchor="middle" font-size="34" font-family="Arial,sans-serif" font-weight="900" fill="${c.fg}">${c.l}</text><text x="60" y="98" text-anchor="middle" font-size="11" font-family="Arial,sans-serif" font-weight="700" fill="rgba(255,255,255,.9)">${safeName.toUpperCase()}</text></g></svg>`
         );
       }
-
       document.getElementById("clubRow").innerHTML = clubs.map(c => {
-        const imgSrc = c.img && c.img.trim() !== "" ? c.img.trim() : fallbackBadge(c);
+        const imgSrc = c.img && c.img.trim() ? c.img.trim() : fallbackBadge(c);
         return `<a href="${c.page}" class="card-chip">
-          <div class="chip-img">
-            <img src="${imgSrc}" alt="${c.name}" loading="lazy"
-              onerror="this.src='${fallbackBadge(c)}'"
-            />
-          </div>
+          <div class="chip-img"><img src="${imgSrc}" alt="${c.name}" loading="lazy" onerror="this.src='${fallbackBadge(c)}'"/></div>
           <div class="chip-name">${c.name}</div>
           <div class="chip-sub">Club crest</div>
         </a>`;
@@ -795,7 +832,7 @@
           const img = document.createElement("img"); img.src = user.photoURL; img.alt = user.displayName || "Profile";
           profileBtn.appendChild(img);
         } else {
-          const initials = (user.displayName || user.email || "U").split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
+          const initials = (user.displayName || user.email || "U").split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
           profileIcon.style.display = "none";
           const span = document.createElement("span"); span.className = "profile-initials"; span.textContent = initials;
           profileBtn.appendChild(span);
@@ -818,7 +855,7 @@
         if (!snap.exists()) return;
         let heroes = [];
         snap.forEach(d => { const v = d.val(); if (v.section === "hero") heroes.push(v); });
-        heroes = heroes.filter(h => getUrl(h)).sort((a, b) => (a.order || 0) - (b.order || 0));
+        heroes = heroes.filter(h => getUrl(h)).sort((a, b) => (a.order||0) - (b.order||0));
         if (!heroes.length) return;
 
         const slidesEl = document.getElementById("slides");
@@ -838,32 +875,32 @@
         showHeroSlide(0);
         restartHero();
 
-        /* preload first hero image for speed */
         const firstHero = heroes[0];
-        if (!isVideo(firstHero)) {
-          const pre = new Image(); pre.src = getUrl(firstHero);
-        }
+        if (!isVideo(firstHero)) { const pre = new Image(); pre.src = getUrl(firstHero); }
       } catch (e) { console.warn("Hero load failed", e); }
       setProgress(40, "Loading products…");
     }
 
     /* ── 3. PRODUCTS ── */
     async function loadProducts() {
-      const loopTrack        = document.getElementById("loopTrack");
-      const allProductsTrack = document.getElementById("allProductsTrack");
-      const countLabel       = document.getElementById("productCountLabel");
+      const loopTrack       = document.getElementById("loopTrack");
+      const allProductsGrid = document.getElementById("allProductsGrid");
+      const countLabel      = document.getElementById("productCountLabel");
+      const colors = ["red","white","blue","dark","gold"];
+
       try {
         const snap = await get(ref(rtdb, "products"));
         if (!snap.exists()) {
-          loopTrack.innerHTML = allProductsTrack.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
-          countLabel.textContent = "Coming soon"; return;
+          loopTrack.innerHTML       = '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
+          allProductsGrid.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">No products yet.</div>';
+          countLabel.textContent    = "Coming soon"; return;
         }
         let products = [];
         snap.forEach(d => { const p = d.val(); p._id = d.key; if (!p.status || p.status === "active") products.push(p); });
         countLabel.innerHTML = `<span style="color:var(--accent);font-weight:800;">${products.length}+</span> jerseys available`;
-        const colors = ["red","white","blue","dark","gold"];
 
-        function card(p, i, btnLabel) {
+        /* WOW picks — horizontal scroll loop cards */
+        function loopCard(p, i) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
           return `<article class="loop-card" data-pid="${p._id}" style="cursor:pointer;">
             <div class="pic">${p.imgUrl
@@ -876,28 +913,49 @@
               <p>${team||(p.type||'Premium jersey')}</p>
               <div class="price-row">
                 <div class="price">&#8377;${p.price||'1499'}</div>
-                <button class="small-btn" data-pid="${p._id}">${btnLabel}</button>
+                <button class="small-btn" data-pid="${p._id}">Shop Now</button>
               </div>
             </div>
           </article>`;
         }
 
-        loopTrack.innerHTML        = products.slice(0, 8).map((p,i) => card(p,i,"Shop Now")).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
-        allProductsTrack.innerHTML = products.slice(0,10).map((p,i) => card(p,i,"View")).join("")    || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products available.</div>';
+        /* All Products — 2-column grid cards, NO overlay on pic */
+        function gridCard(p, i) {
+          const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
+          return `<article class="grid-product-card" data-pid="${p._id}">
+            <div class="pic">${p.imgUrl
+              ? `<img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy"/>`
+              : `<div class="mini-jersey ${colors[i%colors.length]}" style="width:72px;height:88px;"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`
+            }</div>
+            <div class="loop-info">
+              ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ""}
+              <h4>${p.name||'Jersify Kit'}</h4>
+              <p>${team||(p.type||'Premium jersey')}</p>
+              <div class="price-row">
+                <div class="price">&#8377;${p.price||'1499'}</div>
+                <button class="small-btn" data-pid="${p._id}">View</button>
+              </div>
+            </div>
+          </article>`;
+        }
+
+        loopTrack.innerHTML       = products.slice(0,8).map((p,i)  => loopCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
+        allProductsGrid.innerHTML = products.slice(0,10).map((p,i) => gridCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">No products available.</div>';
 
         function attachCardNav(container) {
           container.addEventListener("click", function(e) {
-            const btn = e.target.closest(".small-btn");
-            const article = e.target.closest(".loop-card");
+            const btn     = e.target.closest(".small-btn");
+            const article = e.target.closest("[data-pid]");
             if (btn && btn.dataset.pid) { e.stopPropagation(); window.location.href = "shop.html?id=" + btn.dataset.pid; return; }
             if (article && article.dataset.pid) window.location.href = "shop.html?id=" + article.dataset.pid;
           });
         }
         attachCardNav(loopTrack);
-        attachCardNav(allProductsTrack);
+        attachCardNav(allProductsGrid);
       } catch (e) {
         console.error("Products load failed", e);
         document.getElementById("loopTrack").innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">Could not load products.</div>';
+        document.getElementById("allProductsGrid").innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">Could not load products.</div>';
       }
       setProgress(70, "Loading media…");
     }
@@ -912,13 +970,13 @@
         }
         let items = [];
         snap.forEach(d => { const v = d.val(); v._key = d.key; items.push(v); });
-        items.sort((a, b) => (a.order||0) - (b.order||0));
+        items.sort((a,b) => (a.order||0) - (b.order||0));
 
         const featured = items.filter(m => m.section === "featured" && getUrl(m));
         const reels    = items.filter(m => m.section === "reels"    && getUrl(m));
         const gallery  = items.filter(m => m.section === "gallery"  && getUrl(m));
 
-        /* featured_1 → big media space */
+        /* featured_1 */
         const ms = document.getElementById("mediaSpace");
         const f0 = featured[0];
         if (f0) {
@@ -966,9 +1024,8 @@
           });
           const obs = new IntersectionObserver(entries => {
             entries.forEach(e => {
-              const v = e.target.querySelector("video");
-              if (!v) return;
-              e.isIntersecting ? v.play().catch(() => {}) : (v.pause(), v.currentTime = 0);
+              const v = e.target.querySelector("video"); if (!v) return;
+              e.isIntersecting ? v.play().catch(()=>{}) : (v.pause(), v.currentTime=0);
             });
           }, { threshold: 0.6 });
           reelsRow.querySelectorAll(".reel-card").forEach(c => obs.observe(c));
