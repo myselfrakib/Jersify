@@ -205,14 +205,6 @@
     .coupon-msg { font-size: 11px; margin-top: 8px; font-weight: 600; display: none; }
     .coupon-msg.success { color: var(--success); display: block; }
     .coupon-msg.error { color: var(--accent); display: block; }
-    .coupon-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; min-height: 26px; }
-    .coupon-tag {
-      background: rgba(196,154,0,.08); border: 1px solid rgba(196,154,0,.25); border-radius: 99px;
-      padding: 4px 11px; font-size: 10px; font-weight: 700; color: var(--gold);
-      letter-spacing: .5px; cursor: pointer; transition: all .2s;
-    }
-    .coupon-tag:hover { background: rgba(196,154,0,.15); border-color: rgba(196,154,0,.45); }
-    .coupon-loading-text { font-size: 11px; color: var(--muted); font-style: italic; }
 
     .pay-opt {
       display: flex; align-items: center; gap: 13px;
@@ -449,7 +441,6 @@
   <!-- ── EmailJS SDK ── -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>
-    // Replace YOUR_EMAILJS_PUBLIC_KEY with your key from emailjs.com → Account → API Keys
     emailjs.init({ publicKey: "YOUR_EMAILJS_PUBLIC_KEY" });
   </script>
 
@@ -608,9 +599,6 @@
           <button class="coupon-apply-btn" onclick="applyCoupon()">APPLY</button>
         </div>
         <div class="coupon-msg" id="couponMsg"></div>
-        <div class="coupon-tags" id="couponTagsContainer">
-          <span class="coupon-loading-text">Loading coupons…</span>
-        </div>
       </div>
 
       <div class="card">
@@ -818,38 +806,11 @@
   const dbRef     = ref(db);
   const gProvider = new GoogleAuthProvider();
 
-  /* ─────────────────────────────────────────────────────────
-     ★ NOTIFICATION CONFIG — fill in your keys here
-     ─────────────────────────────────────────────────────────
-     HOW TO GET EACH KEY (takes ~5 min total):
-
-     EMAIL (EmailJS):
-       1. Sign up free at https://emailjs.com
-       2. Add Email Service → connect Gmail (2 clicks)
-       3. Email Templates → New Template → use the variables:
-            {{to_name}}, {{to_email}}, {{order_id}},
-            {{total}}, {{payment_method}}, {{items_summary}}
-          Set "To Email" field to: {{to_email}}
-       4. Account → API Keys → copy Public Key (already in <head>)
-       5. Paste your Service ID and Template ID below
-
-     SMS (Fast2SMS — India):
-       1. Sign up at https://fast2sms.com (free ₹50 trial credit)
-       2. Dashboard → Dev API → copy API Key
-       3. Paste below
-
-     WHATSAPP (CallMeBot — alerts YOU as store owner):
-       1. Save +34 644 44 44 91 in your contacts as "CallMeBot"
-       2. Send this exact message on WhatsApp to that number:
-            I allow callmebot to send me messages
-       3. You'll get an API key back in ~60 seconds
-       4. Paste your phone (with country code, no +) and key below
-  ───────────────────────────────────────────────────────── */
   const NOTIFY = {
     email: {
       enabled:    true,
-      serviceId:  "YOUR_EMAILJS_SERVICE_ID",   // e.g. "service_abc123"
-      templateId: "YOUR_EMAILJS_TEMPLATE_ID",  // e.g. "template_xyz789"
+      serviceId:  "YOUR_EMAILJS_SERVICE_ID",
+      templateId: "YOUR_EMAILJS_TEMPLATE_ID",
     },
     sms: {
       enabled: true,
@@ -857,7 +818,7 @@
     },
     whatsapp: {
       enabled:    true,
-      ownerPhone: "91XXXXXXXXXX",  // Your WhatsApp number — country code + number, no +
+      ownerPhone: "91XXXXXXXXXX",
       apiKey:     "YOUR_CALLMEBOT_API_KEY",
     },
   };
@@ -1138,26 +1099,18 @@
   };
 
   async function loadCoupons() {
-    const tagsEl = document.getElementById('couponTagsContainer');
     try {
       const snap = await get(child(dbRef, 'coupons'));
       if (snap.exists()) {
         const data = snap.val();
-        const activeCodes = [];
         Object.entries(data).forEach(([key, val]) => {
           if (val.active !== false) {
             const code = key.toUpperCase();
             couponsMap[code] = { type: val.type || 'percent', value: Number(val.value) || 0, desc: val.desc || `${val.value}${val.type === 'flat' ? '₹' : '%'} OFF` };
-            activeCodes.push(code);
           }
         });
-        tagsEl.innerHTML = activeCodes.length
-          ? activeCodes.map(c => `<span class="coupon-tag" onclick="useCoupon('${c}')">${c}</span>`).join('')
-          : '<span class="coupon-loading-text">No active coupons right now.</span>';
-      } else {
-        tagsEl.innerHTML = '<span class="coupon-loading-text">No coupons available.</span>';
       }
-    } catch { tagsEl.innerHTML = '<span class="coupon-loading-text">Could not load coupons.</span>'; }
+    } catch { /* silently ignore */ }
   }
 
   async function prefillUserInfo(user) {
@@ -1246,7 +1199,6 @@
     );
   };
 
-  window.useCoupon = code => { document.getElementById('couponInput').value = code; applyCoupon(); };
   window.applyCoupon = () => {
     const code  = document.getElementById('couponInput').value.trim().toUpperCase();
     const msgEl = document.getElementById('couponMsg');
@@ -1459,7 +1411,6 @@
         image:       "https://dummyimage.com/100x100/111/fff&text=J",
         handler: async r => {
           await saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: r.razorpay_payment_id, paymentMethod: 'razorpay' });
-          // ── Send all notifications ──
           await sendOrderConfirmations({ orderId, name, email, phone, total: finalPrice, payMethod: 'Online Payment', items: orderItems });
           localStorage.removeItem('jersify_cart');
           btn.disabled = false; btn.textContent = 'Confirm Order →';
@@ -1476,7 +1427,6 @@
     } else {
       saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: '', paymentMethod: 'cod' })
       .then(async () => {
-        // ── Send all notifications ──
         await sendOrderConfirmations({ orderId, name, email, phone, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems });
         localStorage.removeItem('jersify_cart');
         btn.disabled = false; btn.textContent = 'Confirm Order →';
