@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,19 +68,29 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
+
+/* ── SCROLLABLE FIX ── */
 body {
   font-family: var(--font-body);
   min-height: 100vh;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: flex-start;       /* was center — let content grow naturally */
+  justify-content: center;
   background: linear-gradient(145deg, #0a0a1a 0%, #1a1a2e 50%, #0f1a3e 100%);
-  position: relative; overflow: hidden;
+  background-attachment: fixed;  /* keeps bg pinned while page scrolls */
+  position: relative;
+  overflow-y: auto;              /* was overflow:hidden — now scrollable */
+  overflow-x: hidden;
+  padding-bottom: 60px;
 }
+
 body::before {
   content: '';
   position: fixed; inset: 0;
   background: radial-gradient(ellipse at 20% 80%, rgba(230,57,70,0.15) 0%, transparent 50%),
               radial-gradient(ellipse at 80% 20%, rgba(37,99,235,0.12) 0%, transparent 50%);
   pointer-events: none;
+  z-index: 0;
 }
 body::after {
   content: 'JERSIFY';
@@ -97,6 +106,8 @@ body::after {
   padding: 16px 28px;
   display: flex; align-items: center; justify-content: space-between;
   z-index: 10;
+  background: linear-gradient(to bottom, rgba(10,10,26,0.85) 0%, transparent 100%);
+  backdrop-filter: blur(8px);
 }
 .back-link {
   display: flex; align-items: center; gap: 8px;
@@ -114,8 +125,9 @@ body::after {
   border-radius: 32px;
   width: 100%; max-width: 500px;
   box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
-  overflow: hidden; position: relative; z-index: 1;
-  margin: 80px 20px 40px;
+  overflow: hidden;
+  position: relative; z-index: 1;
+  margin: 90px 20px 40px;   /* top margin clears fixed back-bar */
 }
 
 /* Card top */
@@ -205,25 +217,6 @@ select.form-input option { background: #1a1a2e; color: white; }
   color: #34d399; padding: 11px 16px; font-size: 13px; font-weight: 600;
   border-radius: 10px; margin-bottom: 16px; display: none;
 }
-
-/* Status toggle */
-.toggle-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px; background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; margin-bottom: 20px;
-}
-.toggle-label { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); }
-.toggle-sub { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
-.toggle-right { display: flex; align-items: center; gap: 10px; }
-.toggle-switch { position: relative; width: 50px; height: 28px; flex-shrink: 0; }
-.toggle-switch input { opacity: 0; width: 0; height: 0; }
-.toggle-slider { position: absolute; cursor: pointer; inset: 0; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; transition: .3s; }
-.toggle-slider::before { content: ''; position: absolute; height: 20px; width: 20px; left: 4px; bottom: 4px; background: rgba(255,255,255,0.5); border-radius: 50%; transition: .3s; }
-.toggle-switch input:checked + .toggle-slider { background: rgba(230,57,70,0.5); border-color: rgba(230,57,70,0.5); }
-.toggle-switch input:checked + .toggle-slider::before { transform: translateX(22px); background: white; }
-.status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 700; }
-.badge-active { background: rgba(16,185,129,0.15); color: #34d399; border: 1.5px solid rgba(16,185,129,0.3); }
-.badge-inactive { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.35); border: 1.5px solid rgba(255,255,255,0.1); }
 
 /* Note box */
 .note-box {
@@ -333,13 +326,12 @@ select.form-input option { background: #1a1a2e; color: white; }
         </select>
       </div>
 
-      <!-- Status Toggle -->
-    
+      <!-- Status toggle REMOVED — all new admins are always created inactive (status: false) -->
 
       <div class="note-box">
         <div class="note-title">⚠️ Security Notice</div>
         <div class="note-text">
-          New admins are created with <strong>status: false</strong> by default unless toggled on.
+          New admins are always created with <strong>status: inactive</strong> by default.
           Inactive admins cannot access the dashboard and are blocked on login.
           Only super admins can activate or remove admin accounts from the dashboard.
         </div>
@@ -366,12 +358,6 @@ function switchTab(tab) {
   document.getElementById('tabAdd').classList.toggle('active', tab === 'add');
 }
 
-function updateBadge(cb) {
-  const b = document.getElementById('statusBadge');
-  b.textContent = cb.checked ? '● Active' : '● Inactive';
-  b.className = 'status-badge ' + (cb.checked ? 'badge-active' : 'badge-inactive');
-}
-
 async function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const pass  = document.getElementById('loginPassword').value;
@@ -385,7 +371,6 @@ async function doLogin() {
 
   try {
     const cred = await FB.signInWithEmailAndPassword(FB.auth, email, pass);
-    /* Check /admins/{uid} in Realtime DB */
     const snap = await FB.get(FB.ref(FB.db, `admins/${cred.user.uid}`));
     if (!snap.exists()) {
       await FB.signOut(FB.auth); btn.innerHTML='Access Dashboard →'; btn.disabled=false;
@@ -395,7 +380,6 @@ async function doLogin() {
       await FB.signOut(FB.auth); btn.innerHTML='Access Dashboard →'; btn.disabled=false;
       errEl.textContent='⛔ Admin account inactive. Contact a super admin.'; errEl.style.display='block'; return;
     }
-    /* Update lastLogin */
     await FB.update(FB.ref(FB.db, `admins/${cred.user.uid}`), {lastLogin: Date.now()});
     showToast('Access granted! Redirecting... 🔐', 'success');
     setTimeout(()=>{ window.location.href='admin-dashboard.html'; }, 800);
@@ -434,7 +418,6 @@ async function doAddAdmin() {
   const email  = document.getElementById('newEmail').value.trim();
   const pass   = document.getElementById('newPassword').value;
   const role   = document.getElementById('newRole').value;
-  const status = document.getElementById('statusToggle').checked;
   const errEl  = document.getElementById('addErr');
   const succEl = document.getElementById('addSuccess');
   const btn    = document.getElementById('addBtn');
@@ -445,8 +428,6 @@ async function doAddAdmin() {
 
   btn.innerHTML = '<span class="spinner"></span>Creating...'; btn.disabled = true;
 
-  // ── FIX 1: Set flag BEFORE createUser so onAuthStateChanged doesn't
-  //           redirect us away while we're still writing the Firestore doc
   window._creatingAdmin = true;
 
   let newUid = null;
@@ -456,17 +437,15 @@ async function doAddAdmin() {
     const cred = await FB.createUserWithEmailAndPassword(FB.auth, email, pass);
     newUid = cred.user.uid;
 
-    // ── FIX 2: Write Firestore doc IMMEDIATELY after getting the UID,
-    //           BEFORE calling signOut — otherwise signOut fires onAuthStateChanged
-    //           which can interrupt the write mid-flight
-    /* Write admin record to Realtime DB → /admins/{uid} */
+    // Step 2 — Write admin record to Realtime DB → /admins/{uid}
+    //           status is always false — must be activated by a super admin in the dashboard
     await FB.set(FB.ref(FB.db, `admins/${newUid}`), {
       uid: newUid, name, email, role,
-      status,           /* false by default unless toggled */
+      status: false,       /* always inactive — no bypass allowed */
       createdAt: Date.now(), lastLogin: null
     });
 
-    // Step 3 — Now it's safe to sign out the newly created account
+    // Step 3 — Sign out the newly created account
     await FB.signOut(FB.auth);
 
     // Step 4 — Clear flag so normal auth redirect resumes
@@ -476,22 +455,18 @@ async function doAddAdmin() {
     document.getElementById('newName').value = '';
     document.getElementById('newEmail').value = '';
     document.getElementById('newPassword').value = '';
-    document.getElementById('statusToggle').checked = false;
-    updateBadge({ checked: false });
 
     btn.innerHTML = 'Create Admin Account →'; btn.disabled = false;
-    succEl.textContent = `✅ Admin "${name}" created! Status: ${status ? 'Active — can login now.' : 'Inactive — needs activation in dashboard.'}`;
+    succEl.textContent = `✅ Admin "${name}" created! Status: Inactive — a super admin must activate this account in the dashboard before they can log in.`;
     succEl.style.display = 'block';
-    showToast(`Admin "${name}" created ${status ? '✅ Active' : '⛔ Inactive'}`, 'success');
+    showToast(`Admin "${name}" created — awaiting activation ⛔`, 'success');
 
-    setTimeout(() => { succEl.style.display = 'none'; switchTab('login'); }, 3000);
+    setTimeout(() => { succEl.style.display = 'none'; switchTab('login'); }, 4000);
 
   } catch(e) {
-    // ── FIX 3: Always clear the flag on error so the page doesn't get stuck
     window._creatingAdmin = false;
 
-    // If Auth account was created but Firestore write failed,
-    // try to delete the orphaned Auth account so it can be retried cleanly
+    // If Auth account was created but DB write failed, delete the orphaned account
     if (newUid) {
       try { await FB.auth.currentUser?.delete(); } catch(_) {}
     }
@@ -507,7 +482,7 @@ async function doAddAdmin() {
     } else if (code.includes('network-request-failed')) {
       errEl.textContent = '⛔ Network error. Check your connection and try again.';
     } else if (code.includes('permission-denied')) {
-      errEl.textContent = '⛔ Firestore permission denied. Check your Firebase security rules — admins collection must be writable.';
+      errEl.textContent = '⛔ Permission denied. Check your Firebase security rules.';
     } else {
       errEl.textContent = '⛔ ' + (e.message || 'Failed to create admin. Try again.');
     }
