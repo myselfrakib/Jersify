@@ -272,13 +272,12 @@
 
     /* ── PROMOTIONS ── */
     .promo-viewport {
-      overflow-x: auto;
+      overflow-x: scroll;
       scroll-snap-type: x mandatory;
-      scroll-behavior: smooth;
+      /* NO scroll-behavior:smooth here — it causes jank during live touch drag */
       scrollbar-width: none;
-      /* ── touch-action: pan-x allows horizontal swipe on mobile ── */
-      touch-action: pan-x;
-      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch; /* momentum on iOS */
     }
     .promo-viewport::-webkit-scrollbar { display: none; }
     .promo-track { display: flex; gap: 10px; width: max-content; padding: 2px 0 6px; }
@@ -736,21 +735,7 @@
       }, true);
     })();
 
-    /* ── PROMOTIONS TOUCH SWIPE ── */
-    (() => {
-      const vp = document.getElementById("promoViewport");
-      let touchStartX = 0, touchStartScroll = 0;
-
-      vp.addEventListener("touchstart", e => {
-        touchStartX      = e.touches[0].clientX;
-        touchStartScroll = vp.scrollLeft;
-      }, { passive: true });
-
-      vp.addEventListener("touchmove", e => {
-        const dx = touchStartX - e.touches[0].clientX;
-        vp.scrollLeft = touchStartScroll + dx;
-      }, { passive: true });
-    })();
+    /* Promotions swipe is handled natively by overflow-x:scroll + -webkit-overflow-scrolling:touch */
 
     /* ── REEL MODAL ── */
     const reelModal    = document.getElementById("reelModal");
@@ -1056,7 +1041,7 @@
             div.onclick   = () => window.location.href = link;
             div.innerHTML = vid
               ? `<video src="${url}" autoplay muted loop playsinline></video>`
-              : `<img src="${url}" alt="Promo" loading="lazy"/><div class="promo-overlay"></div>${m.label ? `<div class="promo-label">${m.label}</div>` : ""}`;
+              : `<img src="${url}" alt="Promo" loading="lazy"/><div class="promo-overlay"></div>`;
             promoTrack.insertBefore(div, blank1);
           });
         } else {
