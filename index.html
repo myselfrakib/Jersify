@@ -192,7 +192,7 @@
     .loop-viewport::-webkit-scrollbar { display: none; }
     .loop-viewport.is-dragging { cursor: grabbing; scroll-behavior: auto; }
     .loop-track { display: flex; gap: 12px; width: max-content; padding: 0 16px; }
-    .loop-viewport.is-dragging .loop-card { pointer-events: none; }
+    /* pointer-events left ON during drag — suppression handled in JS click listener */
 
     .loop-card {
       flex: 0 0 170px;
@@ -711,33 +711,36 @@
     /* ── WOW PICKS DRAG (mouse only — touch is native) ── */
     (() => {
       const vp = document.getElementById("loopViewport");
-      let isDown = false, startX = 0, startScroll = 0, didDrag = false;
-      const THRESHOLD = 6;
+      let isDown = false, startX = 0, startScroll = 0, totalDrag = 0;
+      const DRAG_THRESHOLD = 8; // px — below this it's a tap, not a drag
 
       vp.addEventListener("mousedown", e => {
         if (e.button !== 0) return;
-        isDown = true; didDrag = false;
+        isDown = true; totalDrag = 0;
         startX = e.pageX; startScroll = vp.scrollLeft;
-        vp.classList.add("is-dragging");
       });
       window.addEventListener("mousemove", e => {
         if (!isDown) return;
         const dx = e.pageX - startX;
-        if (Math.abs(dx) > THRESHOLD) didDrag = true;
+        totalDrag = Math.abs(dx);
         vp.scrollLeft = startScroll - dx;
+        if (totalDrag > DRAG_THRESHOLD) vp.classList.add("is-dragging");
       });
       window.addEventListener("mouseup", () => {
         if (!isDown) return;
         isDown = false;
-        vp.classList.remove("is-dragging");
-        if (didDrag) {
-          vp.dataset.dragged = "1";
-          setTimeout(() => { delete vp.dataset.dragged; }, 50);
-        }
-        didDrag = false;
+        // Remove dragging class after a short delay so click fires first
+        setTimeout(() => vp.classList.remove("is-dragging"), 0);
       });
+
+      // Only suppress click when we actually dragged significantly
       vp.addEventListener("click", e => {
-        if (vp.dataset.dragged) { e.stopPropagation(); e.preventDefault(); }
+        if (totalDrag > DRAG_THRESHOLD) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+        // Reset after every click resolution
+        totalDrag = 0;
       }, true);
     })();
 
@@ -982,6 +985,10 @@
         /* ── Unified click handler for both WOW Picks and All Products ── */
         function attachCardNav(container) {
           container.addEventListener("click", function(e) {
+            // If the viewport is in drag mode, ignore
+            const vp = document.getElementById("loopViewport");
+            if (vp && vp.classList.contains("is-dragging")) return;
+
             /* "Shop Now" / "View" button */
             const btn = e.target.closest(".small-btn[data-pid]");
             if (btn) {
