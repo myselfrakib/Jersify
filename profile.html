@@ -288,9 +288,10 @@
       background: #fff; border-radius: 20px;
       border: 1px solid var(--line); box-shadow: var(--shadow-soft);
       overflow: hidden; margin-bottom: 12px;
-      cursor: pointer; transition: transform .15s;
+      cursor: pointer; transition: transform .15s, box-shadow .15s;
     }
-    .order-card:hover { transform: translateY(-2px); }
+    .order-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(0,0,0,.1); }
+    .order-card:active { transform: scale(.99); }
 
     .order-header {
       display: flex; align-items: center; justify-content: space-between;
@@ -306,6 +307,8 @@
     }
     .order-status.delivered  { background: rgba(34,197,94,.12);  color: #15803d; }
     .order-status.processing { background: rgba(234,179,8,.12);  color: #a16207; }
+    .order-status.pending    { background: rgba(234,179,8,.12);  color: #a16207; }
+    .order-status.confirmed  { background: rgba(59,130,246,.12); color: #1d4ed8; }
     .order-status.shipped    { background: rgba(59,130,246,.12); color: #1d4ed8; }
     .order-status.cancelled  { background: rgba(239,68,68,.12);  color: #b91c1c; }
 
@@ -323,6 +326,16 @@
     .order-name  { font-size: 13px; font-weight: 800; }
     .order-meta  { font-size: 10px; color: var(--muted); margin-top: 2px; }
     .order-price { font-size: 14px; font-weight: 900; color: var(--accent); margin-top: 4px; }
+
+    .order-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 14px 12px;
+    }
+    .order-tap-hint {
+      font-size: 10px; color: var(--muted); font-weight: 600;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .order-tap-hint svg { width: 12px; height: 12px; }
 
     /* ── ADDRESSES ── */
     .address-card {
@@ -396,6 +409,8 @@
       padding: 20px 20px 36px;
       transform: translateY(40px);
       transition: transform .3s cubic-bezier(.34,1.4,.64,1);
+      max-height: 92vh;
+      overflow-y: auto;
     }
     .modal-overlay.open .modal-sheet { transform: translateY(0); }
 
@@ -423,6 +438,128 @@
       cursor: pointer; box-shadow: 0 8px 18px rgba(198,31,47,.25);
       margin-top: 4px;
     }
+
+    /* ── ORDER DETAIL MODAL ── */
+    #orderDetailModal .modal-sheet {
+      padding-bottom: 40px;
+    }
+
+    .od-status-banner {
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .od-status-banner.delivered  { background: rgba(34,197,94,.08);  border: 1px solid rgba(34,197,94,.2); }
+    .od-status-banner.processing { background: rgba(234,179,8,.08);  border: 1px solid rgba(234,179,8,.2); }
+    .od-status-banner.pending    { background: rgba(234,179,8,.08);  border: 1px solid rgba(234,179,8,.2); }
+    .od-status-banner.confirmed  { background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.2); }
+    .od-status-banner.shipped    { background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.2); }
+    .od-status-banner.cancelled  { background: rgba(239,68,68,.08);  border: 1px solid rgba(239,68,68,.2); }
+
+    .od-status-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .od-status-banner.delivered  .od-status-icon { background: rgba(34,197,94,.15); }
+    .od-status-banner.processing .od-status-icon,
+    .od-status-banner.pending    .od-status-icon { background: rgba(234,179,8,.15); }
+    .od-status-banner.confirmed  .od-status-icon,
+    .od-status-banner.shipped    .od-status-icon { background: rgba(59,130,246,.15); }
+    .od-status-banner.cancelled  .od-status-icon { background: rgba(239,68,68,.15); }
+
+    .od-status-icon svg { width: 20px; height: 20px; }
+    .od-status-banner.delivered  .od-status-icon svg { color: #15803d; }
+    .od-status-banner.processing .od-status-icon svg,
+    .od-status-banner.pending    .od-status-icon svg { color: #a16207; }
+    .od-status-banner.confirmed  .od-status-icon svg,
+    .od-status-banner.shipped    .od-status-icon svg { color: #1d4ed8; }
+    .od-status-banner.cancelled  .od-status-icon svg { color: #b91c1c; }
+
+    .od-status-text { flex: 1; }
+    .od-status-label {
+      font-size: 13px; font-weight: 900; text-transform: capitalize;
+    }
+    .od-status-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    .od-section-title {
+      font-size: 11px; font-weight: 800; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .5px;
+      margin: 18px 0 8px;
+    }
+
+    /* Items list */
+    .od-items { display: flex; flex-direction: column; gap: 10px; }
+
+    .od-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px; border-radius: 16px;
+      background: #fafafa; border: 1px solid var(--line);
+    }
+
+    .od-item-thumb {
+      width: 52px; height: 60px; border-radius: 12px;
+      background: linear-gradient(135deg, #111 0%, #c61f2f 100%);
+      display: grid; place-items: center; flex-shrink: 0; overflow: hidden;
+    }
+    .od-item-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+    .od-item-thumb-ph { color: #fff; font-size: 18px; font-weight: 900; }
+
+    .od-item-info { flex: 1; min-width: 0; }
+    .od-item-name { font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .od-item-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .od-item-team { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .od-item-price { font-size: 14px; font-weight: 900; color: var(--accent); white-space: nowrap; }
+
+    /* Info rows inside order detail */
+    .od-info-rows {
+      border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+    }
+
+    .od-info-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 11px 14px; border-bottom: 1px solid var(--line); gap: 12px;
+    }
+    .od-info-row:last-child { border-bottom: none; }
+    .od-info-key { font-size: 12px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+    .od-info-val { font-size: 12px; font-weight: 700; text-align: right; max-width: 60%; word-break: break-word; }
+
+    /* Price breakdown */
+    .od-price-rows {
+      border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+    }
+    .od-price-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+    .od-price-row:last-child {
+      border-bottom: none; font-weight: 900;
+      background: linear-gradient(135deg, rgba(198,31,47,.04), rgba(143,15,29,.04));
+    }
+    .od-price-row .key { color: var(--muted); font-weight: 600; }
+    .od-price-row.total-row .key,
+    .od-price-row.total-row .val { color: var(--accent); font-size: 15px; }
+
+    /* Tracking pill */
+    .od-tracking-pill {
+      display: flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, #111, #1c1c1c);
+      border-radius: 14px; padding: 12px 16px;
+      margin-top: 4px;
+    }
+    .od-tracking-pill svg { width: 18px; height: 18px; color: #fff; flex-shrink: 0; }
+    .od-tracking-text { flex: 1; }
+    .od-tracking-label { font-size: 10px; color: rgba(255,255,255,.5); font-weight: 600; }
+    .od-tracking-num { font-size: 14px; font-weight: 900; color: #fff; letter-spacing: .5px; }
+
+    /* Payment badge */
+    .od-payment-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #f5f5f5; border-radius: 8px; padding: 4px 10px;
+      font-size: 12px; font-weight: 700;
+    }
+    .od-payment-badge svg { width: 14px; height: 14px; color: #555; }
 
     /* ── TOAST ── */
     .toast {
@@ -737,6 +874,20 @@
     </div>
   </div>
 
+  <!-- ORDER DETAIL MODAL -->
+  <div class="modal-overlay" id="orderDetailModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="modal-title" style="margin-bottom:0;" id="odTitle">Order Details</div>
+        <button id="odCloseBtn" onclick="closeModal('orderDetailModal')" style="width:32px;height:32px;border-radius:50%;border:none;background:#f5f5f5;display:grid;place-items:center;cursor:pointer;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="orderDetailContent"></div>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
@@ -776,11 +927,11 @@
       setTimeout(() => el.classList.remove("show"), 2600);
     };
     const openModal  = id => document.getElementById(id).classList.add("open");
-    const closeModal = id => document.getElementById(id).classList.remove("open");
+    window.closeModal = id => document.getElementById(id).classList.remove("open");
 
-    ["editModal","authModal","addressModal"].forEach(id =>
+    ["editModal","authModal","addressModal","orderDetailModal"].forEach(id =>
       document.getElementById(id).addEventListener("click", e => {
-        if (e.target === document.getElementById(id)) closeModal(id);
+        if (e.target === document.getElementById(id)) window.closeModal(id);
       })
     );
 
@@ -837,7 +988,6 @@
     async function loadUserProfile(user) {
       const email = user.email || "";
 
-      // 1. Populate from Auth first (instant)
       let name = user.displayName || "";
       document.getElementById("profileName").textContent  = name || "User";
       document.getElementById("profileEmail").textContent = email;
@@ -853,13 +1003,11 @@
           "Since " + new Date(created).toLocaleString("en", { month: "short", year: "numeric" });
       }
 
-      // 2. Load extra profile data from users/{uid}
       try {
         const snap = await get(dbRef(rtdb, `users/${user.uid}`));
         if (snap.exists()) {
           userData = snap.val();
 
-          // Prefer displayName from DB if Auth name is empty
           const dbName = userData.displayName || userData.profile?.name || "";
           if (!name && dbName) {
             name = dbName;
@@ -867,19 +1015,13 @@
             document.getElementById("infoName").textContent    = dbName;
           }
 
-          if (userData.phone) {
-            document.getElementById("infoPhone").textContent = userData.phone;
-          }
-          if (userData.dob) {
-            document.getElementById("infoDob").textContent = userData.dob;
-          }
+          if (userData.phone) document.getElementById("infoPhone").textContent = userData.phone;
+          if (userData.dob)   document.getElementById("infoDob").textContent   = userData.dob;
 
-          // Photo: DB field takes priority if Auth photoURL not set
           const photo = user.photoURL || userData.photoURL;
           const finalInitials = name.split(" ").filter(Boolean).map(w=>w[0]).join("").toUpperCase().slice(0,2) || "??";
           setAvatarDisplay(photo || null, finalInitials);
 
-          // Restore notification prefs
           const notif = userData.notifications || {};
           if (notif.emailNotif === false) document.getElementById("toggleEmail").classList.remove("on");
           if (notif.smsNotif   === true)  document.getElementById("toggleSms").classList.add("on");
@@ -887,12 +1029,8 @@
         }
       } catch(e) { console.warn("Could not load extra user data:", e); }
 
-      // 3. Load orders — DB stores orders globally at /orders/{orderId}
-      //    users/{uid}/orders is a map of { orderId: true }
-      //    We fetch each order from /orders/{orderId}
       await loadOrders(user.uid, email);
 
-      // 4. Load wishlist
       try {
         const snap = await get(dbRef(rtdb, `users/${user.uid}/wishlist`));
         let wc = 0;
@@ -900,16 +1038,10 @@
         document.getElementById("statWishlist").textContent = wc;
       } catch(e) { document.getElementById("statWishlist").textContent = "0"; }
 
-      // 5. Load addresses
       loadAddresses(user.uid);
     }
 
-    /* ── LOAD ORDERS ──
-     * Strategy:
-     *   1. Check users/{uid}/orders (map of orderId → true) for this user's order IDs
-     *   2. Fetch each full order from /orders/{orderId}
-     *   3. Fallback: query /orders where userId == uid (covers orders placed before the flag was written)
-     */
+    /* ── LOAD ORDERS ── */
     async function loadOrders(uid, email) {
       const container = document.getElementById("ordersContainer");
       container.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">Loading orders…</div>`;
@@ -918,23 +1050,20 @@
         let orders = [];
         const seen = new Set();
 
-        // Path 1: users/{uid}/orders flags
         const flagSnap = await get(dbRef(rtdb, `users/${uid}/orders`));
         if (flagSnap.exists()) {
-          const flags = flagSnap.val(); // { "JRS-xxx": true, ... }
+          const flags    = flagSnap.val();
           const orderIds = Object.keys(flags).filter(k => flags[k] === true || flags[k]);
           const fetches  = orderIds.map(id => get(dbRef(rtdb, `orders/${id}`)));
           const results  = await Promise.allSettled(fetches);
           results.forEach((r, i) => {
             if (r.status === "fulfilled" && r.value.exists()) {
-              const o = r.value.val();
-              o._id = orderIds[i];
+              const o = r.value.val(); o._id = orderIds[i];
               if (!seen.has(o._id)) { seen.add(o._id); orders.push(o); }
             }
           });
         }
 
-        // Path 2: query /orders by userId (catches any orders not flagged)
         try {
           const q    = query(dbRef(rtdb, "orders"), orderByChild("userId"), equalTo(uid));
           const snap = await get(q);
@@ -943,14 +1072,12 @@
               if (!seen.has(d.key)) {
                 const o = d.val(); o._id = d.key;
                 seen.add(d.key); orders.push(o);
-                // Back-fill the flag so future loads are faster
                 update(dbRef(rtdb, `users/${uid}/orders`), { [d.key]: true }).catch(() => {});
               }
             });
           }
-        } catch(e) { /* index may not exist, that's OK */ }
+        } catch(e) { /* index may not exist */ }
 
-        // Sort newest first
         orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
         renderOrders(orders);
@@ -971,23 +1098,25 @@
         container.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">No orders yet</div>`;
         return;
       }
-      const labels = { delivered:"Delivered", processing:"Processing", shipped:"Shipped", cancelled:"Cancelled", pending:"Processing" };
 
-      container.innerHTML = orders.slice(0, 5).map(o => {
+      const labels = { delivered:"Delivered", processing:"Processing", shipped:"Shipped", cancelled:"Cancelled", pending:"Processing", confirmed:"Confirmed" };
+
+      // Store orders globally so openOrderDetail can access them
+      window._jersifyOrders = orders;
+
+      container.innerHTML = orders.slice(0, 5).map((o, idx) => {
         const sk   = (o.status || "processing").toLowerCase();
         const date = o.createdAt
           ? new Date(o.createdAt).toLocaleDateString("en-IN", { day:"numeric", month:"short", year:"numeric" })
           : "—";
 
-        // items can be an array or object (Firebase array quirk)
-        const itemsArr = Array.isArray(o.items)
-          ? o.items
-          : (o.items ? Object.values(o.items) : []);
+        const itemsArr = Array.isArray(o.items) ? o.items : (o.items ? Object.values(o.items) : []);
         const item = itemsArr[0] || {};
         const imgSrc = item.imgUrl || item.imageUrl || "";
         const displayId = (o.orderId || o._id || "JRF000").replace("JRS-","").slice(-6).toUpperCase();
+        const extraCount = itemsArr.length > 1 ? `+${itemsArr.length - 1} more` : "";
 
-        return `<div class="order-card" onclick="window.location.href='checkout.html'">
+        return `<div class="order-card" onclick="openOrderDetail(${idx})">
           <div class="order-header">
             <div>
               <div class="order-id">#${displayId}</div>
@@ -1003,13 +1132,176 @@
             </div>
             <div class="order-info">
               <div class="order-name">${item.name || "Jersify Jersey"}</div>
-              <div class="order-meta">${itemsArr.length} item${itemsArr.length !== 1 ? "s" : ""} · Size ${item.size || "M"}</div>
+              <div class="order-meta">${itemsArr.length} item${itemsArr.length !== 1 ? "s" : ""} · Size ${(item.size || "M").toUpperCase()}${extraCount ? " · " + extraCount : ""}</div>
               <div class="order-price">₹${o.total || item.price || "–"}</div>
             </div>
+          </div>
+          <div class="order-footer">
+            <span class="order-tap-hint">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Tap to view full details
+            </span>
           </div>
         </div>`;
       }).join("");
     }
+
+    /* ── OPEN ORDER DETAIL ── */
+    window.openOrderDetail = (idx) => {
+      const o = window._jersifyOrders?.[idx];
+      if (!o) return;
+
+      const sk     = (o.status || "processing").toLowerCase();
+      const labels = { delivered:"Delivered", processing:"Processing", shipped:"Shipped", cancelled:"Cancelled", pending:"Processing", confirmed:"Confirmed" };
+      const statusLabel = labels[sk] || sk;
+
+      const date = o.createdAt
+        ? new Date(o.createdAt).toLocaleDateString("en-IN", { day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit" })
+        : "—";
+
+      const itemsArr = Array.isArray(o.items) ? o.items : (o.items ? Object.values(o.items) : []);
+      const displayId = (o.orderId || o._id || "JRF000");
+
+      // Status icon SVG paths
+      const statusIcons = {
+        delivered: `<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`,
+        processing: `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
+        pending:    `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
+        confirmed:  `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>`,
+        shipped:    `<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`,
+        cancelled:  `<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>`,
+      };
+      const statusSubtexts = {
+        delivered:  "Your order has been delivered",
+        processing: "We're preparing your order",
+        pending:    "Awaiting confirmation",
+        confirmed:  "Order confirmed — packing soon",
+        shipped:    "Your order is on the way!",
+        cancelled:  "This order was cancelled",
+      };
+
+      // Items HTML
+      const itemsHtml = itemsArr.map(item => {
+        const imgSrc = item.imgUrl || item.imageUrl || "";
+        return `<div class="od-item">
+          <div class="od-item-thumb">
+            ${imgSrc
+              ? `<img src="${imgSrc}" alt="${item.name || ''}" />`
+              : `<div class="od-item-thumb-ph">${(item.name || "J")[0]}</div>`}
+          </div>
+          <div class="od-item-info">
+            <div class="od-item-name">${item.name || "Jersify Jersey"}</div>
+            <div class="od-item-meta">Size: ${(item.size || "M").toUpperCase()} · Qty: ${item.qty || 1}</div>
+            ${item.team ? `<div class="od-item-team">${item.team}</div>` : ""}
+          </div>
+          <div class="od-item-price">₹${item.price || "–"}</div>
+        </div>`;
+      }).join("");
+
+      // Payment method label
+      const pmLabels = { cod: "Cash on Delivery", online: "Online Payment", razorpay: "Razorpay" };
+      const pmLabel  = pmLabels[(o.paymentMethod || "").toLowerCase()] || (o.paymentMethod || "–");
+
+      // Price breakdown
+      const subtotal  = o.subtotal || 0;
+      const tax       = o.tax      || 0;
+      const discount  = o.discount || 0;
+      const total     = o.total    || 0;
+
+      let priceRowsHtml = `
+        <div class="od-price-row"><span class="key">Subtotal</span><span>₹${subtotal}</span></div>`;
+      if (tax > 0)      priceRowsHtml += `<div class="od-price-row"><span class="key">Tax</span><span>₹${tax.toFixed ? tax.toFixed(2) : tax}</span></div>`;
+      if (discount > 0) priceRowsHtml += `<div class="od-price-row"><span class="key">Discount</span><span style="color:#15803d;">−₹${discount}</span></div>`;
+      priceRowsHtml += `<div class="od-price-row total-row"><span class="key">Total</span><span class="val">₹${total}</span></div>`;
+
+      // Tracking number
+      const trackingHtml = o.trackingNumber
+        ? `<div class="od-section-title">Tracking</div>
+           <div class="od-tracking-pill">
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+             <div class="od-tracking-text">
+               <div class="od-tracking-label">Tracking Number</div>
+               <div class="od-tracking-num">${o.trackingNumber}</div>
+             </div>
+           </div>` : "";
+
+      document.getElementById("odTitle").textContent = `#${displayId.replace("JRS-","").slice(-6).toUpperCase()}`;
+
+      document.getElementById("orderDetailContent").innerHTML = `
+        <!-- Status Banner -->
+        <div class="od-status-banner ${sk}">
+          <div class="od-status-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${statusIcons[sk] || statusIcons.processing}</svg>
+          </div>
+          <div class="od-status-text">
+            <div class="od-status-label">${statusLabel}</div>
+            <div class="od-status-sub">${statusSubtexts[sk] || ""}</div>
+          </div>
+        </div>
+
+        <!-- Items -->
+        <div class="od-section-title">Items Ordered</div>
+        <div class="od-items">${itemsHtml}</div>
+
+        <!-- Order Info -->
+        <div class="od-section-title">Order Info</div>
+        <div class="od-info-rows">
+          <div class="od-info-row">
+            <span class="od-info-key">Order ID</span>
+            <span class="od-info-val" style="font-family:monospace;font-size:11px;">${displayId}</span>
+          </div>
+          <div class="od-info-row">
+            <span class="od-info-key">Date</span>
+            <span class="od-info-val">${date}</span>
+          </div>
+          <div class="od-info-row">
+            <span class="od-info-key">Payment</span>
+            <span class="od-info-val">
+              <span class="od-payment-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                ${pmLabel}
+              </span>
+            </span>
+          </div>
+          ${o.paymentId ? `<div class="od-info-row">
+            <span class="od-info-key">Payment ID</span>
+            <span class="od-info-val" style="font-family:monospace;font-size:11px;">${o.paymentId}</span>
+          </div>` : ""}
+        </div>
+
+        <!-- Delivery Address -->
+        <div class="od-section-title">Delivery Address</div>
+        <div class="od-info-rows">
+          ${o.customerName ? `<div class="od-info-row">
+            <span class="od-info-key">Name</span>
+            <span class="od-info-val">${o.customerName}</span>
+          </div>` : ""}
+          ${o.phone ? `<div class="od-info-row">
+            <span class="od-info-key">Phone</span>
+            <span class="od-info-val">${o.phone}</span>
+          </div>` : ""}
+          ${o.address ? `<div class="od-info-row">
+            <span class="od-info-key">Address</span>
+            <span class="od-info-val">${o.address}${o.country ? ", " + o.country : ""}</span>
+          </div>` : ""}
+        </div>
+
+        <!-- Tracking -->
+        ${trackingHtml}
+
+        <!-- Price Breakdown -->
+        <div class="od-section-title">Price Breakdown</div>
+        <div class="od-price-rows">${priceRowsHtml}</div>
+
+        ${o.adminNotes ? `
+        <div class="od-section-title">Note from Jersify</div>
+        <div style="background:#fafafa;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13px;color:#333;line-height:1.6;">
+          ${o.adminNotes}
+        </div>` : ""}
+      `;
+
+      openModal("orderDetailModal");
+    };
 
     /* ── ADDRESSES ── */
     async function loadAddresses(uid) {
@@ -1112,7 +1404,6 @@
           const val = document.getElementById("editName").value.trim();
           if (!val) return;
           await updateProfile(currentUser, { displayName: val });
-          // Save name to DB as well so it survives across sessions
           await update(dbRef(rtdb, `users/${currentUser.uid}`), { displayName: val });
           userData.displayName = val;
           document.getElementById("profileName").textContent = val;
@@ -1191,7 +1482,6 @@
         if (isSignUp) {
           const cred = await createUserWithEmailAndPassword(auth, email, password);
           if (name) await updateProfile(cred.user, { displayName: name });
-          // Store profile node with consistent field names
           await set(dbRef(rtdb, `users/${cred.user.uid}`), {
             displayName: name,
             email,
