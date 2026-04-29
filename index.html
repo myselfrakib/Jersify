@@ -194,7 +194,6 @@
     .loop-track { display: flex; gap: 12px; width: max-content; padding: 0 16px; }
     .loop-viewport.is-dragging .loop-card { pointer-events: none; }
 
-    /* loop-card: shadow enhanced, NO ::after overlay on .pic */
     .loop-card {
       flex: 0 0 170px;
       scroll-snap-align: start;
@@ -203,6 +202,7 @@
       border: 1px solid var(--line);
       box-shadow: var(--shadow-card);
       overflow: hidden;
+      cursor: pointer;
       transition: box-shadow .22s ease, transform .22s ease;
     }
     .loop-card:hover {
@@ -218,7 +218,6 @@
       position: relative;
       overflow: hidden;
     }
-    /* ✅ NO ::after pseudo-element — overlay layer removed */
     .loop-card .pic img {
       width: 100%;
       height: 100%;
@@ -346,7 +345,6 @@
       gap: 14px;
     }
 
-    /* grid product card — same look as loop-card, NO overlay on pic */
     .grid-product-card {
       border-radius: 22px;
       background: #fff;
@@ -368,7 +366,6 @@
       place-items: center;
       position: relative;
       overflow: hidden;
-      /* NO ::after overlay */
     }
     .grid-product-card .pic img {
       width: 100%;
@@ -640,6 +637,12 @@
     const initScreen   = document.getElementById("initScreen");
     const mainPage     = document.getElementById("mainPage");
 
+    /* ── Navigate to a specific product on the shop page ── */
+    function goToProduct(pid) {
+      if (!pid) return;
+      window.location.href = "shop.html?product=" + encodeURIComponent(pid);
+    }
+
     let _progress = 0;
     function setProgress(pct, label) {
       _progress = Math.max(_progress, pct);
@@ -899,7 +902,7 @@
         snap.forEach(d => { const p = d.val(); p._id = d.key; if (!p.status || p.status === "active") products.push(p); });
         countLabel.innerHTML = `<span style="color:var(--accent);font-weight:800;">${products.length}+</span> jerseys available`;
 
-        /* WOW picks — horizontal scroll loop cards */
+        /* ── WOW picks — horizontal scroll loop cards ── */
         function loopCard(p, i) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
           return `<article class="loop-card" data-pid="${p._id}" style="cursor:pointer;">
@@ -919,7 +922,7 @@
           </article>`;
         }
 
-        /* All Products — 2-column grid cards, NO overlay on pic */
+        /* ── All Products — 2-column grid cards ── */
         function gridCard(p, i) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
           return `<article class="grid-product-card" data-pid="${p._id}">
@@ -942,16 +945,38 @@
         loopTrack.innerHTML       = products.slice(0,8).map((p,i)  => loopCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
         allProductsGrid.innerHTML = products.slice(0,10).map((p,i) => gridCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">No products available.</div>';
 
+        /*
+         * ── FIXED: attachCardNav ──────────────────────────────────────────
+         * Both clicking the article body AND the "Shop Now"/"View" button
+         * now navigate to shop.html?product=<pid>, which your shop page
+         * should read via URLSearchParams to auto-open that product.
+         * The ?product= param is deliberately different from ?id= so you
+         * can distinguish "open product detail" from "filter by id".
+         * If your shop.html already uses ?id= to open a product, just
+         * change "product" → "id" in the two lines below.
+         * ──────────────────────────────────────────────────────────────────
+         */
         function attachCardNav(container) {
           container.addEventListener("click", function(e) {
-            const btn     = e.target.closest(".small-btn");
+            // If a button was clicked, use its pid and stop event here
+            const btn = e.target.closest(".small-btn");
+            if (btn) {
+              e.stopPropagation();
+              const pid = btn.dataset.pid;
+              if (pid) goToProduct(pid);
+              return;
+            }
+            // Otherwise use the article's pid (card body click)
             const article = e.target.closest("[data-pid]");
-            if (btn && btn.dataset.pid) { e.stopPropagation(); window.location.href = "shop.html?id=" + btn.dataset.pid; return; }
-            if (article && article.dataset.pid) window.location.href = "shop.html?id=" + article.dataset.pid;
+            if (article && article.dataset.pid) {
+              goToProduct(article.dataset.pid);
+            }
           });
         }
+
         attachCardNav(loopTrack);
         attachCardNav(allProductsGrid);
+
       } catch (e) {
         console.error("Products load failed", e);
         document.getElementById("loopTrack").innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">Could not load products.</div>';
