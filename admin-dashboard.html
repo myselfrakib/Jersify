@@ -447,7 +447,7 @@
               <div class="media-boxes-row" id="heroBoxesRow"></div>
             </div>
             <div class="media-page-section">
-              <div class="media-section-title">⭐ Featured Media <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(big banner strip)</span></div>
+              <div class="media-section-title">⭐ Featured Media <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(up to 5 — big banner strip + promos)</span></div>
               <div class="media-boxes-row" id="featuredBoxesRow"></div>
             </div>
             <div class="media-page-section">
@@ -780,7 +780,6 @@ async function listenOrders() {
     if (snap.exists()) {
       snap.forEach(d => {
         const val = d.val();
-        // Support both push-key orders and orderId-keyed orders
         data.push({ id: d.key, ...val });
       });
     }
@@ -908,7 +907,6 @@ function handleProductSlotUpload(event, idx) {
 
   _pImgSlots[idx] = { file, url: null };
 
-  // Show local preview immediately
   const reader = new FileReader();
   reader.onload = e => setProductSlotPreview(idx, e.target.result);
   reader.readAsDataURL(file);
@@ -925,7 +923,6 @@ function setProductSlotPreview(idx, url) {
   slot.classList.add('has-img');
   slot.querySelector('.p-img-slot-icon').style.display = 'none';
   slot.querySelector('.p-img-slot-label').style.display = 'none';
-  // Update state url if it's a real URL (not blob)
   if (!url.startsWith('data:') && !url.startsWith('blob:')) {
     if (!_pImgSlots[idx]) _pImgSlots[idx] = {};
     _pImgSlots[idx].url = url;
@@ -955,7 +952,6 @@ function loadProductSlotsFromImages(images) {
   });
 }
 
-/* Upload a single slot's file to Storage, return URL */
 async function uploadProductSlotFile(idx, productName) {
   const slot = _pImgSlots[idx];
   if (!slot || !slot.file) return slot?.url || null;
@@ -990,6 +986,7 @@ async function uploadProductSlotFile(idx, productName) {
 
 /* ═══════════════════════════════════════════════
    MEDIA PAGE
+   ── CHANGE: featured_4 and featured_5 added ──
 ═══════════════════════════════════════════════ */
 const MEDIA_SLOTS = [
   { key:'hero_1',          section:'hero',     label:'Hero 1',         row:'heroBoxesRow',     cls:'' },
@@ -998,6 +995,8 @@ const MEDIA_SLOTS = [
   { key:'featured_1',      section:'featured', label:'Featured 1',     row:'featuredBoxesRow', cls:'' },
   { key:'featured_2',      section:'featured', label:'Featured 2',     row:'featuredBoxesRow', cls:'' },
   { key:'featured_3',      section:'featured', label:'Featured 3',     row:'featuredBoxesRow', cls:'' },
+  { key:'featured_4',      section:'featured', label:'Featured 4',     row:'featuredBoxesRow', cls:'' },
+  { key:'featured_5',      section:'featured', label:'Featured 5',     row:'featuredBoxesRow', cls:'' },
   { key:'gallery_photo_1', section:'gallery',  label:'Gallery Photo 1',row:'galleryBoxesRow',  cls:'gallery-wide' },
   { key:'gallery_photo_2', section:'gallery',  label:'Gallery Photo 2',row:'galleryBoxesRow',  cls:'' },
   { key:'reel_1',          section:'reels',    label:'Reel 1',         row:'reelsBoxesRow',    cls:'reel' },
@@ -1016,7 +1015,6 @@ function buildMediaPage() {
     const row = document.getElementById(slot.row);
     if (!row) return;
 
-    // Wrapper for box + link input
     const wrap = document.createElement('div');
     wrap.className = 'media-slot-wrap';
 
@@ -1080,7 +1078,6 @@ function buildMediaPage() {
     box.appendChild(overlay);
     box.appendChild(progWrap);
 
-    // Link URL input below the box
     const linkInp = document.createElement('input');
     linkInp.type = 'url';
     linkInp.className = 'media-link-input';
@@ -1109,7 +1106,6 @@ function renderIndexMediaData(data) {
       const isVid = (item.mediaType === 'video') || isVideoUrl(url);
       setBoxMedia(box, url, isVid);
     }
-    // Populate link input if item has a link
     if (linkInp && item && item.link) {
       if (!linkInp.value) linkInp.value = item.link;
     }
@@ -1121,7 +1117,7 @@ async function saveMediaLink(key) {
   if (!linkInp) return;
   const link = linkInp.value.trim();
   const existing = _allIndexMedia[key];
-  if (!existing) return; // Only save link if media exists
+  if (!existing) return;
   const { db, dbRef, update } = await waitFb();
   await update(dbRef(db, `indexMedia/${key}`), { link, updatedAt: Date.now() });
   toast('Link saved!', 'success');
@@ -1199,7 +1195,6 @@ async function handleMediaUpload(event, key) {
     }, async () => {
       const url = await getDownloadURL(task.snapshot.ref);
       setBoxMedia(box, url, isVideo);
-      // Preserve existing link
       const existingLink = document.getElementById('link_' + key)?.value.trim() || (_allIndexMedia[key]?.link || '');
       await saveMediaSlot(key, url, slot, isVideo ? 'video' : 'image', existingLink);
       URL.revokeObjectURL(localUrl);
@@ -1255,7 +1250,6 @@ function renderProducts(data) {
       ? `<span class="badge badge-red">Out of Stock</span>`
       : `<span class="badge badge-green">${totalStock} units</span>`;
 
-    // images array support
     const imgs = Array.isArray(p.images) && p.images.length ? p.images : (p.imgUrl ? [p.imgUrl] : []);
     const primaryImg = imgs[0] || '';
     const imgCountBadge = imgs.length > 1 ? `<span style="font-size:9px;color:var(--muted);display:block;margin-top:2px">📷 ${imgs.length} photos</span>` : '';
@@ -1305,7 +1299,6 @@ function openProductModal(data) {
   const sz = data?.sizes || {};
   setV('p_xs', sz.xs||0); setV('p_s', sz.s||0); setV('p_m', sz.m||0); setV('p_l', sz.l||0); setV('p_xl', sz.xl||0);
 
-  // Load existing images into slots
   const existingImages = data?.images || (data?.imgUrl ? [data.imgUrl] : []);
   loadProductSlotsFromImages(existingImages);
 
@@ -1326,7 +1319,6 @@ async function saveProduct() {
   btn.textContent = 'Uploading…';
 
   try {
-    // Upload any pending slot files
     const imageUrls = [];
     for (let i = 0; i < 5; i++) {
       const slot = _pImgSlots[i];
@@ -1346,8 +1338,8 @@ async function saveProduct() {
       price:  getV('p_price'),
       badge:  getV('p_badge'),
       status: getV('p_status'),
-      imgUrl: imageUrls[0] || '',     // primary image for backward compat
-      images: imageUrls,               // full array for shop display
+      imgUrl: imageUrls[0] || '',
+      images: imageUrls,
       sizes: {
         xs: parseInt(getV('p_xs'))||0,
         s:  parseInt(getV('p_s'))||0,
@@ -1496,8 +1488,6 @@ function renderUsers(data) {
 
 /* ═══════════════════════════════════════════════
    COUPONS
-   DB: /coupons/{CODE} = { type, value, desc, active }
-   CODE is the key — e.g. "JERSIFY10"
 ═══════════════════════════════════════════════ */
 let _editCouponCode = null;
 
@@ -1548,7 +1538,7 @@ function openCouponModal(existingCode) {
     if (!c) return;
     const codeInput = document.getElementById('c_code');
     codeInput.value = c.code;
-    codeInput.readOnly = true; // Don't allow changing code during edit
+    codeInput.readOnly = true;
     codeInput.style.opacity = '.6';
     setV('c_type', c.type || 'percent');
     setV('c_value', c.value || '');
@@ -1583,7 +1573,6 @@ function updateCouponPreview() {
   } else {
     preview.style.display = 'none';
   }
-  // Auto-fill description if empty
   const descInput = document.getElementById('c_desc');
   if (!descInput.value && val) {
     descInput.placeholder = type === 'flat' ? `₹${val} OFF on all orders` : `${val}% OFF on all orders`;
