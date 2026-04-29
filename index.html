@@ -710,28 +710,38 @@
     bindArrows("prevWow",   "nextWow",   "loopViewport",  182);
     bindArrows("prevPromo", "nextPromo", "promoViewport", 230);
 
-    /* ── WOW PICKS DRAG (mouse) ── */
+    /* ── WOW PICKS DRAG (mouse only — touch is native) ── */
     (() => {
       const vp = document.getElementById("loopViewport");
-      let isDown = false, startX = 0, startPageX = 0, scrollLeft = 0, moved = false;
-      const DRAG_THRESHOLD = 8;
+      let isDown = false, startX = 0, startScroll = 0, didDrag = false;
+      const THRESHOLD = 6;
+
       vp.addEventListener("mousedown", e => {
-        if (e.target.closest("button") || e.target.closest("a")) return;
-        isDown = true; moved = false;
-        startX = e.pageX - vp.offsetLeft; startPageX = e.pageX;
-        scrollLeft = vp.scrollLeft; vp.classList.add("is-dragging");
+        if (e.button !== 0) return;
+        isDown = true; didDrag = false;
+        startX = e.pageX; startScroll = vp.scrollLeft;
+        vp.classList.add("is-dragging");
       });
-      vp.addEventListener("mouseleave", () => { isDown = false; moved = false; vp.classList.remove("is-dragging"); });
-      vp.addEventListener("mouseup",    () => { isDown = false; vp.classList.remove("is-dragging"); });
-      vp.addEventListener("mousemove",  e => {
-        if (!isDown) return; e.preventDefault();
-        const x = e.pageX - vp.offsetLeft;
-        if (Math.abs(e.pageX - startPageX) > DRAG_THRESHOLD) moved = true;
-        vp.scrollLeft = scrollLeft - (x - startX) * 1.2;
+      window.addEventListener("mousemove", e => {
+        if (!isDown) return;
+        const dx = e.pageX - startX;
+        if (Math.abs(dx) > THRESHOLD) didDrag = true;
+        vp.scrollLeft = startScroll - dx;
       });
+      window.addEventListener("mouseup", () => {
+        if (!isDown) return;
+        isDown = false;
+        vp.classList.remove("is-dragging");
+        /* After a drag, suppress the next click for 50ms only */
+        if (didDrag) {
+          vp.dataset.dragged = "1";
+          setTimeout(() => { delete vp.dataset.dragged; }, 50);
+        }
+        didDrag = false;
+      });
+      /* Only block click if we actually dragged */
       vp.addEventListener("click", e => {
-        if (e.target.closest("button") || e.target.closest("a")) return;
-        if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; }
+        if (vp.dataset.dragged) { e.stopPropagation(); e.preventDefault(); }
       }, true);
     })();
 
@@ -932,10 +942,11 @@
         /* ── WOW picks — horizontal scroll loop cards ── */
         function loopCard(p, i) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
-          return `<article class="loop-card" data-pid="${p._id}">
+          const pid  = encodeURIComponent(p._id);
+          return `<article class="loop-card" style="cursor:pointer" onclick="window.location.href='shop.html?product=${pid}'">
             <div class="pic">${p.imgUrl
-              ? `<img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy"/>`
-              : `<div class="mini-jersey ${colors[i%colors.length]}"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`
+              ? `<img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy" style="pointer-events:none"/>`
+              : `<div class="mini-jersey ${colors[i%colors.length]}" style="pointer-events:none"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`
             }</div>
             <div class="loop-info">
               ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ""}
@@ -943,7 +954,7 @@
               <p>${team||(p.type||'Premium jersey')}</p>
               <div class="price-row">
                 <div class="price">&#8377;${p.price||'1499'}</div>
-                <button class="small-btn" data-pid="${p._id}">Shop Now</button>
+                <button class="small-btn" onclick="event.stopPropagation();window.location.href='shop.html?product=${pid}'">Shop Now</button>
               </div>
             </div>
           </article>`;
