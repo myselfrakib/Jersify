@@ -274,10 +274,9 @@
     .promo-viewport {
       overflow-x: scroll;
       scroll-snap-type: x mandatory;
-      /* NO scroll-behavior:smooth here — it causes jank during live touch drag */
       scrollbar-width: none;
       overscroll-behavior-x: contain;
-      -webkit-overflow-scrolling: touch; /* momentum on iOS */
+      -webkit-overflow-scrolling: touch;
     }
     .promo-viewport::-webkit-scrollbar { display: none; }
     .promo-track { display: flex; gap: 10px; width: max-content; padding: 2px 0 6px; }
@@ -298,7 +297,6 @@
     .promo-card .promo-overlay { position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(0,0,0,.65)); }
     .promo-card .promo-label { position: absolute; bottom: 8px; left: 10px; right: 10px; color: #fff; font-size: 11px; font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* blank promo slots — hidden by default, shown only if no real promos load */
     .promo-card-blank {
       flex: 0 0 220px;
       height: 100px;
@@ -309,7 +307,7 @@
       border: 1.5px dashed rgba(17,17,17,.10);
       box-shadow: var(--shadow-soft);
       scroll-snap-align: start;
-      display: none; /* hidden until needed */
+      display: none;
     }
 
     /* ── REELS ── */
@@ -522,6 +520,7 @@
       </div>
       <div class="loop-viewport" id="loopViewport">
         <div class="loop-track" id="loopTrack">
+          <!-- skeleton placeholders -->
           <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
           <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
           <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
@@ -558,7 +557,6 @@
         </div>
       </div>
       <div class="promo-viewport" id="promoViewport">
-        <!-- promo cards injected here by Firebase; blank slots hidden by default -->
         <div class="promo-track" id="promoTrack">
           <div class="promo-card-blank" id="promoBlank1"></div>
           <div class="promo-card-blank" id="promoBlank2"></div>
@@ -732,20 +730,16 @@
         if (!isDown) return;
         isDown = false;
         vp.classList.remove("is-dragging");
-        /* After a drag, suppress the next click for 50ms only */
         if (didDrag) {
           vp.dataset.dragged = "1";
           setTimeout(() => { delete vp.dataset.dragged; }, 50);
         }
         didDrag = false;
       });
-      /* Only block click if we actually dragged */
       vp.addEventListener("click", e => {
         if (vp.dataset.dragged) { e.stopPropagation(); e.preventDefault(); }
       }, true);
     })();
-
-    /* Promotions swipe is handled natively by overflow-x:scroll + -webkit-overflow-scrolling:touch */
 
     /* ── REEL MODAL ── */
     const reelModal    = document.getElementById("reelModal");
@@ -939,11 +933,13 @@
         snap.forEach(d => { const p = d.val(); p._id = d.key; if (!p.status || p.status === "active") products.push(p); });
         countLabel.innerHTML = `<span style="color:var(--accent);font-weight:800;">${products.length}+</span> jerseys available`;
 
-        /* ── WOW picks — horizontal scroll loop cards ── */
+        /* ── WOW picks — horizontal scroll loop cards ──
+           FIX: use data-pid on the article (no inline onclick) so
+           attachCardNav can handle all clicks uniformly,
+           including the image area. ── */
         function loopCard(p, i) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
-          const pid  = encodeURIComponent(p._id);
-          return `<article class="loop-card" style="cursor:pointer" onclick="window.location.href='shop.html?product=${pid}'">
+          return `<article class="loop-card" data-pid="${p._id}">
             <div class="pic">${p.imgUrl
               ? `<img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy" style="pointer-events:none"/>`
               : `<div class="mini-jersey ${colors[i%colors.length]}" style="pointer-events:none"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`
@@ -954,7 +950,7 @@
               <p>${team||(p.type||'Premium jersey')}</p>
               <div class="price-row">
                 <div class="price">&#8377;${p.price||'1499'}</div>
-                <button class="small-btn" onclick="event.stopPropagation();window.location.href='shop.html?product=${pid}'">Shop Now</button>
+                <button class="small-btn" data-pid="${p._id}">Shop Now</button>
               </div>
             </div>
           </article>`;
@@ -983,7 +979,7 @@
         loopTrack.innerHTML       = products.slice(0,8).map((p,i)  => loopCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
         allProductsGrid.innerHTML = products.slice(0,10).map((p,i) => gridCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">No products available.</div>';
 
-        /* ── Unified click handler: card body → goToProduct, button → goToProduct ── */
+        /* ── Unified click handler for both WOW Picks and All Products ── */
         function attachCardNav(container) {
           container.addEventListener("click", function(e) {
             /* "Shop Now" / "View" button */
@@ -993,7 +989,7 @@
               goToProduct(btn.dataset.pid);
               return;
             }
-            /* anywhere on the card */
+            /* anywhere on the card body */
             const article = e.target.closest("article[data-pid]");
             if (article) {
               goToProduct(article.dataset.pid);
@@ -1040,7 +1036,7 @@
           ms.innerHTML = `<div class="placeholder" style="font-size:13px;font-weight:700;color:#999;">No featured media</div>`;
         }
 
-        /* featured_2+ → promo track (no "Promo Space" labels; blank slots hidden) */
+        /* featured_2+ → promo track */
         const promoTrack = document.getElementById("promoTrack");
         const blank1     = document.getElementById("promoBlank1");
 
@@ -1056,7 +1052,6 @@
             promoTrack.insertBefore(div, blank1);
           });
         } else {
-          /* No real promos: show blank placeholders so section isn't empty */
           document.getElementById("promoBlank1").style.display = "flex";
           document.getElementById("promoBlank2").style.display = "flex";
         }
