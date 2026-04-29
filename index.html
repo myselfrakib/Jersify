@@ -271,7 +271,15 @@
     .media-space .placeholder { font-size: 13px; font-weight: 700; text-align: center; padding: 0 14px; }
 
     /* ── PROMOTIONS ── */
-    .promo-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; touch-action: pan-y; }
+    .promo-viewport {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      /* ── touch-action: pan-x allows horizontal swipe on mobile ── */
+      touch-action: pan-x;
+      -webkit-overflow-scrolling: touch;
+    }
     .promo-viewport::-webkit-scrollbar { display: none; }
     .promo-track { display: flex; gap: 10px; width: max-content; padding: 2px 0 6px; }
     .promo-card {
@@ -290,9 +298,20 @@
     .promo-card img, .promo-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .promo-card .promo-overlay { position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(0,0,0,.65)); }
     .promo-card .promo-label { position: absolute; bottom: 8px; left: 10px; right: 10px; color: #fff; font-size: 11px; font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .promo-card-blank { flex: 0 0 220px; height: 100px; border-radius: 16px; overflow: hidden; position: relative; background: #f7f7f7; border: 2px dashed rgba(17,17,17,.14); box-shadow: var(--shadow-soft); scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
-    .promo-card-blank svg { width: 26px; height: 26px; opacity: .22; }
-    .promo-card-blank span { font-size: 10px; font-weight: 700; color: #bbb; letter-spacing: .3px; }
+
+    /* blank promo slots — hidden by default, shown only if no real promos load */
+    .promo-card-blank {
+      flex: 0 0 220px;
+      height: 100px;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      background: #f2f2f2;
+      border: 1.5px dashed rgba(17,17,17,.10);
+      box-shadow: var(--shadow-soft);
+      scroll-snap-align: start;
+      display: none; /* hidden until needed */
+    }
 
     /* ── REELS ── */
     .reels { padding: 0 16px 18px; }
@@ -540,15 +559,10 @@
         </div>
       </div>
       <div class="promo-viewport" id="promoViewport">
+        <!-- promo cards injected here by Firebase; blank slots hidden by default -->
         <div class="promo-track" id="promoTrack">
-          <div class="promo-card-blank" id="promoBlank1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
-            <span>Promo Space</span>
-          </div>
-          <div class="promo-card-blank" id="promoBlank2">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
-            <span>Promo Space</span>
-          </div>
+          <div class="promo-card-blank" id="promoBlank1"></div>
+          <div class="promo-card-blank" id="promoBlank2"></div>
         </div>
       </div>
     </section>
@@ -606,7 +620,7 @@
     <div class="reel-modal-inner">
       <video id="reelModalVideo" playsinline loop></video>
       <button class="reel-close" id="reelClose" aria-label="Close reel">✕</button>
-      <button class="reel-shop-cta" onclick="window.location.href='shop.html'">Shop Now</button>
+      <button class="reel-shop-cta" id="reelShopBtn">Shop Now</button>
     </div>
   </div>
 
@@ -697,7 +711,7 @@
     bindArrows("prevWow",   "nextWow",   "loopViewport",  182);
     bindArrows("prevPromo", "nextPromo", "promoViewport", 230);
 
-    /* ── WOW PICKS DRAG ── */
+    /* ── WOW PICKS DRAG (mouse) ── */
     (() => {
       const vp = document.getElementById("loopViewport");
       let isDown = false, startX = 0, startPageX = 0, scrollLeft = 0, moved = false;
@@ -722,19 +736,47 @@
       }, true);
     })();
 
+    /* ── PROMOTIONS TOUCH SWIPE ── */
+    (() => {
+      const vp = document.getElementById("promoViewport");
+      let touchStartX = 0, touchStartScroll = 0;
+
+      vp.addEventListener("touchstart", e => {
+        touchStartX      = e.touches[0].clientX;
+        touchStartScroll = vp.scrollLeft;
+      }, { passive: true });
+
+      vp.addEventListener("touchmove", e => {
+        const dx = touchStartX - e.touches[0].clientX;
+        vp.scrollLeft = touchStartScroll + dx;
+      }, { passive: true });
+    })();
+
     /* ── REEL MODAL ── */
     const reelModal    = document.getElementById("reelModal");
     const reelModalVid = document.getElementById("reelModalVideo");
     const reelClose    = document.getElementById("reelClose");
-    function openReel(src) {
-      reelModalVid.src = src; reelModalVid.muted = false;
-      reelModal.classList.add("open"); document.body.style.overflow = "hidden";
+    const reelShopBtn  = document.getElementById("reelShopBtn");
+
+    let _reelShopLink = "shop.html";
+
+    function openReel(src, link) {
+      _reelShopLink = (link && link.trim()) ? link.trim() : "shop.html";
+      reelModalVid.src = src;
+      reelModalVid.muted = false;
+      reelModal.classList.add("open");
+      document.body.style.overflow = "hidden";
       reelModalVid.play().catch(() => { reelModalVid.muted = true; reelModalVid.play(); });
     }
+
     function closeReel() {
-      reelModalVid.pause(); reelModalVid.src = "";
-      reelModal.classList.remove("open"); document.body.style.overflow = "";
+      reelModalVid.pause();
+      reelModalVid.src = "";
+      reelModal.classList.remove("open");
+      document.body.style.overflow = "";
     }
+
+    reelShopBtn.addEventListener("click", () => { window.location.href = _reelShopLink; });
     reelClose.addEventListener("click", closeReel);
     reelModal.addEventListener("click", e => { if (e.target === reelModal) closeReel(); });
     document.addEventListener("keydown", e => { if (e.key === "Escape") closeReel(); });
@@ -905,7 +947,7 @@
         /* ── WOW picks — horizontal scroll loop cards ── */
         function loopCard(p, i) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
-          return `<article class="loop-card" data-pid="${p._id}" style="cursor:pointer;">
+          return `<article class="loop-card" data-pid="${p._id}">
             <div class="pic">${p.imgUrl
               ? `<img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy"/>`
               : `<div class="mini-jersey ${colors[i%colors.length]}"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`
@@ -945,30 +987,19 @@
         loopTrack.innerHTML       = products.slice(0,8).map((p,i)  => loopCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
         allProductsGrid.innerHTML = products.slice(0,10).map((p,i) => gridCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">No products available.</div>';
 
-        /*
-         * ── FIXED: attachCardNav ──────────────────────────────────────────
-         * Both clicking the article body AND the "Shop Now"/"View" button
-         * now navigate to shop.html?product=<pid>, which your shop page
-         * should read via URLSearchParams to auto-open that product.
-         * The ?product= param is deliberately different from ?id= so you
-         * can distinguish "open product detail" from "filter by id".
-         * If your shop.html already uses ?id= to open a product, just
-         * change "product" → "id" in the two lines below.
-         * ──────────────────────────────────────────────────────────────────
-         */
+        /* ── Unified click handler: card body → goToProduct, button → goToProduct ── */
         function attachCardNav(container) {
           container.addEventListener("click", function(e) {
-            // If a button was clicked, use its pid and stop event here
-            const btn = e.target.closest(".small-btn");
+            /* "Shop Now" / "View" button */
+            const btn = e.target.closest(".small-btn[data-pid]");
             if (btn) {
               e.stopPropagation();
-              const pid = btn.dataset.pid;
-              if (pid) goToProduct(pid);
+              goToProduct(btn.dataset.pid);
               return;
             }
-            // Otherwise use the article's pid (card body click)
-            const article = e.target.closest("[data-pid]");
-            if (article && article.dataset.pid) {
+            /* anywhere on the card */
+            const article = e.target.closest("article[data-pid]");
+            if (article) {
               goToProduct(article.dataset.pid);
             }
           });
@@ -1001,52 +1032,64 @@
         const reels    = items.filter(m => m.section === "reels"    && getUrl(m));
         const gallery  = items.filter(m => m.section === "gallery"  && getUrl(m));
 
-        /* featured_1 */
+        /* featured_1 → media banner */
         const ms = document.getElementById("mediaSpace");
         const f0 = featured[0];
         if (f0) {
           const url = getUrl(f0), link = f0.link || "shop.html", vid = isVideo(f0);
           ms.innerHTML = vid
             ? `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;" onclick="window.location.href='${link}'"></video>`
-            : `<img src="${url}" alt="${f0.label||'Featured'}" style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;" onclick="window.location.href='${link}'" loading="lazy"/>`;
+            : `<img src="${url}" alt="Featured" style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;" onclick="window.location.href='${link}'" loading="lazy"/>`;
         } else {
           ms.innerHTML = `<div class="placeholder" style="font-size:13px;font-weight:700;color:#999;">No featured media</div>`;
         }
 
-        /* featured_2+ → promo track */
+        /* featured_2+ → promo track (no "Promo Space" labels; blank slots hidden) */
         const promoTrack = document.getElementById("promoTrack");
         const blank1     = document.getElementById("promoBlank1");
-        featured.slice(1).forEach(m => {
-          const url = getUrl(m), link = m.link || "shop.html", vid = isVideo(m);
-          const div = document.createElement("div");
-          div.className = "promo-card";
-          div.onclick   = () => window.location.href = link;
-          div.innerHTML = vid
-            ? `<video src="${url}" autoplay muted loop playsinline></video>`
-            : `<img src="${url}" alt="${m.label||'Promo'}" loading="lazy"/><div class="promo-overlay"></div>${m.label ? `<div class="promo-label">${m.label}</div>` : ""}`;
-          promoTrack.insertBefore(div, blank1);
-        });
 
-        /* reels */
+        if (featured.length > 1) {
+          featured.slice(1).forEach(m => {
+            const url = getUrl(m), link = m.link || "shop.html", vid = isVideo(m);
+            const div = document.createElement("div");
+            div.className = "promo-card";
+            div.onclick   = () => window.location.href = link;
+            div.innerHTML = vid
+              ? `<video src="${url}" autoplay muted loop playsinline></video>`
+              : `<img src="${url}" alt="Promo" loading="lazy"/><div class="promo-overlay"></div>${m.label ? `<div class="promo-label">${m.label}</div>` : ""}`;
+            promoTrack.insertBefore(div, blank1);
+          });
+        } else {
+          /* No real promos: show blank placeholders so section isn't empty */
+          document.getElementById("promoBlank1").style.display = "flex";
+          document.getElementById("promoBlank2").style.display = "flex";
+        }
+
+        /* ── REELS ── */
         const reelsRow     = document.getElementById("reelsRow");
         const reelsSection = document.getElementById("reelsSection");
         if (reels.length > 0) {
           reelsRow.innerHTML = reels.map(m => {
-            const url = getUrl(m), vid = isVideo(m);
+            const url  = getUrl(m);
+            const link = (m.link && m.link.trim()) ? m.link.trim() : "shop.html";
+            const vid  = isVideo(m);
             const media = vid
               ? `<video class="reel-vid" src="${url}" muted loop playsinline preload="metadata"></video>`
               : `<div class="thumb" style="background-image:url('${url}')"></div>`;
-            return `<div class="reel-card" data-src="${url}"
+            return `<div class="reel-card" data-src="${url}" data-link="${link}"
               onmouseenter="this.querySelector('video')?.play()"
               onmouseleave="const v=this.querySelector('video');if(v){v.pause();v.currentTime=0}">
               ${media}
               <div class="reel-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
             </div>`;
           }).join("");
+
           reelsSection.style.display = "block";
+
           reelsRow.querySelectorAll(".reel-card").forEach(card => {
-            card.addEventListener("click", () => openReel(card.dataset.src));
+            card.addEventListener("click", () => openReel(card.dataset.src, card.dataset.link));
           });
+
           const obs = new IntersectionObserver(entries => {
             entries.forEach(e => {
               const v = e.target.querySelector("video"); if (!v) return;
@@ -1066,14 +1109,14 @@
             const url = getUrl(gA), link = gA.link || "#", vid = isVideo(gA);
             html += `<div class="grid-item-a" onclick="window.location.href='${link}'">${vid
               ? `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
-              : `<img src="${url}" alt="${gA.label||'Gallery'}" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`
+              : `<img src="${url}" alt="Gallery" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`
             }</div>`;
           }
           if (gB) {
             const url = getUrl(gB), link = gB.link || "#", vid = isVideo(gB);
             html += `<div class="grid-item-b" onclick="window.location.href='${link}'">${vid
               ? `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
-              : `<img src="${url}" alt="${gB.label||'Gallery'}" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`
+              : `<img src="${url}" alt="Gallery" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`
             }</div>`;
           }
           galleryGrid.innerHTML = html;
