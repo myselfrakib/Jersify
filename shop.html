@@ -164,30 +164,19 @@
     .drawer-close { position: absolute; top: 12px; left: 12px; width: 36px; height: 36px; border: none; background: rgba(0,0,0,.4); color: #fff; border-radius: 50%; display: grid; place-items: center; cursor: pointer; backdrop-filter: blur(4px); z-index: 10; }
     .drawer-close svg { width: 18px; height: 18px; }
 
-    /* ── SHARE BUTTON (inside gallery, top-right area after counter) ── */
-    .drawer-share-btn {
-      position: absolute; top: 12px; right: 56px;
-      width: 36px; height: 36px; border: none;
-      background: rgba(0,0,0,.4); color: #fff; border-radius: 50%;
+    /* ── SHARE ICON beside name ── */
+    .drawer-name-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+    .drawer-name-row .drawer-name { margin-bottom: 0; flex: 1; }
+    .share-icon-btn {
+      flex-shrink: 0; width: 34px; height: 34px; border: 1.5px solid var(--line);
+      border-radius: 50%; background: #fff; color: var(--muted);
       display: grid; place-items: center; cursor: pointer;
-      backdrop-filter: blur(4px); z-index: 10;
-      transition: background .2s ease, transform .2s ease;
+      transition: border-color .2s ease, color .2s ease, background .2s ease, transform .2s ease;
+      margin-top: 2px;
     }
-    .drawer-share-btn:hover { background: rgba(0,0,0,.7); transform: scale(1.08); }
-    .drawer-share-btn svg { width: 16px; height: 16px; }
-
-    /* Share button in drawer body (below price) */
-    .share-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-    .share-pill {
-      display: inline-flex; align-items: center; gap: 7px;
-      border: 1.5px solid var(--line); border-radius: 99px;
-      padding: 7px 16px; background: #fff; color: var(--text);
-      font-size: 12px; font-weight: 700; cursor: pointer;
-      transition: border-color .2s ease, background .2s ease, color .2s ease;
-    }
-    .share-pill:hover { border-color: var(--accent); color: var(--accent); background: rgba(198,31,47,.04); }
-    .share-pill svg { width: 14px; height: 14px; flex-shrink: 0; }
-    .share-pill.copied { border-color: #2e7d32; color: #2e7d32; background: #e8f5e9; }
+    .share-icon-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(198,31,47,.05); transform: scale(1.08); }
+    .share-icon-btn.copied { border-color: #2e7d32; color: #2e7d32; background: #e8f5e9; }
+    .share-icon-btn svg { width: 15px; height: 15px; }
 
     .swipe-hint { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); font-size: 10px; color: rgba(255,255,255,.6); font-weight: 600; letter-spacing: .5px; z-index: 10; pointer-events: none; white-space: nowrap; }
 
@@ -419,13 +408,6 @@
         <button class="drawer-close" onclick="closeDrawer()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
-        <!-- SHARE BUTTON (gallery top-right) -->
-        <button class="drawer-share-btn" id="drawerShareBtnImg" onclick="shareProduct()" title="Share this product">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-          </svg>
-        </button>
         <div class="drawer-img-counter" id="drawerImgCounter" style="display:none">1 / 1</div>
         <div class="drawer-slides" id="drawerSlides"></div>
         <button class="drawer-arrow prev" id="drawerPrev" onclick="slideDrawer(-1)">
@@ -441,22 +423,19 @@
       <!-- BODY -->
       <div class="drawer-body">
         <div class="drawer-badge-row"><span class="d-badge" id="drawerBadge">Home Kit</span></div>
-        <div class="drawer-name" id="drawerName">Jersey Name</div>
-        <div class="drawer-team" id="drawerTeam">Team Name</div>
-        <div class="drawer-price-row">
-          <div class="drawer-price" id="drawerPrice">₹0</div>
-          <span class="drawer-free-ship">Free Shipping</span>
-        </div>
-
-        <!-- SHARE ROW (below price) -->
-        <div class="share-row">
-          <button class="share-pill" id="sharePillBtn" onclick="shareProduct()">
+        <div class="drawer-name-row">
+          <div class="drawer-name" id="drawerName">Jersey Name</div>
+          <button class="share-icon-btn" id="sharePillBtn" onclick="shareProduct()" title="Share this product">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
               <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
             </svg>
-            Share this kit
           </button>
+        </div>
+        <div class="drawer-team" id="drawerTeam">Team Name</div>
+        <div class="drawer-price-row">
+          <div class="drawer-price" id="drawerPrice">₹0</div>
+          <span class="drawer-free-ship">Free Shipping</span>
         </div>
 
         <div class="drawer-section-label">Select Size</div>
@@ -589,7 +568,6 @@
       if (!drawerProduct) return;
       const url = buildProductURL(drawerProduct.id);
 
-      // Try native Web Share API first (mobile)
       if (navigator.share) {
         try {
           await navigator.share({
@@ -599,32 +577,25 @@
           });
           return;
         } catch (e) {
-          // User cancelled or unsupported — fall through to clipboard
           if (e.name === 'AbortError') return;
         }
       }
 
       // Clipboard fallback
+      const btn = document.getElementById('sharePillBtn');
       try {
         await navigator.clipboard.writeText(url);
-        const btn = document.getElementById('sharePillBtn');
-        btn.classList.add('copied');
-        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;flex-shrink:0"><path d="M20 6L9 17l-5-5"/></svg> Link copied!`;
-        showToast('🔗 Link copied to clipboard');
-        setTimeout(() => {
-          btn.classList.remove('copied');
-          btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;flex-shrink:0"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share this kit`;
-        }, 2500);
       } catch {
-        // Final fallback: select from a temporary input
         const inp = document.createElement('input');
         inp.value = url;
         document.body.appendChild(inp);
         inp.select();
         document.execCommand('copy');
         document.body.removeChild(inp);
-        showToast('🔗 Link copied!');
       }
+      btn.classList.add('copied');
+      showToast('🔗 Link copied to clipboard');
+      setTimeout(() => btn.classList.remove('copied'), 2500);
     };
 
     function buildProductURL(id) {
@@ -1080,10 +1051,9 @@
       document.getElementById('drawerPrice').textContent = '₹' + Number(p.price || 1499).toLocaleString('en-IN');
       document.getElementById('drawerBadge').textContent = p.badge || p.type || 'Kit';
 
-      // Reset share pill
+      // Reset share button
       const btn = document.getElementById('sharePillBtn');
       btn.classList.remove('copied');
-      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;flex-shrink:0"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share this kit`;
 
       const numEl  = document.getElementById('drawerNum');
       const typeEl = document.getElementById('drawerType');
