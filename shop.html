@@ -102,7 +102,6 @@
     .product .img { height: 180px; background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .product .img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
     .product:hover .img img { transform: scale(1.05); }
-    /* Removed ::after overlay pseudo-element */
 
     .jersey-card { width: 120px; height: 150px; border-radius: 24px; position: relative; z-index: 1; box-shadow: 0 16px 30px rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.18); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 14px; text-align: center; background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)), linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%); }
     .jersey-card strong { font-size: 28px; line-height: 1; display: block; color: #fff; }
@@ -164,6 +163,32 @@
     .drawer-img-counter { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,.55); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; z-index: 10; backdrop-filter: blur(4px); letter-spacing: .3px; }
     .drawer-close { position: absolute; top: 12px; left: 12px; width: 36px; height: 36px; border: none; background: rgba(0,0,0,.4); color: #fff; border-radius: 50%; display: grid; place-items: center; cursor: pointer; backdrop-filter: blur(4px); z-index: 10; }
     .drawer-close svg { width: 18px; height: 18px; }
+
+    /* ── SHARE BUTTON (inside gallery, top-right area after counter) ── */
+    .drawer-share-btn {
+      position: absolute; top: 12px; right: 56px;
+      width: 36px; height: 36px; border: none;
+      background: rgba(0,0,0,.4); color: #fff; border-radius: 50%;
+      display: grid; place-items: center; cursor: pointer;
+      backdrop-filter: blur(4px); z-index: 10;
+      transition: background .2s ease, transform .2s ease;
+    }
+    .drawer-share-btn:hover { background: rgba(0,0,0,.7); transform: scale(1.08); }
+    .drawer-share-btn svg { width: 16px; height: 16px; }
+
+    /* Share button in drawer body (below price) */
+    .share-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .share-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      border: 1.5px solid var(--line); border-radius: 99px;
+      padding: 7px 16px; background: #fff; color: var(--text);
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      transition: border-color .2s ease, background .2s ease, color .2s ease;
+    }
+    .share-pill:hover { border-color: var(--accent); color: var(--accent); background: rgba(198,31,47,.04); }
+    .share-pill svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .share-pill.copied { border-color: #2e7d32; color: #2e7d32; background: #e8f5e9; }
+
     .swipe-hint { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); font-size: 10px; color: rgba(255,255,255,.6); font-weight: 600; letter-spacing: .5px; z-index: 10; pointer-events: none; white-space: nowrap; }
 
     .drawer-body { padding: 20px 20px 0; }
@@ -171,7 +196,7 @@
     .d-badge { font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 99px; background: rgba(198,31,47,.1); color: var(--accent); text-transform: uppercase; letter-spacing: .5px; }
     .drawer-name { font-size: 22px; font-weight: 900; margin-bottom: 4px; line-height: 1.2; }
     .drawer-team { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
-    .drawer-price-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .drawer-price-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
     .drawer-price { font-size: 28px; font-weight: 900; color: var(--accent); font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
     .drawer-free-ship { font-size: 10px; font-weight: 700; background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 99px; letter-spacing: .4px; }
     .drawer-section-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; }
@@ -394,6 +419,13 @@
         <button class="drawer-close" onclick="closeDrawer()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
+        <!-- SHARE BUTTON (gallery top-right) -->
+        <button class="drawer-share-btn" id="drawerShareBtnImg" onclick="shareProduct()" title="Share this product">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+        </button>
         <div class="drawer-img-counter" id="drawerImgCounter" style="display:none">1 / 1</div>
         <div class="drawer-slides" id="drawerSlides"></div>
         <button class="drawer-arrow prev" id="drawerPrev" onclick="slideDrawer(-1)">
@@ -415,6 +447,18 @@
           <div class="drawer-price" id="drawerPrice">₹0</div>
           <span class="drawer-free-ship">Free Shipping</span>
         </div>
+
+        <!-- SHARE ROW (below price) -->
+        <div class="share-row">
+          <button class="share-pill" id="sharePillBtn" onclick="shareProduct()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+            Share this kit
+          </button>
+        </div>
+
         <div class="drawer-section-label">Select Size</div>
         <div class="size-grid" id="drawerSizeGrid"></div>
       </div>
@@ -468,7 +512,6 @@
   <script type="module">
     /* ════════════════════════════════════════════════
        FIREBASE CONFIG
-       databaseURL is REQUIRED for Realtime Database
     ════════════════════════════════════════════════ */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, get }
@@ -484,17 +527,16 @@
       appId:             "1:461181023878:web:6ebfbae603baf4a873c307"
     };
 
-    // Direct REST endpoint — no SDK cold-start issues, always reliable
     const RTDB_REST = "https://jersify-f9b5e-default-rtdb.firebaseio.com/products.json";
 
     const app  = initializeApp(FIREBASE_CONFIG);
     const rtdb = getDatabase(app);
 
     /* ══ STATE ══ */
-    let allProducts  = [];   // [{ id, data }]
+    let allProducts  = [];
     let showAll      = false;
     let bgRefreshTimer = null;
-    const PAGE_SIZE  = 200; // effectively show all
+    const PAGE_SIZE  = 200;
 
     /* ══════════════════════════════════════════
        CART
@@ -539,12 +581,65 @@
     }
 
     /* ══════════════════════════════════════════
+       SHARE PRODUCT
+       Updates URL to ?product=ID so the link
+       opens the drawer when someone visits it.
+    ══════════════════════════════════════════ */
+    window.shareProduct = async function() {
+      if (!drawerProduct) return;
+      const url = buildProductURL(drawerProduct.id);
+
+      // Try native Web Share API first (mobile)
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: drawerProduct.data.name || 'Jersify Kit',
+            text: `Check out this kit on Jersify: ${drawerProduct.data.name || ''}`,
+            url
+          });
+          return;
+        } catch (e) {
+          // User cancelled or unsupported — fall through to clipboard
+          if (e.name === 'AbortError') return;
+        }
+      }
+
+      // Clipboard fallback
+      try {
+        await navigator.clipboard.writeText(url);
+        const btn = document.getElementById('sharePillBtn');
+        btn.classList.add('copied');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;flex-shrink:0"><path d="M20 6L9 17l-5-5"/></svg> Link copied!`;
+        showToast('🔗 Link copied to clipboard');
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;flex-shrink:0"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share this kit`;
+        }, 2500);
+      } catch {
+        // Final fallback: select from a temporary input
+        const inp = document.createElement('input');
+        inp.value = url;
+        document.body.appendChild(inp);
+        inp.select();
+        document.execCommand('copy');
+        document.body.removeChild(inp);
+        showToast('🔗 Link copied!');
+      }
+    };
+
+    function buildProductURL(id) {
+      const base = window.location.origin + window.location.pathname;
+      return `${base}?product=${encodeURIComponent(id)}`;
+    }
+
+    /* Update URL bar when drawer opens/closes (no page reload) */
+    function pushProductURL(id) {
+      const url = id ? buildProductURL(id) : (window.location.origin + window.location.pathname);
+      window.history.replaceState({ productId: id || null }, '', url);
+    }
+
+    /* ══════════════════════════════════════════
        FETCH PRODUCTS
-       Strategy:
-         1. REST fetch (fastest, no SDK overhead)
-         2. Firebase SDK get() as fallback
-         3. Background silent refresh every 90s
-            — only updates UI if new data differs
     ══════════════════════════════════════════ */
     async function fetchViaREST() {
       const res  = await fetch(RTDB_REST, { cache: 'no-store' });
@@ -562,9 +657,8 @@
       return list;
     }
 
-    // Apply new products ONLY if count >= what we already have (never shrink display)
     function applyProducts(fresh) {
-      if (fresh.length === 0 && allProducts.length > 0) return; // guard: never clear working data
+      if (fresh.length === 0 && allProducts.length > 0) return;
       allProducts = fresh;
       buildTeamFilter();
       renderProducts();
@@ -577,24 +671,15 @@
 
       let fetched = null;
 
-      // 1️⃣ REST fetch
-      try {
-        fetched = await fetchViaREST();
-      } catch (e) {
-        console.warn('[Jersify] REST fetch failed:', e.message);
-      }
+      try { fetched = await fetchViaREST(); }
+      catch (e) { console.warn('[Jersify] REST fetch failed:', e.message); }
 
-      // 2️⃣ SDK get() fallback
       if (fetched === null) {
-        try {
-          fetched = await fetchViaSDK();
-        } catch (e) {
-          console.warn('[Jersify] SDK get() failed:', e.message);
-        }
+        try { fetched = await fetchViaSDK(); }
+        catch (e) { console.warn('[Jersify] SDK get() failed:', e.message); }
       }
 
       if (fetched === null) {
-        // Both failed
         if (!isBackground) {
           showError();
           document.getElementById('retryBanner').classList.remove('hidden');
@@ -603,12 +688,21 @@
       }
 
       applyProducts(fetched);
+
+      // After first load, check if URL has ?product= and auto-open drawer
+      if (!isBackground) {
+        const params = new URLSearchParams(window.location.search);
+        const pid    = params.get('product');
+        if (pid) {
+          const found = allProducts.find(p => p.id === pid);
+          if (found) openDrawer(pid);
+        }
+      }
     }
 
-    // Silent background refresh — keeps data fresh without listener race conditions
     function startBackgroundRefresh() {
       clearInterval(bgRefreshTimer);
-      bgRefreshTimer = setInterval(() => loadProducts(true), 90_000); // every 90s
+      bgRefreshTimer = setInterval(() => loadProducts(true), 90_000);
     }
 
     window.retryFetch = async function() {
@@ -633,24 +727,18 @@
     }
 
     /* ══════════════════════════════════════════
-       DYNAMIC TEAM FILTER  (built from real data)
+       DYNAMIC TEAM FILTER
     ══════════════════════════════════════════ */
     function buildTeamFilter() {
       const sel = document.getElementById('filterTeam');
       const current = sel.value;
-
-      // Collect unique team names
       const teams = new Set();
       allProducts.forEach(({ data: p }) => {
         const t = Array.isArray(p.team) ? p.team : [p.team || ''];
         t.forEach(name => { if (name) teams.add(name.trim()); });
       });
-
-      // Rebuild options
       sel.innerHTML = '<option value="">All Teams & Clubs</option>' +
         [...teams].sort().map(t => `<option value="${t.toLowerCase()}">${t}</option>`).join('');
-
-      // Restore selection if it still applies
       if (current) {
         const opt = [...sel.options].find(o => o.value === current);
         if (opt) sel.value = current;
@@ -661,7 +749,6 @@
        FILTERS & SORTING
     ══════════════════════════════════════════ */
     function isActive(p) {
-      // Show product if status is 'active' OR status field is absent
       return !p.status || p.status === 'active';
     }
 
@@ -674,38 +761,27 @@
 
       let filtered = allProducts.filter(({ data: p }) => {
         if (!isActive(p)) return false;
-
-        // Team filter
         if (teamFilter) {
           const pt = (Array.isArray(p.team) ? p.team.join(' ') : (p.team || '')).toLowerCase();
           if (!pt.includes(teamFilter)) return false;
         }
-
-        // Size filter  (a product passes if the size key exists with qty > 0 OR sizes not set at all)
         if (sizeFilter) {
           if (p.sizes) {
             const qty = Number(p.sizes[sizeFilter] ?? 0);
             if (qty <= 0) return false;
           }
-          // If no sizes object at all → still show (stock unknown, don't hide)
         }
-
-        // Price filter
         const price = parseFloat(p.price || 0);
         if (priceFilter === 'under1000'  && price >= 1000) return false;
         if (priceFilter === '1000to1500' && (price < 1000 || price > 1500)) return false;
         if (priceFilter === 'above1500'  && price <= 1500) return false;
-
-        // Search
         if (searchVal) {
           const hay = [p.name || '', teamLabel(p), p.type || '', p.badge || ''].join(' ').toLowerCase();
           if (!hay.includes(searchVal)) return false;
         }
-
         return true;
       });
 
-      // Sorting
       if (sortVal === 'price_asc')  filtered.sort((a, b) => parseFloat(a.data.price || 0) - parseFloat(b.data.price || 0));
       if (sortVal === 'price_desc') filtered.sort((a, b) => parseFloat(b.data.price || 0) - parseFloat(a.data.price || 0));
       if (sortVal === 'newest') {
@@ -1004,7 +1080,11 @@
       document.getElementById('drawerPrice').textContent = '₹' + Number(p.price || 1499).toLocaleString('en-IN');
       document.getElementById('drawerBadge').textContent = p.badge || p.type || 'Kit';
 
-      // Jersey placeholder fallback numbers
+      // Reset share pill
+      const btn = document.getElementById('sharePillBtn');
+      btn.classList.remove('copied');
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;flex-shrink:0"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share this kit`;
+
       const numEl  = document.getElementById('drawerNum');
       const typeEl = document.getElementById('drawerType');
       if (numEl)  numEl.textContent  = p.number || '10';
@@ -1012,15 +1092,12 @@
 
       buildDrawerGallery(getProductImages(p));
 
-      // Sizes  (xs s m l xl)
       const sizeGrid = document.getElementById('drawerSizeGrid');
       sizeGrid.innerHTML = ['xs','s','m','l','xl'].map(sz => {
-        // avail = true if sizes not defined (stock unknown) OR qty > 0
         const avail = !p.sizes || Number(p.sizes[sz] || 0) > 0;
         return `<button class="size-pill${avail ? '' : ' oos'}" data-size="${sz}" onclick="selectSize('${sz}', ${avail})">${sz.toUpperCase()}</button>`;
       }).join('');
 
-      // Buy Now button
       document.getElementById('drawerBuyBtn').onclick = () => {
         const sel = document.querySelector('.size-pill.selected');
         if (!sel) { showToast('Please select a size'); return; }
@@ -1035,6 +1112,7 @@
       if (!found) return;
       document.getElementById('drawerScroll').scrollTo({ top: 0, behavior: 'smooth' });
       populateDrawer(found);
+      pushProductURL(id); // update URL when switching products inside drawer
     };
 
     window.openDrawer = function(id) {
@@ -1045,12 +1123,14 @@
       document.getElementById('overlay').classList.add('open');
       document.getElementById('drawer').classList.add('open');
       document.body.style.overflow = 'hidden';
+      pushProductURL(id); // update URL → makes this link shareable
     };
 
     window.closeDrawer = function() {
       document.getElementById('overlay').classList.remove('open');
       document.getElementById('drawer').classList.remove('open');
       document.body.style.overflow = '';
+      pushProductURL(null); // remove ?product= from URL when closed
     };
 
     window.selectSize = function(sz, avail) {
@@ -1073,19 +1153,13 @@
     ══════════════════════════════════════════ */
     window.addEventListener('DOMContentLoaded', async () => {
       updateCartBadge();
-
-      // Load products — REST first, SDK fallback, no onValue listener
       await loadProducts(false);
-
-      // Keep data fresh silently in the background (no flicker, no race)
       startBackgroundRefresh();
 
-      // Filter change listeners
       ['filterTeam','filterSize','filterPrice','filterSort'].forEach(fid => {
         document.getElementById(fid).addEventListener('change', () => { showAll = false; renderProducts(); });
       });
 
-      // Search with debounce
       let timer;
       document.getElementById('searchInput').addEventListener('input', () => {
         clearTimeout(timer);
@@ -1093,6 +1167,17 @@
       });
 
       document.getElementById('viewAllBtn').addEventListener('click', () => { showAll = true; renderProducts(); });
+
+      // Handle browser back/forward — close drawer if URL no longer has ?product
+      window.addEventListener('popstate', (e) => {
+        if (!e.state || !e.state.productId) {
+          document.getElementById('overlay').classList.remove('open');
+          document.getElementById('drawer').classList.remove('open');
+          document.body.style.overflow = '';
+        } else {
+          openDrawer(e.state.productId);
+        }
+      });
     });
   </script>
 
