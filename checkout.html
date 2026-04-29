@@ -290,7 +290,6 @@
     }
     .success-btn:hover { transform: translateY(-2px); }
 
-    /* notification status toast */
     .notif-status {
       font-size: 11px; color: var(--muted); margin-top: 12px;
       display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
@@ -444,7 +443,8 @@
     emailjs.init({ publicKey: "YOUR_EMAILJS_PUBLIC_KEY" });
   </script>
 
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- ── Cashfree SDK ── -->
+  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 </head>
 
 <body>
@@ -606,11 +606,11 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
           Payment Method
         </div>
-        <label class="pay-opt active" onclick="selPay('razorpay')">
-          <input type="radio" name="paymethod" id="pay_rzp" checked value="razorpay">
+        <label class="pay-opt active" onclick="selPay('cashfree')">
+          <input type="radio" name="paymethod" id="pay_cf" checked value="cashfree">
           <div class="pay-opt-content">
             <div class="pay-opt-text">Pay Online</div>
-            <div class="pay-opt-sub">UPI, Cards, Net Banking via Razorpay</div>
+            <div class="pay-opt-sub">UPI, Cards, Net Banking via Cashfree</div>
           </div>
           <div class="pay-opt-icon">💳</div>
         </label>
@@ -806,6 +806,14 @@
   const dbRef     = ref(db);
   const gProvider = new GoogleAuthProvider();
 
+  /* ── Cashfree config ── */
+  const CASHFREE_APP_ID     = "1054082441e8398c0bbfcd9506d2804501";
+  const CASHFREE_SECRET_KEY = "cfsk_ma_prod_44274c384bc392cc637a902d873ac5ab_949e58ad";
+  /* NOTE: In production, the order creation API call (which uses the secret key)
+     MUST be made from your backend server — never expose the secret key in
+     client-side code in a real deployment. This implementation calls Cashfree's
+     orders API directly for demonstration; move this to a server function before going live. */
+
   const NOTIFY = {
     email: {
       enabled:    true,
@@ -833,6 +841,85 @@
   let newAddrVisible    = true;
   let couponsMap        = {};
   let currentUser       = null;
+
+  /* ════════════════════════════════════
+     CASHFREE PAYMENT
+     ════════════════════════════════════ */
+
+  /**
+   * Creates a Cashfree order via their Orders API and returns the payment_session_id.
+   * In production: move this fetch to your backend and call your own endpoint instead.
+   */
+  async function createCashfreeOrder({ orderId, amount, customerName, customerEmail, customerPhone }) {
+    const cleanPhone = String(customerPhone).replace(/\D/g, '').slice(-10);
+    const payload = {
+      order_id:       orderId,
+      order_amount:   amount,
+      order_currency: "INR",
+      customer_details: {
+        customer_id:    currentUser ? currentUser.uid : `guest_${Date.now()}`,
+        customer_name:  customerName,
+        customer_email: customerEmail || "customer@jersify.in",
+        customer_phone: cleanPhone.length === 10 ? `+91${cleanPhone}` : "+919999999999",
+      },
+      order_meta: {
+        return_url: `${window.location.origin}/checkout.html?cf_order_id={order_id}&status={order_status}`,
+        notify_url: "", /* your webhook URL if any */
+      },
+      order_note: "Jersify Order",
+    };
+
+    const resp = await fetch("https://api.cashfree.com/pg/orders", {
+      method:  "POST",
+      headers: {
+        "Content-Type":    "application/json",
+        "x-api-version":   "2023-08-01",
+        "x-client-id":     CASHFREE_APP_ID,
+        "x-client-secret": CASHFREE_SECRET_KEY,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.message || `Cashfree order creation failed (HTTP ${resp.status})`);
+    }
+
+    const data = await resp.json();
+    return data.payment_session_id;
+  }
+
+  /**
+   * Launch Cashfree checkout using the JS SDK drop.
+   */
+  async function launchCashfreeCheckout({ orderId, amount, customerName, customerEmail, customerPhone, onSuccess, onFailure }) {
+    let sessionId;
+    try {
+      sessionId = await createCashfreeOrder({ orderId, amount, customerName, customerEmail, customerPhone });
+    } catch (err) {
+      onFailure(`Could not initiate payment: ${err.message}`);
+      return;
+    }
+
+    const cashfree = await load({ mode: "production" }); /* use "sandbox" for testing */
+
+    const checkoutOptions = {
+      paymentSessionId: sessionId,
+      redirectTarget:   "_modal",
+    };
+
+    cashfree.checkout(checkoutOptions).then(result => {
+      if (result.error) {
+        onFailure(result.error.message || "Payment failed.");
+      } else if (result.redirect) {
+        /* handled via return_url */
+      } else if (result.paymentDetails) {
+        onSuccess(result.paymentDetails.paymentMessage || "Payment successful", sessionId);
+      }
+    }).catch(err => {
+      onFailure(err?.message || "Payment could not be processed.");
+    });
+  }
 
   /* ════════════════════════════════════
      NOTIFICATION FUNCTIONS
@@ -1169,7 +1256,7 @@
   };
   window.selPay = method => {
     document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
-    document.getElementById(method === 'razorpay' ? 'pay_rzp' : 'pay_cod').parentElement.classList.add('active');
+    document.getElementById(method === 'cashfree' ? 'pay_cf' : 'pay_cod').parentElement.classList.add('active');
   };
 
   window.getLocation = () => {
@@ -1281,6 +1368,30 @@
     loadCoupons();
     renderSavedAddresses();
 
+    /* handle Cashfree redirect return */
+    const urlParams = new URLSearchParams(window.location.search);
+    const cfOrderId = urlParams.get('cf_order_id');
+    const cfStatus  = urlParams.get('status');
+    if (cfOrderId && cfStatus) {
+      if (cfStatus === 'SUCCESS') {
+        /* payment successful via redirect — show success */
+        const storedOrder = JSON.parse(sessionStorage.getItem('jersify_pending_order') || '{}');
+        if (storedOrder.orderId) {
+          await saveOrderToDB({ ...storedOrder, paymentId: cfOrderId, paymentMethod: 'cashfree' });
+          await sendOrderConfirmations({ orderId: storedOrder.orderId, name: storedOrder.name, email: storedOrder.email, phone: storedOrder.phone, total: storedOrder.finalPrice, payMethod: 'Online Payment', items: orderItems });
+          localStorage.removeItem('jersify_cart');
+          sessionStorage.removeItem('jersify_pending_order');
+          document.getElementById('loading').style.display         = 'none';
+          document.getElementById('checkoutContent').style.display = 'block';
+          showSuccess(storedOrder.orderId, storedOrder.name, storedOrder.finalPrice, storedOrder.selectedSize || 'M', 'Online Payment');
+          return;
+        }
+      } else {
+        /* payment failed via redirect */
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+
     const params    = new URLSearchParams(window.location.search);
     const pid       = params.get('id');
     const paramSize = params.get('size');
@@ -1390,41 +1501,40 @@
       if (document.getElementById('saveAddrCheck').checked) saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
     }
 
-    const isRzp       = document.getElementById('pay_rzp').checked;
+    const isCF        = document.getElementById('pay_cf').checked;
     const finalPrice  = orderPrice - discountAmount;
     const selectedSize = document.querySelector('.size-btn.active')?.textContent || 'M';
-    const itemDesc    = isCartMode
-      ? `${orderItems.length} item${orderItems.length > 1 ? 's' : ''} from Jersify`
-      : `${orderItems[0]?.name || 'Jersify Kit'} (Size: ${selectedSize})`;
 
     const btn = document.getElementById('confirmBtn');
     btn.disabled = true; btn.textContent = 'Processing…';
     const orderId = `JRS-${Date.now()}`;
 
-    if (isRzp) {
-      const options = {
-        key:         "rzp_test_YourKeyHere",
-        amount:      finalPrice * 100,
-        currency:    "INR",
-        name:        "JERSIFY",
-        description: itemDesc,
-        image:       "https://dummyimage.com/100x100/111/fff&text=J",
-        handler: async r => {
-          await saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: r.razorpay_payment_id, paymentMethod: 'razorpay' });
+    if (isCF) {
+      /* Store order details in sessionStorage in case of redirect flow */
+      sessionStorage.setItem('jersify_pending_order', JSON.stringify({
+        orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice
+      }));
+
+      launchCashfreeCheckout({
+        orderId,
+        amount:          finalPrice,
+        customerName:    name,
+        customerEmail:   email,
+        customerPhone:   phone,
+        onSuccess: async (message, sessionId) => {
+          await saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: sessionId || orderId, paymentMethod: 'cashfree' });
           await sendOrderConfirmations({ orderId, name, email, phone, total: finalPrice, payMethod: 'Online Payment', items: orderItems });
           localStorage.removeItem('jersify_cart');
+          sessionStorage.removeItem('jersify_pending_order');
           btn.disabled = false; btn.textContent = 'Confirm Order →';
           showSuccess(orderId, name, finalPrice, selectedSize, 'Online Payment');
         },
-        prefill: { name, email, contact: phone },
-        notes:   { address: `${address}, ${city}, ${state} - ${pincode}`, size: selectedSize },
-        theme:   { color: "#c61f2f" },
-        modal:   { ondismiss: () => { showPaymentFailed('Payment was cancelled.'); } }
-      };
-      const rzp = new Razorpay(options);
-      rzp.on('payment.failed', r => { showPaymentFailed(`Payment failed: ${r?.error?.description || 'Unknown error'}`); });
-      rzp.open();
+        onFailure: (reason) => {
+          showPaymentFailed(reason);
+        },
+      });
     } else {
+      /* COD flow — unchanged */
       saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: '', paymentMethod: 'cod' })
       .then(async () => {
         await sendOrderConfirmations({ orderId, name, email, phone, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems });
