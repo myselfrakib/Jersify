@@ -1012,7 +1012,7 @@
 
       /* Launch Cashfree modal */
       try {
-        const cashfree = await load({ mode: "production" }); /* change to "sandbox" for testing */
+        const cashfree = await load({ mode: "sandbox" }); /* change to "sandbox" for testing */
         const result   = await cashfree.checkout({ paymentSessionId: sessionId, redirectTarget: "_modal" });
 
         if(result.error){
