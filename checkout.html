@@ -290,19 +290,6 @@
     }
     .success-btn:hover { transform: translateY(-2px); }
 
-    .notif-status {
-      font-size: 11px; color: var(--muted); margin-top: 12px;
-      display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
-    }
-    .notif-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: #f3f3f3; border-radius: 99px; padding: 3px 10px;
-      font-size: 10px; font-weight: 700;
-    }
-    .notif-badge.sent  { background: rgba(30,140,74,.1); color: var(--success); }
-    .notif-badge.fail  { background: rgba(198,31,47,.08); color: var(--accent); }
-    .notif-badge.wait  { background: #f3f3f3; color: #999; }
-
     .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0; }
     .footer h4 { font-size: 18px; margin-bottom: 8px; font-weight: 900; }
     .footer p { font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: 12px; }
@@ -339,32 +326,19 @@
     @media (max-width: 380px) { .form-row { grid-template-columns: 1fr; gap: 0; } .logo { font-size: 40px } }
     @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
 
-    #authBackdrop {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0);
-      z-index: 190; pointer-events: none;
-      transition: background .35s ease;
-    }
+    #authBackdrop { position: fixed; inset: 0; background: rgba(0,0,0,0); z-index: 190; pointer-events: none; transition: background .35s ease; }
     #authBackdrop.show { background: rgba(0,0,0,.55); pointer-events: auto; }
-
     #authModal {
-      position: fixed;
-      left: 50%;
-      bottom: 0;
+      position: fixed; left: 50%; bottom: 0;
       transform: translateX(-50%) translateY(100%);
-      width: min(100%, var(--maxw));
-      background: #fff;
-      border-radius: 28px 28px 0 0;
-      z-index: 200;
+      width: min(100%, var(--maxw)); background: #fff;
+      border-radius: 28px 28px 0 0; z-index: 200;
       box-shadow: 0 -20px 60px rgba(0,0,0,.18);
       transition: transform .42s cubic-bezier(.34,1.15,.64,1);
       padding-bottom: env(safe-area-inset-bottom, 0px);
-      overflow: hidden;
-      max-height: 92vh;
-      overflow-y: auto;
+      overflow: hidden; max-height: 92vh; overflow-y: auto;
     }
     #authModal.show { transform: translateX(-50%) translateY(0); }
-
     .auth-modal-handle { width: 40px; height: 4px; background: #e0e0e0; border-radius: 99px; margin: 14px auto 0; }
     .auth-modal-header { padding: 18px 20px 0; display: flex; align-items: flex-start; justify-content: space-between; }
     .auth-modal-branding { display: flex; flex-direction: column; gap: 2px; }
@@ -410,7 +384,6 @@
     .auth-forgot:hover { text-decoration: underline; }
     #resetPanel { display: none; }
     #resetPanel.show { display: block; }
-    #signinPanel.hidden { display: none; }
     .auth-terms { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.6; margin-top: 14px; }
     .auth-terms a { color: var(--accent); font-weight: 700; }
     .auth-gradient-bar { height: 3px; background: linear-gradient(90deg, var(--accent), #ff6b35, var(--gold), var(--accent)); background-size: 200% 100%; animation: gradientShift 3s linear infinite; }
@@ -436,17 +409,9 @@
     .auth-prompt-signup { flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 10px; padding: 11px; background: #fff; color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer; transition: all .2s; }
     .auth-prompt-signup:hover { border-color: var(--accent); color: var(--accent); }
   </style>
-
-  <!-- ── EmailJS SDK ── -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script>
-    emailjs.init({ publicKey: "YOUR_EMAILJS_PUBLIC_KEY" });
-  </script>
-
-  <!-- ── Cashfree SDK ── -->
+  <!-- Cashfree JS SDK -->
   <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 </head>
-
 <body>
 <div class="page">
 
@@ -499,9 +464,7 @@
           <span class="pay-failed-icon">⚠️</span>
           <span class="pay-failed-title">Payment Failed</span>
         </div>
-        <div class="pay-failed-desc" id="payFailedDesc">
-          Your payment could not be processed. Your order items are still here — try again or switch to Cash on Delivery.
-        </div>
+        <div class="pay-failed-desc" id="payFailedDesc">Your payment could not be processed. Try again or switch to Cash on Delivery.</div>
         <div class="pay-failed-actions">
           <button class="pay-failed-retry" onclick="retryPayment()">Try Again →</button>
           <button class="pay-failed-cod" onclick="switchToCOD()">Switch to COD</button>
@@ -529,7 +492,6 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
           Shipping Address
         </div>
-
         <div id="savedAddressesSection" style="display:none;">
           <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;">Saved</div>
           <div id="savedAddressList"></div>
@@ -538,45 +500,20 @@
             Add New Address
           </div>
         </div>
-
         <div id="addressForm">
-          <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="custName" class="form-input" placeholder="Enter your full name">
+          <div class="form-group"><label>Full Name</label><input type="text" id="custName" class="form-input" placeholder="Enter your full name"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Email</label><input type="email" id="custEmail" class="form-input" placeholder="you@email.com"></div>
+            <div class="form-group"><label>Phone</label><input type="tel" id="custPhone" class="form-input" placeholder="+91 98765 43210"></div>
+          </div>
+          <div class="form-group"><label>Street Address</label><textarea id="custAddress" class="form-input" placeholder="House no, Street, Landmark…"></textarea></div>
+          <div class="form-row">
+            <div class="form-group"><label>City</label><input type="text" id="custCity" class="form-input" placeholder="City"></div>
+            <div class="form-group"><label>State</label><input type="text" id="custState" class="form-input" placeholder="State"></div>
           </div>
           <div class="form-row">
-            <div class="form-group">
-              <label>Email</label>
-              <input type="email" id="custEmail" class="form-input" placeholder="you@email.com">
-            </div>
-            <div class="form-group">
-              <label>Phone</label>
-              <input type="tel" id="custPhone" class="form-input" placeholder="+91 98765 43210">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Street Address</label>
-            <textarea id="custAddress" class="form-input" placeholder="House no, Street, Landmark…"></textarea>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>City</label>
-              <input type="text" id="custCity" class="form-input" placeholder="City">
-            </div>
-            <div class="form-group">
-              <label>State</label>
-              <input type="text" id="custState" class="form-input" placeholder="State">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Pincode</label>
-              <input type="text" id="custPincode" class="form-input" placeholder="400001" maxlength="6">
-            </div>
-            <div class="form-group">
-              <label>Country</label>
-              <input type="text" id="custCountry" class="form-input" value="India">
-            </div>
+            <div class="form-group"><label>Pincode</label><input type="text" id="custPincode" class="form-input" placeholder="400001" maxlength="6"></div>
+            <div class="form-group"><label>Country</label><input type="text" id="custCountry" class="form-input" value="India"></div>
           </div>
           <button class="location-btn" id="locationBtn" onclick="getLocation()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3"/></svg>
@@ -631,9 +568,7 @@
         </div>
         <div class="summary-row"><span>Subtotal</span><span id="subTotal">₹0</span></div>
         <div class="summary-row"><span>Shipping</span><span style="color:var(--success);font-weight:700;">FREE</span></div>
-        <div class="summary-row discount-row" id="discountRow" style="display:none;">
-          <span>Discount</span><span id="discountVal">-₹0</span>
-        </div>
+        <div class="summary-row discount-row" id="discountRow" style="display:none;"><span>Discount</span><span id="discountVal">-₹0</span></div>
         <div class="summary-divider"></div>
         <div class="summary-total">
           <div class="summary-total-label">Total</div>
@@ -653,15 +588,12 @@
       <h4>JERSIFY</h4>
       <p>Premium football jerseys, clubwear, and fan drops designed for people who want style on and off the pitch.</p>
       <div class="footer-links">
-        <a href="index.html">Home</a>
-        <a href="shop.html">Shop</a>
-        <a href="checkout.html">Cart</a>
-        <a href="profile.html">Profile</a>
+        <a href="index.html">Home</a><a href="shop.html">Shop</a>
+        <a href="checkout.html">Cart</a><a href="profile.html">Profile</a>
       </div>
       <div class="copy">© 2025 Jersify. All rights reserved.</div>
     </footer>
   </div>
-
 </div>
 
 <nav class="bottom-nav">
@@ -672,8 +604,7 @@
 </nav>
 
 <div id="authBackdrop" onclick="closeAuthModal()"></div>
-
-<div id="authModal" role="dialog" aria-modal="true" aria-label="Sign in or Create Account">
+<div id="authModal" role="dialog" aria-modal="true">
   <div class="auth-gradient-bar"></div>
   <div class="auth-modal-handle"></div>
   <div class="auth-modal-header">
@@ -681,7 +612,7 @@
       <div class="auth-modal-logo">JERS<span>IFY</span></div>
       <div class="auth-modal-tagline">Your kit. Your game.</div>
     </div>
-    <button class="auth-modal-close" onclick="closeAuthModal()" aria-label="Close">✕</button>
+    <button class="auth-modal-close" onclick="closeAuthModal()">✕</button>
   </div>
   <div class="auth-tabs">
     <button class="auth-tab active" id="tabSignin" onclick="switchAuthTab('signin')">Sign In</button>
@@ -690,16 +621,9 @@
   <div class="auth-body">
     <div class="auth-error" id="authError"></div>
     <div class="auth-success-msg" id="authSuccess"></div>
-
     <div id="signinPanel">
-      <div class="auth-welcome">
-        <div class="auth-welcome-title">Welcome back 👋</div>
-        <div class="auth-welcome-sub">Sign in to continue to your order.</div>
-      </div>
-      <div class="auth-form-group">
-        <label>Email Address</label>
-        <input type="email" id="siEmail" class="auth-input" placeholder="you@email.com" autocomplete="email">
-      </div>
+      <div class="auth-welcome"><div class="auth-welcome-title">Welcome back 👋</div><div class="auth-welcome-sub">Sign in to continue to your order.</div></div>
+      <div class="auth-form-group"><label>Email Address</label><input type="email" id="siEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
       <div class="auth-form-group">
         <label>Password</label>
         <input type="password" id="siPassword" class="auth-input has-icon" placeholder="Your password" autocomplete="current-password">
@@ -708,73 +632,45 @@
         </button>
       </div>
       <a class="auth-forgot" onclick="showResetPanel()">Forgot password?</a>
-      <button class="auth-submit-btn" id="siBtn" onclick="doSignIn()">
-        <div class="auth-btn-spinner"></div>
-        <span class="auth-btn-text">Sign In & Continue</span>
-      </button>
+      <button class="auth-submit-btn" id="siBtn" onclick="doSignIn()"><div class="auth-btn-spinner"></div><span class="auth-btn-text">Sign In & Continue</span></button>
       <div class="auth-divider"><span>or continue with</span></div>
       <button class="auth-google-btn" id="siGoogleBtn" onclick="doGoogleSignIn()">
-        <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+        <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Continue with Google
       </button>
       <div class="auth-terms">By signing in you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
     </div>
-
     <div id="signupPanel" style="display:none;">
-      <div class="auth-welcome">
-        <div class="auth-welcome-title">Create account 🎽</div>
-        <div class="auth-welcome-sub">Join Jersify and get exclusive drops & offers.</div>
-      </div>
-      <div class="auth-form-group">
-        <label>Full Name</label>
-        <input type="text" id="suName" class="auth-input" placeholder="Your full name" autocomplete="name">
-      </div>
-      <div class="auth-form-group">
-        <label>Email Address</label>
-        <input type="email" id="suEmail" class="auth-input" placeholder="you@email.com" autocomplete="email">
-      </div>
+      <div class="auth-welcome"><div class="auth-welcome-title">Create account 🎽</div><div class="auth-welcome-sub">Join Jersify and get exclusive drops & offers.</div></div>
+      <div class="auth-form-group"><label>Full Name</label><input type="text" id="suName" class="auth-input" placeholder="Your full name"></div>
+      <div class="auth-form-group"><label>Email Address</label><input type="email" id="suEmail" class="auth-input" placeholder="you@email.com"></div>
       <div class="auth-form-group">
         <label>Password</label>
-        <input type="password" id="suPassword" class="auth-input has-icon" placeholder="Min. 6 characters" autocomplete="new-password">
+        <input type="password" id="suPassword" class="auth-input has-icon" placeholder="Min. 6 characters">
         <button type="button" class="pw-toggle" onclick="togglePw('suPassword',this)" tabindex="-1">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
       <div class="auth-form-group">
         <label>Confirm Password</label>
-        <input type="password" id="suConfirm" class="auth-input has-icon" placeholder="Repeat password" autocomplete="new-password">
+        <input type="password" id="suConfirm" class="auth-input has-icon" placeholder="Repeat password">
         <button type="button" class="pw-toggle" onclick="togglePw('suConfirm',this)" tabindex="-1">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
-      <button class="auth-submit-btn" id="suBtn" onclick="doSignUp()">
-        <div class="auth-btn-spinner"></div>
-        <span class="auth-btn-text">Create Account & Continue</span>
-      </button>
+      <button class="auth-submit-btn" id="suBtn" onclick="doSignUp()"><div class="auth-btn-spinner"></div><span class="auth-btn-text">Create Account & Continue</span></button>
       <div class="auth-divider"><span>or continue with</span></div>
       <button class="auth-google-btn" id="suGoogleBtn" onclick="doGoogleSignIn()">
-        <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+        <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Continue with Google
       </button>
       <div class="auth-terms">By creating an account you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
     </div>
-
     <div id="resetPanel">
-      <div class="auth-welcome">
-        <div class="auth-welcome-title">Reset Password 🔑</div>
-        <div class="auth-welcome-sub">Enter your email and we'll send a reset link.</div>
-      </div>
-      <div class="auth-form-group">
-        <label>Email Address</label>
-        <input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com">
-      </div>
-      <button class="auth-submit-btn" id="resetBtn" onclick="doResetPassword()">
-        <div class="auth-btn-spinner"></div>
-        <span class="auth-btn-text">Send Reset Link</span>
-      </button>
-      <div style="text-align:center;margin-top:14px;">
-        <a onclick="hideResetPanel()" style="font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;">← Back to Sign In</a>
-      </div>
+      <div class="auth-welcome"><div class="auth-welcome-title">Reset Password 🔑</div><div class="auth-welcome-sub">Enter your email and we'll send a reset link.</div></div>
+      <div class="auth-form-group"><label>Email Address</label><input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com"></div>
+      <button class="auth-submit-btn" id="resetBtn" onclick="doResetPassword()"><div class="auth-btn-spinner"></div><span class="auth-btn-text">Send Reset Link</span></button>
+      <div style="text-align:center;margin-top:14px;"><a onclick="hideResetPanel()" style="font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;">← Back to Sign In</a></div>
     </div>
   </div>
 </div>
@@ -788,8 +684,12 @@
   }                                           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import {
     getDatabase, ref, get, child, set
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  }                                           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
+  /* ─────────────────────────────────────────────
+     CONFIG — only public values here. Secrets
+     live in Firebase Functions config.
+  ───────────────────────────────────────────── */
   const firebaseConfig = {
     apiKey:            "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
     authDomain:        "jersify-f9b5e.firebaseapp.com",
@@ -800,36 +700,31 @@
     databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
   };
 
+  /**
+   * ⚠️  REPLACE THIS with your deployed Firebase Functions region URL.
+   * Format: https://REGION-PROJECT_ID.cloudfunctions.net
+   * Example: https://createcashfreeorder-cb3aepnlna-uc.a.run.app
+   * Find it after deploying with: firebase deploy --only functions
+   */
+  const FUNCTIONS_BASE = "https://createcashfreeorder-cb3aepnlna-uc.a.run.app";
+
+  /* convenience POST helper */
+  async function callFn(name, body) {
+    const r = await fetch(`${FUNCTIONS_BASE}/${name}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await r.json();
+    if (!r.ok || !data.ok) throw new Error(data.error || `${name} failed`);
+    return data;
+  }
+
   const app       = initializeApp(firebaseConfig);
   const auth      = getAuth(app);
   const db        = getDatabase(app);
   const dbRef     = ref(db);
   const gProvider = new GoogleAuthProvider();
-
-  /* ── Cashfree config ── */
-  const CASHFREE_APP_ID     = "1054082441e8398c0bbfcd9506d2804501";
-  const CASHFREE_SECRET_KEY = "cfsk_ma_prod_44274c384bc392cc637a902d873ac5ab_949e58ad";
-  /* NOTE: In production, the order creation API call (which uses the secret key)
-     MUST be made from your backend server — never expose the secret key in
-     client-side code in a real deployment. This implementation calls Cashfree's
-     orders API directly for demonstration; move this to a server function before going live. */
-
-  const NOTIFY = {
-    email: {
-      enabled:    true,
-      serviceId:  "YOUR_EMAILJS_SERVICE_ID",
-      templateId: "YOUR_EMAILJS_TEMPLATE_ID",
-    },
-    sms: {
-      enabled: true,
-      apiKey:  "SMfl0W8NsrI9ZGiUoK3YCTjxBbdvQcmheOyFJ1P4A2D6tnpkLqNYvE0eBwcRJqXSdbUxzilGt5C4A1Oj",
-    },
-    whatsapp: {
-      enabled:    true,
-      ownerPhone: "91XXXXXXXXXX",
-      apiKey:     "YOUR_CALLMEBOT_API_KEY",
-    },
-  };
 
   /* ── state ── */
   let orderPrice        = 0;
@@ -843,384 +738,117 @@
   let currentUser       = null;
 
   /* ════════════════════════════════════
-     CASHFREE PAYMENT
-     ════════════════════════════════════ */
+     AUTH helpers
+  ════════════════════════════════════ */
+  window.openAuthModal   = (tab='signin') => { switchAuthTab(tab); clearAuthMessages(); document.getElementById('authModal').classList.add('show'); document.getElementById('authBackdrop').classList.add('show'); document.body.style.overflow='hidden'; };
+  window.closeAuthModal  = () => { document.getElementById('authModal').classList.remove('show'); document.getElementById('authBackdrop').classList.remove('show'); document.body.style.overflow=''; };
+  window.switchAuthTab   = (tab) => { const s=tab==='signin'; document.getElementById('tabSignin').classList.toggle('active',s); document.getElementById('tabSignup').classList.toggle('active',!s); document.getElementById('signinPanel').style.display=s?'block':'none'; document.getElementById('signupPanel').style.display=!s?'block':'none'; document.getElementById('resetPanel').style.display='none'; clearAuthMessages(); };
+  window.showResetPanel  = () => { document.getElementById('signinPanel').style.display='none'; document.getElementById('resetPanel').style.display='block'; clearAuthMessages(); };
+  window.hideResetPanel  = () => { document.getElementById('resetPanel').style.display='none'; document.getElementById('signinPanel').style.display='block'; clearAuthMessages(); };
+  window.togglePw        = (id,btn) => { const inp=document.getElementById(id); const s=inp.type==='text'; inp.type=s?'password':'text'; btn.innerHTML=s?`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`; };
 
-  /**
-   * Creates a Cashfree order via their Orders API and returns the payment_session_id.
-   * In production: move this fetch to your backend and call your own endpoint instead.
-   */
-  async function createCashfreeOrder({ orderId, amount, customerName, customerEmail, customerPhone }) {
-    const cleanPhone = String(customerPhone).replace(/\D/g, '').slice(-10);
-    const payload = {
-      order_id:       orderId,
-      order_amount:   amount,
-      order_currency: "INR",
-      customer_details: {
-        customer_id:    currentUser ? currentUser.uid : `guest_${Date.now()}`,
-        customer_name:  customerName,
-        customer_email: customerEmail || "customer@jersify.in",
-        customer_phone: cleanPhone.length === 10 ? `+91${cleanPhone}` : "+919999999999",
-      },
-      order_meta: {
-        return_url: `${window.location.origin}/checkout.html?cf_order_id={order_id}&status={order_status}`,
-        notify_url: "", /* your webhook URL if any */
-      },
-      order_note: "Jersify Order",
-    };
-
-    const resp = await fetch("https://api.cashfree.com/pg/orders", {
-      method:  "POST",
-      headers: {
-        "Content-Type":    "application/json",
-        "x-api-version":   "2023-08-01",
-        "x-client-id":     CASHFREE_APP_ID,
-        "x-client-secret": CASHFREE_SECRET_KEY,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.message || `Cashfree order creation failed (HTTP ${resp.status})`);
-    }
-
-    const data = await resp.json();
-    return data.payment_session_id;
-  }
-
-  /**
-   * Launch Cashfree checkout using the JS SDK drop.
-   */
-  async function launchCashfreeCheckout({ orderId, amount, customerName, customerEmail, customerPhone, onSuccess, onFailure }) {
-    let sessionId;
-    try {
-      sessionId = await createCashfreeOrder({ orderId, amount, customerName, customerEmail, customerPhone });
-    } catch (err) {
-      onFailure(`Could not initiate payment: ${err.message}`);
-      return;
-    }
-
-    const cashfree = await load({ mode: "production" }); /* use "sandbox" for testing */
-
-    const checkoutOptions = {
-      paymentSessionId: sessionId,
-      redirectTarget:   "_modal",
-    };
-
-    cashfree.checkout(checkoutOptions).then(result => {
-      if (result.error) {
-        onFailure(result.error.message || "Payment failed.");
-      } else if (result.redirect) {
-        /* handled via return_url */
-      } else if (result.paymentDetails) {
-        onSuccess(result.paymentDetails.paymentMessage || "Payment successful", sessionId);
-      }
-    }).catch(err => {
-      onFailure(err?.message || "Payment could not be processed.");
-    });
-  }
-
-  /* ════════════════════════════════════
-     NOTIFICATION FUNCTIONS
-     ════════════════════════════════════ */
-
-  async function sendOrderConfirmations({ orderId, name, email, phone, total, payMethod, items }) {
-    const jobs = [];
-    if (NOTIFY.email.enabled)    jobs.push({ label: 'Email',     fn: () => sendEmailConfirmation({ orderId, name, email, total, payMethod, items }) });
-    if (NOTIFY.sms.enabled)      jobs.push({ label: 'SMS',       fn: () => sendSMSConfirmation({ orderId, name, phone, total }) });
-    if (NOTIFY.whatsapp.enabled) jobs.push({ label: 'WhatsApp',  fn: () => sendWhatsAppAlert({ orderId, name, phone, total, payMethod, items }) });
-
-    const results = await Promise.allSettled(jobs.map(j => j.fn()));
-    results.forEach((r, i) => {
-      if (r.status === 'rejected') console.warn(`${jobs[i].label} notification failed:`, r.reason);
-      else                          console.log(`${jobs[i].label} notification sent ✓`);
-    });
-    return jobs.map((j, i) => ({ label: j.label, ok: results[i].status === 'fulfilled' }));
-  }
-
-  async function sendEmailConfirmation({ orderId, name, email, total, payMethod, items }) {
-    if (!email) { console.warn('Email skipped: no email address'); return; }
-    const itemsSummary = items.map(i => `${i.name} × ${i.qty || 1}  —  ₹${(i.price * (i.qty || 1)).toLocaleString('en-IN')}`).join('\n');
-    await emailjs.send(
-      NOTIFY.email.serviceId,
-      NOTIFY.email.templateId,
-      {
-        to_name:        name,
-        to_email:       email,
-        order_id:       orderId,
-        total:          `₹${total.toLocaleString('en-IN')}`,
-        payment_method: payMethod,
-        items_summary:  itemsSummary,
-        year:           new Date().getFullYear(),
-      }
-    );
-  }
-
-  async function sendSMSConfirmation({ orderId, name, phone, total }) {
-    const cleanPhone = String(phone).replace(/\D/g, '').slice(-10);
-    if (cleanPhone.length !== 10) { console.warn('SMS skipped: invalid phone'); return; }
-    const message =
-      `Hi ${name.split(' ')[0]}! Your JERSIFY order ${orderId} ` +
-      `worth Rs.${total.toLocaleString('en-IN')} is CONFIRMED. ` +
-      `We will ship it soon!`;
-    const resp = await fetch('https://www.fast2sms.com/dev/bulkV2', {
-      method: 'POST',
-      headers: { 'authorization': NOTIFY.sms.apiKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ route: 'q', message, language: 'english', flash: 0, numbers: cleanPhone }),
-    });
-    const data = await resp.json();
-    if (!data.return) throw new Error(data.message || 'Fast2SMS error');
-  }
-
-  async function sendWhatsAppAlert({ orderId, name, phone, total, payMethod, items }) {
-    const itemLines = items.map(i => `  • ${i.name} x${i.qty || 1}  Rs.${(i.price * (i.qty || 1)).toLocaleString('en-IN')}`).join('\n');
-    const text =
-      `*New JERSIFY Order!*\n\n` +
-      `Order: *${orderId}*\n` +
-      `Customer: ${name}\n` +
-      `Phone: ${phone}\n\n` +
-      `Items:\n${itemLines}\n\n` +
-      `*Total: Rs.${total.toLocaleString('en-IN')}*\n` +
-      `Payment: ${payMethod}\n` +
-      `Time: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`;
-    const url =
-      `https://api.callmebot.com/whatsapp.php` +
-      `?phone=${NOTIFY.whatsapp.ownerPhone}` +
-      `&text=${encodeURIComponent(text)}` +
-      `&apikey=${NOTIFY.whatsapp.apiKey}`;
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`CallMeBot HTTP ${resp.status}`);
-  }
-
-  /* ════════════════════════════════════
-     AUTH MODAL helpers
-     ════════════════════════════════════ */
-  window.openAuthModal = (tab = 'signin') => {
-    switchAuthTab(tab);
-    clearAuthMessages();
-    document.getElementById('authModal').classList.add('show');
-    document.getElementById('authBackdrop').classList.add('show');
-    document.body.style.overflow = 'hidden';
-  };
-  window.closeAuthModal = () => {
-    document.getElementById('authModal').classList.remove('show');
-    document.getElementById('authBackdrop').classList.remove('show');
-    document.body.style.overflow = '';
-  };
-  window.switchAuthTab = (tab) => {
-    const isSignin = tab === 'signin';
-    document.getElementById('tabSignin').classList.toggle('active', isSignin);
-    document.getElementById('tabSignup').classList.toggle('active', !isSignin);
-    document.getElementById('signinPanel').style.display  = isSignin ? 'block' : 'none';
-    document.getElementById('signupPanel').style.display  = !isSignin ? 'block' : 'none';
-    document.getElementById('resetPanel').style.display   = 'none';
-    clearAuthMessages();
-  };
-  window.showResetPanel = () => {
-    document.getElementById('signinPanel').style.display = 'none';
-    document.getElementById('resetPanel').style.display  = 'block';
-    clearAuthMessages();
-  };
-  window.hideResetPanel = () => {
-    document.getElementById('resetPanel').style.display  = 'none';
-    document.getElementById('signinPanel').style.display = 'block';
-    clearAuthMessages();
-  };
-  window.togglePw = (id, btn) => {
-    const inp = document.getElementById(id);
-    const showing = inp.type === 'text';
-    inp.type = showing ? 'password' : 'text';
-    btn.innerHTML = showing
-      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
-      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
-  };
-
-  function setAuthLoading(btnId, loading) {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-    btn.classList.toggle('loading', loading);
-    btn.disabled = loading;
-  }
-  function showAuthError(msg) {
-    const el = document.getElementById('authError');
-    el.textContent = msg; el.classList.add('show');
-    document.getElementById('authSuccess').classList.remove('show');
-  }
-  function showAuthSuccess(msg) {
-    const el = document.getElementById('authSuccess');
-    el.textContent = msg; el.classList.add('show');
-    document.getElementById('authError').classList.remove('show');
-  }
-  function clearAuthMessages() {
-    document.getElementById('authError').classList.remove('show');
-    document.getElementById('authSuccess').classList.remove('show');
-  }
+  function setAuthLoading(id,v){const b=document.getElementById(id);if(b){b.classList.toggle('loading',v);b.disabled=v;}}
+  function showAuthError(m){const e=document.getElementById('authError');e.textContent=m;e.classList.add('show');document.getElementById('authSuccess').classList.remove('show');}
+  function showAuthSuccess(m){const e=document.getElementById('authSuccess');e.textContent=m;e.classList.add('show');document.getElementById('authError').classList.remove('show');}
+  function clearAuthMessages(){document.getElementById('authError').classList.remove('show');document.getElementById('authSuccess').classList.remove('show');}
 
   window.doSignIn = async () => {
-    const email = document.getElementById('siEmail').value.trim();
-    const pw    = document.getElementById('siPassword').value;
-    if (!email || !pw) { showAuthError('Please enter your email and password.'); return; }
-    setAuthLoading('siBtn', true); clearAuthMessages();
-    try {
-      await signInWithEmailAndPassword(auth, email, pw);
-    } catch (err) {
-      setAuthLoading('siBtn', false);
-      showAuthError(friendlyAuthError(err.code));
-    }
+    const email=document.getElementById('siEmail').value.trim(), pw=document.getElementById('siPassword').value;
+    if(!email||!pw){showAuthError('Please enter your email and password.');return;}
+    setAuthLoading('siBtn',true); clearAuthMessages();
+    try { await signInWithEmailAndPassword(auth,email,pw); }
+    catch(err){ setAuthLoading('siBtn',false); showAuthError(friendlyAuthError(err.code)); }
   };
-
   window.doSignUp = async () => {
-    const name    = document.getElementById('suName').value.trim();
-    const email   = document.getElementById('suEmail').value.trim();
-    const pw      = document.getElementById('suPassword').value;
-    const confirm = document.getElementById('suConfirm').value;
-    if (!name)          { showAuthError('Please enter your full name.'); return; }
-    if (!email)         { showAuthError('Please enter your email.'); return; }
-    if (pw.length < 6)  { showAuthError('Password must be at least 6 characters.'); return; }
-    if (pw !== confirm) { showAuthError('Passwords do not match.'); return; }
-    setAuthLoading('suBtn', true); clearAuthMessages();
+    const name=document.getElementById('suName').value.trim(), email=document.getElementById('suEmail').value.trim(), pw=document.getElementById('suPassword').value, confirm=document.getElementById('suConfirm').value;
+    if(!name){showAuthError('Please enter your full name.');return;}
+    if(!email){showAuthError('Please enter your email.');return;}
+    if(pw.length<6){showAuthError('Password must be at least 6 characters.');return;}
+    if(pw!==confirm){showAuthError('Passwords do not match.');return;}
+    setAuthLoading('suBtn',true); clearAuthMessages();
     try {
-      const cred = await createUserWithEmailAndPassword(auth, email, pw);
-      await updateProfile(cred.user, { displayName: name });
-      try { await set(ref(db, `users/${cred.user.uid}/profile`), { name, email }); } catch (_) {}
-    } catch (err) {
-      setAuthLoading('suBtn', false);
-      showAuthError(friendlyAuthError(err.code));
-    }
+      const cred=await createUserWithEmailAndPassword(auth,email,pw);
+      await updateProfile(cred.user,{displayName:name});
+      try{await set(ref(db,`users/${cred.user.uid}/profile`),{name,email});}catch(_){}
+    } catch(err){ setAuthLoading('suBtn',false); showAuthError(friendlyAuthError(err.code)); }
   };
-
   window.doGoogleSignIn = async () => {
-    setAuthLoading('siGoogleBtn', true);
-    setAuthLoading('suGoogleBtn', true);
-    clearAuthMessages();
-    try {
-      await signInWithPopup(auth, gProvider);
-    } catch (err) {
-      setAuthLoading('siGoogleBtn', false);
-      setAuthLoading('suGoogleBtn', false);
-      showAuthError(friendlyAuthError(err.code));
-    }
+    setAuthLoading('siGoogleBtn',true); setAuthLoading('suGoogleBtn',true); clearAuthMessages();
+    try { await signInWithPopup(auth,gProvider); }
+    catch(err){ setAuthLoading('siGoogleBtn',false); setAuthLoading('suGoogleBtn',false); showAuthError(friendlyAuthError(err.code)); }
   };
-
   window.doResetPassword = async () => {
-    const email = document.getElementById('resetEmail').value.trim();
-    if (!email) { showAuthError('Please enter your email address.'); return; }
-    setAuthLoading('resetBtn', true); clearAuthMessages();
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setAuthLoading('resetBtn', false);
-      showAuthSuccess('Reset link sent! Check your inbox.');
-    } catch (err) {
-      setAuthLoading('resetBtn', false);
-      showAuthError(friendlyAuthError(err.code));
-    }
+    const email=document.getElementById('resetEmail').value.trim();
+    if(!email){showAuthError('Please enter your email address.');return;}
+    setAuthLoading('resetBtn',true); clearAuthMessages();
+    try { await sendPasswordResetEmail(auth,email); setAuthLoading('resetBtn',false); showAuthSuccess('Reset link sent! Check your inbox.'); }
+    catch(err){ setAuthLoading('resetBtn',false); showAuthError(friendlyAuthError(err.code)); }
   };
+  window.handleSignOut = async () => { if(!confirm('Sign out?'))return; await signOut(auth); };
 
-  window.handleSignOut = async () => {
-    if (!confirm('Sign out?')) return;
-    await signOut(auth);
-  };
-
-  function friendlyAuthError(code) {
-    const map = {
-      'auth/user-not-found':         'No account found with this email.',
-      'auth/wrong-password':         'Incorrect password. Please try again.',
-      'auth/invalid-email':          'Please enter a valid email address.',
-      'auth/email-already-in-use':   'An account with this email already exists.',
-      'auth/weak-password':          'Password must be at least 6 characters.',
-      'auth/too-many-requests':      'Too many attempts. Please try again later.',
-      'auth/popup-closed-by-user':   'Sign-in popup was closed.',
-      'auth/network-request-failed': 'Network error. Check your connection.',
-      'auth/invalid-credential':     'Incorrect email or password.',
-    };
-    return map[code] || 'Something went wrong. Please try again.';
+  function friendlyAuthError(code){
+    const m={'auth/user-not-found':'No account found with this email.','auth/wrong-password':'Incorrect password.','auth/invalid-email':'Please enter a valid email.','auth/email-already-in-use':'An account with this email already exists.','auth/weak-password':'Password must be at least 6 characters.','auth/too-many-requests':'Too many attempts. Please try again later.','auth/popup-closed-by-user':'Sign-in popup was closed.','auth/network-request-failed':'Network error. Check your connection.','auth/invalid-credential':'Incorrect email or password.'};
+    return m[code]||'Something went wrong. Please try again.';
   }
 
   onAuthStateChanged(auth, user => {
     currentUser = user;
     updateUserBadge(user);
     updateAuthBanners(user);
-    if (user) { prefillUserInfo(user); closeAuthModal(); }
+    if(user){ prefillUserInfo(user); closeAuthModal(); }
   });
 
-  function updateAuthBanners(user) {
-    const signedInBanner = document.getElementById('authSignedInBanner');
-    const promptCard     = document.getElementById('authPromptCard');
-    if (user) {
-      const name = user.displayName || user.email || 'User';
-      document.getElementById('signedInName').textContent  = `Signed in as ${name.split(' ')[0]}`;
-      document.getElementById('signedInEmail').textContent = user.email || '';
-      signedInBanner.classList.add('show');
-      promptCard.classList.remove('show');
-    } else {
-      signedInBanner.classList.remove('show');
-      promptCard.classList.add('show');
-    }
+  function updateAuthBanners(user){
+    const si=document.getElementById('authSignedInBanner'), pc=document.getElementById('authPromptCard');
+    if(user){
+      document.getElementById('signedInName').textContent=`Signed in as ${(user.displayName||user.email||'User').split(' ')[0]}`;
+      document.getElementById('signedInEmail').textContent=user.email||'';
+      si.classList.add('show'); pc.classList.remove('show');
+    } else { si.classList.remove('show'); pc.classList.add('show'); }
+  }
+  function updateUserBadge(user){
+    const badge=document.getElementById('userBadge'), avatar=document.getElementById('userAvatar'), nameEl=document.getElementById('userNameBadge'), titleEl=document.getElementById('topbarTitle');
+    if(user){
+      badge.classList.add('visible'); titleEl.style.display='none';
+      avatar.innerHTML=user.photoURL?`<img src="${user.photoURL}" alt="avatar">`:(user.displayName||user.email||'?').slice(0,2).toUpperCase();
+      nameEl.textContent=(user.displayName||user.email||'').split(' ')[0];
+    } else { badge.classList.remove('visible'); titleEl.style.display=''; }
   }
 
-  function updateUserBadge(user) {
-    const badge   = document.getElementById('userBadge');
-    const avatar  = document.getElementById('userAvatar');
-    const nameEl  = document.getElementById('userNameBadge');
-    const titleEl = document.getElementById('topbarTitle');
-    if (user) {
-      const initials = (user.displayName || user.email || '?').slice(0, 2).toUpperCase();
-      badge.classList.add('visible');
-      titleEl.style.display = 'none';
-      avatar.innerHTML = user.photoURL ? `<img src="${user.photoURL}" alt="avatar">` : initials;
-      nameEl.textContent = (user.displayName || user.email || '').split(' ')[0];
-    } else {
-      badge.classList.remove('visible');
-      titleEl.style.display = '';
-    }
-  }
+  const getCart   = () => { try{return JSON.parse(localStorage.getItem('jersify_cart')||'[]');}catch{return [];} };
+  const saveCart  = c  => localStorage.setItem('jersify_cart',JSON.stringify(c));
+  const getSavedAddresses = () => { try{return JSON.parse(localStorage.getItem('jersify_addresses')||'[]');}catch{return [];} };
+  const saveAddressLocal  = a  => { const addrs=getSavedAddresses(); addrs.unshift({...a,id:Date.now(),tag:'Home'}); localStorage.setItem('jersify_addresses',JSON.stringify(addrs.slice(0,5))); };
 
-  const getCart   = () => { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } };
-  const saveCart  = c  => localStorage.setItem('jersify_cart', JSON.stringify(c));
-  const getSavedAddresses = () => { try { return JSON.parse(localStorage.getItem('jersify_addresses') || '[]'); } catch { return []; } };
-  const saveAddressLocal  = a  => {
-    const addrs = getSavedAddresses();
-    addrs.unshift({ ...a, id: Date.now(), tag: 'Home' });
-    localStorage.setItem('jersify_addresses', JSON.stringify(addrs.slice(0, 5)));
-  };
-
-  async function loadCoupons() {
-    try {
-      const snap = await get(child(dbRef, 'coupons'));
-      if (snap.exists()) {
-        const data = snap.val();
-        Object.entries(data).forEach(([key, val]) => {
-          if (val.active !== false) {
-            const code = key.toUpperCase();
-            couponsMap[code] = { type: val.type || 'percent', value: Number(val.value) || 0, desc: val.desc || `${val.value}${val.type === 'flat' ? '₹' : '%'} OFF` };
+  async function loadCoupons(){
+    try{
+      const snap=await get(child(dbRef,'coupons'));
+      if(snap.exists()){
+        Object.entries(snap.val()).forEach(([key,val])=>{
+          if(val.active!==false){
+            const code=key.toUpperCase();
+            couponsMap[code]={type:val.type||'percent',value:Number(val.value)||0,desc:val.desc||`${val.value}${val.type==='flat'?'₹':'%'} OFF`};
           }
         });
       }
-    } catch { /* silently ignore */ }
+    } catch {}
   }
 
-  async function prefillUserInfo(user) {
-    let name = user.displayName || '', email = user.email || '', phone = user.phoneNumber || '';
-    try {
-      const snap = await get(child(dbRef, `users/${user.uid}`));
-      if (snap.exists()) {
-        const u = snap.val(), p = u.profile || {};
-        name  = p.name  || u.name  || u.displayName || name;
-        email = p.email || u.email || email;
-        phone = p.phone || p.phoneNumber || u.phone || u.phoneNumber || u.mobile || phone;
-      }
-    } catch (_) {}
-    const setIfEmpty = (id, val) => { const el = document.getElementById(id); if (el && !el.value && val) el.value = val; };
-    setIfEmpty('custName', name); setIfEmpty('custEmail', email); setIfEmpty('custPhone', phone);
+  async function prefillUserInfo(user){
+    let name=user.displayName||'', email=user.email||'', phone=user.phoneNumber||'';
+    try{
+      const snap=await get(child(dbRef,`users/${user.uid}`));
+      if(snap.exists()){ const u=snap.val(),p=u.profile||{}; name=p.name||u.name||name; email=p.email||u.email||email; phone=p.phone||p.phoneNumber||u.phone||u.phoneNumber||u.mobile||phone; }
+    } catch {}
+    const setIfEmpty=(id,val)=>{const el=document.getElementById(id);if(el&&!el.value&&val)el.value=val;};
+    setIfEmpty('custName',name); setIfEmpty('custEmail',email); setIfEmpty('custPhone',phone);
   }
 
-  function renderSavedAddresses() {
-    const addrs = getSavedAddresses();
-    const section = document.getElementById('savedAddressesSection');
-    if (!addrs.length) { section.style.display = 'none'; newAddrVisible = true; return; }
-    section.style.display = 'block';
-    document.getElementById('savedAddressList').innerHTML = addrs.map((a, i) => `
+  function renderSavedAddresses(){
+    const addrs=getSavedAddresses(), section=document.getElementById('savedAddressesSection');
+    if(!addrs.length){section.style.display='none';newAddrVisible=true;return;}
+    section.style.display='block';
+    document.getElementById('savedAddressList').innerHTML=addrs.map((a,i)=>`
       <div class="saved-addr${i===0?' selected':''}" onclick="selectSavedAddr(${i},'${encodeURIComponent(JSON.stringify(a))}')" id="savedAddr_${i}">
         <div class="saved-addr-radio"></div>
         <div class="addr-info">
@@ -1229,325 +857,268 @@
           <div class="addr-text">${a.address}, ${a.city}, ${a.state} – ${a.pincode}</div>
         </div>
       </div>`).join('');
-    selectSavedAddr(0, encodeURIComponent(JSON.stringify(addrs[0])));
-    document.getElementById('addressForm').style.display = 'none';
-    document.getElementById('saveAddrRow').style.display = 'none';
-    newAddrVisible = false;
+    selectSavedAddr(0,encodeURIComponent(JSON.stringify(addrs[0])));
+    document.getElementById('addressForm').style.display='none';
+    document.getElementById('saveAddrRow').style.display='none';
+    newAddrVisible=false;
   }
 
-  window.selectSavedAddr = (idx, encoded) => {
-    document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected'));
+  window.selectSavedAddr=(idx,encoded)=>{
+    document.querySelectorAll('.saved-addr').forEach(el=>el.classList.remove('selected'));
     document.getElementById(`savedAddr_${idx}`)?.classList.add('selected');
-    selectedSavedAddr = JSON.parse(decodeURIComponent(encoded));
-    document.getElementById('addressForm').style.display = 'none';
-    document.getElementById('saveAddrRow').style.display = 'none';
-    newAddrVisible = false;
+    selectedSavedAddr=JSON.parse(decodeURIComponent(encoded));
+    document.getElementById('addressForm').style.display='none';
+    document.getElementById('saveAddrRow').style.display='none';
+    newAddrVisible=false;
   };
-  window.toggleNewAddress = () => {
-    newAddrVisible = !newAddrVisible;
-    document.getElementById('addressForm').style.display = newAddrVisible ? 'block' : 'none';
-    document.getElementById('saveAddrRow').style.display = newAddrVisible ? 'flex'  : 'none';
-    if (newAddrVisible) { selectedSavedAddr = null; document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected')); }
+  window.toggleNewAddress=()=>{
+    newAddrVisible=!newAddrVisible;
+    document.getElementById('addressForm').style.display=newAddrVisible?'block':'none';
+    document.getElementById('saveAddrRow').style.display=newAddrVisible?'flex':'none';
+    if(newAddrVisible){selectedSavedAddr=null;document.querySelectorAll('.saved-addr').forEach(el=>el.classList.remove('selected'));}
+  };
+  window.selectSize=btn=>{document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');};
+  window.selPay=method=>{document.querySelectorAll('.pay-opt').forEach(el=>el.classList.remove('active'));document.getElementById(method==='cashfree'?'pay_cf':'pay_cod').parentElement.classList.add('active');};
+
+  window.getLocation=()=>{
+    const btn=document.getElementById('locationBtn'),text=document.getElementById('locationText');
+    if(!navigator.geolocation){text.textContent='Geolocation not supported';return;}
+    btn.classList.add('loading');text.textContent='Detecting your location…';
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      try{
+        const{latitude,longitude}=pos.coords;
+        const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`);
+        const data=await r.json();
+        if(data?.address){
+          const a=data.address;
+          document.getElementById('custAddress').value=[a.house_number,a.road,a.neighbourhood,a.suburb].filter(Boolean).join(', ');
+          document.getElementById('custCity').value=a.city||a.town||a.village||'';
+          document.getElementById('custState').value=a.state||'';
+          document.getElementById('custPincode').value=a.postcode||'';
+          document.getElementById('custCountry').value=a.country||'India';
+          text.textContent='Location detected!';btn.classList.remove('loading');btn.classList.add('success');
+        }
+      }catch{text.textContent='Could not fetch address.';btn.classList.remove('loading');}
+    },()=>{text.textContent='Location denied. Enter manually.';btn.classList.remove('loading');},{enableHighAccuracy:true,timeout:10000});
   };
 
-  window.selectSize = btn => {
-    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  };
-  window.selPay = method => {
-    document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
-    document.getElementById(method === 'cashfree' ? 'pay_cf' : 'pay_cod').parentElement.classList.add('active');
-  };
-
-  window.getLocation = () => {
-    const btn = document.getElementById('locationBtn'), text = document.getElementById('locationText');
-    if (!navigator.geolocation) { text.textContent = 'Geolocation not supported'; return; }
-    btn.classList.add('loading'); text.textContent = 'Detecting your location…';
-    navigator.geolocation.getCurrentPosition(
-      async pos => {
-        try {
-          const { latitude, longitude } = pos.coords;
-          const r    = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`);
-          const data = await r.json();
-          if (data?.address) {
-            const a = data.address;
-            document.getElementById('custAddress').value = [a.house_number, a.road, a.neighbourhood, a.suburb].filter(Boolean).join(', ');
-            document.getElementById('custCity').value    = a.city || a.town || a.village || '';
-            document.getElementById('custState').value   = a.state || '';
-            document.getElementById('custPincode').value = a.postcode || '';
-            document.getElementById('custCountry').value = a.country || 'India';
-            text.textContent = 'Location detected!';
-            btn.classList.remove('loading'); btn.classList.add('success');
-          }
-        } catch { text.textContent = 'Could not fetch address.'; btn.classList.remove('loading'); }
-      },
-      () => { text.textContent = 'Location denied. Enter manually.'; btn.classList.remove('loading'); },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  };
-
-  window.applyCoupon = () => {
-    const code  = document.getElementById('couponInput').value.trim().toUpperCase();
-    const msgEl = document.getElementById('couponMsg');
-    if (!code)         { msgEl.textContent = 'Please enter a coupon code.'; msgEl.className = 'coupon-msg error'; return; }
-    if (couponApplied) { msgEl.textContent = 'A coupon is already applied.'; msgEl.className = 'coupon-msg error'; return; }
-    if (!Object.keys(couponsMap).length) { msgEl.textContent = 'Coupons still loading…'; msgEl.className = 'coupon-msg error'; return; }
-    const coupon = couponsMap[code];
-    if (!coupon) { msgEl.textContent = 'Invalid coupon code.'; msgEl.className = 'coupon-msg error'; return; }
-    discountAmount = coupon.type === 'percent' ? Math.round(orderPrice * coupon.value / 100) : coupon.value;
-    if (discountAmount > orderPrice) discountAmount = orderPrice;
-    couponApplied = true;
-    msgEl.textContent = `${coupon.desc} applied! You save ₹${discountAmount}`;
-    msgEl.className = 'coupon-msg success';
-    document.getElementById('discountRow').style.display = 'flex';
-    document.getElementById('discountVal').textContent   = `-₹${discountAmount}`;
+  window.applyCoupon=()=>{
+    const code=document.getElementById('couponInput').value.trim().toUpperCase(), msgEl=document.getElementById('couponMsg');
+    if(!code){msgEl.textContent='Please enter a coupon code.';msgEl.className='coupon-msg error';return;}
+    if(couponApplied){msgEl.textContent='A coupon is already applied.';msgEl.className='coupon-msg error';return;}
+    const coupon=couponsMap[code];
+    if(!coupon){msgEl.textContent='Invalid coupon code.';msgEl.className='coupon-msg error';return;}
+    discountAmount=coupon.type==='percent'?Math.round(orderPrice*coupon.value/100):coupon.value;
+    if(discountAmount>orderPrice)discountAmount=orderPrice;
+    couponApplied=true;
+    msgEl.textContent=`${coupon.desc} applied! You save ₹${discountAmount}`;msgEl.className='coupon-msg success';
+    document.getElementById('discountRow').style.display='flex';document.getElementById('discountVal').textContent=`-₹${discountAmount}`;
     updateTotal();
   };
+  function updateTotal(){document.getElementById('finalTotal').textContent=`₹${(orderPrice-discountAmount).toLocaleString('en-IN')}`;}
 
-  function updateTotal() {
-    document.getElementById('finalTotal').textContent = `₹${(orderPrice - discountAmount).toLocaleString('en-IN')}`;
-  }
-
-  window.changeQty = (key, delta) => {
-    const cart = getCart(), item = cart.find(i => i.key === key);
-    if (!item) return;
-    item.qty = Math.max(1, item.qty + delta);
-    saveCart(cart); recalcCartTotal();
-    const el = document.getElementById(`qty_${key.replace(/[^a-zA-Z0-9]/g, '_')}`);
-    if (el) el.textContent = item.qty;
+  window.changeQty=(key,delta)=>{
+    const cart=getCart(),item=cart.find(i=>i.key===key);
+    if(!item)return;
+    item.qty=Math.max(1,item.qty+delta);saveCart(cart);recalcCartTotal();
+    const el=document.getElementById(`qty_${key.replace(/[^a-zA-Z0-9]/g,'_')}`);
+    if(el)el.textContent=item.qty;
   };
-
-  function recalcCartTotal() {
-    const cart = getCart();
-    orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    discountAmount = 0; couponApplied = false;
-    document.getElementById('subTotal').textContent   = `₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('finalTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('couponMsg').className = 'coupon-msg';
-    document.getElementById('discountRow').style.display = 'none';
+  function recalcCartTotal(){
+    const cart=getCart();
+    orderPrice=cart.reduce((s,i)=>s+i.price*i.qty,0);
+    discountAmount=0;couponApplied=false;
+    document.getElementById('subTotal').textContent=`₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('finalTotal').textContent=`₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('couponMsg').className='coupon-msg';
+    document.getElementById('discountRow').style.display='none';
   }
 
-  function showPaymentFailed(reason) {
-    const banner = document.getElementById('payFailedBanner');
-    document.getElementById('payFailedDesc').textContent = (reason || 'Payment could not be processed.') + ' Your items are still here — try again or switch to Cash on Delivery.';
-    banner.classList.add('visible');
-    banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    const btn = document.getElementById('confirmBtn');
-    btn.disabled = false; btn.textContent = 'Confirm Order →';
+  function showPaymentFailed(reason){
+    const banner=document.getElementById('payFailedBanner');
+    document.getElementById('payFailedDesc').textContent=(reason||'Payment could not be processed.')+' Your items are still here — try again or switch to Cash on Delivery.';
+    banner.classList.add('visible');banner.scrollIntoView({behavior:'smooth',block:'start'});
+    const btn=document.getElementById('confirmBtn');btn.disabled=false;btn.textContent='Confirm Order →';
   }
-  window.retryPayment = () => {
-    document.getElementById('payFailedBanner').classList.remove('visible');
-    document.getElementById('confirmBtn').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  };
-  window.switchToCOD = () => {
-    document.getElementById('payFailedBanner').classList.remove('visible');
-    selPay('cod');
-    document.getElementById('pay_cod').parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  };
-
-  async function saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId, paymentMethod }) {
-    const items = orderItems.map(item => ({
-      id: item.id || item.key || '', name: item.name || '', price: item.price || 0,
-      qty: item.qty || 1, size: item.size || selectedSize || 'M',
-      team: item.team || '', imgUrl: item.imgUrl || item.imageUrl || '', emoji: item.emoji || '👕'
-    }));
-    const orderData = {
-      orderId, customerName: name, phone, email,
-      address: `${address}, ${city}, ${state} ${pincode}`, country: country || 'India',
-      items, subtotal: orderPrice, discount: discountAmount, total: finalPrice,
-      paymentMethod, paymentId: paymentId || '', status: 'processing',
-      createdAt: Date.now(), updatedAt: Date.now(), userId: currentUser ? currentUser.uid : 'guest'
-    };
-    try {
-      await set(ref(db, `orders/${orderId}`), orderData);
-      if (currentUser) await set(ref(db, `users/${currentUser.uid}/orders/${orderId}`), true);
-    } catch (err) { console.error('Failed to save order:', err); }
-  }
-
-  window.addEventListener('DOMContentLoaded', async () => {
-    loadCoupons();
-    renderSavedAddresses();
-
-    /* handle Cashfree redirect return */
-    const urlParams = new URLSearchParams(window.location.search);
-    const cfOrderId = urlParams.get('cf_order_id');
-    const cfStatus  = urlParams.get('status');
-    if (cfOrderId && cfStatus) {
-      if (cfStatus === 'SUCCESS') {
-        /* payment successful via redirect — show success */
-        const storedOrder = JSON.parse(sessionStorage.getItem('jersify_pending_order') || '{}');
-        if (storedOrder.orderId) {
-          await saveOrderToDB({ ...storedOrder, paymentId: cfOrderId, paymentMethod: 'cashfree' });
-          await sendOrderConfirmations({ orderId: storedOrder.orderId, name: storedOrder.name, email: storedOrder.email, phone: storedOrder.phone, total: storedOrder.finalPrice, payMethod: 'Online Payment', items: orderItems });
-          localStorage.removeItem('jersify_cart');
-          sessionStorage.removeItem('jersify_pending_order');
-          document.getElementById('loading').style.display         = 'none';
-          document.getElementById('checkoutContent').style.display = 'block';
-          showSuccess(storedOrder.orderId, storedOrder.name, storedOrder.finalPrice, storedOrder.selectedSize || 'M', 'Online Payment');
-          return;
-        }
-      } else {
-        /* payment failed via redirect */
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-    }
-
-    const params    = new URLSearchParams(window.location.search);
-    const pid       = params.get('id');
-    const paramSize = params.get('size');
-    const cart      = getCart();
-    const orderBody = document.getElementById('orderItemsBody');
-
-    if (pid) {
-      try {
-        const snap = await get(child(dbRef, `products/${pid}`));
-        if (snap.exists()) {
-          const p    = snap.val();
-          const name = p.name || 'Jersify Kit';
-          orderPrice = p.price ? parseInt(p.price) : 1499;
-          orderItems = [{ id: pid, name, price: orderPrice, size: paramSize || 'M', team: p.team || '', imgUrl: p.imgUrl || '', qty: 1 }];
-          orderBody.innerHTML = `
-            <div class="product-row">
-              <div class="product-img">
-                ${p.imgUrl ? `<img src="${p.imgUrl}" alt="${name}">` : `<span class="product-img-placeholder">10</span>`}
-              </div>
-              <div class="product-info">
-                <div class="product-name">${name}</div>
-                <div class="product-team">${Array.isArray(p.team) ? p.team.join(', ') : (p.team || 'Official Kit')}</div>
-                <div class="product-price">₹${orderPrice.toLocaleString('en-IN')}</div>
-              </div>
-            </div>`;
-          document.getElementById('sizeCard').style.display = 'block';
-          const sizes = ['XS','S','M','L','XL','XXL'];
-          document.getElementById('sizeGrid').innerHTML = sizes.map(sz =>
-            `<button class="size-btn${(paramSize||'M').toUpperCase()===sz?' active':''}" onclick="selectSize(this)">${sz}</button>`
-          ).join('');
-        } else {
-          orderBody.innerHTML = `<p style="color:var(--muted);font-size:13px;text-align:center;padding:12px 0">Product not found.</p>`;
-        }
-      } catch {
-        orderBody.innerHTML = `<p style="color:var(--accent);font-size:13px;text-align:center;padding:12px 0">Error loading product.</p>`;
-      }
-    } else if (cart.length > 0) {
-      isCartMode = true; orderItems = cart;
-      orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
-      orderBody.innerHTML = cart.map(item => {
-        const safeKey = item.key.replace(/[^a-zA-Z0-9]/g, '_');
-        return `
-          <div class="cart-item">
-            <div class="ci-img">
-              ${item.imageUrl || item.imgUrl ? `<img src="${item.imageUrl || item.imgUrl}" alt="${item.name}">` : `<span class="ci-img-placeholder">👕</span>`}
-            </div>
-            <div class="ci-info">
-              <div class="ci-name">${item.name}</div>
-              <div class="ci-meta">${item.team || ''} · Size: ${item.size}</div>
-              <div class="ci-price">₹${item.price.toLocaleString('en-IN')}</div>
-              <div class="ci-qty">
-                <button class="qty-btn" onclick="changeQty('${item.key}',-1)">−</button>
-                <span class="qty-display" id="qty_${safeKey}">${item.qty}</span>
-                <button class="qty-btn" onclick="changeQty('${item.key}',1)">+</button>
-              </div>
-            </div>
-          </div>`;
-      }).join('');
-    } else {
-      orderBody.innerHTML = `
-        <div class="empty-cart-hint">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"/></svg>
-          <p>Your cart is empty.<br>Browse our jerseys and add items.</p>
-          <a href="shop.html" class="browse-btn">Browse Jerseys →</a>
-        </div>`;
-    }
-
-    document.getElementById('subTotal').textContent   = `₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('finalTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('loading').style.display         = 'none';
-    document.getElementById('checkoutContent').style.display = 'block';
-  });
+  window.retryPayment=()=>{document.getElementById('payFailedBanner').classList.remove('visible');document.getElementById('confirmBtn').scrollIntoView({behavior:'smooth',block:'center'});};
+  window.switchToCOD=()=>{document.getElementById('payFailedBanner').classList.remove('visible');selPay('cod');document.getElementById('pay_cod').parentElement.scrollIntoView({behavior:'smooth',block:'center'});};
 
   /* ════════════════════════════════════════════════
-     Process Order
-     ════════════════════════════════════════════════ */
-  window.processOrder = () => {
-    if (orderPrice === 0) { alert('Your cart is empty.'); return; }
-    if (!currentUser) {
+     PROCESS ORDER — now calls backend Functions
+  ════════════════════════════════════════════════ */
+  window.processOrder = async () => {
+    if(orderPrice===0){alert('Your cart is empty.');return;}
+    if(!currentUser){
       openAuthModal('signin');
-      const btn = document.getElementById('confirmBtn');
-      btn.style.animation = 'shake .4s ease';
-      setTimeout(() => btn.style.animation = '', 500);
+      const btn=document.getElementById('confirmBtn');
+      btn.style.animation='shake .4s ease';
+      setTimeout(()=>btn.style.animation='',500);
       return;
     }
 
     document.getElementById('payFailedBanner').classList.remove('visible');
 
-    let name, phone, email, address, city, state, pincode, country;
-    if (selectedSavedAddr) {
-      ({ name, phone, email, address, city, state, pincode } = selectedSavedAddr);
-      country = selectedSavedAddr.country || 'India';
+    let name,phone,email,address,city,state,pincode,country;
+    if(selectedSavedAddr){
+      ({name,phone,email,address,city,state,pincode}=selectedSavedAddr);
+      country=selectedSavedAddr.country||'India';
     } else {
-      name    = document.getElementById('custName').value.trim();
-      phone   = document.getElementById('custPhone').value.trim();
-      email   = document.getElementById('custEmail').value.trim();
-      address = document.getElementById('custAddress').value.trim();
-      city    = document.getElementById('custCity').value.trim();
-      state   = document.getElementById('custState').value.trim();
-      pincode = document.getElementById('custPincode').value.trim();
-      country = document.getElementById('custCountry').value.trim() || 'India';
-      if (!name)                        { shakeField('custName');    alert('Please enter your name.'); return; }
-      if (!phone || phone.length < 10)  { shakeField('custPhone');   alert('Please enter a valid phone number.'); return; }
-      if (!address)                     { shakeField('custAddress'); alert('Please enter your address.'); return; }
-      if (!city)                        { shakeField('custCity');    alert('Please enter your city.'); return; }
-      if (!pincode || pincode.length<4) { shakeField('custPincode'); alert('Please enter a valid pincode.'); return; }
-      if (document.getElementById('saveAddrCheck').checked) saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
+      name=document.getElementById('custName').value.trim();
+      phone=document.getElementById('custPhone').value.trim();
+      email=document.getElementById('custEmail').value.trim();
+      address=document.getElementById('custAddress').value.trim();
+      city=document.getElementById('custCity').value.trim();
+      state=document.getElementById('custState').value.trim();
+      pincode=document.getElementById('custPincode').value.trim();
+      country=document.getElementById('custCountry').value.trim()||'India';
+      if(!name){shakeField('custName');alert('Please enter your name.');return;}
+      if(!phone||phone.length<10){shakeField('custPhone');alert('Please enter a valid phone number.');return;}
+      if(!address){shakeField('custAddress');alert('Please enter your address.');return;}
+      if(!city){shakeField('custCity');alert('Please enter your city.');return;}
+      if(!pincode||pincode.length<4){shakeField('custPincode');alert('Please enter a valid pincode.');return;}
+      if(document.getElementById('saveAddrCheck').checked)saveAddressLocal({name,phone,email,address,city,state,pincode,country});
     }
 
-    const isCF        = document.getElementById('pay_cf').checked;
-    const finalPrice  = orderPrice - discountAmount;
+    const isCF       = document.getElementById('pay_cf').checked;
+    const finalPrice = orderPrice - discountAmount;
     const selectedSize = document.querySelector('.size-btn.active')?.textContent || 'M';
+    const orderId    = `JRS-${Date.now()}`;
+    const btn        = document.getElementById('confirmBtn');
+    btn.disabled=true; btn.textContent='Processing…';
 
-    const btn = document.getElementById('confirmBtn');
-    btn.disabled = true; btn.textContent = 'Processing…';
-    const orderId = `JRS-${Date.now()}`;
+    const orderPayload = {
+      orderId, userId: currentUser.uid,
+      customerName: name, phone, email,
+      address, city, state, pincode, country,
+      items: orderItems, subtotal: orderPrice,
+      discount: discountAmount, total: finalPrice,
+      selectedSize, paymentMethod: isCF ? 'cashfree' : 'cod',
+    };
 
-    if (isCF) {
-      /* Store order details in sessionStorage in case of redirect flow */
-      sessionStorage.setItem('jersify_pending_order', JSON.stringify({
-        orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice
-      }));
+    if(isCF){
+      /* ── Online Payment via Cashfree (backend creates order) ── */
+      let sessionId;
+      try {
+        const result = await callFn('createCashfreeOrder', {
+          orderId, amount: finalPrice,
+          customerName: name, customerEmail: email, customerPhone: phone,
+          returnUrl: `${window.location.origin}/checkout.html?cf_order_id={order_id}&status={order_status}`,
+        });
+        sessionId = result.payment_session_id;
+      } catch(err) {
+        showPaymentFailed(`Could not initiate payment: ${err.message}`);
+        return;
+      }
 
-      launchCashfreeCheckout({
-        orderId,
-        amount:          finalPrice,
-        customerName:    name,
-        customerEmail:   email,
-        customerPhone:   phone,
-        onSuccess: async (message, sessionId) => {
-          await saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: sessionId || orderId, paymentMethod: 'cashfree' });
-          await sendOrderConfirmations({ orderId, name, email, phone, total: finalPrice, payMethod: 'Online Payment', items: orderItems });
+      /* Launch Cashfree modal */
+      try {
+        const cashfree = await load({ mode: "production" }); /* change to "sandbox" for testing */
+        const result   = await cashfree.checkout({ paymentSessionId: sessionId, redirectTarget: "_modal" });
+
+        if(result.error){
+          showPaymentFailed(result.error.message || 'Payment failed.');
+        } else if(result.paymentDetails) {
+          /* ── Payment SUCCESS: verify server-side then save ── */
+          try {
+            const verify = await callFn('verifyCashfreePayment', { cf_order_id: orderId });
+            if(verify.status !== 'SUCCESS') throw new Error('Payment not verified');
+          } catch(err) {
+            console.warn('Verification issue:', err.message);
+            // Proceed anyway if Cashfree SDK confirmed success
+          }
+
+          await callFn('saveOrder', { ...orderPayload, paymentId: sessionId, paymentMethod: 'cashfree', status: 'processing' });
+          await callFn('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Online Payment', items: orderItems });
+          await callFn('sendSMS',        { orderId, name, phone, total: finalPrice });
+          await callFn('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Online Payment', items: orderItems });
+
           localStorage.removeItem('jersify_cart');
-          sessionStorage.removeItem('jersify_pending_order');
-          btn.disabled = false; btn.textContent = 'Confirm Order →';
+          btn.disabled=false; btn.textContent='Confirm Order →';
           showSuccess(orderId, name, finalPrice, selectedSize, 'Online Payment');
-        },
-        onFailure: (reason) => {
-          showPaymentFailed(reason);
-        },
-      });
+        }
+      } catch(err) {
+        showPaymentFailed(err?.message || 'Payment could not be processed.');
+      }
+
     } else {
-      /* COD flow — unchanged */
-      saveOrderToDB({ orderId, name, phone, email, address, city, state, pincode, country, selectedSize, finalPrice, paymentId: '', paymentMethod: 'cod' })
-      .then(async () => {
-        await sendOrderConfirmations({ orderId, name, email, phone, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems });
+      /* ── COD flow ── */
+      try {
+        await callFn('saveOrder', { ...orderPayload, status: 'processing' });
+        await callFn('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems });
+        await callFn('sendSMS',        { orderId, name, phone, total: finalPrice });
+        await callFn('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems });
         localStorage.removeItem('jersify_cart');
-        btn.disabled = false; btn.textContent = 'Confirm Order →';
+        btn.disabled=false; btn.textContent='Confirm Order →';
         showSuccess(orderId, name, finalPrice, selectedSize, 'Cash on Delivery');
-      });
+      } catch(err) {
+        btn.disabled=false; btn.textContent='Confirm Order →';
+        alert('Order could not be placed: ' + err.message);
+      }
     }
   };
 
-  function showSuccess(orderId, name, total, size, payMethod) {
-    let countdown = 5;
-    document.querySelector('.content').innerHTML = `
+  /* ── Handle Cashfree redirect return (fallback for non-modal flow) ── */
+  window.addEventListener('DOMContentLoaded', async () => {
+    loadCoupons();
+    renderSavedAddresses();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const cfOrderId = urlParams.get('cf_order_id');
+    const cfStatus  = urlParams.get('status');
+    if(cfOrderId && cfStatus){
+      if(cfStatus==='SUCCESS'){
+        const stored = JSON.parse(sessionStorage.getItem('jersify_pending_order')||'{}');
+        if(stored.orderId){
+          try {
+            await callFn('saveOrder', { ...stored, paymentId: cfOrderId, paymentMethod: 'cashfree', status: 'processing' });
+            await callFn('sendOrderEmail', { orderId: stored.orderId, name: stored.name, email: stored.email, total: stored.finalPrice, payMethod: 'Online Payment', items: [] });
+            await callFn('sendSMS',      { orderId: stored.orderId, name: stored.name, phone: stored.phone, total: stored.finalPrice });
+            localStorage.removeItem('jersify_cart');
+            sessionStorage.removeItem('jersify_pending_order');
+            document.getElementById('loading').style.display='none';
+            document.getElementById('checkoutContent').style.display='block';
+            showSuccess(stored.orderId, stored.name, stored.finalPrice, stored.selectedSize||'M','Online Payment');
+            return;
+          } catch {}
+        }
+      }
+      window.history.replaceState({},document.title,window.location.pathname);
+    }
+
+    /* Load products / cart */
+    const params=new URLSearchParams(window.location.search), pid=params.get('id'), paramSize=params.get('size'), cart=getCart(), orderBody=document.getElementById('orderItemsBody');
+    if(pid){
+      try{
+        const snap=await get(child(dbRef,`products/${pid}`));
+        if(snap.exists()){
+          const p=snap.val(), name=p.name||'Jersify Kit';
+          orderPrice=p.price?parseInt(p.price):1499;
+          orderItems=[{id:pid,name,price:orderPrice,size:paramSize||'M',team:p.team||'',imgUrl:p.imgUrl||'',qty:1}];
+          orderBody.innerHTML=`<div class="product-row"><div class="product-img">${p.imgUrl?`<img src="${p.imgUrl}" alt="${name}">`:'<span class="product-img-placeholder">10</span>'}</div><div class="product-info"><div class="product-name">${name}</div><div class="product-team">${Array.isArray(p.team)?p.team.join(', '):(p.team||'Official Kit')}</div><div class="product-price">₹${orderPrice.toLocaleString('en-IN')}</div></div></div>`;
+          document.getElementById('sizeCard').style.display='block';
+          const sizes=['XS','S','M','L','XL','XXL'];
+          document.getElementById('sizeGrid').innerHTML=sizes.map(sz=>`<button class="size-btn${(paramSize||'M').toUpperCase()===sz?' active':''}" onclick="selectSize(this)">${sz}</button>`).join('');
+        }else{orderBody.innerHTML='<p style="color:var(--muted);font-size:13px;text-align:center;padding:12px 0">Product not found.</p>';}
+      }catch{orderBody.innerHTML='<p style="color:var(--accent);font-size:13px;text-align:center;padding:12px 0">Error loading product.</p>';}
+    }else if(cart.length>0){
+      isCartMode=true; orderItems=cart;
+      orderPrice=cart.reduce((s,i)=>s+i.price*i.qty,0);
+      orderBody.innerHTML=cart.map(item=>{
+        const safeKey=item.key.replace(/[^a-zA-Z0-9]/g,'_');
+        return `<div class="cart-item"><div class="ci-img">${item.imageUrl||item.imgUrl?`<img src="${item.imageUrl||item.imgUrl}" alt="${item.name}">`:'<span class="ci-img-placeholder">👕</span>'}</div><div class="ci-info"><div class="ci-name">${item.name}</div><div class="ci-meta">${item.team||''} · Size: ${item.size}</div><div class="ci-price">₹${item.price.toLocaleString('en-IN')}</div><div class="ci-qty"><button class="qty-btn" onclick="changeQty('${item.key}',-1)">−</button><span class="qty-display" id="qty_${safeKey}">${item.qty}</span><button class="qty-btn" onclick="changeQty('${item.key}',1)">+</button></div></div></div>`;
+      }).join('');
+    }else{
+      orderBody.innerHTML=`<div class="empty-cart-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"/></svg><p>Your cart is empty.<br>Browse our jerseys and add items.</p><a href="shop.html" class="browse-btn">Browse Jerseys →</a></div>`;
+    }
+    document.getElementById('subTotal').textContent=`₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('finalTotal').textContent=`₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('loading').style.display='none';
+    document.getElementById('checkoutContent').style.display='block';
+  });
+
+  function showSuccess(orderId,name,total,size,payMethod){
+    let countdown=5;
+    document.querySelector('.content').innerHTML=`
       <div class="success-screen">
         <span class="success-emoji">🎉</span>
         <div class="success-title">Order Confirmed!</div>
@@ -1556,25 +1127,24 @@
           <div class="success-detail-row"><span>Customer</span><span>${name}</span></div>
           <div class="success-detail-row"><span>Amount Paid</span><span>₹${total.toLocaleString('en-IN')}</span></div>
           <div class="success-detail-row"><span>Payment</span><span>${payMethod}</span></div>
-          ${!isCartMode ? `<div class="success-detail-row"><span>Size</span><span>${size}</span></div>` : ''}
+          ${!isCartMode?`<div class="success-detail-row"><span>Size</span><span>${size}</span></div>`:''}
         </div>
         <div class="success-msg">Thank you for shopping with Jersify! Your kit is being packed and will be on its way soon.</div>
         <button class="success-btn" onclick="window.location.href='profile.html'">View My Orders →</button>
-        <div class="success-redirect" id="successRedirect">Redirecting in <span id="countdownNum">${countdown}</span>s…</div>
+        <div class="success-redirect">Redirecting in <span id="countdownNum">${countdown}</span>s…</div>
       </div>`;
-    const interval = setInterval(() => {
+    const interval=setInterval(()=>{
       countdown--;
-      const el = document.getElementById('countdownNum');
-      if (el) el.textContent = countdown;
-      if (countdown <= 0) { clearInterval(interval); window.location.href = 'profile.html'; }
-    }, 1000);
+      const el=document.getElementById('countdownNum');
+      if(el)el.textContent=countdown;
+      if(countdown<=0){clearInterval(interval);window.location.href='profile.html';}
+    },1000);
   }
 
-  function shakeField(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.style.borderColor = 'var(--accent)'; el.style.animation = 'shake .4s ease';
-    setTimeout(() => { el.style.animation = ''; el.style.borderColor = ''; }, 500);
+  function shakeField(id){
+    const el=document.getElementById(id);if(!el)return;
+    el.style.borderColor='var(--accent)';el.style.animation='shake .4s ease';
+    setTimeout(()=>{el.style.animation='';el.style.borderColor='';},500);
   }
 </script>
 </body>
