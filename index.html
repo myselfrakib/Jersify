@@ -192,7 +192,6 @@
     .loop-viewport::-webkit-scrollbar { display: none; }
     .loop-viewport.is-dragging { cursor: grabbing; scroll-behavior: auto; }
     .loop-track { display: flex; gap: 12px; width: max-content; padding: 0 16px; }
-    /* pointer-events left ON during drag — suppression handled in JS click listener */
 
     .loop-card {
       flex: 0 0 170px;
@@ -255,6 +254,7 @@
       padding: 8px 8px 10px;
       text-align: center;
       transition: box-shadow .2s, transform .2s;
+      cursor: pointer;
     }
     .card-chip:hover {
       box-shadow: 0 14px 32px rgba(0,0,0,.14);
@@ -654,6 +654,12 @@
       window.location.href = "shop.html?product=" + encodeURIComponent(pid);
     }
 
+    /* ── Navigate to a team page using team.html?id=xxx ── */
+    function goToTeam(teamId) {
+      if (!teamId) return;
+      window.location.href = "team.html?id=" + encodeURIComponent(teamId);
+    }
+
     let _progress = 0;
     function setProgress(pct, label) {
       _progress = Math.max(_progress, pct);
@@ -712,7 +718,7 @@
     (() => {
       const vp = document.getElementById("loopViewport");
       let isDown = false, startX = 0, startScroll = 0, totalDrag = 0;
-      const DRAG_THRESHOLD = 8; // px — below this it's a tap, not a drag
+      const DRAG_THRESHOLD = 8;
 
       vp.addEventListener("mousedown", e => {
         if (e.button !== 0) return;
@@ -729,17 +735,14 @@
       window.addEventListener("mouseup", () => {
         if (!isDown) return;
         isDown = false;
-        // Remove dragging class after a short delay so click fires first
         setTimeout(() => vp.classList.remove("is-dragging"), 0);
       });
 
-      // Only suppress click when we actually dragged significantly
       vp.addEventListener("click", e => {
         if (totalDrag > DRAG_THRESHOLD) {
           e.stopPropagation();
           e.preventDefault();
         }
-        // Reset after every click resolution
         totalDrag = 0;
       }, true);
     })();
@@ -785,32 +788,38 @@
       if (e.key === "Enter" && searchInput.value.trim()) window.location.href = `shop.html?q=${encodeURIComponent(searchInput.value.trim())}`;
     });
 
-    /* ── COUNTRY CHIPS ── */
+    /* ── COUNTRY CHIPS — now route to team.html?id=xxx ── */
     (() => {
       const countries = [
-        { name: "Argentina", sub: "National team", page: "argentina.html", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>` },
-        { name: "Brazil",    sub: "National team", page: "brazil.html",    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cb"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cb)"><rect width="120" height="120" fill="#1f8f3a"/><polygon points="60,18 98,60 60,102 22,60" fill="#f6d44a"/><circle cx="60" cy="60" r="18" fill="#2a4c9b"/></g></svg>` },
-        { name: "France",    sub: "National team", page: "france.html",    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cc"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cc)"><rect width="40" height="120" x="0" fill="#244aa5"/><rect width="40" height="120" x="40" fill="#fff"/><rect width="40" height="120" x="80" fill="#d81e2e"/></g></svg>` },
-        { name: "Germany",   sub: "National team", page: "germany.html",   svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cd"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cd)"><rect width="120" height="40" y="0" fill="#111"/><rect width="120" height="40" y="40" fill="#d81e2e"/><rect width="120" height="40" y="80" fill="#f3c400"/></g></svg>` },
-        { name: "Spain",     sub: "National team", page: "spain.html",     svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>` },
-        { name: "Portugal",  sub: "National team", page: "portugal.html",  svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>` }
+        { name: "Argentina", sub: "National team", id: "argentina", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>` },
+        { name: "Brazil",    sub: "National team", id: "brazil",    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cb"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cb)"><rect width="120" height="120" fill="#1f8f3a"/><polygon points="60,18 98,60 60,102 22,60" fill="#f6d44a"/><circle cx="60" cy="60" r="18" fill="#2a4c9b"/></g></svg>` },
+        { name: "France",    sub: "National team", id: "france",    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cc"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cc)"><rect width="40" height="120" x="0" fill="#244aa5"/><rect width="40" height="120" x="40" fill="#fff"/><rect width="40" height="120" x="80" fill="#d81e2e"/></g></svg>` },
+        { name: "Germany",   sub: "National team", id: "germany",   svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cd"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cd)"><rect width="120" height="40" y="0" fill="#111"/><rect width="120" height="40" y="40" fill="#d81e2e"/><rect width="120" height="40" y="80" fill="#f3c400"/></g></svg>` },
+        { name: "Spain",     sub: "National team", id: "spain",     svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>` },
+        { name: "Portugal",  sub: "National team", id: "portugal",  svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>` }
       ];
       document.getElementById("countryRow").innerHTML = countries.map(c =>
-        `<a href="${c.page}" class="card-chip"><div class="chip-img"><img src="data:image/svg+xml;charset=UTF-8,${encodeURIComponent(c.svg)}" alt="${c.name}"></div><div class="chip-name">${c.name}</div><div class="chip-sub">${c.sub}</div></a>`
+        `<div class="card-chip" onclick="goToTeam('${c.id}')">
+          <div class="chip-img">
+            <img src="data:image/svg+xml;charset=UTF-8,${encodeURIComponent(c.svg)}" alt="${c.name}">
+          </div>
+          <div class="chip-name">${c.name}</div>
+          <div class="chip-sub">${c.sub}</div>
+        </div>`
       ).join("");
     })();
 
-    /* ── CLUB CHIPS ── */
+    /* ── CLUB CHIPS — now route to team.html?id=xxx ── */
     (() => {
       const clubs = [
-        { name: "Barcelona", page: "barcelona.html",  img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab", bg: "#a51d2d", fg: "#f2c94c", l: "B" },
-        { name: "Real Madrid", page: "real-madrid.html", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b", bg: "#e8d7a2", fg: "#0f5bd6", l: "R" },
-        { name: "Arsenal",    page: "arsenal.html",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee", bg: "#EF0107", fg: "#ffffff", l: "A" },
-        { name: "Chelsea",    page: "chelsea.html",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a", bg: "#1a4da1", fg: "#fff", l: "C" },
-        { name: "Man City",   page: "man-city.html",  img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7", bg: "#9ed7ff", fg: "#0f4ea2", l: "M" },
-        { name: "Man Utd",    page: "man-utd.html",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b", bg: "#c61f2f", fg: "#111", l: "U" },
-        { name: "PSG",        page: "psg.html",       img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6", bg: "#12284c", fg: "#c61f2f", l: "P" },
-        { name: "Liverpool",  page: "liverpool.html", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9", bg: "#c8102e", fg: "#f6eb61", l: "L" }
+        { name: "Barcelona",  id: "barcelona",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab", bg: "#a51d2d", fg: "#f2c94c", l: "B" },
+        { name: "Real Madrid", id: "real-madrid", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b", bg: "#e8d7a2", fg: "#0f5bd6", l: "R" },
+        { name: "Arsenal",    id: "arsenal",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee", bg: "#EF0107", fg: "#ffffff", l: "A" },
+        { name: "Chelsea",    id: "chelsea",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a", bg: "#1a4da1", fg: "#fff", l: "C" },
+        { name: "Man City",   id: "man-city",    img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7", bg: "#9ed7ff", fg: "#0f4ea2", l: "M" },
+        { name: "Man Utd",    id: "man-utd",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b", bg: "#c61f2f", fg: "#111", l: "U" },
+        { name: "PSG",        id: "psg",         img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6", bg: "#12284c", fg: "#c61f2f", l: "P" },
+        { name: "Liverpool",  id: "liverpool",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9", bg: "#c8102e", fg: "#f6eb61", l: "L" }
       ];
       function fallbackBadge(c) {
         const safeName = c.name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -820,11 +829,13 @@
       }
       document.getElementById("clubRow").innerHTML = clubs.map(c => {
         const imgSrc = c.img && c.img.trim() ? c.img.trim() : fallbackBadge(c);
-        return `<a href="${c.page}" class="card-chip">
-          <div class="chip-img"><img src="${imgSrc}" alt="${c.name}" loading="lazy" onerror="this.src='${fallbackBadge(c)}'"/></div>
+        return `<div class="card-chip" onclick="goToTeam('${c.id}')">
+          <div class="chip-img">
+            <img src="${imgSrc}" alt="${c.name}" loading="lazy" onerror="this.src='${fallbackBadge(c)}'"/>
+          </div>
           <div class="chip-name">${c.name}</div>
           <div class="chip-sub">Club crest</div>
-        </a>`;
+        </div>`;
       }).join("");
     })();
   </script>
@@ -936,10 +947,6 @@
         snap.forEach(d => { const p = d.val(); p._id = d.key; if (!p.status || p.status === "active") products.push(p); });
         countLabel.innerHTML = `<span style="color:var(--accent);font-weight:800;">${products.length}+</span> jerseys available`;
 
-        /* ── WOW picks — horizontal scroll loop cards ──
-           FIX: use data-pid on the article (no inline onclick) so
-           attachCardNav can handle all clicks uniformly,
-           including the image area. ── */
         function loopCard(p, i) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
           return `<article class="loop-card" data-pid="${p._id}">
@@ -959,7 +966,6 @@
           </article>`;
         }
 
-        /* ── All Products — 2-column grid cards ── */
         function gridCard(p, i) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
           return `<article class="grid-product-card" data-pid="${p._id}">
@@ -982,21 +988,17 @@
         loopTrack.innerHTML       = products.slice(0,8).map((p,i)  => loopCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
         allProductsGrid.innerHTML = products.slice(0,10).map((p,i) => gridCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">No products available.</div>';
 
-        /* ── Unified click handler for both WOW Picks and All Products ── */
         function attachCardNav(container) {
           container.addEventListener("click", function(e) {
-            // If the viewport is in drag mode, ignore
             const vp = document.getElementById("loopViewport");
             if (vp && vp.classList.contains("is-dragging")) return;
 
-            /* "Shop Now" / "View" button */
             const btn = e.target.closest(".small-btn[data-pid]");
             if (btn) {
               e.stopPropagation();
               goToProduct(btn.dataset.pid);
               return;
             }
-            /* anywhere on the card body */
             const article = e.target.closest("article[data-pid]");
             if (article) {
               goToProduct(article.dataset.pid);
