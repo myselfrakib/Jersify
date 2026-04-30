@@ -44,7 +44,6 @@
       background-repeat: no-repeat;
       opacity: 1;
     }
-    /* Sun glow (Arsenal style) — shown when no heroBg image */
     .hero-sun {
       position: absolute;
       top: -60px; right: -60px;
@@ -65,7 +64,6 @@
       0%,100% { transform: scale(1); opacity: 0.8; }
       50% { transform: scale(1.08); opacity: 1; }
     }
-    /* Sun rays animation (Arsenal style) */
     .hero-sun-rays {
       position: absolute;
       top: -80px; right: -80px;
@@ -80,7 +78,6 @@
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
-    /* Overlay for hero bg images */
     .hero-overlay {
       position: absolute;
       inset: 0;
@@ -187,8 +184,6 @@
       letter-spacing: 0.5px;
     }
     .hero-stat-pill strong { color: var(--pill-accent, #ffaaaa); }
-
-    /* Captain image floating in hero — exactly like Arsenal page */
     .hero-captain-float {
       position: absolute;
       right: 16px;
@@ -590,7 +585,6 @@
 </head>
 <body>
 
-<!-- Fallback: shown if team id is invalid -->
 <div id="app">
   <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0a0a1a;color:#fff;font-family:sans-serif;">
     <div style="text-align:center;">
@@ -602,7 +596,6 @@
   </div>
 </div>
 
-<!-- Shared lightbox -->
 <div class="img-lightbox-overlay" id="imgLightbox" onclick="closeLightbox(event)">
   <button class="img-lightbox-close" onclick="closeLightbox(event)" aria-label="Close">✕</button>
   <img class="img-lightbox-img" id="lightboxImg" src="" alt="Product Image" />
@@ -610,15 +603,6 @@
 </div>
 
 <script>
-// ================================================================
-// JERSIFY — Unified Team Page  (team.html?id=<team-id>)
-//
-// Valid IDs:
-//   Clubs:    arsenal | barcelona | chelsea | liverpool |
-//             man-city | man-utd | real-madrid | psg
-//   Nations:  argentina | brazil | france | germany | portugal | spain
-// ================================================================
-
 const TEAM_CONFIGS = {
   "arsenal": {
     id: "arsenal", name: "Arsenal",
@@ -628,8 +612,7 @@ const TEAM_CONFIGS = {
       "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
     },
     heroBg: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1774945175872_WhatsApp%20Image%202026-03-30%20at%203.50.05%20PM%20(1).jpeg?alt=media&token=c7e5de04-290b-429a-bdf6-30fae3adb926",
-    captainImg: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/arsenal_top_player-removebg-preview.png?alt=media&token=35e40177-6fd7-4318-98d6-99c1b344c99b",
-    filterKeys: ["arsenal"]
+    captainImg: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/arsenal_top_player-removebg-preview.png?alt=media&token=35e40177-6fd7-4318-98d6-99c1b344c99b"
   },
   "barcelona": {
     id: "barcelona", name: "Barcelona",
@@ -638,8 +621,7 @@ const TEAM_CONFIGS = {
       "dark": "#1a0020", "dark2": "#2a0030", "text": "#1a0020", "muted": "#7a5a6a",
       "pill-accent": "#ffaad0", "page-bg": "#fff5fa"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["barcelona"]
+    heroBg: "", captainImg: ""
   },
   "chelsea": {
     id: "chelsea", name: "Chelsea",
@@ -648,8 +630,7 @@ const TEAM_CONFIGS = {
       "dark": "#001528", "dark2": "#00203a", "text": "#001528", "muted": "#5a7a9a",
       "pill-accent": "#aac4ff", "page-bg": "#f5f8ff"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["chelsea"]
+    heroBg: "", captainImg: ""
   },
   "liverpool": {
     id: "liverpool", name: "Liverpool",
@@ -658,8 +639,7 @@ const TEAM_CONFIGS = {
       "dark": "#0d0d0d", "dark2": "#1a1a1a", "text": "#0d0d0d", "muted": "#6b5a5a",
       "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["liverpool"]
+    heroBg: "", captainImg: ""
   },
   "man-city": {
     id: "man-city", name: "Man City",
@@ -668,8 +648,7 @@ const TEAM_CONFIGS = {
       "dark": "#0a1a30", "dark2": "#0f2240", "text": "#0a1a30", "muted": "#5a7a9a",
       "pill-accent": "#aaddff", "page-bg": "#f5faff"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["man city","manchester city"]
+    heroBg: "", captainImg: ""
   },
   "man-utd": {
     id: "man-utd", name: "Man United",
@@ -678,8 +657,7 @@ const TEAM_CONFIGS = {
       "dark": "#1a0a0a", "dark2": "#280e0e", "text": "#1a0a0a", "muted": "#7a5a5a",
       "pill-accent": "#ffbbaa", "page-bg": "#fff5f5"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["man united","manchester united","man utd"]
+    heroBg: "", captainImg: ""
   },
   "real-madrid": {
     id: "real-madrid", name: "Real Madrid",
@@ -688,8 +666,7 @@ const TEAM_CONFIGS = {
       "dark": "#0a0a1a", "dark2": "#141428", "text": "#0a0a1a", "muted": "#6a6a7a",
       "pill-accent": "#ffe9a0", "page-bg": "#fdfdf5"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["real madrid","real"]
+    heroBg: "", captainImg: ""
   },
   "psg": {
     id: "psg", name: "PSG",
@@ -698,8 +675,7 @@ const TEAM_CONFIGS = {
       "dark": "#00112a", "dark2": "#001a3a", "text": "#00112a", "muted": "#5a7a9a",
       "pill-accent": "#aaccee", "page-bg": "#f5f8ff"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["psg","paris"]
+    heroBg: "", captainImg: ""
   },
   "argentina": {
     id: "argentina", name: "Argentina",
@@ -708,8 +684,7 @@ const TEAM_CONFIGS = {
       "dark": "#0c1a2e", "dark2": "#152338", "text": "#0c1a2e", "muted": "#5a7a9a",
       "pill-accent": "#c8e8ff", "page-bg": "#f5f9ff"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["argentina"]
+    heroBg: "", captainImg: ""
   },
   "brazil": {
     id: "brazil", name: "Brazil",
@@ -718,8 +693,7 @@ const TEAM_CONFIGS = {
       "dark": "#002776", "dark2": "#001C54", "text": "#002776", "muted": "#5a7a9a",
       "pill-accent": "#fff5aa", "page-bg": "#fdfff0"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["brazil"]
+    heroBg: "", captainImg: ""
   },
   "france": {
     id: "france", name: "France",
@@ -728,8 +702,7 @@ const TEAM_CONFIGS = {
       "dark": "#0a0a2e", "dark2": "#151540", "text": "#0a0a2e", "muted": "#6a6a9a",
       "pill-accent": "#aabbee", "page-bg": "#f5f5ff"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["france"]
+    heroBg: "", captainImg: ""
   },
   "germany": {
     id: "germany", name: "Germany",
@@ -738,8 +711,7 @@ const TEAM_CONFIGS = {
       "dark": "#1a1a1a", "dark2": "#0d0d0d", "text": "#1a1a1a", "muted": "#777777",
       "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["germany"]
+    heroBg: "", captainImg: ""
   },
   "portugal": {
     id: "portugal", name: "Portugal",
@@ -748,8 +720,7 @@ const TEAM_CONFIGS = {
       "dark": "#1a0a0a", "dark2": "#250e0e", "text": "#1a0a0a", "muted": "#6a6a6a",
       "pill-accent": "#aaffcc", "page-bg": "#f5fff8"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["portugal"]
+    heroBg: "", captainImg: ""
   },
   "spain": {
     id: "spain", name: "Spain",
@@ -758,12 +729,10 @@ const TEAM_CONFIGS = {
       "dark": "#1a0a0e", "dark2": "#2a0a10", "text": "#1a0a0e", "muted": "#8a5a6a",
       "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
     },
-    heroBg: "", captainImg: "",
-    filterKeys: ["spain"]
+    heroBg: "", captainImg: ""
   }
 };
 
-// ── TEAM PAGE CONTENT ──────────────────────────────────────────────
 const PAGE_DATA = {
   "arsenal": {
     flagHTML: `<img src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab" style="width:100%;height:100%;object-fit:cover;" alt="Arsenal FC" />`,
@@ -1201,7 +1170,6 @@ const PAGE_DATA = {
   }
 };
 
-// ── JERSEY SVG BUILDER ─────────────────────────────────────────────
 function buildJerseySVG(fill, num, label, darkShade) {
   return `<svg viewBox="0 0 110 130" xmlns="http://www.w3.org/2000/svg" width="110" height="130">
     <path d="M28 30 L15 46 L28 52 L28 118 L82 118 L82 52 L95 46 L82 30 C78 28 70 26 66 22 C63 20 62 18 55 18 C48 18 47 20 44 22 C40 26 32 28 28 30Z" fill="${fill}"/>
@@ -1215,13 +1183,11 @@ function buildJerseySVG(fill, num, label, darkShade) {
   </svg>`;
 }
 
-// ── BUILD HERO HTML — Arsenal-style sun rays when no heroBg ────────
 function buildHeroBg(cfg) {
   if (cfg.heroBg) {
     return `<div class="hero-bg-stripes" id="heroBgEl"></div>
             <div class="hero-overlay"></div>`;
   }
-  // Animated sun glow matching Arsenal page aesthetic
   return `<div class="hero-sun"></div>
           <div class="hero-sun2"></div>
           <div class="hero-sun-rays">
@@ -1235,7 +1201,6 @@ function buildHeroBg(cfg) {
           <div class="hero-overlay"></div>`;
 }
 
-// ── BUILD PAGE HTML ────────────────────────────────────────────────
 function buildPageHTML(id, cfg, data) {
   const honourCards = data.honours.map(h =>
     `<div class="achievement-card">
@@ -1253,7 +1218,6 @@ function buildPageHTML(id, cfg, data) {
     `<div class="hl-year-badge">${y}</div>`
   ).join('');
 
-  // Icon player section: use real image if available, else SVG jersey
   const captainSvg = buildJerseySVG(
     data.captainSvgFill, data.captainSvgNum, data.captainSvgLabel, cfg.vars['sky-dark']
   );
@@ -1268,7 +1232,6 @@ function buildPageHTML(id, cfg, data) {
     </div>`
   ).join('');
 
-  // Hero floating captain image — same as arsenal.html: bottom-right, floating animation
   const heroFloat = cfg.captainImg
     ? `<div class="hero-captain-float"><img src="${cfg.captainImg}" alt="${cfg.name} Captain" /></div>`
     : '';
@@ -1285,10 +1248,8 @@ function buildPageHTML(id, cfg, data) {
   ).join('');
 
   return `
-    <!-- HERO -->
     <section class="hero">
       ${buildHeroBg(cfg)}
-
       <div class="topbar">
         <button class="back-btn" onclick="history.back()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -1302,7 +1263,6 @@ function buildPageHTML(id, cfg, data) {
           </svg>
         </button>
       </div>
-
       <div class="hero-content">
         <div class="country-flag-row">
           <div class="flag-circle">${data.flagHTML}</div>
@@ -1311,17 +1271,14 @@ function buildPageHTML(id, cfg, data) {
         <div class="hero-title">${data.titleA}<span>${data.titleB}</span></div>
         <div class="hero-meta">${pills}</div>
       </div>
-
       ${heroFloat}
     </section>
 
-    <!-- HONOURS -->
     <section class="section" style="margin-top:20px;">
       <div class="section-title">Honours</div>
       <div class="achievements-row">${honourCards}</div>
     </section>
 
-    <!-- HIGHLIGHT BANNER -->
     <div class="highlight-banner" data-emoji="${data.bannerEmoji}">
       <div class="hl-trophy">${data.bannerTrophy}</div>
       <div class="hl-text">
@@ -1331,7 +1288,6 @@ function buildPageHTML(id, cfg, data) {
       </div>
     </div>
 
-    <!-- ICON PLAYER -->
     <section class="section" style="margin-top:20px;">
       <div class="section-title">Icon Player</div>
     </section>
@@ -1352,7 +1308,6 @@ function buildPageHTML(id, cfg, data) {
       </div>
     </div>
 
-    <!-- SHOP -->
     <section class="products-section" style="margin-top:20px;">
       <div class="section-title" style="padding:0;">${data.shopTitle}</div>
     </section>
@@ -1367,7 +1322,6 @@ function buildPageHTML(id, cfg, data) {
       </div>
     </div>
 
-    <!-- LEGACY TIMELINE -->
     <section class="section" style="margin-top:20px;">
       <div class="section-title">Legacy</div>
     </section>
@@ -1381,20 +1335,17 @@ function buildPageHTML(id, cfg, data) {
   `;
 }
 
-// ── BOOT ──────────────────────────────────────────────────────────
 (function () {
   const id  = (new URLSearchParams(location.search).get('id') || '').toLowerCase().trim();
   const cfg = TEAM_CONFIGS[id];
   const data = PAGE_DATA[id];
-  if (!cfg || !data) return; // leave fallback visible
+  if (!cfg || !data) return;
 
   window._JERSIFY_ID  = id;
   window._JERSIFY_CFG = cfg;
 
-  // 1. Title
   document.title = 'JERSIFY — ' + cfg.name;
 
-  // 2. Inject CSS vars (all teams, including pill-accent and page-bg)
   const v = cfg.vars;
   document.getElementById('root-vars').textContent = `:root {
     --sky:          ${v['sky']           || '#888'};
@@ -1410,17 +1361,14 @@ function buildPageHTML(id, cfg, data) {
     --maxw: 430px; --radius: 24px;
   }`;
 
-  // 3. Inject page markup
   document.getElementById('app').innerHTML =
     '<div class="page">' + buildPageHTML(id, cfg, data) + '</div>';
 
-  // 4. Set hero bg image
   if (cfg.heroBg) {
     const el = document.getElementById('heroBgEl');
     if (el) el.style.backgroundImage = `url('${cfg.heroBg}')`;
   }
 
-  // 5. Wishlist toggle
   const wishlistBtn  = document.getElementById('wishlistBtn');
   const wishlistIcon = document.getElementById('wishlistIcon');
   let wishlisted = false;
@@ -1434,7 +1382,6 @@ function buildPageHTML(id, cfg, data) {
     });
   }
 
-  // 6. Scroll-reveal animation
   requestAnimationFrame(() => {
     const cards = document.querySelectorAll(
       '.achievement-card, .product-card, .timeline-item, .featured-player'
@@ -1457,7 +1404,6 @@ function buildPageHTML(id, cfg, data) {
   });
 })();
 
-// ── LIGHTBOX ──────────────────────────────────────────────────────
 function openLightbox(imgUrl, name) {
   const overlay = document.getElementById('imgLightbox');
   const img     = document.getElementById('lightboxImg');
@@ -1481,7 +1427,22 @@ function closeLightbox(e) {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 </script>
 
-<!-- Firebase Realtime DB — loads products for each team dynamically -->
+<!-- ================================================================
+  Firebase Realtime DB — Smart product sync with name-first matching.
+
+  ROOT CAUSE FIX: Many products in the database have incorrect `team`
+  field values (e.g. Arsenal kits tagged as "Chelsea", Man United kits
+  tagged as "Man City"). The old filter matched on both team field AND
+  product name, causing cross-contamination between pages.
+
+  NEW LOGIC — Name takes absolute priority:
+    1. Scan the product NAME against a global keyword→teamId map.
+    2. If a name keyword matches, only show the product on that team's
+       page — regardless of what the team field says.
+    3. Only if the product name doesn't match any known keyword, fall
+       back to the team field (exact match) as a secondary check.
+       This handles generic/unlabelled product names.
+================================================================ -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -1500,29 +1461,114 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
     databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
   });
   const rtdb = getDatabase(app);
-  const keys = cfg.filterKeys;
+
+  // ── SMART MATCHING ENGINE ────────────────────────────────────────
+  //
+  // Maps product-name keywords → page ID.
+  // Sorted longest-first so multi-word phrases match before single words
+  // (e.g. "manchester united" is checked before "man utd" or "united").
+  //
+  const NAME_KEYWORD_MAP = [
+    // Multi-word first (longest → shortest)
+    ["paris saint germain", "psg"],
+    ["manchester united",   "man-utd"],
+    ["manchester city",     "man-city"],
+    ["real madrid",         "real-madrid"],
+    ["man united",          "man-utd"],
+    ["man city",            "man-city"],
+    ["man utd",             "man-utd"],
+    ["fc barcelona",        "barcelona"],
+    ["liverpool fc",        "liverpool"],
+    ["chelsea fc",          "chelsea"],
+    ["arsenal fc",          "arsenal"],
+    // Single-word / short
+    ["barcelona",           "barcelona"],
+    ["liverpool",           "liverpool"],
+    ["arsenal",             "arsenal"],
+    ["chelsea",             "chelsea"],
+    ["portugal",            "portugal"],
+    ["argentina",           "argentina"],
+    ["germany",             "germany"],
+    ["france",              "france"],
+    ["brazil",              "brazil"],
+    ["spain",               "spain"],
+    ["psg",                 "psg"],
+  ];
+
+  // Fallback: exact team-field values for each page ID.
+  // Used only when the product name doesn't match any known keyword above.
+  const TEAM_FIELD_FALLBACK = {
+    "arsenal":     ["arsenal"],
+    "barcelona":   ["barcelona"],
+    "chelsea":     ["chelsea"],
+    "liverpool":   ["liverpool"],
+    "man-city":    ["man city", "manchester city"],
+    "man-utd":     ["man utd", "man united", "manchester united"],
+    "real-madrid": ["real madrid"],
+    "psg":         ["psg", "paris"],
+    "argentina":   ["argentina"],
+    "brazil":      ["brazil"],
+    "france":      ["france"],
+    "germany":     ["germany"],
+    "portugal":    ["portugal"],
+    "spain":       ["spain"],
+  };
+
+  /**
+   * Returns the page ID this product belongs to based on its name,
+   * or null if no name keyword is recognised.
+   */
+  function getTeamFromName(rawName) {
+    const n = (rawName || '').toLowerCase();
+    for (const [keyword, teamId] of NAME_KEYWORD_MAP) {
+      if (n.includes(keyword)) return teamId;
+    }
+    return null;
+  }
+
+  /**
+   * Decide whether a product should appear on the current team page.
+   *
+   * Priority:
+   *   1. If the product name contains a recognisable team keyword →
+   *      show ONLY on that team's page (ignores team field entirely).
+   *   2. Otherwise → show if the team field exactly matches one of the
+   *      page's fallback values.
+   */
+  function productMatchesPage(p, pageId) {
+    const nameTeam = getTeamFromName(p.name);
+
+    if (nameTeam !== null) {
+      // Name is authoritative — only show on the matched team page
+      return nameTeam === pageId;
+    }
+
+    // Generic / unrecognised name — fall back to team field
+    const teamField = (p.team || '').toLowerCase().trim();
+    const fallbacks = TEAM_FIELD_FALLBACK[pageId] || [];
+    return fallbacks.some(k => teamField === k || teamField.includes(k));
+  }
+  // ── END MATCHING ENGINE ─────────────────────────────────────────
 
   onValue(ref(rtdb, 'products'), snapshot => {
     const container = document.querySelector('.products-scroll');
     if (!container) return;
 
     let html = '';
-    snapshot.forEach(child => {
-      const p    = child.val();
-      const key  = child.key;
-      const team = (p.team  || '').toLowerCase();
-      const pname = (p.name || '').toLowerCase();
 
-      const match = keys.some(k =>
-        team === k || team.includes(k) || pname.includes(k)
-      );
-      if (!match) return;
+    snapshot.forEach(child => {
+      const p   = child.val();
+      const key = child.key;
+
+      // Skip inactive products
       if (p.status && p.status !== 'active') return;
+
+      // Smart team match
+      if (!productMatchesPage(p, id)) return;
 
       const safeName = (p.name || 'Kit').replace(/'/g, "\\'").replace(/"/g, '&quot;');
       const imgUrl   = p.imgUrl || '';
 
-      // Product card — image tappable to open lightbox (zoom-in)
       html += `
         <div class="product-card">
           <div class="product-card-top${imgUrl ? '' : ' sky-bg'}"
@@ -1554,8 +1600,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
 
     // Animate newly loaded product cards
     container.querySelectorAll('.product-card').forEach((card, i) => {
-      card.style.opacity   = '0';
-      card.style.transform = 'translateY(24px)';
+      card.style.opacity    = '0';
+      card.style.transform  = 'translateY(24px)';
       card.style.transition = `opacity .4s ease ${i * .08}s, transform .4s ease ${i * .08}s`;
       setTimeout(() => {
         card.style.opacity   = '1';
