@@ -21,7 +21,7 @@
     .page {
       width: min(100%, var(--maxw));
       min-height: 100vh;
-      background: #fff5f5;
+      background: var(--page-bg, #fff5f5);
       position: relative;
       overflow: hidden;
       border-left: 1px solid rgba(0,0,0,.04);
@@ -44,7 +44,43 @@
       background-repeat: no-repeat;
       opacity: 1;
     }
-    .hero-bg-gradient { display: none; }
+    /* Sun glow (Arsenal style) — shown when no heroBg image */
+    .hero-sun {
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--sky-rgb),0.3) 0%, rgba(var(--sky-rgb),0.08) 50%, transparent 70%);
+      animation: pulse-sun 3s ease-in-out infinite;
+    }
+    .hero-sun2 {
+      position: absolute;
+      bottom: -40px; left: -60px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--sky-rgb),0.2) 0%, transparent 70%);
+      animation: pulse-sun 4s 1s ease-in-out infinite;
+    }
+    @keyframes pulse-sun {
+      0%,100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+    /* Sun rays animation (Arsenal style) */
+    .hero-sun-rays {
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 320px; height: 320px;
+      pointer-events: none;
+    }
+    .hero-sun-rays svg {
+      width: 100%; height: 100%;
+      animation: spin-slow 20s linear infinite;
+    }
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    /* Overlay for hero bg images */
     .hero-overlay {
       position: absolute;
       inset: 0;
@@ -52,31 +88,9 @@
         to bottom,
         rgba(0,0,0,0.18) 0%,
         rgba(0,0,0,0.05) 40%,
-        rgba(0,0,0,0.55) 100%
+        rgba(0,0,0,0.6) 100%
       );
       z-index: 2;
-    }
-    .hero-flame {
-      position: absolute;
-      top: -80px; right: -50px;
-      width: 300px; height: 300px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(var(--sky-rgb),0.25) 0%, rgba(var(--sky-rgb),0.3) 40%, transparent 70%);
-      animation: pulse-glow 3s ease-in-out infinite;
-      z-index: 3;
-    }
-    .hero-flame2 {
-      position: absolute;
-      bottom: -40px; left: -60px;
-      width: 200px; height: 200px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(var(--sky-rgb),0.2) 0%, transparent 70%);
-      animation: pulse-glow 4s 1s ease-in-out infinite;
-      z-index: 3;
-    }
-    @keyframes pulse-glow {
-      0%,100% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.08); opacity: 1; }
     }
     .topbar {
       position: absolute;
@@ -97,7 +111,9 @@
       display: grid;
       place-items: center;
       cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
     }
+    .back-btn:hover, .wishlist-btn:hover { background: rgba(255,255,255,0.2); }
     .back-btn svg, .wishlist-btn svg { width: 20px; height: 20px; }
     .logo-badge {
       font-family: 'Bebas Neue', sans-serif;
@@ -170,27 +186,28 @@
       color: #fff;
       letter-spacing: 0.5px;
     }
-    .hero-stat-pill strong { color: #ffddaa; }
+    .hero-stat-pill strong { color: var(--pill-accent, #ffaaaa); }
 
-    /* Captain image floating in hero */
+    /* Captain image floating in hero — exactly like Arsenal page */
     .hero-captain-float {
       position: absolute;
       right: 16px;
       bottom: 0;
       width: 155px;
-      height: 190px;
+      height: 195px;
       z-index: 6;
-      animation: float-hero 3.5s ease-in-out infinite;
+      animation: float-hero 3s ease-in-out infinite;
       filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));
     }
     .hero-captain-float img {
       width: 100%;
       height: 100%;
       object-fit: contain;
+      object-position: bottom center;
     }
     @keyframes float-hero {
-      0%,100% { transform: translateY(0) rotate(-2deg); }
-      50% { transform: translateY(-10px) rotate(-2deg); }
+      0%,100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-10px) rotate(-5deg); }
     }
     @keyframes slide-up {
       from { opacity: 0; transform: translateY(20px); }
@@ -231,8 +248,8 @@
       border-radius: 18px;
       padding: 14px 10px;
       text-align: center;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 4px 16px rgba(var(--sky-rgb),0.12);
+      border: 1px solid rgba(var(--sky-rgb),0.1);
       position: relative;
       overflow: hidden;
     }
@@ -265,12 +282,12 @@
     .highlight-banner {
       margin: 0 20px 20px;
       border-radius: 20px;
-      background: linear-gradient(135deg, var(--dark) 0%, var(--dark2,#222) 50%, var(--sky-dark) 100%);
+      background: linear-gradient(135deg, var(--dark) 0%, var(--dark2,#3a0000) 50%, var(--sky-dark) 100%);
       padding: 20px;
       display: flex;
       align-items: center;
       gap: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      box-shadow: 0 10px 30px rgba(var(--sky-rgb),0.25);
       position: relative;
       overflow: hidden;
     }
@@ -294,13 +311,13 @@
     .hl-text p { font-size: 12px; color: rgba(255,255,255,0.75); line-height: 1.4; }
     .hl-years { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
     .hl-year-badge {
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(var(--sky-rgb),0.25);
+      border: 1px solid rgba(var(--sky-rgb),0.5);
       border-radius: 6px;
       padding: 3px 8px;
       font-size: 11px;
       font-weight: 700;
-      color: rgba(255,255,255,0.9);
+      color: var(--pill-accent, #ffaaaa);
       font-family: 'Barlow Condensed', sans-serif;
     }
 
@@ -309,14 +326,14 @@
       margin: 20px 20px 0;
       border-radius: 22px;
       overflow: hidden;
-      background: linear-gradient(135deg, var(--dark) 0%, var(--dark2,#222) 100%);
-      box-shadow: 0 12px 36px rgba(0,0,0,0.35);
+      background: linear-gradient(135deg, var(--dark) 0%, var(--dark2,#3a0000) 100%);
+      box-shadow: 0 12px 36px rgba(var(--sky-rgb),0.3);
       position: relative;
     }
     .fp-stripes {
       position: absolute; inset: 0;
       background: repeating-linear-gradient(90deg,
-        rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 20px,
+        rgba(var(--sky-rgb),0.07) 0px, rgba(var(--sky-rgb),0.07) 20px,
         transparent 20px, transparent 40px);
     }
     .fp-content {
@@ -329,7 +346,7 @@
     .fp-kicker {
       font-size: 10px; font-weight: 700;
       letter-spacing: 2px; text-transform: uppercase;
-      color: rgba(255,200,150,0.9);
+      color: var(--pill-accent, #ffaaaa);
       margin-bottom: 6px;
       font-family: 'Barlow Condensed', sans-serif;
     }
@@ -341,7 +358,7 @@
     }
     .fp-role {
       font-size: 11px; font-weight: 600;
-      color: rgba(255,200,150,0.8);
+      color: var(--pill-accent, rgba(255,150,150,0.9));
       letter-spacing: 1px; text-transform: uppercase;
       margin-bottom: 16px;
     }
@@ -358,7 +375,7 @@
     .fp-stat-val {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 22px; font-weight: 800;
-      color: rgba(255,220,180,0.95);
+      color: var(--pill-accent, #ffaaaa);
       line-height: 1;
     }
     .fp-stat-key {
@@ -380,8 +397,7 @@
       justify-content: center;
     }
     .fp-jersey img {
-      width: 110px;
-      height: 130px;
+      width: 110px; height: 130px;
       object-fit: contain;
       filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
     }
@@ -402,13 +418,13 @@
     .product-card {
       border-radius: 20px;
       background: #fff;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.10);
-      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 6px 20px rgba(var(--sky-rgb),0.12);
+      border: 1px solid rgba(var(--sky-rgb),0.1);
       overflow: hidden;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .product-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.14); }
+    .product-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(var(--sky-rgb),0.18); }
     .product-card:active { transform: scale(0.97); }
     .product-card-top {
       height: 170px;
@@ -417,7 +433,6 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      cursor: zoom-in;
     }
     .product-card-top.sky-bg {
       background: linear-gradient(135deg, var(--sky) 0%, #fff 40%, var(--sky) 100%);
@@ -426,6 +441,7 @@
       width: 100%; height: 100%;
       object-fit: cover;
       transition: transform 0.3s ease;
+      cursor: zoom-in;
     }
     .product-card:hover .product-card-top img { transform: scale(1.04); }
     .product-badge-new {
@@ -465,10 +481,10 @@
       font-size: 11px; font-weight: 800;
       letter-spacing: 0.5px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      box-shadow: 0 4px 12px rgba(var(--sky-rgb),0.35);
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .buy-btn:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
+    .buy-btn:hover { box-shadow: 0 6px 16px rgba(var(--sky-rgb),0.45); }
     .buy-btn:active { transform: scale(0.88); }
 
     /* ========== TIMELINE ========== */
@@ -489,7 +505,7 @@
       border-radius: 50%;
       background: linear-gradient(135deg, var(--sky), var(--sky-dark));
       border: 2px solid #fff;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 3px 10px rgba(var(--sky-rgb),0.35);
       display: grid; place-items: center;
       flex-shrink: 0; font-size: 12px; z-index: 1;
     }
@@ -497,8 +513,8 @@
       background: #fff;
       border-radius: 14px; padding: 12px 14px;
       flex: 1;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.07);
-      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 4px 14px rgba(var(--sky-rgb),0.08);
+      border: 1px solid rgba(var(--sky-rgb),0.08);
     }
     .timeline-year {
       font-family: 'Barlow Condensed', sans-serif;
@@ -515,9 +531,11 @@
       background: rgba(0,0,0,0.92); backdrop-filter: blur(12px);
       align-items: center; justify-content: center;
       flex-direction: column; gap: 16px;
-      animation: lb-fade 0.25s ease;
     }
-    .img-lightbox-overlay.open { display: flex; }
+    .img-lightbox-overlay.open {
+      display: flex;
+      animation: lb-fade 0.25s ease both;
+    }
     @keyframes lb-fade { from { opacity: 0; } to { opacity: 1; } }
     @keyframes lb-zoom { from { transform: scale(0.75); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     .img-lightbox-img {
@@ -544,31 +562,7 @@
       text-align: center; max-width: 320px;
     }
 
-    /* ========== BOTTOM NAV ========== */
-    .bottom-nav {
-      position: fixed;
-      left: 50%; transform: translateX(-50%);
-      bottom: 12px;
-      width: min(100%, calc(var(--maxw) - 16px));
-      background: rgba(255,255,255,.96);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0,0,0,.06);
-      border-radius: 22px;
-      box-shadow: 0 12px 28px rgba(0,0,0,.08);
-      display: flex; justify-content: space-around;
-      padding: 10px 8px; z-index: 50;
-    }
-    .nav-item {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 4px;
-      font-size: 10px; color: #999;
-      min-width: 56px; cursor: pointer;
-    }
-    .nav-item svg { width: 20px; height: 20px; }
-    .nav-item.active { color: var(--sky-dark); font-weight: 700; }
-    .spacer { height: 20px; }
-
-    /* ========== LOADING STATE ========== */
+    /* ========== LOADING / EMPTY ========== */
     .product-loading {
       grid-column: 1/-1;
       display: flex; align-items: center; justify-content: center;
@@ -586,18 +580,17 @@
       0%,80%,100% { transform: scale(0.6); opacity: 0.3; }
       40% { transform: scale(1); opacity: 1; }
     }
-
-    /* ========== EMPTY STATE ========== */
     .no-products {
       grid-column: 1/-1;
       text-align: center; padding: 30px 20px;
       color: var(--muted); font-size: 13px;
     }
+    .spacer { height: 20px; }
   </style>
 </head>
 <body>
 
-<!-- Fallback shown if id is invalid -->
+<!-- Fallback: shown if team id is invalid -->
 <div id="app">
   <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0a0a1a;color:#fff;font-family:sans-serif;">
     <div style="text-align:center;">
@@ -631,9 +624,8 @@ const TEAM_CONFIGS = {
     id: "arsenal", name: "Arsenal",
     vars: {
       "sky": "#EF0107", "sky-dark": "#c0000a", "sky-light": "#ff4a50", "sky-rgb": "239,1,7",
-      "white": "#FFFFFF", "gold": "#FFFFFF", "gold-dark": "#e0e0e0",
-      "dark": "#1a0000", "dark2": "#2a0000", "text": "#1a0000", "muted": "#7a5050",
-      "line": "rgba(239,1,7,0.2)", "maxw": "430px", "radius": "24px"
+      "dark": "#1a0000", "dark2": "#3a0000", "text": "#1a0000", "muted": "#7a5050",
+      "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
     },
     heroBg: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1774945175872_WhatsApp%20Image%202026-03-30%20at%203.50.05%20PM%20(1).jpeg?alt=media&token=c7e5de04-290b-429a-bdf6-30fae3adb926",
     captainImg: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/arsenal_top_player-removebg-preview.png?alt=media&token=35e40177-6fd7-4318-98d6-99c1b344c99b",
@@ -643,156 +635,130 @@ const TEAM_CONFIGS = {
     id: "barcelona", name: "Barcelona",
     vars: {
       "sky": "#A50044", "sky-dark": "#8a003a", "sky-light": "#c44070", "sky-rgb": "165,0,68",
-      "white": "#FFFFFF", "gold": "#004D98", "gold-dark": "#003d7a",
       "dark": "#1a0020", "dark2": "#2a0030", "text": "#1a0020", "muted": "#7a5a6a",
-      "line": "rgba(165,0,68,0.2)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#ffaad0", "page-bg": "#fff5fa"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["barcelona"]
   },
   "chelsea": {
     id: "chelsea", name: "Chelsea",
     vars: {
       "sky": "#034694", "sky-dark": "#022f6a", "sky-light": "#3a7abf", "sky-rgb": "3,70,148",
-      "white": "#FFFFFF", "gold": "#DBA11B", "gold-dark": "#b88a14",
       "dark": "#001528", "dark2": "#00203a", "text": "#001528", "muted": "#5a7a9a",
-      "line": "rgba(3,70,148,0.2)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#aac4ff", "page-bg": "#f5f8ff"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["chelsea"]
   },
   "liverpool": {
     id: "liverpool", name: "Liverpool",
     vars: {
       "sky": "#C8102E", "sky-dark": "#9e0c24", "sky-light": "#e84060", "sky-rgb": "200,16,46",
-      "white": "#FFFFFF", "gold": "#F6C400", "gold-dark": "#c9a000",
       "dark": "#0d0d0d", "dark2": "#1a1a1a", "text": "#0d0d0d", "muted": "#6b5a5a",
-      "line": "rgba(200,16,46,0.2)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["liverpool"]
   },
   "man-city": {
     id: "man-city", name: "Man City",
     vars: {
       "sky": "#6CABDD", "sky-dark": "#4a8fc2", "sky-light": "#a0d0f0", "sky-rgb": "108,171,221",
-      "white": "#FFFFFF", "gold": "#1C2C5B", "gold-dark": "#0f1a3a",
       "dark": "#0a1a30", "dark2": "#0f2240", "text": "#0a1a30", "muted": "#5a7a9a",
-      "line": "rgba(108,171,221,0.2)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#aaddff", "page-bg": "#f5faff"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["man city","manchester city"]
   },
   "man-utd": {
     id: "man-utd", name: "Man United",
     vars: {
       "sky": "#DA291C", "sky-dark": "#b51f14", "sky-light": "#e85a50", "sky-rgb": "218,41,28",
-      "white": "#FFFFFF", "gold": "#FBE122", "gold-dark": "#d4be10",
       "dark": "#1a0a0a", "dark2": "#280e0e", "text": "#1a0a0a", "muted": "#7a5a5a",
-      "line": "rgba(218,41,28,0.2)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#ffbbaa", "page-bg": "#fff5f5"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["man united","manchester united","man utd"]
   },
   "real-madrid": {
     id: "real-madrid", name: "Real Madrid",
     vars: {
       "sky": "#d4af37", "sky-dark": "#b8960e", "sky-light": "#f5e6b8", "sky-rgb": "212,175,55",
-      "white": "#FFFFFF", "gold": "#d4af37", "gold-dark": "#b8960e",
       "dark": "#0a0a1a", "dark2": "#141428", "text": "#0a0a1a", "muted": "#6a6a7a",
-      "line": "rgba(212,175,55,0.2)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#ffe9a0", "page-bg": "#fdfdf5"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["real madrid","real"]
   },
   "psg": {
     id: "psg", name: "PSG",
     vars: {
       "sky": "#004170", "sky-dark": "#003058", "sky-light": "#336a90", "sky-rgb": "0,65,112",
-      "white": "#FFFFFF", "gold": "#DA291C", "gold-dark": "#b51f14",
       "dark": "#00112a", "dark2": "#001a3a", "text": "#00112a", "muted": "#5a7a9a",
-      "line": "rgba(0,65,112,0.2)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#aaccee", "page-bg": "#f5f8ff"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["psg","paris"]
   },
   "argentina": {
     id: "argentina", name: "Argentina",
     vars: {
       "sky": "#74ACDF", "sky-dark": "#4a8bc4", "sky-light": "#a8ccea", "sky-rgb": "116,172,223",
-      "white": "#FFFFFF", "gold": "#F6C400", "gold-dark": "#c49a00",
       "dark": "#0c1a2e", "dark2": "#152338", "text": "#0c1a2e", "muted": "#5a7a9a",
-      "line": "rgba(116,172,223,0.2)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#c8e8ff", "page-bg": "#f5f9ff"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["argentina"]
   },
   "brazil": {
     id: "brazil", name: "Brazil",
     vars: {
       "sky": "#FFDF00", "sky-dark": "#D4B700", "sky-light": "#FFF176", "sky-rgb": "255,223,0",
-      "white": "#FFFFFF", "gold": "#009C3B", "gold-dark": "#007A2E",
       "dark": "#002776", "dark2": "#001C54", "text": "#002776", "muted": "#5a7a9a",
-      "line": "rgba(0,39,118,0.2)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#fff5aa", "page-bg": "#fdfff0"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["brazil"]
   },
   "france": {
     id: "france", name: "France",
     vars: {
       "sky": "#002654", "sky-dark": "#001a3a", "sky-light": "#334d73", "sky-rgb": "0,38,84",
-      "white": "#FFFFFF", "gold": "#ED2939", "gold-dark": "#c41e2c",
       "dark": "#0a0a2e", "dark2": "#151540", "text": "#0a0a2e", "muted": "#6a6a9a",
-      "line": "rgba(0,38,84,0.2)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#aabbee", "page-bg": "#f5f5ff"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["france"]
   },
   "germany": {
     id: "germany", name: "Germany",
     vars: {
       "sky": "#DD0000", "sky-dark": "#aa0000", "sky-light": "#ee4444", "sky-rgb": "221,0,0",
-      "white": "#FFFFFF", "gold": "#FFCC00", "gold-dark": "#d4a800",
       "dark": "#1a1a1a", "dark2": "#0d0d0d", "text": "#1a1a1a", "muted": "#777777",
-      "line": "rgba(0,0,0,0.12)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["germany"]
   },
   "portugal": {
     id: "portugal", name: "Portugal",
     vars: {
       "sky": "#006847", "sky-dark": "#00543a", "sky-light": "#2a9a6a", "sky-rgb": "0,104,71",
-      "white": "#FFFFFF", "gold": "#FE0000", "gold-dark": "#cc0000",
       "dark": "#1a0a0a", "dark2": "#250e0e", "text": "#1a0a0a", "muted": "#6a6a6a",
-      "line": "rgba(0,104,71,0.2)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#aaffcc", "page-bg": "#f5fff8"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["portugal"]
   },
   "spain": {
     id: "spain", name: "Spain",
     vars: {
       "sky": "#C60B1E", "sky-dark": "#a00919", "sky-light": "#e04050", "sky-rgb": "198,11,30",
-      "white": "#FFFFFF", "gold": "#FFC400", "gold-dark": "#d4a300",
       "dark": "#1a0a0e", "dark2": "#2a0a10", "text": "#1a0a0e", "muted": "#8a5a6a",
-      "line": "rgba(198,11,30,0.2)", "maxw": "430px", "radius": "24px"
+      "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
     },
-    heroBg: "",
-    captainImg: "",
+    heroBg: "", captainImg: "",
     filterKeys: ["spain"]
   }
 };
@@ -821,9 +787,7 @@ const PAGE_DATA = {
     captainRole:"No. 8 · Arsenal FC",
     captainStats:[{v:"58",k:"Goals"},{v:"72",k:"Assists"},{v:"180",k:"Apps"},{v:"🔴",k:"The Captain"}],
     captainOverlay:"★ THE CAPTAIN ★",
-    captainSvgFill:"#EF0107",
-    captainSvgNum:"8",
-    captainSvgLabel:"AFC",
+    captainSvgFill:"#EF0107", captainSvgNum:"8", captainSvgLabel:"AFC",
     shopTitle:"Shop Arsenal",
     timeline:[
       {dot:"🏆",year:"LONDON · 2003/04",event:"The Invincibles",detail:"Arsène Wenger's masterpiece — 38 games, 26 wins, 12 draws. The only side to win a Premier League title unbeaten."},
@@ -833,7 +797,7 @@ const PAGE_DATA = {
     ]
   },
   "barcelona": {
-    flagHTML: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="24" height="24" fill="#A50044"/><rect x="24" width="24" height="24" fill="#004D98"/><rect y="24" width="24" height="24" fill="#004D98"/><rect x="24" y="24" width="24" height="24" fill="#A50044"/></svg>`,
+    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="24" height="24" fill="#A50044"/><rect x="24" width="24" height="24" fill="#004D98"/><rect y="24" width="24" height="24" fill="#004D98"/><rect x="24" y="24" width="24" height="24" fill="#A50044"/></svg>`,
     label:"Club Team · La Liga",
     titleA:"BARCE",titleB:"LONA",
     pills:["<strong>5×</strong> UCL","<strong>27×</strong> La Liga","<strong>31×</strong> Copa"],
@@ -1251,6 +1215,26 @@ function buildJerseySVG(fill, num, label, darkShade) {
   </svg>`;
 }
 
+// ── BUILD HERO HTML — Arsenal-style sun rays when no heroBg ────────
+function buildHeroBg(cfg) {
+  if (cfg.heroBg) {
+    return `<div class="hero-bg-stripes" id="heroBgEl"></div>
+            <div class="hero-overlay"></div>`;
+  }
+  // Animated sun glow matching Arsenal page aesthetic
+  return `<div class="hero-sun"></div>
+          <div class="hero-sun2"></div>
+          <div class="hero-sun-rays">
+            <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+              ${Array.from({length:12},(_,i)=>{
+                const a=i*30, r=`rotate(${a},160,160)`;
+                return `<rect x="155" y="0" width="10" height="80" rx="5" fill="rgba(var(--sky-rgb),0.08)" transform="${r}"/>`;
+              }).join('')}
+            </svg>
+          </div>
+          <div class="hero-overlay"></div>`;
+}
+
 // ── BUILD PAGE HTML ────────────────────────────────────────────────
 function buildPageHTML(id, cfg, data) {
   const honourCards = data.honours.map(h =>
@@ -1269,14 +1253,11 @@ function buildPageHTML(id, cfg, data) {
     `<div class="hl-year-badge">${y}</div>`
   ).join('');
 
+  // Icon player section: use real image if available, else SVG jersey
   const captainSvg = buildJerseySVG(
-    data.captainSvgFill,
-    data.captainSvgNum,
-    data.captainSvgLabel,
-    cfg.vars['sky-dark']
+    data.captainSvgFill, data.captainSvgNum, data.captainSvgLabel, cfg.vars['sky-dark']
   );
-
-  const captainImgHTML = cfg.captainImg
+  const fpJerseyHTML = cfg.captainImg
     ? `<img src="${cfg.captainImg}" alt="${data.captainName.replace(/<br>/g,' ')}" />`
     : captainSvg;
 
@@ -1286,6 +1267,11 @@ function buildPageHTML(id, cfg, data) {
       <div class="fp-stat-key">${s.k}</div>
     </div>`
   ).join('');
+
+  // Hero floating captain image — same as arsenal.html: bottom-right, floating animation
+  const heroFloat = cfg.captainImg
+    ? `<div class="hero-captain-float"><img src="${cfg.captainImg}" alt="${cfg.name} Captain" /></div>`
+    : '';
 
   const timelineHTML = data.timeline.map(t =>
     `<div class="timeline-item">
@@ -1298,16 +1284,10 @@ function buildPageHTML(id, cfg, data) {
     </div>`
   ).join('');
 
-  // Captain float only when captainImg exists (Arsenal pattern)
-  const captainFloat = cfg.captainImg
-    ? `<div class="hero-captain-float"><img src="${cfg.captainImg}" alt="Captain" /></div>`
-    : '';
-
   return `
     <!-- HERO -->
     <section class="hero">
-      ${cfg.heroBg ? '<div class="hero-bg-stripes" id="heroBgEl"></div>' : '<div class="hero-flame"></div><div class="hero-flame2"></div>'}
-      <div class="hero-overlay"></div>
+      ${buildHeroBg(cfg)}
 
       <div class="topbar">
         <button class="back-btn" onclick="history.back()">
@@ -1332,7 +1312,7 @@ function buildPageHTML(id, cfg, data) {
         <div class="hero-meta">${pills}</div>
       </div>
 
-      ${captainFloat}
+      ${heroFloat}
     </section>
 
     <!-- HONOURS -->
@@ -1366,7 +1346,7 @@ function buildPageHTML(id, cfg, data) {
           <div class="fp-stats-grid">${captainStats}</div>
         </div>
         <div class="fp-right">
-          <div class="fp-jersey">${captainImgHTML}</div>
+          <div class="fp-jersey">${fpJerseyHTML}</div>
           <div class="fp-number-overlay">${data.captainOverlay}</div>
         </div>
       </div>
@@ -1387,7 +1367,7 @@ function buildPageHTML(id, cfg, data) {
       </div>
     </div>
 
-    <!-- LEGACY -->
+    <!-- LEGACY TIMELINE -->
     <section class="section" style="margin-top:20px;">
       <div class="section-title">Legacy</div>
     </section>
@@ -1414,35 +1394,34 @@ function buildPageHTML(id, cfg, data) {
   // 1. Title
   document.title = 'JERSIFY — ' + cfg.name;
 
-  // 2. CSS vars
+  // 2. Inject CSS vars (all teams, including pill-accent and page-bg)
   const v = cfg.vars;
   document.getElementById('root-vars').textContent = `:root {
-    --sky:       ${v['sky']       || '#888'};
-    --sky-dark:  ${v['sky-dark']  || '#666'};
-    --sky-light: ${v['sky-light'] || '#aaa'};
-    --white:     ${v['white']     || '#fff'};
-    --gold:      ${v['gold']      || '#ffd700'};
-    --gold-dark: ${v['gold-dark'] || '#c8a000'};
-    --dark:      ${v['dark']      || '#111'};
-    --dark2:     ${v['dark2']     || '#222'};
-    --text:      ${v['text']      || '#111'};
-    --muted:     ${v['muted']     || '#888'};
-    --line:      ${v['line']      || 'rgba(128,128,128,.2)'};
+    --sky:          ${v['sky']           || '#888'};
+    --sky-dark:     ${v['sky-dark']      || '#666'};
+    --sky-light:    ${v['sky-light']     || '#aaa'};
+    --sky-rgb:      ${v['sky-rgb']       || '128,128,128'};
+    --dark:         ${v['dark']          || '#111'};
+    --dark2:        ${v['dark2']         || '#222'};
+    --text:         ${v['text']          || '#111'};
+    --muted:        ${v['muted']         || '#888'};
+    --pill-accent:  ${v['pill-accent']   || '#ffddaa'};
+    --page-bg:      ${v['page-bg']       || '#fff5f5'};
     --maxw: 430px; --radius: 24px;
   }`;
 
-  // 3. Inject page
+  // 3. Inject page markup
   document.getElementById('app').innerHTML =
     '<div class="page">' + buildPageHTML(id, cfg, data) + '</div>';
 
-  // 4. Hero bg
+  // 4. Set hero bg image
   if (cfg.heroBg) {
     const el = document.getElementById('heroBgEl');
     if (el) el.style.backgroundImage = `url('${cfg.heroBg}')`;
   }
 
   // 5. Wishlist toggle
-  const wishlistBtn = document.getElementById('wishlistBtn');
+  const wishlistBtn  = document.getElementById('wishlistBtn');
   const wishlistIcon = document.getElementById('wishlistIcon');
   let wishlisted = false;
   if (wishlistBtn) {
@@ -1455,13 +1434,15 @@ function buildPageHTML(id, cfg, data) {
     });
   }
 
-  // 6. Scroll reveal
+  // 6. Scroll-reveal animation
   requestAnimationFrame(() => {
-    const cards = document.querySelectorAll('.achievement-card,.product-card,.timeline-item,.featured-player');
+    const cards = document.querySelectorAll(
+      '.achievement-card, .product-card, .timeline-item, .featured-player'
+    );
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) {
-          e.target.style.opacity  = '1';
+          e.target.style.opacity   = '1';
           e.target.style.transform = 'translateY(0)';
           io.unobserve(e.target);
         }
@@ -1470,7 +1451,7 @@ function buildPageHTML(id, cfg, data) {
     cards.forEach((c, i) => {
       c.style.opacity    = '0';
       c.style.transform  = 'translateY(24px)';
-      c.style.transition = `opacity .4s ease ${i*.05}s,transform .4s ease ${i*.05}s`;
+      c.style.transition = `opacity .4s ease ${i * .05}s, transform .4s ease ${i * .05}s`;
       io.observe(c);
     });
   });
@@ -1500,6 +1481,7 @@ function closeLightbox(e) {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 </script>
 
+<!-- Firebase Realtime DB — loads products for each team dynamically -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -1528,7 +1510,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
     snapshot.forEach(child => {
       const p    = child.val();
       const key  = child.key;
-      const team = (p.team || '').toLowerCase();
+      const team = (p.team  || '').toLowerCase();
       const pname = (p.name || '').toLowerCase();
 
       const match = keys.some(k =>
@@ -1537,16 +1519,17 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
       if (!match) return;
       if (p.status && p.status !== 'active') return;
 
-      const encodedName = (p.name || 'Kit').replace(/'/g, "\\'");
-      const imgUrl = p.imgUrl || '';
+      const safeName = (p.name || 'Kit').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      const imgUrl   = p.imgUrl || '';
 
+      // Product card — image tappable to open lightbox (zoom-in)
       html += `
         <div class="product-card">
-          <div class="product-card-top sky-bg" style="${imgUrl ? 'background:none;' : ''}"
-               onclick="openLightbox('${imgUrl}','${encodedName}')">
+          <div class="product-card-top${imgUrl ? '' : ' sky-bg'}"
+               onclick="openLightbox('${imgUrl}','${safeName}')">
             ${p.badge ? `<div class="product-badge-new">${p.badge}</div>` : ''}
             ${imgUrl
-              ? `<img src="${imgUrl}" alt="${p.name || 'Kit'}" loading="lazy"/>`
+              ? `<img src="${imgUrl}" alt="${p.name || 'Kit'}" loading="lazy" />`
               : `<svg viewBox="0 0 100 120" width="90" height="108" xmlns="http://www.w3.org/2000/svg" style="pointer-events:none;">
                   <path d="M25 28 L13 42 L25 47 L25 108 L75 108 L75 47 L87 42 L75 28 C72 26 64 24 60 21 C58 19 57 17 50 17 C43 17 42 19 40 21 C36 24 28 26 25 28Z" fill="var(--sky)"/>
                   <path d="M25 28 L13 42 L25 47Z" fill="var(--sky-dark)" opacity="0.9"/>
@@ -1560,19 +1543,20 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
             <div class="product-card-sub">${p.type || p.team || 'Kit'}</div>
             <div class="product-card-footer">
               <div class="product-price">${p.price ? '₹' + p.price : '₹1499'}</div>
-              <button class="buy-btn" onclick="window.location.href='checkout.html?id=${key}'">BUY NOW</button>
+              <button class="buy-btn" onclick="event.stopPropagation();window.location.href='checkout.html?id=${key}'">BUY NOW</button>
             </div>
           </div>
         </div>`;
     });
 
-    container.innerHTML = html || `<div class="no-products">No products available yet for ${cfg.name}.</div>`;
+    container.innerHTML = html ||
+      `<div class="no-products">No products available yet for ${cfg.name}.</div>`;
 
-    // Animate new product cards
+    // Animate newly loaded product cards
     container.querySelectorAll('.product-card').forEach((card, i) => {
-      card.style.opacity    = '0';
-      card.style.transform  = 'translateY(24px)';
-      card.style.transition = `opacity .4s ease ${i*.08}s,transform .4s ease ${i*.08}s`;
+      card.style.opacity   = '0';
+      card.style.transform = 'translateY(24px)';
+      card.style.transition = `opacity .4s ease ${i * .08}s, transform .4s ease ${i * .08}s`;
       setTimeout(() => {
         card.style.opacity   = '1';
         card.style.transform = 'translateY(0)';
