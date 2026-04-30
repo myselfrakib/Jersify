@@ -453,6 +453,55 @@
       text-transform: uppercase;
       z-index: 2;
     }
+
+    /* ========== SHARE BUTTON ========== */
+    .product-share-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 3;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.55);
+      background: rgba(0,0,0,0.32);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.18s ease, border-color 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      flex-shrink: 0;
+    }
+    .product-share-btn:hover {
+      background: rgba(0,0,0,0.55);
+      border-color: rgba(255,255,255,0.85);
+      transform: scale(1.1);
+    }
+    .product-share-btn:active {
+      transform: scale(0.9);
+    }
+    .product-share-btn svg {
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+    }
+    /* Shared / copied state */
+    .product-share-btn.copied {
+      background: rgba(74,222,128,0.75);
+      border-color: rgba(74,222,128,0.9);
+    }
+    .product-share-btn.copied svg { display: none; }
+    .product-share-btn.copied::after {
+      content: '✓';
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+
     .product-card-bottom { padding: 12px; }
     .product-card-name {
       font-family: 'Barlow Condensed', sans-serif;
@@ -1272,11 +1321,6 @@ function buildHeroBg(cfg) {
 
 /* ================================================================
    PAGE HTML BUILDER
-   IDs for live sync:
-     #heroBgEl       → hero background image
-     #heroCaptFloat  → floating captain image (hero)
-     #flagCircleEl   → club/country logo circle
-     #fpJerseyEl     → featured player jersey / captain photo
 ================================================================ */
 function buildPageHTML(id, cfg, data) {
   const honourCards = data.honours.map(h =>
@@ -1413,6 +1457,47 @@ function buildPageHTML(id, cfg, data) {
 }
 
 /* ================================================================
+   SHARE PRODUCT HELPER
+================================================================ */
+function shareProduct(productKey, productName, event) {
+  event.stopPropagation();
+  const btn = event.currentTarget;
+
+  const teamId = window._JERSIFY_ID;
+  const url = `${location.origin}${location.pathname}?id=${teamId}`;
+  const shareData = { title: productName, text: `Check out ${productName} on JERSIFY!`, url };
+
+  /* Try native share sheet first (mobile) */
+  if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
+    navigator.share(shareData).catch(() => {});
+    return;
+  }
+
+  /* Fallback: copy to clipboard */
+  const copyText = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      /* Legacy fallback */
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+  };
+
+  copyText().then(() => {
+    btn.classList.add('copied');
+    showSyncToast('Link copied to clipboard!');
+    setTimeout(() => btn.classList.remove('copied'), 2000);
+  });
+}
+
+/* ================================================================
    BOOT
 ================================================================ */
 (function () {
@@ -1527,24 +1612,6 @@ function showSyncToast(msg) {
 
 <!-- ================================================================
   FIREBASE MODULE — Products + Team Images DB Sync
-  
-  DB STRUCTURE:
-    /teamimages/{teamId}/hero     → hero banner image URL
-    /teamimages/{teamId}/captain  → captain/player image URL
-    /teamimages/{teamId}/logo     → club/country logo URL
-
-  BEHAVIOUR:
-    1. On load: check if /teamimages/{id} exists in DB.
-       • If NOT → write current hardcoded values as defaults (seed).
-       • If YES → leave existing DB values untouched (user may have updated them).
-    2. onValue listener keeps all 3 images in sync in real-time.
-       Any external update to the DB (e.g. admin panel) is reflected
-       instantly on screen without a page reload.
-    3. DOM targets (set in buildPageHTML):
-         #heroBgEl      → background-image CSS
-         #heroCaptFloat → floating hero captain img src
-         #flagCircleEl  → logo circle innerHTML
-         #fpJerseyEl    → featured player jersey img src
 ================================================================ -->
 <script type="module">
   import { initializeApp }           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -1557,7 +1624,6 @@ function showSyncToast(msg) {
     const data = window._JERSIFY_DATA;
     if (!id || !cfg || !data) return;
 
-    /* ── Firebase init ── */
     const app = initializeApp({
       apiKey:            "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
       authDomain:        "jersify-f9b5e.firebaseapp.com",
@@ -1569,13 +1635,11 @@ function showSyncToast(msg) {
     });
     const rtdb = getDatabase(app);
 
-    /* ── Helper: extract URL from flagHTML if it's an <img> ── */
     function extractLogoUrl(flagHTML) {
       const match = (flagHTML || '').match(/src=["']([^"']+)["']/);
       return match ? match[1] : '';
     }
 
-    /* ── DOM helpers ── */
     function applyHero(url) {
       if (!url) return;
       const el = document.getElementById('heroBgEl');
@@ -1588,8 +1652,6 @@ function showSyncToast(msg) {
 
     function applyCaptain(url) {
       if (!url) return;
-
-      /* Hero floating image */
       const floatEl = document.getElementById('heroCaptFloat');
       if (floatEl) {
         floatEl.style.display = '';
@@ -1597,8 +1659,6 @@ function showSyncToast(msg) {
           `<img src="${url}" alt="${cfg.name} Captain"
                 style="width:100%;height:100%;object-fit:contain;object-position:bottom center;" />`;
       }
-
-      /* Featured player jersey */
       const jerseyEl = document.getElementById('fpJerseyEl');
       if (jerseyEl) {
         jerseyEl.innerHTML =
@@ -1619,13 +1679,10 @@ function showSyncToast(msg) {
       }
     }
 
-    /* ── Path: /teamimages/{id} ── */
     const teamImgRef = ref(rtdb, `teamimages/${id}`);
 
-    /* ── STEP 1: Seed DB with defaults if entry is missing ── */
     get(teamImgRef).then(snap => {
       if (!snap.exists()) {
-        /* Build the default record from hardcoded data */
         const defaults = {
           hero:    cfg.heroBg     || '',
           captain: cfg.captainImg || '',
@@ -1639,31 +1696,22 @@ function showSyncToast(msg) {
       }
     }).catch(err => console.warn('[JERSIFY] get() failed:', err));
 
-    /* ── STEP 2: Real-time listener — apply images whenever DB changes ── */
     let firstLoad = true;
     onValue(teamImgRef, snap => {
       if (!snap.exists()) return;
       const imgs = snap.val();
-
-      /* Apply each image if present */
       if (imgs.hero)    applyHero(imgs.hero);
       if (imgs.captain) applyCaptain(imgs.captain);
       if (imgs.logo)    applyLogo(imgs.logo);
-
-      /* Show toast on subsequent updates (not on initial load) */
-      if (!firstLoad) {
-        showSyncToast('Images synced from database');
-      }
+      if (!firstLoad) showSyncToast('Images synced from database');
       firstLoad = false;
-
       console.log(`[JERSIFY] Synced /teamimages/${id}:`, imgs);
     }, err => console.warn('[JERSIFY] onValue error:', err));
 
   })();
-
 </script>
 
-<!-- Product engine as separate module to avoid double-init issues -->
+<!-- Product engine -->
 <script type="module">
   import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -1673,7 +1721,6 @@ function showSyncToast(msg) {
     const cfg = window._JERSIFY_CFG;
     if (!id || !cfg) return;
 
-    /* Get existing app (already initialised above) */
     const app  = getApps()[0];
     const rtdb = getDatabase(app);
 
@@ -1724,8 +1771,9 @@ function showSyncToast(msg) {
         const resolvedTeam = resolveTeamFromName(p.name);
         if (resolvedTeam !== id) return;
 
-        const safeName = (p.name || 'Kit').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        const imgUrl   = p.imgUrl || '';
+        const safeName    = (p.name || 'Kit').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const safeNameJs  = (p.name || 'Kit').replace(/'/g, "\\'");
+        const imgUrl      = p.imgUrl || '';
 
         html += `
           <div class="product-card">
@@ -1741,6 +1789,19 @@ function showSyncToast(msg) {
                     <text x="50" y="82" text-anchor="middle" font-family="Bebas Neue,sans-serif" font-size="22" fill="rgba(255,255,255,.92)">${cfg.name.substring(0,3).toUpperCase()}</text>
                   </svg>`
               }
+              <button
+                class="product-share-btn"
+                title="Share product"
+                aria-label="Share ${safeName}"
+                onclick="shareProduct('${key}','${safeNameJs}',event)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="18" cy="5" r="3"/>
+                  <circle cx="6" cy="12" r="3"/>
+                  <circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                </svg>
+              </button>
             </div>
             <div class="product-card-bottom">
               <div class="product-card-name">${p.name || 'Jersify Kit'}</div>
