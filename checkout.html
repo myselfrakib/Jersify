@@ -38,6 +38,7 @@
       padding-bottom: 120px;
     }
 
+    /* ── Topbar ── */
     .topbar {
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
       padding: 16px 16px 10px;
@@ -62,6 +63,7 @@
 
     .content { padding: 12px 16px; }
 
+    /* ── Cards ── */
     .card {
       background: #fff; border-radius: 22px; border: 1px solid var(--line);
       padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow);
@@ -79,11 +81,13 @@
     }
     .card-header svg { width: 14px; height: 14px; opacity: .8 }
 
+    /* ── Loading ── */
     #loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 14px; }
     .spinner { width: 36px; height: 36px; border: 3px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg) } }
     #loading p { font-size: 13px; color: var(--muted); font-weight: 600; }
 
+    /* ── Cart Items ── */
     .cart-item { display: flex; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
     .cart-item:last-child { border-bottom: none; padding-bottom: 0; }
     .ci-img {
@@ -106,6 +110,7 @@
     .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
     .qty-display { font-size: 14px; font-weight: 800; min-width: 20px; text-align: center; }
 
+    /* ── Product (single buy) ── */
     .product-row { display: flex; gap: 14px; align-items: center; }
     .product-img {
       width: 80px; height: 100px; border-radius: 16px;
@@ -119,6 +124,7 @@
     .product-team { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
     .product-price { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--accent); letter-spacing: 1px; }
 
+    /* ── Empty Cart ── */
     .empty-cart-hint { text-align: center; padding: 20px 0 8px; }
     .empty-cart-hint svg { width: 44px; height: 44px; opacity: .18; margin-bottom: 10px; }
     .empty-cart-hint p { font-size: 13px; color: var(--muted); font-weight: 500; line-height: 1.6; }
@@ -129,6 +135,7 @@
     }
     .browse-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+    /* ── Size Grid ── */
     .size-grid { display: flex; gap: 8px; flex-wrap: wrap; }
     .size-btn {
       width: 46px; height: 40px; border-radius: 10px; border: 1.5px solid var(--line);
@@ -138,6 +145,7 @@
     .size-btn:hover { border-color: var(--accent); color: var(--accent); }
     .size-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(198,31,47,.25); }
 
+    /* ── Addresses ── */
     .saved-addr {
       border: 1.5px solid var(--line); border-radius: 14px; padding: 12px 14px;
       margin-bottom: 10px; cursor: pointer; transition: all .22s;
@@ -161,6 +169,7 @@
     .new-addr-toggle:hover { border-color: var(--accent); color: var(--accent); }
     .new-addr-toggle svg { width: 15px; height: 15px; }
 
+    /* ── Address Form ── */
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 10px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1.2px; }
     .form-input {
@@ -187,6 +196,7 @@
     .save-addr-checkbox { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
     .save-addr-row label { font-size: 12px; color: var(--muted); cursor: pointer; }
 
+    /* ── Coupon ── */
     .coupon-row { display: flex; gap: 8px; }
     .coupon-input {
       flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 11px 13px;
@@ -206,6 +216,7 @@
     .coupon-msg.success { color: var(--success); display: block; }
     .coupon-msg.error { color: var(--accent); display: block; }
 
+    /* ── Payment Options ── */
     .pay-opt {
       display: flex; align-items: center; gap: 13px;
       border: 1.5px solid var(--line); border-radius: 14px; padding: 13px 15px;
@@ -219,6 +230,7 @@
     .pay-opt-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
     .pay-opt-icon { width: 38px; height: 38px; border-radius: 10px; background: #f4f4f4; display: grid; place-items: center; font-size: 18px; }
 
+    /* ── Payment Failed Banner ── */
     .pay-failed-banner {
       display: none;
       background: rgba(198,31,47,.05);
@@ -246,6 +258,7 @@
     }
     .pay-failed-cod:hover { border-color: var(--text); }
 
+    /* ── Order Summary ── */
     .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 13px; font-weight: 500; color: var(--muted); }
     .summary-row span:last-child { color: var(--text); font-weight: 700; }
     .discount-row span { color: var(--success) !important; }
@@ -254,19 +267,24 @@
     .summary-total-label { font-size: 16px; font-weight: 900; }
     .summary-total-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--accent); letter-spacing: 1px; }
 
+    /* ── Confirm Button ── */
     .confirm-btn {
       width: 100%; border: none; border-radius: 14px; padding: 16px;
       font-size: 14px; font-weight: 800; letter-spacing: .5px; color: #fff; cursor: pointer;
       background: linear-gradient(180deg, var(--accent), var(--accent2));
       box-shadow: 0 10px 28px rgba(198,31,47,.28); transition: transform .2s ease, box-shadow .2s ease;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
     }
     .confirm-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(198,31,47,.38); }
     .confirm-btn:active { transform: translateY(0); }
     .confirm-btn:disabled { opacity: .55; pointer-events: none; }
+    .confirm-btn .btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: none; }
+    .confirm-btn.loading .btn-spinner { display: block; }
 
     .secure-badge { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 14px; padding: 10px; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .4px; }
     .secure-badge svg { width: 13px; height: 13px; opacity: .5; }
 
+    /* ── Success Screen ── */
     .success-screen { text-align: center; padding: 60px 16px 40px; }
     .success-emoji { font-size: 64px; margin-bottom: 16px; display: block; animation: popIn .5s cubic-bezier(.34,1.56,.64,1) both; }
     @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -290,6 +308,7 @@
     }
     .success-btn:hover { transform: translateY(-2px); }
 
+    /* ── Footer ── */
     .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0; }
     .footer h4 { font-size: 18px; margin-bottom: 8px; font-weight: 900; }
     .footer p { font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: 12px; }
@@ -297,6 +316,7 @@
     .footer-links a { color: rgba(255,255,255,.9); }
     .copy { font-size: 11px; color: rgba(255,255,255,.55); border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; }
 
+    /* ── Bottom Nav ── */
     .bottom-nav {
       position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px;
       width: min(100%, calc(var(--maxw) - 16px));
@@ -309,6 +329,7 @@
     .nav-item.active { color: var(--accent); font-weight: 800; }
     .nav-item:hover:not(.active) { color: #111; }
 
+    /* ── User Badge ── */
     .user-badge {
       display: none; align-items: center; gap: 6px;
       background: rgba(198,31,47,.08); border: 1px solid rgba(198,31,47,.18);
@@ -326,6 +347,7 @@
     @media (max-width: 380px) { .form-row { grid-template-columns: 1fr; gap: 0; } .logo { font-size: 40px } }
     @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
 
+    /* ── Auth Modal ── */
     #authBackdrop { position: fixed; inset: 0; background: rgba(0,0,0,0); z-index: 190; pointer-events: none; transition: background .35s ease; }
     #authBackdrop.show { background: rgba(0,0,0,.55); pointer-events: auto; }
     #authModal {
@@ -388,6 +410,8 @@
     .auth-terms a { color: var(--accent); font-weight: 700; }
     .auth-gradient-bar { height: 3px; background: linear-gradient(90deg, var(--accent), #ff6b35, var(--gold), var(--accent)); background-size: 200% 100%; animation: gradientShift 3s linear infinite; }
     @keyframes gradientShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+
+    /* ── Auth Banners ── */
     #authSignedInBanner { display: none; align-items: center; gap: 12px; background: rgba(30,140,74,.06); border: 1.5px solid rgba(30,140,74,.2); border-radius: 16px; padding: 12px 16px; margin-bottom: 14px; animation: fadeInUp .3s ease both; }
     #authSignedInBanner.show { display: flex; }
     .signed-in-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
@@ -408,8 +432,29 @@
     .auth-prompt-signin:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(198,31,47,.35); }
     .auth-prompt-signup { flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 10px; padding: 11px; background: #fff; color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer; transition: all .2s; }
     .auth-prompt-signup:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Processing Overlay ── */
+    #processingOverlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6);
+      z-index: 300; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    #processingOverlay.show { display: flex; }
+    .processing-box {
+      background: #fff; border-radius: 24px; padding: 32px 28px; text-align: center;
+      max-width: 280px; width: 90%;
+      animation: popIn .35s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    .processing-spinner {
+      width: 48px; height: 48px; border: 4px solid var(--line);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin .8s linear infinite; margin: 0 auto 16px;
+    }
+    .processing-title { font-size: 16px; font-weight: 900; margin-bottom: 6px; }
+    .processing-sub { font-size: 12px; color: var(--muted); line-height: 1.6; }
   </style>
-  <!-- Cashfree JS SDK -->
+
+  <!-- Cashfree JS SDK v3 -->
   <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 </head>
 <body>
@@ -437,6 +482,7 @@
   <div id="checkoutContent" style="display:none">
     <div class="content">
 
+      <!-- Auth banners -->
       <div id="authSignedInBanner">
         <span class="signed-in-icon">✅</span>
         <div class="signed-in-info">
@@ -451,6 +497,7 @@
           <span class="auth-prompt-icon">🔒</span>
           <div class="auth-prompt-text">
             <strong>Sign in to place your order</strong>
+            <span>Track orders and save your address for faster checkout.</span>
           </div>
         </div>
         <div class="auth-prompt-actions">
@@ -459,6 +506,7 @@
         </div>
       </div>
 
+      <!-- Payment failed banner -->
       <div class="pay-failed-banner" id="payFailedBanner">
         <div class="pay-failed-header">
           <span class="pay-failed-icon">⚠️</span>
@@ -471,6 +519,7 @@
         </div>
       </div>
 
+      <!-- Order Items -->
       <div class="card" id="orderItemsCard">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
@@ -479,6 +528,7 @@
         <div id="orderItemsBody"></div>
       </div>
 
+      <!-- Size Selector -->
       <div class="card" id="sizeCard" style="display:none;">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
@@ -487,6 +537,7 @@
         <div class="size-grid" id="sizeGrid"></div>
       </div>
 
+      <!-- Shipping Address -->
       <div class="card">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -501,19 +552,19 @@
           </div>
         </div>
         <div id="addressForm">
-          <div class="form-group"><label>Full Name</label><input type="text" id="custName" class="form-input" placeholder="Enter your full name"></div>
+          <div class="form-group"><label>Full Name</label><input type="text" id="custName" class="form-input" placeholder="Enter your full name" autocomplete="name"></div>
           <div class="form-row">
-            <div class="form-group"><label>Email</label><input type="email" id="custEmail" class="form-input" placeholder="you@email.com"></div>
-            <div class="form-group"><label>Phone</label><input type="tel" id="custPhone" class="form-input" placeholder="+91 98765 43210"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="custEmail" class="form-input" placeholder="you@email.com" autocomplete="email"></div>
+            <div class="form-group"><label>Phone</label><input type="tel" id="custPhone" class="form-input" placeholder="+91 98765 43210" autocomplete="tel"></div>
           </div>
-          <div class="form-group"><label>Street Address</label><textarea id="custAddress" class="form-input" placeholder="House no, Street, Landmark…"></textarea></div>
+          <div class="form-group"><label>Street Address</label><textarea id="custAddress" class="form-input" placeholder="House no, Street, Landmark…" autocomplete="street-address"></textarea></div>
           <div class="form-row">
-            <div class="form-group"><label>City</label><input type="text" id="custCity" class="form-input" placeholder="City"></div>
-            <div class="form-group"><label>State</label><input type="text" id="custState" class="form-input" placeholder="State"></div>
+            <div class="form-group"><label>City</label><input type="text" id="custCity" class="form-input" placeholder="City" autocomplete="address-level2"></div>
+            <div class="form-group"><label>State</label><input type="text" id="custState" class="form-input" placeholder="State" autocomplete="address-level1"></div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label>Pincode</label><input type="text" id="custPincode" class="form-input" placeholder="400001" maxlength="6"></div>
-            <div class="form-group"><label>Country</label><input type="text" id="custCountry" class="form-input" value="India"></div>
+            <div class="form-group"><label>Pincode</label><input type="text" id="custPincode" class="form-input" placeholder="400001" maxlength="6" inputmode="numeric" autocomplete="postal-code"></div>
+            <div class="form-group"><label>Country</label><input type="text" id="custCountry" class="form-input" value="India" autocomplete="country-name"></div>
           </div>
           <button class="location-btn" id="locationBtn" onclick="getLocation()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3"/></svg>
@@ -526,18 +577,20 @@
         </div>
       </div>
 
+      <!-- Coupon -->
       <div class="card">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5" rx="1"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
           Coupon Code
         </div>
         <div class="coupon-row">
-          <input type="text" id="couponInput" class="coupon-input" placeholder="Enter coupon code">
+          <input type="text" id="couponInput" class="coupon-input" placeholder="Enter coupon code" autocomplete="off">
           <button class="coupon-apply-btn" onclick="applyCoupon()">APPLY</button>
         </div>
         <div class="coupon-msg" id="couponMsg"></div>
       </div>
 
+      <!-- Payment Method -->
       <div class="card">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
@@ -561,6 +614,7 @@
         </label>
       </div>
 
+      <!-- Order Summary -->
       <div class="card">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -576,7 +630,10 @@
         </div>
       </div>
 
-      <button class="confirm-btn" id="confirmBtn" onclick="processOrder()">Confirm Order →</button>
+      <button class="confirm-btn" id="confirmBtn" onclick="processOrder()">
+        <div class="btn-spinner"></div>
+        <span id="confirmBtnText">Confirm Order →</span>
+      </button>
 
       <div class="secure-badge">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
@@ -596,6 +653,7 @@
   </div>
 </div>
 
+<!-- Bottom Nav -->
 <nav class="bottom-nav">
   <a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg><div>Home</div></a>
   <a href="shop.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16"/><path d="M5 10l1-5h12l1 5"/><path d="M4 10v8h16v-8"/><path d="M9 18v-4h6v4"/></svg><div>Shop</div></a>
@@ -603,6 +661,16 @@
   <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div>Profile</div></a>
 </nav>
 
+<!-- Processing Overlay -->
+<div id="processingOverlay">
+  <div class="processing-box">
+    <div class="processing-spinner"></div>
+    <div class="processing-title" id="processingTitle">Processing…</div>
+    <div class="processing-sub" id="processingSub">Please wait, do not close this page.</div>
+  </div>
+</div>
+
+<!-- Auth Modal -->
 <div id="authBackdrop" onclick="closeAuthModal()"></div>
 <div id="authModal" role="dialog" aria-modal="true">
   <div class="auth-gradient-bar"></div>
@@ -642,18 +710,18 @@
     </div>
     <div id="signupPanel" style="display:none;">
       <div class="auth-welcome"><div class="auth-welcome-title">Create account 🎽</div><div class="auth-welcome-sub">Join Jersify and get exclusive drops & offers.</div></div>
-      <div class="auth-form-group"><label>Full Name</label><input type="text" id="suName" class="auth-input" placeholder="Your full name"></div>
-      <div class="auth-form-group"><label>Email Address</label><input type="email" id="suEmail" class="auth-input" placeholder="you@email.com"></div>
+      <div class="auth-form-group"><label>Full Name</label><input type="text" id="suName" class="auth-input" placeholder="Your full name" autocomplete="name"></div>
+      <div class="auth-form-group"><label>Email Address</label><input type="email" id="suEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
       <div class="auth-form-group">
         <label>Password</label>
-        <input type="password" id="suPassword" class="auth-input has-icon" placeholder="Min. 6 characters">
+        <input type="password" id="suPassword" class="auth-input has-icon" placeholder="Min. 6 characters" autocomplete="new-password">
         <button type="button" class="pw-toggle" onclick="togglePw('suPassword',this)" tabindex="-1">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
       <div class="auth-form-group">
         <label>Confirm Password</label>
-        <input type="password" id="suConfirm" class="auth-input has-icon" placeholder="Repeat password">
+        <input type="password" id="suConfirm" class="auth-input has-icon" placeholder="Repeat password" autocomplete="new-password">
         <button type="button" class="pw-toggle" onclick="togglePw('suConfirm',this)" tabindex="-1">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
@@ -668,7 +736,7 @@
     </div>
     <div id="resetPanel">
       <div class="auth-welcome"><div class="auth-welcome-title">Reset Password 🔑</div><div class="auth-welcome-sub">Enter your email and we'll send a reset link.</div></div>
-      <div class="auth-form-group"><label>Email Address</label><input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com"></div>
+      <div class="auth-form-group"><label>Email Address</label><input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
       <button class="auth-submit-btn" id="resetBtn" onclick="doResetPassword()"><div class="auth-btn-spinner"></div><span class="auth-btn-text">Send Reset Link</span></button>
       <div style="text-align:center;margin-top:14px;"><a onclick="hideResetPanel()" style="font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;">← Back to Sign In</a></div>
     </div>
@@ -687,8 +755,7 @@
   }                                           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   /* ─────────────────────────────────────────────
-     CONFIG — only public values here. Secrets
-     live in Firebase Functions config.
+     FIREBASE CONFIG
   ───────────────────────────────────────────── */
   const firebaseConfig = {
     apiKey:            "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
@@ -701,14 +768,12 @@
   };
 
   /**
-   * ⚠️  REPLACE THIS with your deployed Firebase Functions region URL.
-   * Format: https://REGION-PROJECT_ID.cloudfunctions.net
-   * Example: https://createcashfreeorder-cb3aepnlna-uc.a.run.app
-   * Find it after deploying with: firebase deploy --only functions
+   * Your deployed Firebase Functions base URL.
+   * Update this after running: firebase deploy --only functions
    */
   const FUNCTIONS_BASE = "https://createcashfreeorder-cb3aepnlna-uc.a.run.app";
 
-  /* convenience POST helper */
+  /* ─── Convenience POST helper ─── */
   async function callFn(name, body) {
     const r = await fetch(`${FUNCTIONS_BASE}/${name}`, {
       method: "POST",
@@ -726,7 +791,7 @@
   const dbRef     = ref(db);
   const gProvider = new GoogleAuthProvider();
 
-  /* ── state ── */
+  /* ── State ── */
   let orderPrice        = 0;
   let orderItems        = [];
   let discountAmount    = 0;
@@ -737,254 +802,357 @@
   let couponsMap        = {};
   let currentUser       = null;
 
-  /* ════════════════════════════════════
-     AUTH helpers
-  ════════════════════════════════════ */
-  window.openAuthModal   = (tab='signin') => { switchAuthTab(tab); clearAuthMessages(); document.getElementById('authModal').classList.add('show'); document.getElementById('authBackdrop').classList.add('show'); document.body.style.overflow='hidden'; };
-  window.closeAuthModal  = () => { document.getElementById('authModal').classList.remove('show'); document.getElementById('authBackdrop').classList.remove('show'); document.body.style.overflow=''; };
-  window.switchAuthTab   = (tab) => { const s=tab==='signin'; document.getElementById('tabSignin').classList.toggle('active',s); document.getElementById('tabSignup').classList.toggle('active',!s); document.getElementById('signinPanel').style.display=s?'block':'none'; document.getElementById('signupPanel').style.display=!s?'block':'none'; document.getElementById('resetPanel').style.display='none'; clearAuthMessages(); };
-  window.showResetPanel  = () => { document.getElementById('signinPanel').style.display='none'; document.getElementById('resetPanel').style.display='block'; clearAuthMessages(); };
-  window.hideResetPanel  = () => { document.getElementById('resetPanel').style.display='none'; document.getElementById('signinPanel').style.display='block'; clearAuthMessages(); };
-  window.togglePw        = (id,btn) => { const inp=document.getElementById(id); const s=inp.type==='text'; inp.type=s?'password':'text'; btn.innerHTML=s?`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`; };
+  /* ─────────────────────────────────────────────
+     PROCESSING OVERLAY HELPERS
+  ───────────────────────────────────────────── */
+  function showProcessing(title = 'Processing…', sub = 'Please wait, do not close this page.') {
+    document.getElementById('processingTitle').textContent = title;
+    document.getElementById('processingSub').textContent = sub;
+    document.getElementById('processingOverlay').classList.add('show');
+  }
+  function hideProcessing() {
+    document.getElementById('processingOverlay').classList.remove('show');
+  }
 
-  function setAuthLoading(id,v){const b=document.getElementById(id);if(b){b.classList.toggle('loading',v);b.disabled=v;}}
-  function showAuthError(m){const e=document.getElementById('authError');e.textContent=m;e.classList.add('show');document.getElementById('authSuccess').classList.remove('show');}
-  function showAuthSuccess(m){const e=document.getElementById('authSuccess');e.textContent=m;e.classList.add('show');document.getElementById('authError').classList.remove('show');}
-  function clearAuthMessages(){document.getElementById('authError').classList.remove('show');document.getElementById('authSuccess').classList.remove('show');}
+  /* ─────────────────────────────────────────────
+     CONFIRM BUTTON STATE
+  ───────────────────────────────────────────── */
+  function setConfirmBtn(loading, text = 'Confirm Order →') {
+    const btn = document.getElementById('confirmBtn');
+    const txtEl = document.getElementById('confirmBtnText');
+    btn.disabled = loading;
+    btn.classList.toggle('loading', loading);
+    txtEl.textContent = text;
+  }
+
+  /* ════════════════════════════════════
+     AUTH HELPERS
+  ════════════════════════════════════ */
+  window.openAuthModal   = (tab = 'signin') => { switchAuthTab(tab); clearAuthMessages(); document.getElementById('authModal').classList.add('show'); document.getElementById('authBackdrop').classList.add('show'); document.body.style.overflow = 'hidden'; };
+  window.closeAuthModal  = () => { document.getElementById('authModal').classList.remove('show'); document.getElementById('authBackdrop').classList.remove('show'); document.body.style.overflow = ''; };
+  window.switchAuthTab   = (tab) => { const s = tab === 'signin'; document.getElementById('tabSignin').classList.toggle('active', s); document.getElementById('tabSignup').classList.toggle('active', !s); document.getElementById('signinPanel').style.display = s ? 'block' : 'none'; document.getElementById('signupPanel').style.display = !s ? 'block' : 'none'; document.getElementById('resetPanel').style.display = 'none'; clearAuthMessages(); };
+  window.showResetPanel  = () => { document.getElementById('signinPanel').style.display = 'none'; document.getElementById('resetPanel').style.display = 'block'; clearAuthMessages(); };
+  window.hideResetPanel  = () => { document.getElementById('resetPanel').style.display = 'none'; document.getElementById('signinPanel').style.display = 'block'; clearAuthMessages(); };
+  window.togglePw        = (id, btn) => { const inp = document.getElementById(id); const s = inp.type === 'text'; inp.type = s ? 'password' : 'text'; btn.innerHTML = s ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`; };
+
+  function setAuthLoading(id, v) { const b = document.getElementById(id); if (b) { b.classList.toggle('loading', v); b.disabled = v; } }
+  function showAuthError(m) { const e = document.getElementById('authError'); e.textContent = m; e.classList.add('show'); document.getElementById('authSuccess').classList.remove('show'); }
+  function showAuthSuccess(m) { const e = document.getElementById('authSuccess'); e.textContent = m; e.classList.add('show'); document.getElementById('authError').classList.remove('show'); }
+  function clearAuthMessages() { document.getElementById('authError').classList.remove('show'); document.getElementById('authSuccess').classList.remove('show'); }
 
   window.doSignIn = async () => {
-    const email=document.getElementById('siEmail').value.trim(), pw=document.getElementById('siPassword').value;
-    if(!email||!pw){showAuthError('Please enter your email and password.');return;}
-    setAuthLoading('siBtn',true); clearAuthMessages();
-    try { await signInWithEmailAndPassword(auth,email,pw); }
-    catch(err){ setAuthLoading('siBtn',false); showAuthError(friendlyAuthError(err.code)); }
+    const email = document.getElementById('siEmail').value.trim();
+    const pw    = document.getElementById('siPassword').value;
+    if (!email || !pw) { showAuthError('Please enter your email and password.'); return; }
+    setAuthLoading('siBtn', true); clearAuthMessages();
+    try { await signInWithEmailAndPassword(auth, email, pw); }
+    catch (err) { setAuthLoading('siBtn', false); showAuthError(friendlyAuthError(err.code)); }
   };
-  window.doSignUp = async () => {
-    const name=document.getElementById('suName').value.trim(), email=document.getElementById('suEmail').value.trim(), pw=document.getElementById('suPassword').value, confirm=document.getElementById('suConfirm').value;
-    if(!name){showAuthError('Please enter your full name.');return;}
-    if(!email){showAuthError('Please enter your email.');return;}
-    if(pw.length<6){showAuthError('Password must be at least 6 characters.');return;}
-    if(pw!==confirm){showAuthError('Passwords do not match.');return;}
-    setAuthLoading('suBtn',true); clearAuthMessages();
-    try {
-      const cred=await createUserWithEmailAndPassword(auth,email,pw);
-      await updateProfile(cred.user,{displayName:name});
-      try{await set(ref(db,`users/${cred.user.uid}/profile`),{name,email});}catch(_){}
-    } catch(err){ setAuthLoading('suBtn',false); showAuthError(friendlyAuthError(err.code)); }
-  };
-  window.doGoogleSignIn = async () => {
-    setAuthLoading('siGoogleBtn',true); setAuthLoading('suGoogleBtn',true); clearAuthMessages();
-    try { await signInWithPopup(auth,gProvider); }
-    catch(err){ setAuthLoading('siGoogleBtn',false); setAuthLoading('suGoogleBtn',false); showAuthError(friendlyAuthError(err.code)); }
-  };
-  window.doResetPassword = async () => {
-    const email=document.getElementById('resetEmail').value.trim();
-    if(!email){showAuthError('Please enter your email address.');return;}
-    setAuthLoading('resetBtn',true); clearAuthMessages();
-    try { await sendPasswordResetEmail(auth,email); setAuthLoading('resetBtn',false); showAuthSuccess('Reset link sent! Check your inbox.'); }
-    catch(err){ setAuthLoading('resetBtn',false); showAuthError(friendlyAuthError(err.code)); }
-  };
-  window.handleSignOut = async () => { if(!confirm('Sign out?'))return; await signOut(auth); };
 
-  function friendlyAuthError(code){
-    const m={'auth/user-not-found':'No account found with this email.','auth/wrong-password':'Incorrect password.','auth/invalid-email':'Please enter a valid email.','auth/email-already-in-use':'An account with this email already exists.','auth/weak-password':'Password must be at least 6 characters.','auth/too-many-requests':'Too many attempts. Please try again later.','auth/popup-closed-by-user':'Sign-in popup was closed.','auth/network-request-failed':'Network error. Check your connection.','auth/invalid-credential':'Incorrect email or password.'};
-    return m[code]||'Something went wrong. Please try again.';
+  window.doSignUp = async () => {
+    const name    = document.getElementById('suName').value.trim();
+    const email   = document.getElementById('suEmail').value.trim();
+    const pw      = document.getElementById('suPassword').value;
+    const confirm = document.getElementById('suConfirm').value;
+    if (!name)          { showAuthError('Please enter your full name.'); return; }
+    if (!email)         { showAuthError('Please enter your email.'); return; }
+    if (pw.length < 6)  { showAuthError('Password must be at least 6 characters.'); return; }
+    if (pw !== confirm) { showAuthError('Passwords do not match.'); return; }
+    setAuthLoading('suBtn', true); clearAuthMessages();
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, pw);
+      await updateProfile(cred.user, { displayName: name });
+      try { await set(ref(db, `users/${cred.user.uid}/profile`), { name, email }); } catch (_) {}
+    } catch (err) { setAuthLoading('suBtn', false); showAuthError(friendlyAuthError(err.code)); }
+  };
+
+  window.doGoogleSignIn = async () => {
+    setAuthLoading('siGoogleBtn', true); setAuthLoading('suGoogleBtn', true); clearAuthMessages();
+    try { await signInWithPopup(auth, gProvider); }
+    catch (err) { setAuthLoading('siGoogleBtn', false); setAuthLoading('suGoogleBtn', false); showAuthError(friendlyAuthError(err.code)); }
+  };
+
+  window.doResetPassword = async () => {
+    const email = document.getElementById('resetEmail').value.trim();
+    if (!email) { showAuthError('Please enter your email address.'); return; }
+    setAuthLoading('resetBtn', true); clearAuthMessages();
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setAuthLoading('resetBtn', false);
+      showAuthSuccess('Reset link sent! Check your inbox.');
+    } catch (err) { setAuthLoading('resetBtn', false); showAuthError(friendlyAuthError(err.code)); }
+  };
+
+  window.handleSignOut = async () => { if (!confirm('Sign out?')) return; await signOut(auth); };
+
+  function friendlyAuthError(code) {
+    const m = {
+      'auth/user-not-found':        'No account found with this email.',
+      'auth/wrong-password':        'Incorrect password.',
+      'auth/invalid-email':         'Please enter a valid email.',
+      'auth/email-already-in-use':  'An account with this email already exists.',
+      'auth/weak-password':         'Password must be at least 6 characters.',
+      'auth/too-many-requests':     'Too many attempts. Please try again later.',
+      'auth/popup-closed-by-user':  'Sign-in popup was closed.',
+      'auth/network-request-failed':'Network error. Check your connection.',
+      'auth/invalid-credential':    'Incorrect email or password.',
+    };
+    return m[code] || 'Something went wrong. Please try again.';
   }
 
   onAuthStateChanged(auth, user => {
     currentUser = user;
     updateUserBadge(user);
     updateAuthBanners(user);
-    if(user){ prefillUserInfo(user); closeAuthModal(); }
+    if (user) { prefillUserInfo(user); closeAuthModal(); }
   });
 
-  function updateAuthBanners(user){
-    const si=document.getElementById('authSignedInBanner'), pc=document.getElementById('authPromptCard');
-    if(user){
-      document.getElementById('signedInName').textContent=`Signed in as ${(user.displayName||user.email||'User').split(' ')[0]}`;
-      document.getElementById('signedInEmail').textContent=user.email||'';
+  function updateAuthBanners(user) {
+    const si = document.getElementById('authSignedInBanner');
+    const pc = document.getElementById('authPromptCard');
+    if (user) {
+      document.getElementById('signedInName').textContent  = `Signed in as ${(user.displayName || user.email || 'User').split(' ')[0]}`;
+      document.getElementById('signedInEmail').textContent = user.email || '';
       si.classList.add('show'); pc.classList.remove('show');
-    } else { si.classList.remove('show'); pc.classList.add('show'); }
-  }
-  function updateUserBadge(user){
-    const badge=document.getElementById('userBadge'), avatar=document.getElementById('userAvatar'), nameEl=document.getElementById('userNameBadge'), titleEl=document.getElementById('topbarTitle');
-    if(user){
-      badge.classList.add('visible'); titleEl.style.display='none';
-      avatar.innerHTML=user.photoURL?`<img src="${user.photoURL}" alt="avatar">`:(user.displayName||user.email||'?').slice(0,2).toUpperCase();
-      nameEl.textContent=(user.displayName||user.email||'').split(' ')[0];
-    } else { badge.classList.remove('visible'); titleEl.style.display=''; }
+    } else {
+      si.classList.remove('show'); pc.classList.add('show');
+    }
   }
 
-  const getCart   = () => { try{return JSON.parse(localStorage.getItem('jersify_cart')||'[]');}catch{return [];} };
-  const saveCart  = c  => localStorage.setItem('jersify_cart',JSON.stringify(c));
-  const getSavedAddresses = () => { try{return JSON.parse(localStorage.getItem('jersify_addresses')||'[]');}catch{return [];} };
-  const saveAddressLocal  = a  => { const addrs=getSavedAddresses(); addrs.unshift({...a,id:Date.now(),tag:'Home'}); localStorage.setItem('jersify_addresses',JSON.stringify(addrs.slice(0,5))); };
+  function updateUserBadge(user) {
+    const badge   = document.getElementById('userBadge');
+    const avatar  = document.getElementById('userAvatar');
+    const nameEl  = document.getElementById('userNameBadge');
+    const titleEl = document.getElementById('topbarTitle');
+    if (user) {
+      badge.classList.add('visible'); titleEl.style.display = 'none';
+      avatar.innerHTML = user.photoURL
+        ? `<img src="${user.photoURL}" alt="avatar">`
+        : (user.displayName || user.email || '?').slice(0, 2).toUpperCase();
+      nameEl.textContent = (user.displayName || user.email || '').split(' ')[0];
+    } else {
+      badge.classList.remove('visible'); titleEl.style.display = '';
+    }
+  }
 
-  async function loadCoupons(){
-    try{
-      const snap=await get(child(dbRef,'coupons'));
-      if(snap.exists()){
-        Object.entries(snap.val()).forEach(([key,val])=>{
-          if(val.active!==false){
-            const code=key.toUpperCase();
-            couponsMap[code]={type:val.type||'percent',value:Number(val.value)||0,desc:val.desc||`${val.value}${val.type==='flat'?'₹':'%'} OFF`};
+  /* ─────────────────────────────────────────────
+     LOCAL STORAGE HELPERS
+  ───────────────────────────────────────────── */
+  const getCart            = () => { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } };
+  const saveCart           = c  => localStorage.setItem('jersify_cart', JSON.stringify(c));
+  const getSavedAddresses  = () => { try { return JSON.parse(localStorage.getItem('jersify_addresses') || '[]'); } catch { return []; } };
+  const saveAddressLocal   = a  => { const addrs = getSavedAddresses(); addrs.unshift({ ...a, id: Date.now(), tag: 'Home' }); localStorage.setItem('jersify_addresses', JSON.stringify(addrs.slice(0, 5))); };
+
+  /* ─────────────────────────────────────────────
+     LOAD COUPONS FROM FIREBASE
+  ───────────────────────────────────────────── */
+  async function loadCoupons() {
+    try {
+      const snap = await get(child(dbRef, 'coupons'));
+      if (snap.exists()) {
+        Object.entries(snap.val()).forEach(([key, val]) => {
+          if (val.active !== false) {
+            const code = key.toUpperCase();
+            couponsMap[code] = { type: val.type || 'percent', value: Number(val.value) || 0, desc: val.desc || `${val.value}${val.type === 'flat' ? '₹' : '%'} OFF` };
           }
         });
       }
-    } catch {}
+    } catch (_) {}
   }
 
-  async function prefillUserInfo(user){
-    let name=user.displayName||'', email=user.email||'', phone=user.phoneNumber||'';
-    try{
-      const snap=await get(child(dbRef,`users/${user.uid}`));
-      if(snap.exists()){ const u=snap.val(),p=u.profile||{}; name=p.name||u.name||name; email=p.email||u.email||email; phone=p.phone||p.phoneNumber||u.phone||u.phoneNumber||u.mobile||phone; }
-    } catch {}
-    const setIfEmpty=(id,val)=>{const el=document.getElementById(id);if(el&&!el.value&&val)el.value=val;};
-    setIfEmpty('custName',name); setIfEmpty('custEmail',email); setIfEmpty('custPhone',phone);
+  /* ─────────────────────────────────────────────
+     PREFILL USER INFO
+  ───────────────────────────────────────────── */
+  async function prefillUserInfo(user) {
+    let name  = user.displayName || '';
+    let email = user.email || '';
+    let phone = user.phoneNumber || '';
+    try {
+      const snap = await get(child(dbRef, `users/${user.uid}`));
+      if (snap.exists()) {
+        const u = snap.val(), p = u.profile || {};
+        name  = p.name  || u.name  || name;
+        email = p.email || u.email || email;
+        phone = p.phone || p.phoneNumber || u.phone || u.phoneNumber || u.mobile || phone;
+      }
+    } catch (_) {}
+    const setIfEmpty = (id, val) => { const el = document.getElementById(id); if (el && !el.value && val) el.value = val; };
+    setIfEmpty('custName', name);
+    setIfEmpty('custEmail', email);
+    setIfEmpty('custPhone', phone);
   }
 
-  function renderSavedAddresses(){
-    const addrs=getSavedAddresses(), section=document.getElementById('savedAddressesSection');
-    if(!addrs.length){section.style.display='none';newAddrVisible=true;return;}
-    section.style.display='block';
-    document.getElementById('savedAddressList').innerHTML=addrs.map((a,i)=>`
-      <div class="saved-addr${i===0?' selected':''}" onclick="selectSavedAddr(${i},'${encodeURIComponent(JSON.stringify(a))}')" id="savedAddr_${i}">
+  /* ─────────────────────────────────────────────
+     SAVED ADDRESSES
+  ───────────────────────────────────────────── */
+  function renderSavedAddresses() {
+    const addrs   = getSavedAddresses();
+    const section = document.getElementById('savedAddressesSection');
+    if (!addrs.length) { section.style.display = 'none'; newAddrVisible = true; return; }
+    section.style.display = 'block';
+    document.getElementById('savedAddressList').innerHTML = addrs.map((a, i) => `
+      <div class="saved-addr${i === 0 ? ' selected' : ''}" onclick="selectSavedAddr(${i},'${encodeURIComponent(JSON.stringify(a))}')" id="savedAddr_${i}">
         <div class="saved-addr-radio"></div>
         <div class="addr-info">
-          <span class="addr-tag">${a.tag||'Home'}</span>
+          <span class="addr-tag">${a.tag || 'Home'}</span>
           <div class="addr-name">${a.name}</div>
           <div class="addr-text">${a.address}, ${a.city}, ${a.state} – ${a.pincode}</div>
         </div>
       </div>`).join('');
-    selectSavedAddr(0,encodeURIComponent(JSON.stringify(addrs[0])));
-    document.getElementById('addressForm').style.display='none';
-    document.getElementById('saveAddrRow').style.display='none';
-    newAddrVisible=false;
+    selectSavedAddr(0, encodeURIComponent(JSON.stringify(addrs[0])));
+    document.getElementById('addressForm').style.display  = 'none';
+    document.getElementById('saveAddrRow').style.display  = 'none';
+    newAddrVisible = false;
   }
 
-  window.selectSavedAddr=(idx,encoded)=>{
-    document.querySelectorAll('.saved-addr').forEach(el=>el.classList.remove('selected'));
+  window.selectSavedAddr = (idx, encoded) => {
+    document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected'));
     document.getElementById(`savedAddr_${idx}`)?.classList.add('selected');
-    selectedSavedAddr=JSON.parse(decodeURIComponent(encoded));
-    document.getElementById('addressForm').style.display='none';
-    document.getElementById('saveAddrRow').style.display='none';
-    newAddrVisible=false;
+    selectedSavedAddr = JSON.parse(decodeURIComponent(encoded));
+    document.getElementById('addressForm').style.display  = 'none';
+    document.getElementById('saveAddrRow').style.display  = 'none';
+    newAddrVisible = false;
   };
-  window.toggleNewAddress=()=>{
-    newAddrVisible=!newAddrVisible;
-    document.getElementById('addressForm').style.display=newAddrVisible?'block':'none';
-    document.getElementById('saveAddrRow').style.display=newAddrVisible?'flex':'none';
-    if(newAddrVisible){selectedSavedAddr=null;document.querySelectorAll('.saved-addr').forEach(el=>el.classList.remove('selected'));}
-  };
-  window.selectSize=btn=>{document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');};
-  window.selPay=method=>{document.querySelectorAll('.pay-opt').forEach(el=>el.classList.remove('active'));document.getElementById(method==='cashfree'?'pay_cf':'pay_cod').parentElement.classList.add('active');};
 
-  window.getLocation=()=>{
-    const btn=document.getElementById('locationBtn'),text=document.getElementById('locationText');
-    if(!navigator.geolocation){text.textContent='Geolocation not supported';return;}
-    btn.classList.add('loading');text.textContent='Detecting your location…';
-    navigator.geolocation.getCurrentPosition(async pos=>{
-      try{
-        const{latitude,longitude}=pos.coords;
-        const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`);
-        const data=await r.json();
-        if(data?.address){
-          const a=data.address;
-          document.getElementById('custAddress').value=[a.house_number,a.road,a.neighbourhood,a.suburb].filter(Boolean).join(', ');
-          document.getElementById('custCity').value=a.city||a.town||a.village||'';
-          document.getElementById('custState').value=a.state||'';
-          document.getElementById('custPincode').value=a.postcode||'';
-          document.getElementById('custCountry').value=a.country||'India';
-          text.textContent='Location detected!';btn.classList.remove('loading');btn.classList.add('success');
+  window.toggleNewAddress = () => {
+    newAddrVisible = !newAddrVisible;
+    document.getElementById('addressForm').style.display  = newAddrVisible ? 'block' : 'none';
+    document.getElementById('saveAddrRow').style.display  = newAddrVisible ? 'flex'  : 'none';
+    if (newAddrVisible) { selectedSavedAddr = null; document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected')); }
+  };
+
+  window.selectSize = btn => { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
+  window.selPay     = method => { document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active')); document.getElementById(method === 'cashfree' ? 'pay_cf' : 'pay_cod').parentElement.classList.add('active'); };
+
+  /* ─────────────────────────────────────────────
+     GEOLOCATION
+  ───────────────────────────────────────────── */
+  window.getLocation = () => {
+    const btn  = document.getElementById('locationBtn');
+    const text = document.getElementById('locationText');
+    if (!navigator.geolocation) { text.textContent = 'Geolocation not supported'; return; }
+    btn.classList.add('loading'); text.textContent = 'Detecting your location…';
+    navigator.geolocation.getCurrentPosition(async pos => {
+      try {
+        const { latitude, longitude } = pos.coords;
+        const r    = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`);
+        const data = await r.json();
+        if (data?.address) {
+          const a = data.address;
+          document.getElementById('custAddress').value = [a.house_number, a.road, a.neighbourhood, a.suburb].filter(Boolean).join(', ');
+          document.getElementById('custCity').value    = a.city || a.town || a.village || '';
+          document.getElementById('custState').value   = a.state || '';
+          document.getElementById('custPincode').value = a.postcode || '';
+          document.getElementById('custCountry').value = a.country || 'India';
+          text.textContent = 'Location detected! ✓';
+          btn.classList.remove('loading'); btn.classList.add('success');
         }
-      }catch{text.textContent='Could not fetch address.';btn.classList.remove('loading');}
-    },()=>{text.textContent='Location denied. Enter manually.';btn.classList.remove('loading');},{enableHighAccuracy:true,timeout:10000});
+      } catch { text.textContent = 'Could not fetch address.'; btn.classList.remove('loading'); }
+    }, () => { text.textContent = 'Location denied. Enter manually.'; btn.classList.remove('loading'); }, { enableHighAccuracy: true, timeout: 10000 });
   };
 
-  window.applyCoupon=()=>{
-    const code=document.getElementById('couponInput').value.trim().toUpperCase(), msgEl=document.getElementById('couponMsg');
-    if(!code){msgEl.textContent='Please enter a coupon code.';msgEl.className='coupon-msg error';return;}
-    if(couponApplied){msgEl.textContent='A coupon is already applied.';msgEl.className='coupon-msg error';return;}
-    const coupon=couponsMap[code];
-    if(!coupon){msgEl.textContent='Invalid coupon code.';msgEl.className='coupon-msg error';return;}
-    discountAmount=coupon.type==='percent'?Math.round(orderPrice*coupon.value/100):coupon.value;
-    if(discountAmount>orderPrice)discountAmount=orderPrice;
-    couponApplied=true;
-    msgEl.textContent=`${coupon.desc} applied! You save ₹${discountAmount}`;msgEl.className='coupon-msg success';
-    document.getElementById('discountRow').style.display='flex';document.getElementById('discountVal').textContent=`-₹${discountAmount}`;
+  /* ─────────────────────────────────────────────
+     COUPON
+  ───────────────────────────────────────────── */
+  window.applyCoupon = () => {
+    const code  = document.getElementById('couponInput').value.trim().toUpperCase();
+    const msgEl = document.getElementById('couponMsg');
+    if (!code)         { msgEl.textContent = 'Please enter a coupon code.'; msgEl.className = 'coupon-msg error'; return; }
+    if (couponApplied) { msgEl.textContent = 'A coupon is already applied.'; msgEl.className = 'coupon-msg error'; return; }
+    const coupon = couponsMap[code];
+    if (!coupon)       { msgEl.textContent = 'Invalid coupon code.'; msgEl.className = 'coupon-msg error'; return; }
+    discountAmount = coupon.type === 'percent' ? Math.round(orderPrice * coupon.value / 100) : coupon.value;
+    if (discountAmount > orderPrice) discountAmount = orderPrice;
+    couponApplied = true;
+    msgEl.textContent = `${coupon.desc} applied! You save ₹${discountAmount}`;
+    msgEl.className   = 'coupon-msg success';
+    document.getElementById('discountRow').style.display = 'flex';
+    document.getElementById('discountVal').textContent   = `-₹${discountAmount}`;
     updateTotal();
   };
-  function updateTotal(){document.getElementById('finalTotal').textContent=`₹${(orderPrice-discountAmount).toLocaleString('en-IN')}`;}
 
-  window.changeQty=(key,delta)=>{
-    const cart=getCart(),item=cart.find(i=>i.key===key);
-    if(!item)return;
-    item.qty=Math.max(1,item.qty+delta);saveCart(cart);recalcCartTotal();
-    const el=document.getElementById(`qty_${key.replace(/[^a-zA-Z0-9]/g,'_')}`);
-    if(el)el.textContent=item.qty;
+  function updateTotal() {
+    document.getElementById('finalTotal').textContent = `₹${(orderPrice - discountAmount).toLocaleString('en-IN')}`;
+  }
+
+  /* ─────────────────────────────────────────────
+     QTY CHANGE (cart mode)
+  ───────────────────────────────────────────── */
+  window.changeQty = (key, delta) => {
+    const cart = getCart(), item = cart.find(i => i.key === key);
+    if (!item) return;
+    item.qty = Math.max(1, item.qty + delta);
+    saveCart(cart); recalcCartTotal();
+    const el = document.getElementById(`qty_${key.replace(/[^a-zA-Z0-9]/g, '_')}`);
+    if (el) el.textContent = item.qty;
   };
-  function recalcCartTotal(){
-    const cart=getCart();
-    orderPrice=cart.reduce((s,i)=>s+i.price*i.qty,0);
-    discountAmount=0;couponApplied=false;
-    document.getElementById('subTotal').textContent=`₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('finalTotal').textContent=`₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('couponMsg').className='coupon-msg';
-    document.getElementById('discountRow').style.display='none';
+
+  function recalcCartTotal() {
+    const cart = getCart();
+    orderPrice     = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    discountAmount = 0; couponApplied = false;
+    document.getElementById('subTotal').textContent   = `₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('finalTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('couponMsg').className    = 'coupon-msg';
+    document.getElementById('discountRow').style.display = 'none';
   }
 
-  function showPaymentFailed(reason){
-    const banner=document.getElementById('payFailedBanner');
-    document.getElementById('payFailedDesc').textContent=(reason||'Payment could not be processed.')+' Your items are still here — try again or switch to Cash on Delivery.';
-    banner.classList.add('visible');banner.scrollIntoView({behavior:'smooth',block:'start'});
-    const btn=document.getElementById('confirmBtn');btn.disabled=false;btn.textContent='Confirm Order →';
+  /* ─────────────────────────────────────────────
+     PAYMENT FAILED BANNER
+  ───────────────────────────────────────────── */
+  function showPaymentFailed(reason) {
+    const banner = document.getElementById('payFailedBanner');
+    document.getElementById('payFailedDesc').textContent = (reason || 'Payment could not be processed.') + ' Your items are still here — try again or switch to Cash on Delivery.';
+    banner.classList.add('visible');
+    banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setConfirmBtn(false);
   }
-  window.retryPayment=()=>{document.getElementById('payFailedBanner').classList.remove('visible');document.getElementById('confirmBtn').scrollIntoView({behavior:'smooth',block:'center'});};
-  window.switchToCOD=()=>{document.getElementById('payFailedBanner').classList.remove('visible');selPay('cod');document.getElementById('pay_cod').parentElement.scrollIntoView({behavior:'smooth',block:'center'});};
+
+  window.retryPayment = () => { document.getElementById('payFailedBanner').classList.remove('visible'); document.getElementById('confirmBtn').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+  window.switchToCOD  = () => { document.getElementById('payFailedBanner').classList.remove('visible'); selPay('cod'); document.getElementById('pay_cod').parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
 
   /* ════════════════════════════════════════════════
-     PROCESS ORDER — now calls backend Functions
+     PROCESS ORDER — Main order flow
   ════════════════════════════════════════════════ */
   window.processOrder = async () => {
-    if(orderPrice===0){alert('Your cart is empty.');return;}
-    if(!currentUser){
+    if (orderPrice === 0) { alert('Your cart is empty.'); return; }
+
+    if (!currentUser) {
       openAuthModal('signin');
-      const btn=document.getElementById('confirmBtn');
-      btn.style.animation='shake .4s ease';
-      setTimeout(()=>btn.style.animation='',500);
+      const btn = document.getElementById('confirmBtn');
+      btn.style.animation = 'shake .4s ease';
+      setTimeout(() => btn.style.animation = '', 500);
       return;
     }
 
     document.getElementById('payFailedBanner').classList.remove('visible');
 
-    let name,phone,email,address,city,state,pincode,country;
-    if(selectedSavedAddr){
-      ({name,phone,email,address,city,state,pincode}=selectedSavedAddr);
-      country=selectedSavedAddr.country||'India';
+    /* ── Collect address fields ── */
+    let name, phone, email, address, city, state, pincode, country;
+    if (selectedSavedAddr) {
+      ({ name, phone, email, address, city, state, pincode } = selectedSavedAddr);
+      country = selectedSavedAddr.country || 'India';
     } else {
-      name=document.getElementById('custName').value.trim();
-      phone=document.getElementById('custPhone').value.trim();
-      email=document.getElementById('custEmail').value.trim();
-      address=document.getElementById('custAddress').value.trim();
-      city=document.getElementById('custCity').value.trim();
-      state=document.getElementById('custState').value.trim();
-      pincode=document.getElementById('custPincode').value.trim();
-      country=document.getElementById('custCountry').value.trim()||'India';
-      if(!name){shakeField('custName');alert('Please enter your name.');return;}
-      if(!phone||phone.length<10){shakeField('custPhone');alert('Please enter a valid phone number.');return;}
-      if(!address){shakeField('custAddress');alert('Please enter your address.');return;}
-      if(!city){shakeField('custCity');alert('Please enter your city.');return;}
-      if(!pincode||pincode.length<4){shakeField('custPincode');alert('Please enter a valid pincode.');return;}
-      if(document.getElementById('saveAddrCheck').checked)saveAddressLocal({name,phone,email,address,city,state,pincode,country});
+      name    = document.getElementById('custName').value.trim();
+      phone   = document.getElementById('custPhone').value.trim();
+      email   = document.getElementById('custEmail').value.trim();
+      address = document.getElementById('custAddress').value.trim();
+      city    = document.getElementById('custCity').value.trim();
+      state   = document.getElementById('custState').value.trim();
+      pincode = document.getElementById('custPincode').value.trim();
+      country = document.getElementById('custCountry').value.trim() || 'India';
+      if (!name)                    { shakeField('custName');    alert('Please enter your name.');             return; }
+      if (!phone || phone.length < 10) { shakeField('custPhone'); alert('Please enter a valid phone number.'); return; }
+      if (!address)                 { shakeField('custAddress'); alert('Please enter your address.');          return; }
+      if (!city)                    { shakeField('custCity');    alert('Please enter your city.');             return; }
+      if (!pincode || pincode.length < 4) { shakeField('custPincode'); alert('Please enter a valid pincode.'); return; }
+      if (document.getElementById('saveAddrCheck').checked) saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
     }
 
-    const isCF       = document.getElementById('pay_cf').checked;
-    const finalPrice = orderPrice - discountAmount;
+    const isCF        = document.getElementById('pay_cf').checked;
+    const finalPrice  = orderPrice - discountAmount;
     const selectedSize = document.querySelector('.size-btn.active')?.textContent || 'M';
-    const orderId    = `JRS-${Date.now()}`;
-    const btn        = document.getElementById('confirmBtn');
-    btn.disabled=true; btn.textContent='Processing…';
+    const orderId     = `JRS-${Date.now()}`;
 
     const orderPayload = {
       orderId, userId: currentUser.uid,
@@ -995,8 +1163,12 @@
       selectedSize, paymentMethod: isCF ? 'cashfree' : 'cod',
     };
 
-    if(isCF){
-      /* ── Online Payment via Cashfree (backend creates order) ── */
+    if (isCF) {
+      /* ──────────────────────────────────────
+         ONLINE PAYMENT via Cashfree
+      ────────────────────────────────────── */
+      setConfirmBtn(true, 'Creating order…');
+
       let sessionId;
       try {
         const result = await callFn('createCashfreeOrder', {
@@ -1005,146 +1177,267 @@
           returnUrl: `${window.location.origin}/checkout.html?cf_order_id={order_id}&status={order_status}`,
         });
         sessionId = result.payment_session_id;
-      } catch(err) {
+      } catch (err) {
+        setConfirmBtn(false);
         showPaymentFailed(`Could not initiate payment: ${err.message}`);
         return;
       }
 
-      /* Launch Cashfree modal */
-      try {
-        const cashfree = await load({ mode: "sandbox" }); /* change to "sandbox" for testing */
-        const result   = await cashfree.checkout({ paymentSessionId: sessionId, redirectTarget: "_modal" });
+      setConfirmBtn(false);
 
-        if(result.error){
-          showPaymentFailed(result.error.message || 'Payment failed.');
-        } else if(result.paymentDetails) {
-          /* ── Payment SUCCESS: verify server-side then save ── */
+      /* ── Launch Cashfree payment modal ── */
+      try {
+        /*
+         * FIX: Use Cashfree() constructor (global from SDK script),
+         * NOT load() which is undefined in module scope.
+         * Change mode to "production" when going live.
+         */
+        const cashfree = Cashfree({ mode: "sandbox" }); // ← FIXED
+
+        showProcessing('Opening payment…', 'Complete payment in the Cashfree window.');
+
+        const result = await cashfree.checkout({
+          paymentSessionId: sessionId,
+          redirectTarget:   "_modal",
+        });
+
+        hideProcessing();
+
+        if (result.error) {
+          showPaymentFailed(result.error.message || 'Payment was not completed.');
+          return;
+        }
+
+        if (result.paymentDetails) {
+          /* ── Payment success — verify then save ── */
+          showProcessing('Verifying payment…', 'Almost done, please wait.');
+
           try {
             const verify = await callFn('verifyCashfreePayment', { cf_order_id: orderId });
-            if(verify.status !== 'SUCCESS') throw new Error('Payment not verified');
-          } catch(err) {
-            console.warn('Verification issue:', err.message);
-            // Proceed anyway if Cashfree SDK confirmed success
+            if (verify.status !== 'SUCCESS') throw new Error('Payment not verified');
+          } catch (err) {
+            console.warn('Verification warning:', err.message);
+            // Proceed anyway — Cashfree SDK confirmed success
           }
 
-          await callFn('saveOrder', { ...orderPayload, paymentId: sessionId, paymentMethod: 'cashfree', status: 'processing' });
-          await callFn('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Online Payment', items: orderItems });
-          await callFn('sendSMS',        { orderId, name, phone, total: finalPrice });
-          await callFn('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Online Payment', items: orderItems });
+          showProcessing('Saving your order…', 'Wrapping things up…');
+          try {
+            await callFn('saveOrder', { ...orderPayload, paymentId: sessionId, paymentMethod: 'cashfree', status: 'processing' });
+          } catch (err) {
+            hideProcessing(); setConfirmBtn(false);
+            alert('Order save failed: ' + err.message);
+            return;
+          }
+
+          /* Fire-and-forget notifications */
+          callFn('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Online Payment', items: orderItems }).catch(console.warn);
+          callFn('sendSMS',        { orderId, name, phone, total: finalPrice }).catch(console.warn);
+          callFn('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Online Payment', items: orderItems }).catch(console.warn);
 
           localStorage.removeItem('jersify_cart');
-          btn.disabled=false; btn.textContent='Confirm Order →';
+          hideProcessing(); setConfirmBtn(false);
           showSuccess(orderId, name, finalPrice, selectedSize, 'Online Payment');
+        } else {
+          // Modal closed without completing
+          showPaymentFailed('Payment was cancelled or not completed.');
         }
-      } catch(err) {
+
+      } catch (err) {
+        hideProcessing(); setConfirmBtn(false);
         showPaymentFailed(err?.message || 'Payment could not be processed.');
       }
 
     } else {
-      /* ── COD flow ── */
+      /* ──────────────────────────────────────
+         CASH ON DELIVERY
+      ────────────────────────────────────── */
+      setConfirmBtn(true, 'Placing order…');
+      showProcessing('Placing your order…', 'Saving your order details.');
+
       try {
         await callFn('saveOrder', { ...orderPayload, status: 'processing' });
-        await callFn('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems });
-        await callFn('sendSMS',        { orderId, name, phone, total: finalPrice });
-        await callFn('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems });
+
+        /* Fire-and-forget notifications */
+        callFn('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems }).catch(console.warn);
+        callFn('sendSMS',        { orderId, name, phone, total: finalPrice }).catch(console.warn);
+        callFn('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems }).catch(console.warn);
+
         localStorage.removeItem('jersify_cart');
-        btn.disabled=false; btn.textContent='Confirm Order →';
+        hideProcessing(); setConfirmBtn(false);
         showSuccess(orderId, name, finalPrice, selectedSize, 'Cash on Delivery');
-      } catch(err) {
-        btn.disabled=false; btn.textContent='Confirm Order →';
+
+      } catch (err) {
+        hideProcessing(); setConfirmBtn(false);
         alert('Order could not be placed: ' + err.message);
       }
     }
   };
 
-  /* ── Handle Cashfree redirect return (fallback for non-modal flow) ── */
+  /* ─────────────────────────────────────────────
+     HANDLE CASHFREE REDIRECT RETURN
+     (fallback for non-modal / redirect flow)
+  ───────────────────────────────────────────── */
+  async function handleCashfreeReturn() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const cfOrderId = urlParams.get('cf_order_id');
+    const cfStatus  = urlParams.get('status');
+    if (!cfOrderId || !cfStatus) return false;
+
+    // Clean URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    if (cfStatus === 'SUCCESS') {
+      const stored = JSON.parse(sessionStorage.getItem('jersify_pending_order') || '{}');
+      if (stored.orderId) {
+        try {
+          showProcessing('Saving your order…', 'Please wait…');
+          await callFn('saveOrder', { ...stored, paymentId: cfOrderId, paymentMethod: 'cashfree', status: 'processing' });
+          callFn('sendOrderEmail', { orderId: stored.orderId, name: stored.customerName, email: stored.email, total: stored.total, payMethod: 'Online Payment', items: stored.items || [] }).catch(console.warn);
+          callFn('sendSMS',        { orderId: stored.orderId, name: stored.customerName, phone: stored.phone, total: stored.total }).catch(console.warn);
+          localStorage.removeItem('jersify_cart');
+          sessionStorage.removeItem('jersify_pending_order');
+          hideProcessing();
+          document.getElementById('loading').style.display        = 'none';
+          document.getElementById('checkoutContent').style.display = 'block';
+          showSuccess(stored.orderId, stored.customerName, stored.total, stored.selectedSize || 'M', 'Online Payment');
+          return true;
+        } catch (e) { hideProcessing(); console.error(e); }
+      }
+    } else {
+      // Payment failed on redirect
+      document.getElementById('loading').style.display        = 'none';
+      document.getElementById('checkoutContent').style.display = 'block';
+      showPaymentFailed('Payment was not successful. Please try again.');
+      return true;
+    }
+    return false;
+  }
+
+  /* ─────────────────────────────────────────────
+     DOMContentLoaded — Bootstrap
+  ───────────────────────────────────────────── */
   window.addEventListener('DOMContentLoaded', async () => {
     loadCoupons();
     renderSavedAddresses();
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const cfOrderId = urlParams.get('cf_order_id');
-    const cfStatus  = urlParams.get('status');
-    if(cfOrderId && cfStatus){
-      if(cfStatus==='SUCCESS'){
-        const stored = JSON.parse(sessionStorage.getItem('jersify_pending_order')||'{}');
-        if(stored.orderId){
-          try {
-            await callFn('saveOrder', { ...stored, paymentId: cfOrderId, paymentMethod: 'cashfree', status: 'processing' });
-            await callFn('sendOrderEmail', { orderId: stored.orderId, name: stored.name, email: stored.email, total: stored.finalPrice, payMethod: 'Online Payment', items: [] });
-            await callFn('sendSMS',      { orderId: stored.orderId, name: stored.name, phone: stored.phone, total: stored.finalPrice });
-            localStorage.removeItem('jersify_cart');
-            sessionStorage.removeItem('jersify_pending_order');
-            document.getElementById('loading').style.display='none';
-            document.getElementById('checkoutContent').style.display='block';
-            showSuccess(stored.orderId, stored.name, stored.finalPrice, stored.selectedSize||'M','Online Payment');
-            return;
-          } catch {}
-        }
-      }
-      window.history.replaceState({},document.title,window.location.pathname);
-    }
+    // Handle Cashfree redirect return first
+    const handled = await handleCashfreeReturn();
+    if (handled) return;
 
     /* Load products / cart */
-    const params=new URLSearchParams(window.location.search), pid=params.get('id'), paramSize=params.get('size'), cart=getCart(), orderBody=document.getElementById('orderItemsBody');
-    if(pid){
-      try{
-        const snap=await get(child(dbRef,`products/${pid}`));
-        if(snap.exists()){
-          const p=snap.val(), name=p.name||'Jersify Kit';
-          orderPrice=p.price?parseInt(p.price):1499;
-          orderItems=[{id:pid,name,price:orderPrice,size:paramSize||'M',team:p.team||'',imgUrl:p.imgUrl||'',qty:1}];
-          orderBody.innerHTML=`<div class="product-row"><div class="product-img">${p.imgUrl?`<img src="${p.imgUrl}" alt="${name}">`:'<span class="product-img-placeholder">10</span>'}</div><div class="product-info"><div class="product-name">${name}</div><div class="product-team">${Array.isArray(p.team)?p.team.join(', '):(p.team||'Official Kit')}</div><div class="product-price">₹${orderPrice.toLocaleString('en-IN')}</div></div></div>`;
-          document.getElementById('sizeCard').style.display='block';
-          const sizes=['XS','S','M','L','XL','XXL'];
-          document.getElementById('sizeGrid').innerHTML=sizes.map(sz=>`<button class="size-btn${(paramSize||'M').toUpperCase()===sz?' active':''}" onclick="selectSize(this)">${sz}</button>`).join('');
-        }else{orderBody.innerHTML='<p style="color:var(--muted);font-size:13px;text-align:center;padding:12px 0">Product not found.</p>';}
-      }catch{orderBody.innerHTML='<p style="color:var(--accent);font-size:13px;text-align:center;padding:12px 0">Error loading product.</p>';}
-    }else if(cart.length>0){
-      isCartMode=true; orderItems=cart;
-      orderPrice=cart.reduce((s,i)=>s+i.price*i.qty,0);
-      orderBody.innerHTML=cart.map(item=>{
-        const safeKey=item.key.replace(/[^a-zA-Z0-9]/g,'_');
-        return `<div class="cart-item"><div class="ci-img">${item.imageUrl||item.imgUrl?`<img src="${item.imageUrl||item.imgUrl}" alt="${item.name}">`:'<span class="ci-img-placeholder">👕</span>'}</div><div class="ci-info"><div class="ci-name">${item.name}</div><div class="ci-meta">${item.team||''} · Size: ${item.size}</div><div class="ci-price">₹${item.price.toLocaleString('en-IN')}</div><div class="ci-qty"><button class="qty-btn" onclick="changeQty('${item.key}',-1)">−</button><span class="qty-display" id="qty_${safeKey}">${item.qty}</span><button class="qty-btn" onclick="changeQty('${item.key}',1)">+</button></div></div></div>`;
+    const params   = new URLSearchParams(window.location.search);
+    const pid      = params.get('id');
+    const paramSize = params.get('size');
+    const cart     = getCart();
+    const orderBody = document.getElementById('orderItemsBody');
+
+    if (pid) {
+      /* Single product buy */
+      try {
+        const snap = await get(child(dbRef, `products/${pid}`));
+        if (snap.exists()) {
+          const p = snap.val(), name = p.name || 'Jersify Kit';
+          orderPrice  = p.price ? parseInt(p.price) : 1499;
+          orderItems  = [{ id: pid, name, price: orderPrice, size: paramSize || 'M', team: p.team || '', imgUrl: p.imgUrl || '', qty: 1 }];
+          orderBody.innerHTML = `
+            <div class="product-row">
+              <div class="product-img">
+                ${p.imgUrl ? `<img src="${p.imgUrl}" alt="${name}">` : '<span class="product-img-placeholder">10</span>'}
+              </div>
+              <div class="product-info">
+                <div class="product-name">${name}</div>
+                <div class="product-team">${Array.isArray(p.team) ? p.team.join(', ') : (p.team || 'Official Kit')}</div>
+                <div class="product-price">₹${orderPrice.toLocaleString('en-IN')}</div>
+              </div>
+            </div>`;
+          document.getElementById('sizeCard').style.display = 'block';
+          const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+          document.getElementById('sizeGrid').innerHTML = sizes.map(sz =>
+            `<button class="size-btn${(paramSize || 'M').toUpperCase() === sz ? ' active' : ''}" onclick="selectSize(this)">${sz}</button>`
+          ).join('');
+        } else {
+          orderBody.innerHTML = '<p style="color:var(--muted);font-size:13px;text-align:center;padding:12px 0">Product not found.</p>';
+        }
+      } catch {
+        orderBody.innerHTML = '<p style="color:var(--accent);font-size:13px;text-align:center;padding:12px 0">Error loading product.</p>';
+      }
+
+    } else if (cart.length > 0) {
+      /* Cart mode */
+      isCartMode  = true;
+      orderItems  = cart;
+      orderPrice  = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      orderBody.innerHTML = cart.map(item => {
+        const safeKey = item.key.replace(/[^a-zA-Z0-9]/g, '_');
+        return `
+          <div class="cart-item">
+            <div class="ci-img">
+              ${item.imageUrl || item.imgUrl ? `<img src="${item.imageUrl || item.imgUrl}" alt="${item.name}">` : '<span class="ci-img-placeholder">👕</span>'}
+            </div>
+            <div class="ci-info">
+              <div class="ci-name">${item.name}</div>
+              <div class="ci-meta">${item.team || ''} · Size: ${item.size}</div>
+              <div class="ci-price">₹${item.price.toLocaleString('en-IN')}</div>
+              <div class="ci-qty">
+                <button class="qty-btn" onclick="changeQty('${item.key}',-1)">−</button>
+                <span class="qty-display" id="qty_${safeKey}">${item.qty}</span>
+                <button class="qty-btn" onclick="changeQty('${item.key}',1)">+</button>
+              </div>
+            </div>
+          </div>`;
       }).join('');
-    }else{
-      orderBody.innerHTML=`<div class="empty-cart-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"/></svg><p>Your cart is empty.<br>Browse our jerseys and add items.</p><a href="shop.html" class="browse-btn">Browse Jerseys →</a></div>`;
+
+    } else {
+      /* Empty cart */
+      orderBody.innerHTML = `
+        <div class="empty-cart-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"/></svg>
+          <p>Your cart is empty.<br>Browse our jerseys and add items.</p>
+          <a href="shop.html" class="browse-btn">Browse Jerseys →</a>
+        </div>`;
     }
-    document.getElementById('subTotal').textContent=`₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('finalTotal').textContent=`₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('loading').style.display='none';
-    document.getElementById('checkoutContent').style.display='block';
+
+    document.getElementById('subTotal').textContent   = `₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('finalTotal').textContent  = `₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('loading').style.display        = 'none';
+    document.getElementById('checkoutContent').style.display = 'block';
   });
 
-  function showSuccess(orderId,name,total,size,payMethod){
-    let countdown=5;
-    document.querySelector('.content').innerHTML=`
+  /* ─────────────────────────────────────────────
+     SUCCESS SCREEN
+  ───────────────────────────────────────────── */
+  function showSuccess(orderId, name, total, size, payMethod) {
+    let countdown = 5;
+    document.querySelector('.content').innerHTML = `
       <div class="success-screen">
         <span class="success-emoji">🎉</span>
         <div class="success-title">Order Confirmed!</div>
         <div class="success-order-id">Order ID: ${orderId}</div>
         <div class="success-details">
           <div class="success-detail-row"><span>Customer</span><span>${name}</span></div>
-          <div class="success-detail-row"><span>Amount Paid</span><span>₹${total.toLocaleString('en-IN')}</span></div>
+          <div class="success-detail-row"><span>Amount Paid</span><span>₹${Number(total).toLocaleString('en-IN')}</span></div>
           <div class="success-detail-row"><span>Payment</span><span>${payMethod}</span></div>
-          ${!isCartMode?`<div class="success-detail-row"><span>Size</span><span>${size}</span></div>`:''}
+          ${!isCartMode ? `<div class="success-detail-row"><span>Size</span><span>${size}</span></div>` : ''}
         </div>
-        <div class="success-msg">Thank you for shopping with Jersify! Your kit is being packed and will be on its way soon.</div>
+        <div class="success-msg">Thank you for shopping with Jersify! Your kit is being packed and will be on its way soon. 🚚</div>
         <button class="success-btn" onclick="window.location.href='profile.html'">View My Orders →</button>
         <div class="success-redirect">Redirecting in <span id="countdownNum">${countdown}</span>s…</div>
       </div>`;
-    const interval=setInterval(()=>{
+    const interval = setInterval(() => {
       countdown--;
-      const el=document.getElementById('countdownNum');
-      if(el)el.textContent=countdown;
-      if(countdown<=0){clearInterval(interval);window.location.href='profile.html';}
-    },1000);
+      const el = document.getElementById('countdownNum');
+      if (el) el.textContent = countdown;
+      if (countdown <= 0) { clearInterval(interval); window.location.href = 'profile.html'; }
+    }, 1000);
   }
 
-  function shakeField(id){
-    const el=document.getElementById(id);if(!el)return;
-    el.style.borderColor='var(--accent)';el.style.animation='shake .4s ease';
-    setTimeout(()=>{el.style.animation='';el.style.borderColor='';},500);
+  /* ─────────────────────────────────────────────
+     FIELD SHAKE ANIMATION
+  ───────────────────────────────────────────── */
+  function shakeField(id) {
+    const el = document.getElementById(id); if (!el) return;
+    el.style.borderColor = 'var(--accent)'; el.style.animation = 'shake .4s ease';
+    setTimeout(() => { el.style.animation = ''; el.style.borderColor = ''; }, 500);
   }
 </script>
 </body>
