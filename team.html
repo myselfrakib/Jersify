@@ -1313,7 +1313,7 @@ function buildPageHTML(id, cfg, data) {
     </section>
 
     <div style="padding:0 20px;margin-top:14px;">
-      <div class="products-scroll">
+      <div class="products-scroll" id="productsGrid">
         <div class="product-loading">
           <div class="product-loading-dot"></div>
           <div class="product-loading-dot"></div>
@@ -1428,20 +1428,23 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
 </script>
 
 <!-- ================================================================
-  Firebase Realtime DB — Smart product sync with name-first matching.
+  PRODUCT MATCHING ENGINE v2 — NAME-ONLY, TEAM-FIELD IGNORED.
 
-  ROOT CAUSE FIX: Many products in the database have incorrect `team`
-  field values (e.g. Arsenal kits tagged as "Chelsea", Man United kits
-  tagged as "Man City"). The old filter matched on both team field AND
-  product name, causing cross-contamination between pages.
+  ROOT CAUSE: The `team` field in Firebase is completely unreliable.
+  Arsenal kits are tagged "Chelsea", Man City kits tagged "Man Utd",
+  PSG tagged "France", etc. The product NAME is always correct.
 
-  NEW LOGIC — Name takes absolute priority:
-    1. Scan the product NAME against a global keyword→teamId map.
-    2. If a name keyword matches, only show the product on that team's
-       page — regardless of what the team field says.
-    3. Only if the product name doesn't match any known keyword, fall
-       back to the team field (exact match) as a secondary check.
-       This handles generic/unlabelled product names.
+  SOLUTION: Match products exclusively using the product name.
+  The `team` field is NEVER used for filtering.
+
+  RULE PRIORITY (checked in order, first match wins):
+    1. Exact multi-word club/country phrases (longest first)
+    2. Single strong keywords
+    3. No match → product is not shown on any team page
+
+  AMBIGUOUS CASES ("Real Madrid Spain Retro", "FC Barcelona Spain"):
+    - "real madrid" keyword fires before "spain" → goes to real-madrid ✓
+    - "fc barcelona" keyword fires before "spain" → goes to barcelona ✓
 ================================================================ -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -1462,110 +1465,106 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
   });
   const rtdb = getDatabase(app);
 
-  // ── SMART MATCHING ENGINE ────────────────────────────────────────
+  // ── NAME-ONLY MATCHING ENGINE ────────────────────────────────────
   //
-  // Maps product-name keywords → page ID.
-  // Sorted longest-first so multi-word phrases match before single words
-  // (e.g. "manchester united" is checked before "man utd" or "united").
+  // Each entry: [keyword, pageId]
+  // Checked IN ORDER — first match wins. Longer/more-specific phrases
+  // MUST come before shorter ones that might overlap.
   //
-  const NAME_KEYWORD_MAP = [
-    // Multi-word first (longest → shortest)
-    ["paris saint germain", "psg"],
-    ["manchester united",   "man-utd"],
-    ["manchester city",     "man-city"],
-    ["real madrid",         "real-madrid"],
-    ["man united",          "man-utd"],
-    ["man city",            "man-city"],
-    ["man utd",             "man-utd"],
-    ["fc barcelona",        "barcelona"],
-    ["liverpool fc",        "liverpool"],
-    ["chelsea fc",          "chelsea"],
-    ["arsenal fc",          "arsenal"],
-    // Single-word / short
-    ["barcelona",           "barcelona"],
-    ["liverpool",           "liverpool"],
-    ["arsenal",             "arsenal"],
-    ["chelsea",             "chelsea"],
-    ["portugal",            "portugal"],
-    ["argentina",           "argentina"],
-    ["germany",             "germany"],
-    ["france",              "france"],
-    ["brazil",              "brazil"],
-    ["spain",               "spain"],
-    ["psg",                 "psg"],
+  // Key design decisions based on actual DB product names:
+  //   • "paris saint germain" → psg  (before any france/paris check)
+  //   • "real madrid"         → real-madrid  (before "spain" or "madrid")
+  //   • "fc barcelona"        → barcelona  (before "spain" or "barcelona")
+  //   • "manchester united"   → man-utd  (before "manchester" alone)
+  //   • "manchester city"     → man-city  (before "manchester" alone)
+  //   • "snapdragon manchester united" → man-utd  ✓ (manchester united fires)
+  //   • "puma manchester city" → man-city  ✓
+  //   • "adidas manchester united" → man-utd  ✓
+  //   • "adidas real madrid"  → real-madrid  ✓
+  //   • "fc barcelona spain retro" → barcelona  ✓ (fc barcelona fires first)
+  //   • "real madrid spain retro"  → real-madrid  ✓ (real madrid fires first)
+  //   • "adidas spain national"    → spain  ✓
+  //   • "fc bayern munich" / "bayern munich" → (no page, correctly skipped)
+  //   • "juventus fc"        → (no page, correctly skipped)
+  //   • "japan"              → (no page, correctly skipped)
+  //
+  const NAME_RULES = [
+    // ── Multi-word (longest/most-specific first) ──────────────────
+    ["paris saint germain",   "psg"],
+    ["manchester united",     "man-utd"],
+    ["manchester city",       "man-city"],
+    ["real madrid",           "real-madrid"],
+    ["fc barcelona",          "barcelona"],
+    ["liverpool fc",          "liverpool"],
+    ["chelsea fc",            "chelsea"],
+    ["arsenal fc",            "arsenal"],
+    ["man united",            "man-utd"],
+    ["man city",              "man-city"],
+    ["man utd",               "man-utd"],
+
+    // ── Single strong club keywords ───────────────────────────────
+    // NOTE: "barcelona" must come AFTER "fc barcelona" (already handled above)
+    // NOTE: "arsenal" checked before generic "france"/"spain" to handle
+    //        any cross-contamination in future product names.
+    ["arsenal",               "arsenal"],
+    ["barcelona",             "barcelona"],
+    ["liverpool",             "liverpool"],
+    ["chelsea",               "chelsea"],
+
+    // ── PSG variants ──────────────────────────────────────────────
+    ["paris saint-germain",   "psg"],
+    ["psg",                   "psg"],
+
+    // ── National teams ────────────────────────────────────────────
+    // "argentina" before "spain"/"brazil" to avoid any edge cases
+    ["argentina",             "argentina"],
+    ["brazil",                "brazil"],
+    ["portugal",              "portugal"],
+    // "france" AFTER "paris saint germain" so PSG kits don't land here
+    ["france",                "france"],
+    // "germany" before "spain" (no overlap, but consistent ordering)
+    ["germany",               "germany"],
+    // "spain" is last because some product names contain "spain" as a
+    // descriptor (e.g. "Real Madrid Spain Retro") — those are already
+    // caught by "real madrid" above, so "spain" here only catches
+    // genuinely Spanish national team products.
+    ["spain",                 "spain"],
   ];
 
-  // Fallback: exact team-field values for each page ID.
-  // Used only when the product name doesn't match any known keyword above.
-  const TEAM_FIELD_FALLBACK = {
-    "arsenal":     ["arsenal"],
-    "barcelona":   ["barcelona"],
-    "chelsea":     ["chelsea"],
-    "liverpool":   ["liverpool"],
-    "man-city":    ["man city", "manchester city"],
-    "man-utd":     ["man utd", "man united", "manchester united"],
-    "real-madrid": ["real madrid"],
-    "psg":         ["psg", "paris"],
-    "argentina":   ["argentina"],
-    "brazil":      ["brazil"],
-    "france":      ["france"],
-    "germany":     ["germany"],
-    "portugal":    ["portugal"],
-    "spain":       ["spain"],
-  };
-
   /**
-   * Returns the page ID this product belongs to based on its name,
-   * or null if no name keyword is recognised.
+   * Returns the pageId this product belongs to based purely on its name,
+   * or null if no rule matches (product is shown on no team page).
+   * The `team` field is intentionally never consulted.
    */
-  function getTeamFromName(rawName) {
+  function resolveTeamFromName(rawName) {
     const n = (rawName || '').toLowerCase();
-    for (const [keyword, teamId] of NAME_KEYWORD_MAP) {
-      if (n.includes(keyword)) return teamId;
+    for (const [keyword, pageId] of NAME_RULES) {
+      if (n.includes(keyword)) return pageId;
     }
-    return null;
+    return null; // no match — product not shown anywhere
   }
 
-  /**
-   * Decide whether a product should appear on the current team page.
-   *
-   * Priority:
-   *   1. If the product name contains a recognisable team keyword →
-   *      show ONLY on that team's page (ignores team field entirely).
-   *   2. Otherwise → show if the team field exactly matches one of the
-   *      page's fallback values.
-   */
-  function productMatchesPage(p, pageId) {
-    const nameTeam = getTeamFromName(p.name);
-
-    if (nameTeam !== null) {
-      // Name is authoritative — only show on the matched team page
-      return nameTeam === pageId;
-    }
-
-    // Generic / unrecognised name — fall back to team field
-    const teamField = (p.team || '').toLowerCase().trim();
-    const fallbacks = TEAM_FIELD_FALLBACK[pageId] || [];
-    return fallbacks.some(k => teamField === k || teamField.includes(k));
-  }
   // ── END MATCHING ENGINE ─────────────────────────────────────────
 
   onValue(ref(rtdb, 'products'), snapshot => {
-    const container = document.querySelector('.products-scroll');
+    const container = document.getElementById('productsGrid');
     if (!container) return;
 
     let html = '';
+    let count = 0;
 
     snapshot.forEach(child => {
       const p   = child.val();
       const key = child.key;
 
-      // Skip inactive products
+      // Skip inactive / unlisted products
       if (p.status && p.status !== 'active') return;
 
-      // Smart team match
-      if (!productMatchesPage(p, id)) return;
+      // Name-based team resolution — ignores p.team entirely
+      const resolvedTeam = resolveTeamFromName(p.name);
+      if (resolvedTeam !== id) return;
 
+      count++;
       const safeName = (p.name || 'Kit').replace(/'/g, "\\'").replace(/"/g, '&quot;');
       const imgUrl   = p.imgUrl || '';
 
@@ -1586,7 +1585,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
           </div>
           <div class="product-card-bottom">
             <div class="product-card-name">${p.name || 'Jersify Kit'}</div>
-            <div class="product-card-sub">${p.type || p.team || 'Kit'}</div>
+            <div class="product-card-sub">${p.type || 'Kit'}</div>
             <div class="product-card-footer">
               <div class="product-price">${p.price ? '₹' + p.price : '₹1499'}</div>
               <button class="buy-btn" onclick="event.stopPropagation();window.location.href='checkout.html?id=${key}'">BUY NOW</button>
@@ -1608,6 +1607,18 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
         card.style.transform = 'translateY(0)';
       }, 50);
     });
+
+    // Re-run scroll animation observer for new cards
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity   = '1';
+          e.target.style.transform = 'translateY(0)';
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    container.querySelectorAll('.product-card').forEach(c => io.observe(c));
   });
 </script>
 
