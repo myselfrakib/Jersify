@@ -1661,23 +1661,6 @@ function showSyncToast(msg) {
 
   })();
 
-  /* ================================================================
-     PRODUCT MATCHING ENGINE v2
-     Matches products by name only (team field is unreliable).
-  ================================================================ */
-  (function () {
-    const id  = window._JERSIFY_ID;
-    const cfg = window._JERSIFY_CFG;
-    if (!id || !cfg) return;
-
-    /* Re-use already initialised app */
-    const { getDatabase, ref, onValue } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js")
-      .catch(() => ({}));
-
-    // Actually we need to use the already-initialized Firebase.
-    // Since we can't call initializeApp again cleanly inside a second IIFE,
-    // we restructure below.
-  })();
 </script>
 
 <!-- Product engine as separate module to avoid double-init issues -->
