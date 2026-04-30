@@ -1450,176 +1450,127 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  const id  = window._JERSIFY_ID;
-  const cfg = window._JERSIFY_CFG;
-  if (!id || !cfg) return;
+  (function() {
+    const id  = window._JERSIFY_ID;
+    const cfg = window._JERSIFY_CFG;
+    if (!id || !cfg) return;
 
-  const app = initializeApp({
-    apiKey:            "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
-    authDomain:        "jersify-f9b5e.firebaseapp.com",
-    projectId:         "jersify-f9b5e",
-    storageBucket:     "jersify-f9b5e.firebasestorage.app",
-    messagingSenderId: "461181023878",
-    appId:             "1:461181023878:web:6ebfbae603baf4a873c307",
-    databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
-  });
-  const rtdb = getDatabase(app);
+    const app = initializeApp({
+      apiKey:            "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
+      authDomain:        "jersify-f9b5e.firebaseapp.com",
+      projectId:         "jersify-f9b5e",
+      storageBucket:     "jersify-f9b5e.firebasestorage.app",
+      messagingSenderId: "461181023878",
+      appId:             "1:461181023878:web:6ebfbae603baf4a873c307",
+      databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
+    });
+    const rtdb = getDatabase(app);
 
-  // ── NAME-ONLY MATCHING ENGINE ────────────────────────────────────
-  //
-  // Each entry: [keyword, pageId]
-  // Checked IN ORDER — first match wins. Longer/more-specific phrases
-  // MUST come before shorter ones that might overlap.
-  //
-  // Key design decisions based on actual DB product names:
-  //   • "paris saint germain" → psg  (before any france/paris check)
-  //   • "real madrid"         → real-madrid  (before "spain" or "madrid")
-  //   • "fc barcelona"        → barcelona  (before "spain" or "barcelona")
-  //   • "manchester united"   → man-utd  (before "manchester" alone)
-  //   • "manchester city"     → man-city  (before "manchester" alone)
-  //   • "snapdragon manchester united" → man-utd  ✓ (manchester united fires)
-  //   • "puma manchester city" → man-city  ✓
-  //   • "adidas manchester united" → man-utd  ✓
-  //   • "adidas real madrid"  → real-madrid  ✓
-  //   • "fc barcelona spain retro" → barcelona  ✓ (fc barcelona fires first)
-  //   • "real madrid spain retro"  → real-madrid  ✓ (real madrid fires first)
-  //   • "adidas spain national"    → spain  ✓
-  //   • "fc bayern munich" / "bayern munich" → (no page, correctly skipped)
-  //   • "juventus fc"        → (no page, correctly skipped)
-  //   • "japan"              → (no page, correctly skipped)
-  //
-  const NAME_RULES = [
-    // ── Multi-word (longest/most-specific first) ──────────────────
-    ["paris saint germain",   "psg"],
-    ["manchester united",     "man-utd"],
-    ["manchester city",       "man-city"],
-    ["real madrid",           "real-madrid"],
-    ["fc barcelona",          "barcelona"],
-    ["liverpool fc",          "liverpool"],
-    ["chelsea fc",            "chelsea"],
-    ["arsenal fc",            "arsenal"],
-    ["man united",            "man-utd"],
-    ["man city",              "man-city"],
-    ["man utd",               "man-utd"],
+    // NAME-ONLY matching — team field is intentionally ignored.
+    // Rules checked in order; first match wins.
+    const NAME_RULES = [
+      ["paris saint germain",  "psg"],
+      ["paris saint-germain",  "psg"],
+      ["manchester united",    "man-utd"],
+      ["manchester city",      "man-city"],
+      ["real madrid",          "real-madrid"],
+      ["fc barcelona",         "barcelona"],
+      ["liverpool fc",         "liverpool"],
+      ["chelsea fc",           "chelsea"],
+      ["arsenal fc",           "arsenal"],
+      ["man united",           "man-utd"],
+      ["man city",             "man-city"],
+      ["man utd",              "man-utd"],
+      ["arsenal",              "arsenal"],
+      ["barcelona",            "barcelona"],
+      ["liverpool",            "liverpool"],
+      ["chelsea",              "chelsea"],
+      ["psg",                  "psg"],
+      ["argentina",            "argentina"],
+      ["brazil",               "brazil"],
+      ["portugal",             "portugal"],
+      ["france",               "france"],
+      ["germany",              "germany"],
+      ["spain",                "spain"],
+    ];
 
-    // ── Single strong club keywords ───────────────────────────────
-    // NOTE: "barcelona" must come AFTER "fc barcelona" (already handled above)
-    // NOTE: "arsenal" checked before generic "france"/"spain" to handle
-    //        any cross-contamination in future product names.
-    ["arsenal",               "arsenal"],
-    ["barcelona",             "barcelona"],
-    ["liverpool",             "liverpool"],
-    ["chelsea",               "chelsea"],
-
-    // ── PSG variants ──────────────────────────────────────────────
-    ["paris saint-germain",   "psg"],
-    ["psg",                   "psg"],
-
-    // ── National teams ────────────────────────────────────────────
-    // "argentina" before "spain"/"brazil" to avoid any edge cases
-    ["argentina",             "argentina"],
-    ["brazil",                "brazil"],
-    ["portugal",              "portugal"],
-    // "france" AFTER "paris saint germain" so PSG kits don't land here
-    ["france",                "france"],
-    // "germany" before "spain" (no overlap, but consistent ordering)
-    ["germany",               "germany"],
-    // "spain" is last because some product names contain "spain" as a
-    // descriptor (e.g. "Real Madrid Spain Retro") — those are already
-    // caught by "real madrid" above, so "spain" here only catches
-    // genuinely Spanish national team products.
-    ["spain",                 "spain"],
-  ];
-
-  /**
-   * Returns the pageId this product belongs to based purely on its name,
-   * or null if no rule matches (product is shown on no team page).
-   * The `team` field is intentionally never consulted.
-   */
-  function resolveTeamFromName(rawName) {
-    const n = (rawName || '').toLowerCase();
-    for (const [keyword, pageId] of NAME_RULES) {
-      if (n.includes(keyword)) return pageId;
+    function resolveTeamFromName(rawName) {
+      const n = (rawName || "").toLowerCase();
+      for (const [keyword, pageId] of NAME_RULES) {
+        if (n.includes(keyword)) return pageId;
+      }
+      return null;
     }
-    return null; // no match — product not shown anywhere
-  }
 
-  // ── END MATCHING ENGINE ─────────────────────────────────────────
+    onValue(ref(rtdb, "products"), snapshot => {
+      const container = document.getElementById("productsGrid");
+      if (!container) return;
 
-  onValue(ref(rtdb, 'products'), snapshot => {
-    const container = document.getElementById('productsGrid');
-    if (!container) return;
+      let html = "";
 
-    let html = '';
-    let count = 0;
+      snapshot.forEach(child => {
+        const p   = child.val();
+        const key = child.key;
 
-    snapshot.forEach(child => {
-      const p   = child.val();
-      const key = child.key;
+        if (p.status && p.status !== "active") return;
 
-      // Skip inactive / unlisted products
-      if (p.status && p.status !== 'active') return;
+        const resolvedTeam = resolveTeamFromName(p.name);
+        if (resolvedTeam !== id) return;
 
-      // Name-based team resolution — ignores p.team entirely
-      const resolvedTeam = resolveTeamFromName(p.name);
-      if (resolvedTeam !== id) return;
+        const safeName = (p.name || "Kit").replace(/'/g, "\\'").replace(/"/g, "&quot;");
+        const imgUrl   = p.imgUrl || "";
 
-      count++;
-      const safeName = (p.name || 'Kit').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-      const imgUrl   = p.imgUrl || '';
-
-      html += `
-        <div class="product-card">
-          <div class="product-card-top${imgUrl ? '' : ' sky-bg'}"
-               onclick="openLightbox('${imgUrl}','${safeName}')">
-            ${p.badge ? `<div class="product-badge-new">${p.badge}</div>` : ''}
-            ${imgUrl
-              ? `<img src="${imgUrl}" alt="${p.name || 'Kit'}" loading="lazy" />`
-              : `<svg viewBox="0 0 100 120" width="90" height="108" xmlns="http://www.w3.org/2000/svg" style="pointer-events:none;">
-                  <path d="M25 28 L13 42 L25 47 L25 108 L75 108 L75 47 L87 42 L75 28 C72 26 64 24 60 21 C58 19 57 17 50 17 C43 17 42 19 40 21 C36 24 28 26 25 28Z" fill="var(--sky)"/>
-                  <path d="M25 28 L13 42 L25 47Z" fill="var(--sky-dark)" opacity="0.9"/>
-                  <path d="M75 28 L87 42 L75 47Z" fill="var(--sky-dark)" opacity="0.9"/>
-                  <text x="50" y="82" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="22" fill="rgba(255,255,255,.92)">${cfg.name.substring(0,3).toUpperCase()}</text>
-                </svg>`
-            }
-          </div>
-          <div class="product-card-bottom">
-            <div class="product-card-name">${p.name || 'Jersify Kit'}</div>
-            <div class="product-card-sub">${p.type || 'Kit'}</div>
-            <div class="product-card-footer">
-              <div class="product-price">${p.price ? '₹' + p.price : '₹1499'}</div>
-              <button class="buy-btn" onclick="event.stopPropagation();window.location.href='checkout.html?id=${key}'">BUY NOW</button>
+        html += `
+          <div class="product-card">
+            <div class="product-card-top${imgUrl ? "" : " sky-bg"}"
+                 onclick="openLightbox('${imgUrl}','${safeName}')">
+              ${p.badge ? `<div class="product-badge-new">${p.badge}</div>` : ""}
+              ${imgUrl
+                ? `<img src="${imgUrl}" alt="${p.name || "Kit"}" loading="lazy" />`
+                : `<svg viewBox="0 0 100 120" width="90" height="108" xmlns="http://www.w3.org/2000/svg" style="pointer-events:none;">
+                    <path d="M25 28 L13 42 L25 47 L25 108 L75 108 L75 47 L87 42 L75 28 C72 26 64 24 60 21 C58 19 57 17 50 17 C43 17 42 19 40 21 C36 24 28 26 25 28Z" fill="var(--sky)"/>
+                    <path d="M25 28 L13 42 L25 47Z" fill="var(--sky-dark)" opacity="0.9"/>
+                    <path d="M75 28 L87 42 L75 47Z" fill="var(--sky-dark)" opacity="0.9"/>
+                    <text x="50" y="82" text-anchor="middle" font-family="Bebas Neue,sans-serif" font-size="22" fill="rgba(255,255,255,.92)">${cfg.name.substring(0,3).toUpperCase()}</text>
+                  </svg>`
+              }
             </div>
-          </div>
-        </div>`;
-    });
-
-    container.innerHTML = html ||
-      `<div class="no-products">No products available yet for ${cfg.name}.</div>`;
-
-    // Animate newly loaded product cards
-    container.querySelectorAll('.product-card').forEach((card, i) => {
-      card.style.opacity    = '0';
-      card.style.transform  = 'translateY(24px)';
-      card.style.transition = `opacity .4s ease ${i * .08}s, transform .4s ease ${i * .08}s`;
-      setTimeout(() => {
-        card.style.opacity   = '1';
-        card.style.transform = 'translateY(0)';
-      }, 50);
-    });
-
-    // Re-run scroll animation observer for new cards
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.style.opacity   = '1';
-          e.target.style.transform = 'translateY(0)';
-          io.unobserve(e.target);
-        }
+            <div class="product-card-bottom">
+              <div class="product-card-name">${p.name || "Jersify Kit"}</div>
+              <div class="product-card-sub">${p.type || "Kit"}</div>
+              <div class="product-card-footer">
+                <div class="product-price">${p.price ? "\u20B9" + p.price : "\u20B91499"}</div>
+                <button class="buy-btn" onclick="event.stopPropagation();window.location.href='checkout.html?id=${key}'">BUY NOW</button>
+              </div>
+            </div>
+          </div>`;
       });
-    }, { threshold: 0.08 });
-    container.querySelectorAll('.product-card').forEach(c => io.observe(c));
-  });
+
+      container.innerHTML = html ||
+        `<div class="no-products">No products available yet for ${cfg.name}.</div>`;
+
+      container.querySelectorAll(".product-card").forEach((card, i) => {
+        card.style.opacity    = "0";
+        card.style.transform  = "translateY(24px)";
+        card.style.transition = `opacity .4s ease ${i * 0.08}s, transform .4s ease ${i * 0.08}s`;
+        setTimeout(() => {
+          card.style.opacity   = "1";
+          card.style.transform = "translateY(0)";
+        }, 50);
+      });
+
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.style.opacity   = "1";
+            e.target.style.transform = "translateY(0)";
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.08 });
+      container.querySelectorAll(".product-card").forEach(c => io.observe(c));
+    });
+  })();
 </script>
 
 </body>
