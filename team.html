@@ -43,6 +43,7 @@
       background-position: center;
       background-repeat: no-repeat;
       opacity: 1;
+      transition: background-image 0.5s ease;
     }
     .hero-sun {
       position: absolute;
@@ -142,6 +143,7 @@
       align-items: center;
       justify-content: center;
       font-size: 26px;
+      transition: opacity 0.3s ease;
     }
     .flag-circle img { width: 100%; height: 100%; object-fit: cover; }
     .flag-circle svg { width: 100%; height: 100%; }
@@ -193,6 +195,7 @@
       z-index: 6;
       animation: float-hero 3s ease-in-out infinite;
       filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));
+      transition: opacity 0.4s ease;
     }
     .hero-captain-float img {
       width: 100%;
@@ -390,6 +393,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: opacity 0.3s ease;
     }
     .fp-jersey img {
       width: 110px; height: 130px;
@@ -580,10 +584,53 @@
       text-align: center; padding: 30px 20px;
       color: var(--muted); font-size: 13px;
     }
+
+    /* ========== IMAGE SYNC TOAST ========== */
+    .sync-toast {
+      position: fixed;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: rgba(20,20,20,0.92);
+      backdrop-filter: blur(12px);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.5px;
+      z-index: 9998;
+      border: 1px solid rgba(255,255,255,0.12);
+      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), opacity 0.35s ease;
+      opacity: 0;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .sync-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .sync-dot {
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #4ade80;
+      margin-right: 6px;
+      vertical-align: middle;
+      animation: blink-dot 1.2s ease-in-out infinite;
+    }
+    @keyframes blink-dot {
+      0%,100% { opacity: 1; } 50% { opacity: 0.3; }
+    }
+
     .spacer { height: 20px; }
   </style>
 </head>
 <body>
+
+<!-- SYNC TOAST -->
+<div class="sync-toast" id="syncToast">
+  <span class="sync-dot"></span> Images synced from database
+</div>
 
 <div id="app">
   <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0a0a1a;color:#fff;font-family:sans-serif;">
@@ -603,6 +650,11 @@
 </div>
 
 <script>
+/* ================================================================
+   TEAM CONFIGS — heroBg / captainImg are now FALLBACK DEFAULTS.
+   Live values are stored in Firebase under /teamimages/{id}/
+   and override these on load + sync in real-time.
+================================================================ */
 const TEAM_CONFIGS = {
   "arsenal": {
     id: "arsenal", name: "Arsenal",
@@ -736,6 +788,7 @@ const TEAM_CONFIGS = {
 const PAGE_DATA = {
   "arsenal": {
     flagHTML: `<img src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab" style="width:100%;height:100%;object-fit:cover;" alt="Arsenal FC" />`,
+    flagImgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab",
     label: "Club Team · Premier League",
     titleA: "ARSE", titleB: "NAL",
     pills: ["<strong>13×</strong> League","<strong>14×</strong> FA Cup","<strong>1886</strong>"],
@@ -767,6 +820,7 @@ const PAGE_DATA = {
   },
   "barcelona": {
     flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="24" height="24" fill="#A50044"/><rect x="24" width="24" height="24" fill="#004D98"/><rect y="24" width="24" height="24" fill="#004D98"/><rect x="24" y="24" width="24" height="24" fill="#A50044"/></svg>`,
+    flagImgUrl: "",
     label:"Club Team · La Liga",
     titleA:"BARCE",titleB:"LONA",
     pills:["<strong>5×</strong> UCL","<strong>27×</strong> La Liga","<strong>31×</strong> Copa"],
@@ -798,6 +852,7 @@ const PAGE_DATA = {
   },
   "chelsea": {
     flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#034694"/><circle cx="24" cy="24" r="14" fill="none" stroke="#DBA11B" stroke-width="2"/><text x="24" y="29" text-anchor="middle" font-family="serif" font-size="14" fill="#DBA11B" font-weight="bold">CFC</text></svg>`,
+    flagImgUrl: "",
     label:"Club Team · Premier League",
     titleA:"CHEL",titleB:"SEA",
     pills:["<strong>2×</strong> UCL","<strong>6×</strong> PL","<strong>8×</strong> FA Cup"],
@@ -828,7 +883,7 @@ const PAGE_DATA = {
     ]
   },
   "liverpool": {
-    flagHTML:`⚽`,
+    flagHTML:`⚽`, flagImgUrl:"",
     label:"Club Team · Premier League",
     titleA:"LIVER",titleB:"POOL",
     pills:["<strong>6×</strong> UCL","<strong>20×</strong> League","<strong>8×</strong> FA Cup"],
@@ -860,6 +915,7 @@ const PAGE_DATA = {
   },
   "man-city": {
     flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#6CABDD"/><circle cx="24" cy="24" r="14" fill="#1C2C5B"/><text x="24" y="29" text-anchor="middle" font-family="serif" font-size="12" fill="#6CABDD" font-weight="bold">MCFC</text></svg>`,
+    flagImgUrl:"",
     label:"Club Team · Premier League",
     titleA:"MAN",titleB:"CITY",
     pills:["<strong>1×</strong> UCL","<strong>10×</strong> PL","<strong>1×</strong> Treble"],
@@ -891,6 +947,7 @@ const PAGE_DATA = {
   },
   "man-utd": {
     flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#DA291C"/><rect x="10" y="10" width="28" height="28" rx="3" fill="#1a0a0a"/><text x="24" y="30" text-anchor="middle" font-family="serif" font-size="12" fill="#FBE122" font-weight="bold">MUFC</text></svg>`,
+    flagImgUrl:"",
     label:"Club Team · Premier League",
     titleA:"MAN",titleB:"UTD",
     pills:["<strong>3×</strong> UCL","<strong>20×</strong> PL","<strong>12×</strong> FA Cup"],
@@ -922,6 +979,7 @@ const PAGE_DATA = {
   },
   "real-madrid": {
     flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#FFFFFF"/><rect x="8" y="8" width="32" height="32" rx="4" fill="#0a0a1a"/><text x="24" y="30" text-anchor="middle" font-family="serif" font-size="16" fill="#d4af37" font-weight="bold">RM</text></svg>`,
+    flagImgUrl:"",
     label:"Club Team · La Liga",
     titleA:"REAL",titleB:"MADRID",
     pills:["<strong>15×</strong> UCL","<strong>36×</strong> La Liga","<strong>8×</strong> Club WC"],
@@ -953,6 +1011,7 @@ const PAGE_DATA = {
   },
   "psg": {
     flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#004170"/><circle cx="24" cy="24" r="14" fill="#DA291C"/><text x="24" y="29" text-anchor="middle" font-family="serif" font-size="12" fill="#fff" font-weight="bold">PSG</text></svg>`,
+    flagImgUrl:"",
     label:"Club Team · Ligue 1",
     titleA:"PA",titleB:"RIS",
     pills:["<strong>12×</strong> Ligue 1","<strong>15×</strong> Coupe","<strong>10×</strong> Trophée"],
@@ -984,6 +1043,7 @@ const PAGE_DATA = {
   },
   "argentina": {
     flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#74ACDF"/><rect width="48" height="16" y="16" fill="#fff"/><circle cx="24" cy="24" r="5" fill="#F6C400"/></svg>`,
+    flagImgUrl:"",
     label:"National Team · AFA",
     titleA:"ARGEN",titleB:"TINA",
     pills:["FIFA #<strong>1</strong>","<strong>3×</strong> World Champs","<strong>15×</strong> Copa"],
@@ -1015,6 +1075,7 @@ const PAGE_DATA = {
   },
   "brazil": {
     flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#009C3B"/><polygon points="24,6 46,24 24,42 2,24" fill="#FFDF00"/><circle cx="24" cy="24" r="8" fill="#002776"/></svg>`,
+    flagImgUrl:"",
     label:"National Team · CBF",
     titleA:"BRA",titleB:"ZIL",
     pills:["FIFA #<strong>5</strong>","<strong>5×</strong> World Champs","<strong>9×</strong> Copa"],
@@ -1046,6 +1107,7 @@ const PAGE_DATA = {
   },
   "france": {
     flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="16" height="48" fill="#002654"/><rect x="16" width="16" height="48" fill="#fff"/><rect x="32" width="16" height="48" fill="#ED2939"/></svg>`,
+    flagImgUrl:"",
     label:"National Team · FFF",
     titleA:"FRA",titleB:"NCE",
     pills:["FIFA #<strong>2</strong>","<strong>2×</strong> World Champs","<strong>2×</strong> Euro"],
@@ -1077,6 +1139,7 @@ const PAGE_DATA = {
   },
   "germany": {
     flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="16" fill="#1a1a1a"/><rect y="16" width="48" height="16" fill="#DD0000"/><rect y="32" width="48" height="16" fill="#FFCC00"/></svg>`,
+    flagImgUrl:"",
     label:"National Team · DFB",
     titleA:"GER",titleB:"MANY",
     pills:["FIFA #<strong>14</strong>","<strong>4×</strong> World Champs","<strong>3×</strong> Euro"],
@@ -1108,6 +1171,7 @@ const PAGE_DATA = {
   },
   "portugal": {
     flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="18" height="48" fill="#006847"/><rect x="18" width="30" height="48" fill="#FE0000"/><circle cx="18" cy="24" r="7" fill="#FFC400"/></svg>`,
+    flagImgUrl:"",
     label:"National Team · FPF",
     titleA:"POR",titleB:"TUGAL",
     pills:["FIFA #<strong>6</strong>","<strong>1×</strong> Euro Champ","<strong>1×</strong> Nations League"],
@@ -1139,6 +1203,7 @@ const PAGE_DATA = {
   },
   "spain": {
     flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="12" fill="#C60B1E"/><rect y="12" width="48" height="24" fill="#FFC400"/><rect y="36" width="48" height="12" fill="#C60B1E"/></svg>`,
+    flagImgUrl:"",
     label:"National Team · RFEF",
     titleA:"SP",titleB:"AIN",
     pills:["FIFA #<strong>8</strong>","<strong>1×</strong> World Champ","<strong>4×</strong> Euro"],
@@ -1170,6 +1235,9 @@ const PAGE_DATA = {
   }
 };
 
+/* ================================================================
+   HELPERS
+================================================================ */
 function buildJerseySVG(fill, num, label, darkShade) {
   return `<svg viewBox="0 0 110 130" xmlns="http://www.w3.org/2000/svg" width="110" height="130">
     <path d="M28 30 L15 46 L28 52 L28 118 L82 118 L82 52 L95 46 L82 30 C78 28 70 26 66 22 C63 20 62 18 55 18 C48 18 47 20 44 22 C40 26 32 28 28 30Z" fill="${fill}"/>
@@ -1188,12 +1256,13 @@ function buildHeroBg(cfg) {
     return `<div class="hero-bg-stripes" id="heroBgEl"></div>
             <div class="hero-overlay"></div>`;
   }
-  return `<div class="hero-sun"></div>
+  return `<div class="hero-bg-stripes" id="heroBgEl"></div>
+          <div class="hero-sun"></div>
           <div class="hero-sun2"></div>
           <div class="hero-sun-rays">
             <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
               ${Array.from({length:12},(_,i)=>{
-                const a=i*30, r=`rotate(${a},160,160)`;
+                const r=`rotate(${i*30},160,160)`;
                 return `<rect x="155" y="0" width="10" height="80" rx="5" fill="rgba(var(--sky-rgb),0.08)" transform="${r}"/>`;
               }).join('')}
             </svg>
@@ -1201,6 +1270,14 @@ function buildHeroBg(cfg) {
           <div class="hero-overlay"></div>`;
 }
 
+/* ================================================================
+   PAGE HTML BUILDER
+   IDs for live sync:
+     #heroBgEl       → hero background image
+     #heroCaptFloat  → floating captain image (hero)
+     #flagCircleEl   → club/country logo circle
+     #fpJerseyEl     → featured player jersey / captain photo
+================================================================ */
 function buildPageHTML(id, cfg, data) {
   const honourCards = data.honours.map(h =>
     `<div class="achievement-card">
@@ -1221,7 +1298,7 @@ function buildPageHTML(id, cfg, data) {
   const captainSvg = buildJerseySVG(
     data.captainSvgFill, data.captainSvgNum, data.captainSvgLabel, cfg.vars['sky-dark']
   );
-  const fpJerseyHTML = cfg.captainImg
+  const fpJerseyInner = cfg.captainImg
     ? `<img src="${cfg.captainImg}" alt="${data.captainName.replace(/<br>/g,' ')}" />`
     : captainSvg;
 
@@ -1232,8 +1309,8 @@ function buildPageHTML(id, cfg, data) {
     </div>`
   ).join('');
 
-  const heroFloat = cfg.captainImg
-    ? `<div class="hero-captain-float"><img src="${cfg.captainImg}" alt="${cfg.name} Captain" /></div>`
+  const heroFloatInner = cfg.captainImg
+    ? `<img src="${cfg.captainImg}" alt="${cfg.name} Captain" />`
     : '';
 
   const timelineHTML = data.timeline.map(t =>
@@ -1265,13 +1342,13 @@ function buildPageHTML(id, cfg, data) {
       </div>
       <div class="hero-content">
         <div class="country-flag-row">
-          <div class="flag-circle">${data.flagHTML}</div>
+          <div class="flag-circle" id="flagCircleEl">${data.flagHTML}</div>
           <div class="country-label">${data.label}</div>
         </div>
         <div class="hero-title">${data.titleA}<span>${data.titleB}</span></div>
         <div class="hero-meta">${pills}</div>
       </div>
-      ${heroFloat}
+      <div class="hero-captain-float" id="heroCaptFloat" style="${heroFloatInner ? '' : 'display:none;'}">${heroFloatInner}</div>
     </section>
 
     <section class="section" style="margin-top:20px;">
@@ -1302,7 +1379,7 @@ function buildPageHTML(id, cfg, data) {
           <div class="fp-stats-grid">${captainStats}</div>
         </div>
         <div class="fp-right">
-          <div class="fp-jersey">${fpJerseyHTML}</div>
+          <div class="fp-jersey" id="fpJerseyEl">${fpJerseyInner}</div>
           <div class="fp-number-overlay">${data.captainOverlay}</div>
         </div>
       </div>
@@ -1335,14 +1412,18 @@ function buildPageHTML(id, cfg, data) {
   `;
 }
 
+/* ================================================================
+   BOOT
+================================================================ */
 (function () {
-  const id  = (new URLSearchParams(location.search).get('id') || '').toLowerCase().trim();
-  const cfg = TEAM_CONFIGS[id];
+  const id   = (new URLSearchParams(location.search).get('id') || '').toLowerCase().trim();
+  const cfg  = TEAM_CONFIGS[id];
   const data = PAGE_DATA[id];
   if (!cfg || !data) return;
 
   window._JERSIFY_ID  = id;
   window._JERSIFY_CFG = cfg;
+  window._JERSIFY_DATA = data;
 
   document.title = 'JERSIFY — ' + cfg.name;
 
@@ -1364,11 +1445,13 @@ function buildPageHTML(id, cfg, data) {
   document.getElementById('app').innerHTML =
     '<div class="page">' + buildPageHTML(id, cfg, data) + '</div>';
 
+  /* Apply static hero bg fallback immediately */
   if (cfg.heroBg) {
     const el = document.getElementById('heroBgEl');
     if (el) el.style.backgroundImage = `url('${cfg.heroBg}')`;
   }
 
+  /* Wishlist button */
   const wishlistBtn  = document.getElementById('wishlistBtn');
   const wishlistIcon = document.getElementById('wishlistIcon');
   let wishlisted = false;
@@ -1382,6 +1465,7 @@ function buildPageHTML(id, cfg, data) {
     });
   }
 
+  /* Scroll-in animations */
   requestAnimationFrame(() => {
     const cards = document.querySelectorAll(
       '.achievement-card, .product-card, .timeline-item, .featured-player'
@@ -1404,6 +1488,9 @@ function buildPageHTML(id, cfg, data) {
   });
 })();
 
+/* ================================================================
+   LIGHTBOX
+================================================================ */
 function openLightbox(imgUrl, name) {
   const overlay = document.getElementById('imgLightbox');
   const img     = document.getElementById('lightboxImg');
@@ -1425,36 +1512,52 @@ function closeLightbox(e) {
   }
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+/* ================================================================
+   TOAST HELPER
+================================================================ */
+function showSyncToast(msg) {
+  const t = document.getElementById('syncToast');
+  if (!t) return;
+  t.innerHTML = `<span class="sync-dot"></span> ${msg}`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
 </script>
 
 <!-- ================================================================
-  PRODUCT MATCHING ENGINE v2 — NAME-ONLY, TEAM-FIELD IGNORED.
+  FIREBASE MODULE — Products + Team Images DB Sync
+  
+  DB STRUCTURE:
+    /teamimages/{teamId}/hero     → hero banner image URL
+    /teamimages/{teamId}/captain  → captain/player image URL
+    /teamimages/{teamId}/logo     → club/country logo URL
 
-  ROOT CAUSE: The `team` field in Firebase is completely unreliable.
-  Arsenal kits are tagged "Chelsea", Man City kits tagged "Man Utd",
-  PSG tagged "France", etc. The product NAME is always correct.
-
-  SOLUTION: Match products exclusively using the product name.
-  The `team` field is NEVER used for filtering.
-
-  RULE PRIORITY (checked in order, first match wins):
-    1. Exact multi-word club/country phrases (longest first)
-    2. Single strong keywords
-    3. No match → product is not shown on any team page
-
-  AMBIGUOUS CASES ("Real Madrid Spain Retro", "FC Barcelona Spain"):
-    - "real madrid" keyword fires before "spain" → goes to real-madrid ✓
-    - "fc barcelona" keyword fires before "spain" → goes to barcelona ✓
+  BEHAVIOUR:
+    1. On load: check if /teamimages/{id} exists in DB.
+       • If NOT → write current hardcoded values as defaults (seed).
+       • If YES → leave existing DB values untouched (user may have updated them).
+    2. onValue listener keeps all 3 images in sync in real-time.
+       Any external update to the DB (e.g. admin panel) is reflected
+       instantly on screen without a page reload.
+    3. DOM targets (set in buildPageHTML):
+         #heroBgEl      → background-image CSS
+         #heroCaptFloat → floating hero captain img src
+         #flagCircleEl  → logo circle innerHTML
+         #fpJerseyEl    → featured player jersey img src
 ================================================================ -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { initializeApp }           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, get, set }
+                                      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  (function() {
-    const id  = window._JERSIFY_ID;
-    const cfg = window._JERSIFY_CFG;
-    if (!id || !cfg) return;
+  (function () {
+    const id   = window._JERSIFY_ID;
+    const cfg  = window._JERSIFY_CFG;
+    const data = window._JERSIFY_DATA;
+    if (!id || !cfg || !data) return;
 
+    /* ── Firebase init ── */
     const app = initializeApp({
       apiKey:            "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
       authDomain:        "jersify-f9b5e.firebaseapp.com",
@@ -1466,8 +1569,131 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
     });
     const rtdb = getDatabase(app);
 
-    // NAME-ONLY matching — team field is intentionally ignored.
-    // Rules checked in order; first match wins.
+    /* ── Helper: extract URL from flagHTML if it's an <img> ── */
+    function extractLogoUrl(flagHTML) {
+      const match = (flagHTML || '').match(/src=["']([^"']+)["']/);
+      return match ? match[1] : '';
+    }
+
+    /* ── DOM helpers ── */
+    function applyHero(url) {
+      if (!url) return;
+      const el = document.getElementById('heroBgEl');
+      if (el) {
+        el.style.backgroundImage = `url('${url}')`;
+        el.style.backgroundSize  = 'cover';
+        el.style.backgroundPosition = 'center';
+      }
+    }
+
+    function applyCaptain(url) {
+      if (!url) return;
+
+      /* Hero floating image */
+      const floatEl = document.getElementById('heroCaptFloat');
+      if (floatEl) {
+        floatEl.style.display = '';
+        floatEl.innerHTML =
+          `<img src="${url}" alt="${cfg.name} Captain"
+                style="width:100%;height:100%;object-fit:contain;object-position:bottom center;" />`;
+      }
+
+      /* Featured player jersey */
+      const jerseyEl = document.getElementById('fpJerseyEl');
+      if (jerseyEl) {
+        jerseyEl.innerHTML =
+          `<img src="${url}" alt="Captain"
+                style="width:110px;height:130px;object-fit:contain;
+                       filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));" />`;
+      }
+    }
+
+    function applyLogo(url) {
+      if (!url) return;
+      const el = document.getElementById('flagCircleEl');
+      if (el) {
+        el.innerHTML =
+          `<img src="${url}"
+                style="width:100%;height:100%;object-fit:cover;"
+                alt="${cfg.name} Logo" />`;
+      }
+    }
+
+    /* ── Path: /teamimages/{id} ── */
+    const teamImgRef = ref(rtdb, `teamimages/${id}`);
+
+    /* ── STEP 1: Seed DB with defaults if entry is missing ── */
+    get(teamImgRef).then(snap => {
+      if (!snap.exists()) {
+        /* Build the default record from hardcoded data */
+        const defaults = {
+          hero:    cfg.heroBg     || '',
+          captain: cfg.captainImg || '',
+          logo:    data.flagImgUrl || extractLogoUrl(data.flagHTML) || ''
+        };
+        set(teamImgRef, defaults)
+          .then(() => console.log(`[JERSIFY] Seeded /teamimages/${id}`, defaults))
+          .catch(err => console.warn('[JERSIFY] Seed failed:', err));
+      } else {
+        console.log(`[JERSIFY] /teamimages/${id} already exists — skipping seed.`);
+      }
+    }).catch(err => console.warn('[JERSIFY] get() failed:', err));
+
+    /* ── STEP 2: Real-time listener — apply images whenever DB changes ── */
+    let firstLoad = true;
+    onValue(teamImgRef, snap => {
+      if (!snap.exists()) return;
+      const imgs = snap.val();
+
+      /* Apply each image if present */
+      if (imgs.hero)    applyHero(imgs.hero);
+      if (imgs.captain) applyCaptain(imgs.captain);
+      if (imgs.logo)    applyLogo(imgs.logo);
+
+      /* Show toast on subsequent updates (not on initial load) */
+      if (!firstLoad) {
+        showSyncToast('Images synced from database');
+      }
+      firstLoad = false;
+
+      console.log(`[JERSIFY] Synced /teamimages/${id}:`, imgs);
+    }, err => console.warn('[JERSIFY] onValue error:', err));
+
+  })();
+
+  /* ================================================================
+     PRODUCT MATCHING ENGINE v2
+     Matches products by name only (team field is unreliable).
+  ================================================================ */
+  (function () {
+    const id  = window._JERSIFY_ID;
+    const cfg = window._JERSIFY_CFG;
+    if (!id || !cfg) return;
+
+    /* Re-use already initialised app */
+    const { getDatabase, ref, onValue } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js")
+      .catch(() => ({}));
+
+    // Actually we need to use the already-initialized Firebase.
+    // Since we can't call initializeApp again cleanly inside a second IIFE,
+    // we restructure below.
+  })();
+</script>
+
+<!-- Product engine as separate module to avoid double-init issues -->
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  (function () {
+    const id  = window._JERSIFY_ID;
+    const cfg = window._JERSIFY_CFG;
+    if (!id || !cfg) return;
+
+    /* Get existing app (already initialised above) */
+    const app  = getApps()[0];
+    const rtdb = getDatabase(app);
+
     const NAME_RULES = [
       ["paris saint germain",  "psg"],
       ["paris saint-germain",  "psg"],
@@ -1495,38 +1721,36 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
     ];
 
     function resolveTeamFromName(rawName) {
-      const n = (rawName || "").toLowerCase();
+      const n = (rawName || '').toLowerCase();
       for (const [keyword, pageId] of NAME_RULES) {
         if (n.includes(keyword)) return pageId;
       }
       return null;
     }
 
-    onValue(ref(rtdb, "products"), snapshot => {
-      const container = document.getElementById("productsGrid");
+    onValue(ref(rtdb, 'products'), snapshot => {
+      const container = document.getElementById('productsGrid');
       if (!container) return;
 
-      let html = "";
+      let html = '';
 
       snapshot.forEach(child => {
         const p   = child.val();
         const key = child.key;
-
-        if (p.status && p.status !== "active") return;
-
+        if (p.status && p.status !== 'active') return;
         const resolvedTeam = resolveTeamFromName(p.name);
         if (resolvedTeam !== id) return;
 
-        const safeName = (p.name || "Kit").replace(/'/g, "\\'").replace(/"/g, "&quot;");
-        const imgUrl   = p.imgUrl || "";
+        const safeName = (p.name || 'Kit').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const imgUrl   = p.imgUrl || '';
 
         html += `
           <div class="product-card">
-            <div class="product-card-top${imgUrl ? "" : " sky-bg"}"
+            <div class="product-card-top${imgUrl ? '' : ' sky-bg'}"
                  onclick="openLightbox('${imgUrl}','${safeName}')">
-              ${p.badge ? `<div class="product-badge-new">${p.badge}</div>` : ""}
+              ${p.badge ? `<div class="product-badge-new">${p.badge}</div>` : ''}
               ${imgUrl
-                ? `<img src="${imgUrl}" alt="${p.name || "Kit"}" loading="lazy" />`
+                ? `<img src="${imgUrl}" alt="${p.name || 'Kit'}" loading="lazy" />`
                 : `<svg viewBox="0 0 100 120" width="90" height="108" xmlns="http://www.w3.org/2000/svg" style="pointer-events:none;">
                     <path d="M25 28 L13 42 L25 47 L25 108 L75 108 L75 47 L87 42 L75 28 C72 26 64 24 60 21 C58 19 57 17 50 17 C43 17 42 19 40 21 C36 24 28 26 25 28Z" fill="var(--sky)"/>
                     <path d="M25 28 L13 42 L25 47Z" fill="var(--sky-dark)" opacity="0.9"/>
@@ -1536,11 +1760,14 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
               }
             </div>
             <div class="product-card-bottom">
-              <div class="product-card-name">${p.name || "Jersify Kit"}</div>
-              <div class="product-card-sub">${p.type || "Kit"}</div>
+              <div class="product-card-name">${p.name || 'Jersify Kit'}</div>
+              <div class="product-card-sub">${p.type || 'Kit'}</div>
               <div class="product-card-footer">
-                <div class="product-price">${p.price ? "\u20B9" + p.price : "\u20B91499"}</div>
-                <button class="buy-btn" onclick="event.stopPropagation();window.location.href='checkout.html?id=${key}'">BUY NOW</button>
+                <div class="product-price">${p.price ? '₹' + p.price : '₹1499'}</div>
+                <button class="buy-btn"
+                  onclick="event.stopPropagation();window.location.href='checkout.html?id=${key}'">
+                  BUY NOW
+                </button>
               </div>
             </div>
           </div>`;
@@ -1549,26 +1776,27 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
       container.innerHTML = html ||
         `<div class="no-products">No products available yet for ${cfg.name}.</div>`;
 
-      container.querySelectorAll(".product-card").forEach((card, i) => {
-        card.style.opacity    = "0";
-        card.style.transform  = "translateY(24px)";
+      /* Animate in */
+      container.querySelectorAll('.product-card').forEach((card, i) => {
+        card.style.opacity    = '0';
+        card.style.transform  = 'translateY(24px)';
         card.style.transition = `opacity .4s ease ${i * 0.08}s, transform .4s ease ${i * 0.08}s`;
         setTimeout(() => {
-          card.style.opacity   = "1";
-          card.style.transform = "translateY(0)";
+          card.style.opacity   = '1';
+          card.style.transform = 'translateY(0)';
         }, 50);
       });
 
       const io = new IntersectionObserver(entries => {
         entries.forEach(e => {
           if (e.isIntersecting) {
-            e.target.style.opacity   = "1";
-            e.target.style.transform = "translateY(0)";
+            e.target.style.opacity   = '1';
+            e.target.style.transform = 'translateY(0)';
             io.unobserve(e.target);
           }
         });
       }, { threshold: 0.08 });
-      container.querySelectorAll(".product-card").forEach(c => io.observe(c));
+      container.querySelectorAll('.product-card').forEach(c => io.observe(c));
     });
   })();
 </script>
