@@ -217,33 +217,6 @@
     .pay-opt-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
     .pay-opt-icon { width: 38px; height: 38px; border-radius: 10px; background: #f4f4f4; display: grid; place-items: center; font-size: 18px; }
 
-    .pay-failed-banner {
-      display: none;
-      background: rgba(198,31,47,.05);
-      border: 1.5px solid rgba(198,31,47,.3);
-      border-radius: 16px; padding: 16px; margin-bottom: 14px;
-      animation: fadeInUp .3s ease both;
-    }
-    .pay-failed-banner.visible { display: block; }
-    .pay-failed-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-    .pay-failed-icon { font-size: 22px; line-height: 1; }
-    .pay-failed-title { font-size: 14px; font-weight: 900; color: var(--accent); }
-    .pay-failed-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
-    .pay-failed-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .pay-failed-retry {
-      border: none; border-radius: 10px; padding: 9px 20px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; font-size: 12px; font-weight: 800; cursor: pointer;
-      transition: transform .2s, box-shadow .2s;
-    }
-    .pay-failed-retry:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(198,31,47,.3); }
-    .pay-failed-cod {
-      border: 1.5px solid rgba(0,0,0,.15); border-radius: 10px; padding: 9px 20px;
-      background: #fff; color: var(--text); font-size: 12px; font-weight: 700;
-      cursor: pointer; transition: all .2s;
-    }
-    .pay-failed-cod:hover { border-color: var(--text); }
-
     .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 13px; font-weight: 500; color: var(--muted); }
     .summary-row span:last-child { color: var(--text); font-weight: 700; }
     .discount-row span { color: var(--success) !important; }
@@ -251,6 +224,18 @@
     .summary-total { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 2px; border-top: 2px solid #111; margin-top: 6px; }
     .summary-total-label { font-size: 16px; font-weight: 900; }
     .summary-total-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--accent); letter-spacing: 1px; }
+
+    /* Redirect info banner */
+    .redirect-info {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: rgba(198,31,47,.04); border: 1.5px solid rgba(198,31,47,.2);
+      border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;
+      animation: fadeInUp .3s ease both;
+    }
+    .redirect-info-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .redirect-info-text { flex: 1; }
+    .redirect-info-text strong { display: block; font-size: 13px; font-weight: 800; margin-bottom: 3px; }
+    .redirect-info-text span { font-size: 11px; color: var(--muted); line-height: 1.6; }
 
     .confirm-btn {
       width: 100%; border: none; border-radius: 14px; padding: 16px;
@@ -267,30 +252,6 @@
 
     .secure-badge { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 14px; padding: 10px; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: .4px; }
     .secure-badge svg { width: 13px; height: 13px; opacity: .5; }
-
-    /* ── Success Screen ── */
-    .success-screen { text-align: center; padding: 60px 16px 40px; }
-    .success-emoji { font-size: 64px; margin-bottom: 16px; display: block; animation: popIn .5s cubic-bezier(.34,1.56,.64,1) both; }
-    @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .success-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; color: var(--success); letter-spacing: 2px; margin-bottom: 6px; }
-    .success-order-id { font-size: 12px; font-weight: 700; color: var(--muted); background: #f5f5f5; display: inline-block; padding: 5px 14px; border-radius: 99px; margin-bottom: 16px; }
-    .success-msg { font-size: 13px; color: var(--muted); line-height: 1.7; max-width: 280px; margin: 0 auto 24px; }
-    .success-redirect { font-size: 12px; color: var(--muted); margin-top: 16px; }
-    .success-redirect span { color: var(--accent); font-weight: 800; }
-    .success-details {
-      background: #f9f9f9; border: 1px solid var(--line); border-radius: 18px;
-      padding: 16px; margin: 0 auto 24px; max-width: 320px; text-align: left;
-    }
-    .success-detail-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 12px; }
-    .success-detail-row span:first-child { color: var(--muted); font-weight: 500; }
-    .success-detail-row span:last-child { font-weight: 700; }
-    .success-btn {
-      border: none; border-radius: 14px; padding: 14px 32px;
-      background: linear-gradient(180deg, var(--accent), var(--accent2));
-      color: #fff; font-size: 13px; font-weight: 800; cursor: pointer;
-      box-shadow: 0 10px 28px rgba(198,31,47,.28); transition: transform .2s;
-    }
-    .success-btn:hover { transform: translateY(-2px); }
 
     .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0; }
     .footer h4 { font-size: 18px; margin-bottom: 8px; font-weight: 900; }
@@ -325,10 +286,26 @@
     .user-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .user-name { font-size: 11px; font-weight: 700; color: var(--accent); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    @media (max-width: 380px) { .form-row { grid-template-columns: 1fr; gap: 0; } .logo { font-size: 40px } }
-    @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
+    #authSignedInBanner { display: none; align-items: center; gap: 12px; background: rgba(30,140,74,.06); border: 1.5px solid rgba(30,140,74,.2); border-radius: 16px; padding: 12px 16px; margin-bottom: 14px; animation: fadeInUp .3s ease both; }
+    #authSignedInBanner.show { display: flex; }
+    .signed-in-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
+    .signed-in-info { flex: 1; }
+    .signed-in-info strong { font-size: 13px; font-weight: 800; color: var(--success); display: block; }
+    .signed-in-info span { font-size: 11px; color: var(--muted); }
+    .sign-out-btn { border: 1px solid rgba(0,0,0,.12); border-radius: 8px; padding: 5px 12px; background: #fff; color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer; transition: all .2s; flex-shrink: 0; }
+    .sign-out-btn:hover { border-color: var(--accent); color: var(--accent); }
+    #authPromptCard { display: none; border: 1.5px dashed rgba(198,31,47,.3); border-radius: 18px; padding: 16px; margin-bottom: 14px; background: rgba(198,31,47,.02); animation: fadeInUp .3s ease both; }
+    #authPromptCard.show { display: block; }
+    .auth-prompt-inner { display: flex; align-items: center; gap: 14px; }
+    .auth-prompt-icon { font-size: 28px; line-height: 1; flex-shrink: 0; }
+    .auth-prompt-text { flex: 1; }
+    .auth-prompt-text strong { font-size: 13px; font-weight: 900; display: block; margin-bottom: 3px; }
+    .auth-prompt-text span { font-size: 11px; color: var(--muted); line-height: 1.5; }
+    .auth-prompt-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .auth-prompt-signin { flex: 1; border: none; border-radius: 10px; padding: 11px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .auth-prompt-signup { flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 10px; padding: 11px; background: #fff; color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer; }
 
-    /* ── Auth Modal ── */
+    /* Auth Modal */
     #authBackdrop { position: fixed; inset: 0; background: rgba(0,0,0,0); z-index: 190; pointer-events: none; transition: background .35s ease; }
     #authBackdrop.show { background: rgba(0,0,0,.55); pointer-events: auto; }
     #authModal {
@@ -348,93 +325,52 @@
     .auth-modal-logo { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: #111; letter-spacing: 2px; line-height: 1; }
     .auth-modal-logo span { color: var(--accent); }
     .auth-modal-tagline { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
-    .auth-modal-close { width: 32px; height: 32px; border: none; border-radius: 50%; background: #f3f3f3; color: #555; font-size: 15px; cursor: pointer; display: grid; place-items: center; transition: background .2s, color .2s; flex-shrink: 0; }
-    .auth-modal-close:hover { background: #111; color: #fff; }
-    .auth-tabs { display: flex; margin: 20px 20px 0; gap: 0; background: #f5f5f5; border-radius: 14px; padding: 4px; }
-    .auth-tab { flex: 1; border: none; border-radius: 10px; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .25s; background: transparent; color: var(--muted); }
+    .auth-modal-close { width: 32px; height: 32px; border: none; border-radius: 50%; background: #f3f3f3; color: #555; font-size: 15px; cursor: pointer; display: grid; place-items: center; }
+    .auth-tabs { display: flex; margin: 20px 20px 0; background: #f5f5f5; border-radius: 14px; padding: 4px; }
+    .auth-tab { flex: 1; border: none; border-radius: 10px; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; background: transparent; color: var(--muted); }
     .auth-tab.active { background: #fff; color: var(--text); box-shadow: 0 2px 10px rgba(0,0,0,.08); }
     .auth-body { padding: 20px 20px 28px; }
-    .auth-welcome { margin-bottom: 18px; }
     .auth-welcome-title { font-size: 20px; font-weight: 900; margin-bottom: 4px; }
-    .auth-welcome-sub { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .auth-welcome-sub { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; }
     .auth-form-group { margin-bottom: 12px; position: relative; }
     .auth-form-group label { display: block; font-size: 10px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1.2px; }
     .auth-input { width: 100%; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 12px 14px; font-size: 13px; font-weight: 500; background: #fafafa; color: var(--text); outline: none; transition: all .22s; }
-    .auth-input::placeholder { color: #bbb; }
     .auth-input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(198,31,47,.08); }
     .auth-input.has-icon { padding-right: 44px; }
-    .pw-toggle { position: absolute; right: 12px; bottom: 12px; background: none; border: none; cursor: pointer; color: var(--muted); padding: 0; display: grid; place-items: center; transition: color .2s; }
-    .pw-toggle:hover { color: var(--text); }
+    .pw-toggle { position: absolute; right: 12px; bottom: 12px; background: none; border: none; cursor: pointer; color: var(--muted); display: grid; place-items: center; }
     .pw-toggle svg { width: 17px; height: 17px; }
-    .auth-error { background: rgba(198,31,47,.06); border: 1px solid rgba(198,31,47,.2); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 14px; display: none; line-height: 1.5; }
+    .auth-error { background: rgba(198,31,47,.06); border: 1px solid rgba(198,31,47,.2); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 14px; display: none; }
     .auth-error.show { display: block; }
-    .auth-success-msg { background: rgba(30,140,74,.06); border: 1px solid rgba(30,140,74,.2); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--success); font-weight: 600; margin-bottom: 14px; display: none; line-height: 1.5; }
+    .auth-success-msg { background: rgba(30,140,74,.06); border: 1px solid rgba(30,140,74,.2); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--success); font-weight: 600; margin-bottom: 14px; display: none; }
     .auth-success-msg.show { display: block; }
-    .auth-submit-btn { width: 100%; border: none; border-radius: 14px; padding: 15px; font-size: 14px; font-weight: 800; letter-spacing: .4px; color: #fff; cursor: pointer; background: linear-gradient(180deg, var(--accent), var(--accent2)); box-shadow: 0 8px 24px rgba(198,31,47,.28); transition: transform .2s ease, box-shadow .2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .auth-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(198,31,47,.36); }
-    .auth-submit-btn:disabled { opacity: .6; pointer-events: none; }
+    .auth-submit-btn { width: 100%; border: none; border-radius: 14px; padding: 15px; font-size: 14px; font-weight: 800; color: #fff; cursor: pointer; background: linear-gradient(180deg, var(--accent), var(--accent2)); box-shadow: 0 8px 24px rgba(198,31,47,.28); display: flex; align-items: center; justify-content: center; gap: 8px; }
     .auth-btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: none; }
     .auth-submit-btn.loading .auth-btn-spinner { display: block; }
-    .auth-submit-btn.loading .auth-btn-text { opacity: .7; }
+    .auth-submit-btn:disabled { opacity: .6; pointer-events: none; }
     .auth-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
     .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
-    .auth-divider span { font-size: 11px; color: var(--muted); font-weight: 600; white-space: nowrap; }
-    .auth-google-btn { width: 100%; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 13px; background: #fff; color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .22s; }
-    .auth-google-btn:hover { background: #f8f8f8; border-color: rgba(0,0,0,.2); box-shadow: 0 2px 10px rgba(0,0,0,.06); }
-    .auth-google-btn:disabled { opacity: .6; pointer-events: none; }
-    .google-icon { width: 18px; height: 18px; }
+    .auth-divider span { font-size: 11px; color: var(--muted); font-weight: 600; }
+    .auth-google-btn { width: 100%; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 13px; background: #fff; color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
     .auth-forgot { display: block; text-align: right; font-size: 11px; font-weight: 700; color: var(--accent); margin-top: -4px; margin-bottom: 12px; cursor: pointer; }
-    .auth-forgot:hover { text-decoration: underline; }
     #resetPanel { display: none; }
     #resetPanel.show { display: block; }
     .auth-terms { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.6; margin-top: 14px; }
     .auth-terms a { color: var(--accent); font-weight: 700; }
     .auth-gradient-bar { height: 3px; background: linear-gradient(90deg, var(--accent), #ff6b35, var(--gold), var(--accent)); background-size: 200% 100%; animation: gradientShift 3s linear infinite; }
     @keyframes gradientShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+    .google-icon { width: 18px; height: 18px; }
 
-    #authSignedInBanner { display: none; align-items: center; gap: 12px; background: rgba(30,140,74,.06); border: 1.5px solid rgba(30,140,74,.2); border-radius: 16px; padding: 12px 16px; margin-bottom: 14px; animation: fadeInUp .3s ease both; }
-    #authSignedInBanner.show { display: flex; }
-    .signed-in-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
-    .signed-in-info { flex: 1; }
-    .signed-in-info strong { font-size: 13px; font-weight: 800; color: var(--success); display: block; }
-    .signed-in-info span { font-size: 11px; color: var(--muted); }
-    .sign-out-btn { border: 1px solid rgba(0,0,0,.12); border-radius: 8px; padding: 5px 12px; background: #fff; color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer; transition: all .2s; flex-shrink: 0; }
-    .sign-out-btn:hover { border-color: var(--accent); color: var(--accent); }
-    #authPromptCard { display: none; border: 1.5px dashed rgba(198,31,47,.3); border-radius: 18px; padding: 16px; margin-bottom: 14px; background: rgba(198,31,47,.02); animation: fadeInUp .3s ease both; }
-    #authPromptCard.show { display: block; }
-    .auth-prompt-inner { display: flex; align-items: center; gap: 14px; }
-    .auth-prompt-icon { font-size: 28px; line-height: 1; flex-shrink: 0; }
-    .auth-prompt-text { flex: 1; }
-    .auth-prompt-text strong { font-size: 13px; font-weight: 900; display: block; margin-bottom: 3px; }
-    .auth-prompt-text span { font-size: 11px; color: var(--muted); line-height: 1.5; }
-    .auth-prompt-actions { display: flex; gap: 8px; margin-top: 12px; }
-    .auth-prompt-signin { flex: 1; border: none; border-radius: 10px; padding: 11px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-size: 12px; font-weight: 800; cursor: pointer; transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 14px rgba(198,31,47,.25); }
-    .auth-prompt-signin:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(198,31,47,.35); }
-    .auth-prompt-signup { flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 10px; padding: 11px; background: #fff; color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer; transition: all .2s; }
-    .auth-prompt-signup:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* ── Processing Overlay ── */
-    #processingOverlay {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6);
-      z-index: 300; align-items: center; justify-content: center;
-      backdrop-filter: blur(4px);
-    }
+    /* Processing overlay */
+    #processingOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 300; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
     #processingOverlay.show { display: flex; }
-    .processing-box {
-      background: #fff; border-radius: 24px; padding: 32px 28px; text-align: center;
-      max-width: 280px; width: 90%;
-      animation: popIn .35s cubic-bezier(.34,1.56,.64,1) both;
-    }
-    .processing-spinner {
-      width: 48px; height: 48px; border: 4px solid var(--line);
-      border-top-color: var(--accent); border-radius: 50%;
-      animation: spin .8s linear infinite; margin: 0 auto 16px;
-    }
+    .processing-box { background: #fff; border-radius: 24px; padding: 32px 28px; text-align: center; max-width: 280px; width: 90%; }
+    .processing-spinner { width: 48px; height: 48px; border: 4px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 16px; }
     .processing-title { font-size: 16px; font-weight: 900; margin-bottom: 6px; }
     .processing-sub { font-size: 12px; color: var(--muted); line-height: 1.6; }
-  </style>
 
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    @media (max-width: 380px) { .form-row { grid-template-columns: 1fr; gap: 0; } .logo { font-size: 40px } }
+    @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
+  </style>
 </head>
 <body>
 <div class="page">
@@ -481,18 +417,6 @@
         <div class="auth-prompt-actions">
           <button class="auth-prompt-signin" onclick="openAuthModal('signin')">Sign In</button>
           <button class="auth-prompt-signup" onclick="openAuthModal('signup')">Create Account</button>
-        </div>
-      </div>
-
-      <div class="pay-failed-banner" id="payFailedBanner">
-        <div class="pay-failed-header">
-          <span class="pay-failed-icon">⚠️</span>
-          <span class="pay-failed-title">Payment Failed</span>
-        </div>
-        <div class="pay-failed-desc" id="payFailedDesc">Your payment could not be processed.</div>
-        <div class="pay-failed-actions">
-          <button class="pay-failed-retry" onclick="retryPayment()">Try Again →</button>
-          <button class="pay-failed-cod" onclick="switchToCOD()">Switch to COD</button>
         </div>
       </div>
 
@@ -601,9 +525,18 @@
         </div>
       </div>
 
+      <!-- Info banner shown when Razorpay is selected -->
+      <div class="redirect-info" id="redirectInfo">
+        <span class="redirect-info-icon">🔒</span>
+        <div class="redirect-info-text">
+          <strong>Secure Payment Gateway</strong>
+          <span>You'll be briefly redirected to our secure payment page to complete your purchase, then brought back here.</span>
+        </div>
+      </div>
+
       <button class="confirm-btn" id="confirmBtn" onclick="processOrder()">
         <div class="btn-spinner"></div>
-        <span id="confirmBtnText">Confirm Order →</span>
+        <span id="confirmBtnText">Proceed to Payment →</span>
       </button>
 
       <div class="secure-badge">
@@ -634,8 +567,8 @@
 <div id="processingOverlay">
   <div class="processing-box">
     <div class="processing-spinner"></div>
-    <div class="processing-title" id="processingTitle">Processing…</div>
-    <div class="processing-sub" id="processingSub">Please wait, do not close this page.</div>
+    <div class="processing-title" id="processingTitle">Preparing…</div>
+    <div class="processing-sub" id="processingSub">Redirecting to secure payment page.</div>
   </div>
 </div>
 
@@ -658,7 +591,8 @@
     <div class="auth-error" id="authError"></div>
     <div class="auth-success-msg" id="authSuccess"></div>
     <div id="signinPanel">
-      <div class="auth-welcome"><div class="auth-welcome-title">Welcome back 👋</div><div class="auth-welcome-sub">Sign in to continue to your order.</div></div>
+      <div class="auth-welcome-title">Welcome back 👋</div>
+      <div class="auth-welcome-sub">Sign in to continue to your order.</div>
       <div class="auth-form-group"><label>Email Address</label><input type="email" id="siEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
       <div class="auth-form-group">
         <label>Password</label>
@@ -677,7 +611,8 @@
       <div class="auth-terms">By signing in you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
     </div>
     <div id="signupPanel" style="display:none;">
-      <div class="auth-welcome"><div class="auth-welcome-title">Create account 🎽</div><div class="auth-welcome-sub">Join Jersify and get exclusive drops & offers.</div></div>
+      <div class="auth-welcome-title">Create account 🎽</div>
+      <div class="auth-welcome-sub">Join Jersify and get exclusive drops & offers.</div>
       <div class="auth-form-group"><label>Full Name</label><input type="text" id="suName" class="auth-input" placeholder="Your full name" autocomplete="name"></div>
       <div class="auth-form-group"><label>Email Address</label><input type="email" id="suEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
       <div class="auth-form-group">
@@ -703,7 +638,8 @@
       <div class="auth-terms">By creating an account you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
     </div>
     <div id="resetPanel">
-      <div class="auth-welcome"><div class="auth-welcome-title">Reset Password 🔑</div><div class="auth-welcome-sub">Enter your email and we'll send a reset link.</div></div>
+      <div class="auth-welcome-title">Reset Password 🔑</div>
+      <div class="auth-welcome-sub">Enter your email and we'll send a reset link.</div>
       <div class="auth-form-group"><label>Email Address</label><input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
       <button class="auth-submit-btn" id="resetBtn" onclick="doResetPassword()"><div class="auth-btn-spinner"></div><span class="auth-btn-text">Send Reset Link</span></button>
       <div style="text-align:center;margin-top:14px;"><a onclick="hideResetPanel()" style="font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;">← Back to Sign In</a></div>
@@ -719,7 +655,7 @@
     GoogleAuthProvider, signInWithPopup, signOut, updateProfile
   }                             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import {
-    getDatabase, ref, get, set, child, push
+    getDatabase, ref, get, set, child
   }                             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   /* ── Firebase Config ── */
@@ -733,18 +669,17 @@
     databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
   };
 
-  /* ── Razorpay Key ── */
-  const RAZORPAY_KEY_ID = "rzp_live_omDNDSL8gmUBCZ";
+  /* ── Payment page URL (waverid) ── */
+  const PAYMENT_PAGE_URL = "https://waveridrentals.vercel.app/checkout";
 
-  /* ── Redirect target after success ── */
-  const SUCCESS_REDIRECT = "https://waveridrentals.vercel.app/index.html";
+  /* ── Success redirect (back to jersify after payment) ── */
+  const SUCCESS_REDIRECT = "https://jersify.online/order-success.html";
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getDatabase(app);
   const gProvider = new GoogleAuthProvider();
 
-  /* ── State ── */
   let orderPrice        = 0;
   let orderItems        = [];
   let discountAmount    = 0;
@@ -755,51 +690,30 @@
   let couponsMap        = {};
   let currentUser       = null;
 
-  /* ══════════════════════════════════════════
-     SAVE ORDER DIRECTLY TO FIREBASE RTDB
-     (replaces the broken callFn approach)
-  ══════════════════════════════════════════ */
-  async function saveOrderToFirebase(orderData) {
-    const ordersRef = ref(db, 'orders');
-    const newOrderRef = push(ordersRef);          // auto-generates a unique key
-    await set(newOrderRef, {
-      ...orderData,
-      createdAt: new Date().toISOString(),
-    });
-    return newOrderRef.key;                        // return the Firebase key
-  }
-
-  /* ══════════════════════════════════════════
-     OPTIONAL: fire-and-forget notification
-     via your existing Cloud Function URL.
-     If it fails, the order is already saved.
-  ══════════════════════════════════════════ */
-  function fireNotification(path, body) {
-    const FUNCTIONS_BASE = "https://createcashfreeorder-cb3aepnlna-uc.a.run.app";
-    fetch(`${FUNCTIONS_BASE}/${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    }).catch(() => {}); // silently ignore failures
-  }
-
   /* ── Processing overlay ── */
-  function showProcessing(title = 'Processing…', sub = 'Please wait, do not close this page.') {
-    document.getElementById('processingTitle').textContent = title;
-    document.getElementById('processingSub').textContent   = sub;
+  function showProcessing(title, sub) {
+    document.getElementById('processingTitle').textContent = title || 'Preparing…';
+    document.getElementById('processingSub').textContent   = sub   || 'Redirecting to secure payment.';
     document.getElementById('processingOverlay').classList.add('show');
   }
   function hideProcessing() {
     document.getElementById('processingOverlay').classList.remove('show');
   }
 
-  /* ── Confirm button state ── */
-  function setConfirmBtn(loading, text = 'Confirm Order →') {
+  function setConfirmBtn(loading, text) {
     const btn = document.getElementById('confirmBtn');
     btn.disabled = loading;
     btn.classList.toggle('loading', loading);
-    document.getElementById('confirmBtnText').textContent = text;
+    document.getElementById('confirmBtnText').textContent = text || 'Proceed to Payment →';
   }
+
+  /* ── Redirect info banner toggle ── */
+  window.selPay = method => {
+    document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
+    document.getElementById(method === 'razorpay' ? 'pay_rzp' : 'pay_cod').parentElement.classList.add('active');
+    document.getElementById('redirectInfo').style.display = method === 'razorpay' ? 'flex' : 'none';
+    document.getElementById('confirmBtnText').textContent = method === 'razorpay' ? 'Proceed to Payment →' : 'Confirm Order →';
+  };
 
   /* ── Auth helpers ── */
   window.openAuthModal  = (tab = 'signin') => { switchAuthTab(tab); clearAuthMessages(); document.getElementById('authModal').classList.add('show'); document.getElementById('authBackdrop').classList.add('show'); document.body.style.overflow = 'hidden'; };
@@ -858,15 +772,15 @@
 
   function friendlyAuthError(code) {
     const m = {
-      'auth/user-not-found':        'No account found with this email.',
-      'auth/wrong-password':        'Incorrect password.',
-      'auth/invalid-email':         'Please enter a valid email.',
-      'auth/email-already-in-use':  'An account with this email already exists.',
-      'auth/weak-password':         'Password must be at least 6 characters.',
-      'auth/too-many-requests':     'Too many attempts. Please try again later.',
-      'auth/popup-closed-by-user':  'Sign-in popup was closed.',
-      'auth/network-request-failed':'Network error. Check your connection.',
-      'auth/invalid-credential':    'Incorrect email or password.',
+      'auth/user-not-found': 'No account found with this email.',
+      'auth/wrong-password': 'Incorrect password.',
+      'auth/invalid-email': 'Please enter a valid email.',
+      'auth/email-already-in-use': 'An account with this email already exists.',
+      'auth/weak-password': 'Password must be at least 6 characters.',
+      'auth/too-many-requests': 'Too many attempts. Please try again later.',
+      'auth/popup-closed-by-user': 'Sign-in popup was closed.',
+      'auth/network-request-failed': 'Network error. Check your connection.',
+      'auth/invalid-credential': 'Incorrect email or password.',
     };
     return m[code] || 'Something went wrong. Please try again.';
   }
@@ -891,10 +805,10 @@
   }
 
   function updateUserBadge(user) {
-    const badge  = document.getElementById('userBadge');
+    const badge = document.getElementById('userBadge');
     const avatar = document.getElementById('userAvatar');
     const nameEl = document.getElementById('userNameBadge');
-    const titleEl= document.getElementById('topbarTitle');
+    const titleEl = document.getElementById('topbarTitle');
     if (user) {
       badge.classList.add('visible'); titleEl.style.display = 'none';
       avatar.innerHTML = user.photoURL ? `<img src="${user.photoURL}" alt="avatar">` : (user.displayName || user.email || '?').slice(0,2).toUpperCase();
@@ -904,13 +818,11 @@
     }
   }
 
-  /* ── Local storage helpers ── */
   const getCart           = () => { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } };
   const saveCart          = c  => localStorage.setItem('jersify_cart', JSON.stringify(c));
   const getSavedAddresses = () => { try { return JSON.parse(localStorage.getItem('jersify_addresses') || '[]'); } catch { return []; } };
   const saveAddressLocal  = a  => { const addrs = getSavedAddresses(); addrs.unshift({ ...a, id: Date.now(), tag: 'Home' }); localStorage.setItem('jersify_addresses', JSON.stringify(addrs.slice(0,5))); };
 
-  /* ── Load coupons from Firebase ── */
   async function loadCoupons() {
     try {
       const snap = await get(child(ref(db), 'coupons'));
@@ -925,7 +837,6 @@
     } catch (_) {}
   }
 
-  /* ── Prefill user info ── */
   async function prefillUserInfo(user) {
     let name = user.displayName || '', email = user.email || '', phone = user.phoneNumber || '';
     try {
@@ -941,7 +852,6 @@
     setIfEmpty('custName', name); setIfEmpty('custEmail', email); setIfEmpty('custPhone', phone);
   }
 
-  /* ── Saved addresses ── */
   function renderSavedAddresses() {
     const addrs   = getSavedAddresses();
     const section = document.getElementById('savedAddressesSection');
@@ -979,12 +889,7 @@
   };
 
   window.selectSize = btn => { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
-  window.selPay = method => {
-    document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
-    document.getElementById(method === 'razorpay' ? 'pay_rzp' : 'pay_cod').parentElement.classList.add('active');
-  };
 
-  /* ── Geolocation ── */
   window.getLocation = () => {
     const btn = document.getElementById('locationBtn'), text = document.getElementById('locationText');
     if (!navigator.geolocation) { text.textContent = 'Geolocation not supported'; return; }
@@ -1008,7 +913,6 @@
     }, () => { text.textContent = 'Location denied. Enter manually.'; btn.classList.remove('loading'); }, { enableHighAccuracy: true, timeout: 10000 });
   };
 
-  /* ── Coupon ── */
   window.applyCoupon = () => {
     const code  = document.getElementById('couponInput').value.trim().toUpperCase();
     const msgEl = document.getElementById('couponMsg');
@@ -1030,7 +934,6 @@
     document.getElementById('finalTotal').textContent = `₹${(orderPrice - discountAmount).toLocaleString('en-IN')}`;
   }
 
-  /* ── Qty change ── */
   window.changeQty = (key, delta) => {
     const cart = getCart(), item = cart.find(i => i.key === key);
     if (!item) return;
@@ -1050,48 +953,12 @@
     document.getElementById('discountRow').style.display = 'none';
   }
 
-  /* ── Payment failed banner ── */
-  function showPaymentFailed(reason) {
-    const banner = document.getElementById('payFailedBanner');
-    document.getElementById('payFailedDesc').textContent = (reason || 'Payment could not be processed.') + ' Your items are still here — try again or switch to Cash on Delivery.';
-    banner.classList.add('visible');
-    banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setConfirmBtn(false);
-  }
-
-  window.retryPayment = () => { document.getElementById('payFailedBanner').classList.remove('visible'); document.getElementById('confirmBtn').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
-  window.switchToCOD  = () => { document.getElementById('payFailedBanner').classList.remove('visible'); selPay('cod'); document.getElementById('pay_cod').parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
-
   /* ══════════════════════════════════════════
-     RAZORPAY — open checkout modal
-  ══════════════════════════════════════════ */
-  function openRazorpay({ amount, name, email, phone, description }) {
-    return new Promise((resolve, reject) => {
-      const options = {
-        key:         RAZORPAY_KEY_ID,
-        amount:      amount * 100,        // paise
-        currency:    "INR",
-        name:        "JERSIFY",
-        description: description || "Jersey Purchase",
-        prefill:     { name: name || "", email: email || "", contact: phone || "" },
-        theme:       { color: "#c61f2f" },
-        modal:       { ondismiss: () => reject(new Error("Payment was cancelled.")) },
-        handler:     (response) => resolve(response),
-      };
-      const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', resp => reject(new Error(resp.error?.description || "Payment failed.")));
-      rzp.open();
-    });
-  }
-
-  /* ══════════════════════════════════════════
-     PROCESS ORDER
+     PROCESS ORDER — validate → redirect
   ══════════════════════════════════════════ */
   window.processOrder = async () => {
     if (orderPrice === 0) { alert('Your cart is empty.'); return; }
     if (!currentUser)     { openAuthModal('signin'); shakeField('confirmBtn'); return; }
-
-    document.getElementById('payFailedBanner').classList.remove('visible');
 
     /* ── Collect address ── */
     let name, phone, email, address, city, state, pincode, country;
@@ -1107,12 +974,15 @@
       state   = document.getElementById('custState').value.trim();
       pincode = document.getElementById('custPincode').value.trim();
       country = document.getElementById('custCountry').value.trim() || 'India';
-      if (!name)                       { shakeField('custName');    alert('Please enter your name.');             return; }
-      if (!phone || phone.length < 10) { shakeField('custPhone');   alert('Please enter a valid phone number.'); return; }
-      if (!address)                    { shakeField('custAddress'); alert('Please enter your address.');          return; }
-      if (!city)                       { shakeField('custCity');    alert('Please enter your city.');             return; }
-      if (!pincode || pincode.length < 4) { shakeField('custPincode'); alert('Please enter a valid pincode.'); return; }
-      if (document.getElementById('saveAddrCheck').checked) saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
+
+      if (!name)                          { shakeField('custName');    alert('Please enter your name.');             return; }
+      if (!phone || phone.length < 10)    { shakeField('custPhone');   alert('Please enter a valid phone number.'); return; }
+      if (!address)                       { shakeField('custAddress'); alert('Please enter your address.');          return; }
+      if (!city)                          { shakeField('custCity');    alert('Please enter your city.');             return; }
+      if (!pincode || pincode.length < 4) { shakeField('custPincode'); alert('Please enter a valid pincode.');       return; }
+
+      if (document.getElementById('saveAddrCheck').checked)
+        saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
     }
 
     const isRZP        = document.getElementById('pay_rzp').checked;
@@ -1120,76 +990,63 @@
     const selectedSize = document.querySelector('.size-btn.active')?.textContent || 'M';
     const orderId      = `JRS-${Date.now()}`;
 
-    const orderPayload = {
-      orderId, userId: currentUser.uid,
-      customerName: name, phone, email,
+    /* ── Build payload ── */
+    const payload = {
+      orderId,
+      userId:       currentUser.uid,
+      userEmail:    currentUser.email || '',
+      customerName: name,
+      phone, email,
       address, city, state, pincode, country,
-      items: orderItems, subtotal: orderPrice,
-      discount: discountAmount, total: finalPrice,
-      selectedSize, paymentMethod: isRZP ? 'razorpay' : 'cod',
-      status: 'processing',
+      items:        JSON.stringify(orderItems),
+      subtotal:     orderPrice,
+      discount:     discountAmount,
+      total:        finalPrice,
+      selectedSize,
+      paymentMethod: isRZP ? 'razorpay' : 'cod',
+      isCartMode:    isCartMode ? '1' : '0',
+      successRedirect: SUCCESS_REDIRECT,
+      /* Firebase config so payment page can write the order */
+      fbApiKey:    firebaseConfig.apiKey,
+      fbProjectId: firebaseConfig.projectId,
+      fbDbUrl:     firebaseConfig.databaseURL,
+      fbAppId:     firebaseConfig.appId,
     };
 
-    if (isRZP) {
-      /* ── Online Payment via Razorpay ── */
-      setConfirmBtn(true, 'Opening payment…');
-      try {
-        const rzpResponse = await openRazorpay({ amount: finalPrice, name, email, phone, description: orderItems.map(i => i.name).join(', ') });
-
-        /* Payment succeeded — now save the order */
-        setConfirmBtn(false);
-        showProcessing('Payment received! 🎉', 'Saving your order, please wait…');
-
-        try {
-          await saveOrderToFirebase({
-            ...orderPayload,
-            paymentId:        rzpResponse.razorpay_payment_id,
-            razorpayOrderId:  rzpResponse.razorpay_order_id  || null,
-            razorpaySignature:rzpResponse.razorpay_signature || null,
-            paymentMethod:    'razorpay',
-            status:           'processing',
-          });
-        } catch (dbErr) {
-          hideProcessing();
-          alert('Payment was successful but order save failed: ' + dbErr.message + '\nPlease contact support with your payment ID: ' + rzpResponse.razorpay_payment_id);
-          return;
-        }
-
-        /* Fire-and-forget notifications (won't block the flow) */
-        fireNotification('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Online Payment (Razorpay)', items: orderItems });
-        fireNotification('sendSMS',        { orderId, name, phone, total: finalPrice });
-        fireNotification('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Online Payment (Razorpay)', items: orderItems });
-
-        localStorage.removeItem('jersify_cart');
-        hideProcessing();
-        showSuccess(orderId, name, finalPrice, selectedSize, 'Online Payment');
-
-      } catch (err) {
-        /* Razorpay modal was dismissed or payment failed */
-        setConfirmBtn(false);
-        showPaymentFailed(err?.message || 'Payment could not be processed.');
-      }
-
-    } else {
-      /* ── Cash on Delivery ── */
+    if (!isRZP) {
+      /* ── COD: save directly here, no redirect needed ── */
       setConfirmBtn(true, 'Placing order…');
       showProcessing('Placing your order…', 'Saving your order details.');
       try {
-        await saveOrderToFirebase(orderPayload);
-
-        fireNotification('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems });
-        fireNotification('sendSMS',        { orderId, name, phone, total: finalPrice });
-        fireNotification('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems });
-
+        const { getDatabase: gDB, ref: rRef, set: rSet, push: rPush } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+        const ordersRef    = rRef(db, 'orders');
+        const newOrderRef  = rPush(ordersRef);
+        await rSet(newOrderRef, { ...payload, items: orderItems, status: 'processing', createdAt: new Date().toISOString() });
         localStorage.removeItem('jersify_cart');
         hideProcessing(); setConfirmBtn(false);
-        showSuccess(orderId, name, finalPrice, selectedSize, 'Cash on Delivery');
-
+        showSuccessScreen(orderId, name, finalPrice, selectedSize, 'Cash on Delivery');
       } catch (err) {
         hideProcessing(); setConfirmBtn(false);
         alert('Order could not be placed: ' + err.message);
       }
+      return;
     }
+
+    /* ── Online: encode payload and redirect ── */
+    setConfirmBtn(true, 'Redirecting…');
+    showProcessing('Redirecting to payment…', 'You\'ll be back in seconds after paying.');
+
+    /* Store a snapshot in sessionStorage as fallback */
+    try { sessionStorage.setItem('jersify_pending_order', JSON.stringify({ ...payload, items: orderItems })); } catch (_) {}
+
+    /* Build redirect URL */
+    const params = new URLSearchParams();
+    Object.entries(payload).forEach(([k, v]) => params.set(k, v));
+
+    /* Short delay so the overlay is visible, then redirect */
+    setTimeout(() => {
+      window.location.href = `${PAYMENT_PAGE_URL}?${params.toString()}`;
+    }, 600);
   };
 
   /* ── DOMContentLoaded ── */
@@ -1197,7 +1054,22 @@
     loadCoupons();
     renderSavedAddresses();
 
+    /* ── Check if returning from a successful payment ── */
     const params    = new URLSearchParams(window.location.search);
+    const status    = params.get('payment_status');
+    const retOid    = params.get('orderId');
+    const retName   = params.get('customerName');
+    const retTotal  = params.get('total');
+    const retSize   = params.get('selectedSize');
+    const retMethod = params.get('paymentMethod');
+
+    if (status === 'success' && retOid) {
+      document.getElementById('loading').style.display         = 'none';
+      document.getElementById('checkoutContent').style.display = 'block';
+      showSuccessScreen(retOid, retName || 'Customer', Number(retTotal) || 0, retSize || 'M', retMethod === 'razorpay' ? 'Online Payment' : 'Cash on Delivery');
+      return;
+    }
+
     const pid       = params.get('id');
     const paramSize = params.get('size');
     const cart      = getCart();
@@ -1256,7 +1128,6 @@
             </div>
           </div>`;
       }).join('');
-
     } else {
       orderBody.innerHTML = `
         <div class="empty-cart-hint">
@@ -1272,45 +1143,42 @@
     document.getElementById('checkoutContent').style.display   = 'block';
   });
 
-  /* ══════════════════════════════════════════
-     SUCCESS SCREEN — then redirect to homepage
-  ══════════════════════════════════════════ */
-  function showSuccess(orderId, name, total, size, payMethod) {
+  /* ── Success screen ── */
+  function showSuccessScreen(orderId, name, total, size, payMethod) {
     let countdown = 5;
     document.querySelector('.content').innerHTML = `
-      <div class="success-screen">
-        <span class="success-emoji">🎉</span>
-        <div class="success-title">Order Confirmed!</div>
-        <div class="success-order-id">Order ID: ${orderId}</div>
-        <div class="success-details">
-          <div class="success-detail-row"><span>Customer</span><span>${name}</span></div>
-          <div class="success-detail-row"><span>Amount Paid</span><span>₹${Number(total).toLocaleString('en-IN')}</span></div>
-          <div class="success-detail-row"><span>Payment</span><span>${payMethod}</span></div>
-          ${!isCartMode ? `<div class="success-detail-row"><span>Size</span><span>${size}</span></div>` : ''}
+      <div style="text-align:center;padding:60px 16px 40px;">
+        <span style="font-size:64px;display:block;margin-bottom:16px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both">🎉</span>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--success);letter-spacing:2px;margin-bottom:6px;">Order Confirmed!</div>
+        <div style="font-size:12px;font-weight:700;color:var(--muted);background:#f5f5f5;display:inline-block;padding:5px 14px;border-radius:99px;margin-bottom:16px;">Order ID: ${orderId}</div>
+        <div style="background:#f9f9f9;border:1px solid var(--line);border-radius:18px;padding:16px;margin:0 auto 24px;max-width:320px;text-align:left;">
+          <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Customer</span><span style="font-weight:700;">${name}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Amount</span><span style="font-weight:700;">₹${Number(total).toLocaleString('en-IN')}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Payment</span><span style="font-weight:700;">${payMethod}</span></div>
         </div>
-        <div class="success-msg">Thank you for shopping with Jersify! Your kit is being packed and will be on its way soon. 🚚</div>
-        <button class="success-btn" onclick="window.location.href='${SUCCESS_REDIRECT}'">Back to Home →</button>
-        <div class="success-redirect">Redirecting in <span id="countdownNum">${countdown}</span>s…</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;max-width:280px;margin:0 auto 24px;">Thank you for shopping with Jersify! Your kit is being packed. 🚚</div>
+        <button onclick="window.location.href='index.html'" style="border:none;border-radius:14px;padding:14px 32px;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 10px 28px rgba(198,31,47,.28);">Back to Home →</button>
+        <div style="font-size:12px;color:var(--muted);margin-top:16px;">Redirecting in <span id="countdownNum">${countdown}</span>s…</div>
       </div>`;
-
-    /* Auto-redirect countdown */
     const interval = setInterval(() => {
       countdown--;
       const el = document.getElementById('countdownNum');
       if (el) el.textContent = countdown;
-      if (countdown <= 0) {
-        clearInterval(interval);
-        window.location.href = SUCCESS_REDIRECT;
-      }
+      if (countdown <= 0) { clearInterval(interval); window.location.href = 'index.html'; }
     }, 1000);
   }
 
-  /* ── Shake animation helper ── */
   function shakeField(id) {
     const el = document.getElementById(id); if (!el) return;
     el.style.borderColor = 'var(--accent)'; el.style.animation = 'shake .4s ease';
     setTimeout(() => { el.style.animation = ''; el.style.borderColor = ''; }, 500);
   }
+
+  window.addEventListener('load', () => {
+    const style = document.createElement('style');
+    style.textContent = `@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }`;
+    document.head.appendChild(style);
+  });
 </script>
 </body>
 </html>
