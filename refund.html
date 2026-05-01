@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refund Policy — Jersify</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --dark: #111111;
+    --card: #161616;
+    --border: #222222;
+    --accent: #e8ff3c;
+    --accent-dim: rgba(232,255,60,0.08);
+    --white: #f5f5f5;
+    --muted: #888888;
+    --green: #3cffa0;
+    --green-dim: rgba(60,255,160,0.07);
+    --red: #ff5050;
+    --red-dim: rgba(255,80,80,0.07);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300; line-height: 1.7;
+    min-height: 100vh;
+  }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 40px;
+  }
+  .logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 1.6rem; letter-spacing: 0.08em;
+    color: var(--white); text-decoration: none;
+  }
+  .logo span { color: var(--accent); }
+  nav a.back {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600; font-size: 0.85rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+    text-decoration: none; transition: color 0.2s;
+  }
+  nav a.back:hover { color: var(--accent); }
+
+  .hero-band {
+    background: linear-gradient(135deg, #0f1400 0%, #0a0a0a 60%);
+    border-bottom: 1px solid var(--border);
+    padding: 64px 40px 48px;
+    position: relative; overflow: hidden;
+  }
+  .hero-band::before {
+    content: 'REFUND';
+    position: absolute; right: -60px; top: -10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 12rem; line-height: 1;
+    color: rgba(232,255,60,0.025); pointer-events: none;
+  }
+  .tag {
+    display: inline-block;
+    background: var(--accent-dim); border: 1px solid rgba(232,255,60,0.2);
+    color: var(--accent); font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 0.7rem; letter-spacing: 0.2em;
+    text-transform: uppercase; padding: 4px 12px; border-radius: 2px; margin-bottom: 16px;
+  }
+  .hero-band h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: clamp(2.8rem, 6vw, 5rem);
+    line-height: 0.95; text-transform: uppercase; letter-spacing: 0.02em;
+    margin-bottom: 16px;
+  }
+  .hero-band p { color: var(--muted); font-size: 0.9rem; max-width: 520px; }
+  .updated { margin-top: 20px; font-size: 0.78rem; color: var(--muted); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.08em; }
+
+  /* QUICK SUMMARY CARDS */
+  .summary-strip {
+    background: var(--dark); border-bottom: 1px solid var(--border);
+    padding: 32px 40px;
+  }
+  .summary-strip h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 0.7rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
+  }
+  .cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;
+    max-width: 900px; margin: 0 auto;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 4px; padding: 20px;
+  }
+  .card .icon {
+    font-size: 1.6rem; margin-bottom: 8px;
+  }
+  .card .label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 0.7rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+  }
+  .card .value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800; font-size: 1.3rem;
+    color: var(--accent);
+  }
+  .card p { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+  .container {
+    max-width: 900px; margin: 0 auto;
+    padding: 60px 40px;
+    display: grid; grid-template-columns: 220px 1fr; gap: 60px;
+    align-items: start;
+  }
+  .toc {
+    position: sticky; top: 80px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 4px; padding: 24px;
+  }
+  .toc h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+  }
+  .toc a {
+    display: block; font-size: 0.82rem; color: var(--muted);
+    text-decoration: none; padding: 5px 0;
+    border-bottom: 1px solid var(--border); transition: color 0.2s;
+  }
+  .toc a:last-child { border-bottom: none; }
+  .toc a:hover { color: var(--white); }
+
+  .content section { margin-bottom: 52px; }
+  .content h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800; font-size: 1.6rem; letter-spacing: 0.04em;
+    text-transform: uppercase; margin-bottom: 16px;
+    padding-bottom: 10px; border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+  .content p { color: #ccc; font-size: 0.92rem; margin-bottom: 14px; }
+  .content ul { list-style: none; padding: 0; }
+  .content ul li {
+    color: #ccc; font-size: 0.92rem;
+    padding: 6px 0 6px 20px; position: relative;
+  }
+  .content ul li::before {
+    content: '→'; position: absolute; left: 0;
+    color: var(--accent); font-weight: 700;
+  }
+
+  /* YES / NO LISTS */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+  .yes-box, .no-box {
+    border-radius: 4px; padding: 20px;
+  }
+  .yes-box { background: var(--green-dim); border: 1px solid rgba(60,255,160,0.2); }
+  .no-box { background: var(--red-dim); border: 1px solid rgba(255,80,80,0.2); }
+  .yes-box h4 { color: var(--green); font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.9rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+  .no-box h4 { color: var(--red); font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 0.9rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+  .yes-box ul li::before { content: '✓'; color: var(--green); }
+  .no-box ul li::before { content: '✗'; color: var(--red); }
+  .yes-box ul li, .no-box ul li { font-size: 0.85rem; }
+
+  /* STEPS */
+  .steps { margin: 24px 0; }
+  .step {
+    display: flex; gap: 16px; margin-bottom: 16px;
+    align-items: flex-start;
+  }
+  .step-num {
+    flex-shrink: 0; width: 32px; height: 32px;
+    background: var(--accent); color: var(--black);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 2px;
+  }
+  .step-body h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 1rem; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--white); margin-bottom: 2px;
+  }
+  .step-body p { font-size: 0.86rem; color: var(--muted); margin: 0; }
+
+  .razorpay-note {
+    background: #0e0e1a; border: 1px solid #2a2a6a;
+    border-radius: 4px; padding: 16px 20px;
+    margin: 20px 0; font-size: 0.85rem; color: #aaa;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .razorpay-note .rp-icon {
+    flex-shrink: 0; background: #2563EB; color: white;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 0.65rem; letter-spacing: 0.05em;
+    padding: 3px 7px; border-radius: 2px; margin-top: 2px;
+  }
+  .highlight-box {
+    background: var(--accent-dim); border-left: 3px solid var(--accent);
+    border-radius: 2px; padding: 16px 20px; margin: 20px 0;
+    font-size: 0.88rem; color: #ddd;
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  footer p { font-size: 0.8rem; color: var(--muted); }
+  .footer-links a {
+    font-size: 0.8rem; color: var(--muted);
+    text-decoration: none; margin-left: 20px; transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  @media (max-width: 700px) {
+    nav { padding: 14px 20px; }
+    .hero-band { padding: 48px 20px 36px; }
+    .summary-strip { padding: 24px 20px; }
+    .container { grid-template-columns: 1fr; padding: 40px 20px; gap: 40px; }
+    .toc { position: static; }
+    .two-col { grid-template-columns: 1fr; }
+    footer { padding: 24px 20px; flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">JERS<span>I</span>FY</a>
+  <a href="index.html" class="back">← Back to Store</a>
+</nav>
+
+<div class="hero-band">
+  <div class="tag">Legal</div>
+  <h1>Refund &amp;<br>Return Policy</h1>
+  <p>We want you to love your Jersify order. If something's not right, here's exactly how we'll make it right.</p>
+  <div class="updated">Last updated: May 1, 2025 &nbsp;·&nbsp; Effective immediately</div>
+</div>
+
+<!-- QUICK SUMMARY -->
+<div class="summary-strip">
+  <h2>Quick Overview</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="icon">📦</div>
+      <div class="label">Return Window</div>
+      <div class="value">7 Days</div>
+      <p>from delivery date</p>
+    </div>
+    <div class="card">
+      <div class="icon">💳</div>
+      <div class="label">Refund Timeline</div>
+      <div class="value">7–10 Days</div>
+      <p>to original payment method</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔄</div>
+      <div class="label">Exchange</div>
+      <div class="value">Available</div>
+      <p>for size / wrong item</p>
+    </div>
+    <div class="card">
+      <div class="icon">🛡️</div>
+      <div class="label">Condition</div>
+      <div class="value">Unused</div>
+      <p>original packaging required</p>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <aside class="toc">
+    <h3>Contents</h3>
+    <a href="#eligible">1. What's Eligible</a>
+    <a href="#not-eligible">2. Non-Eligible Items</a>
+    <a href="#how-to">3. How to Return</a>
+    <a href="#refund-process">4. Refund Process</a>
+    <a href="#exchange">5. Exchanges</a>
+    <a href="#damaged">6. Damaged/Wrong Items</a>
+    <a href="#cancelled">7. Order Cancellation</a>
+    <a href="#payment-fail">8. Payment Failures</a>
+    <a href="#contact">9. Contact Us</a>
+  </aside>
+
+  <main class="content">
+
+    <section id="eligible">
+      <h2>1. Eligible Returns</h2>
+      <p>We accept returns within <strong>7 days of delivery</strong> for the following reasons:</p>
+      <div class="two-col">
+        <div class="yes-box">
+          <h4>✓ Accepted</h4>
+          <ul>
+            <li>Defective or damaged item</li>
+            <li>Wrong item delivered</li>
+            <li>Wrong size delivered (vs ordered)</li>
+            <li>Significant colour mismatch</li>
+            <li>Missing parts / accessories</li>
+          </ul>
+        </div>
+        <div class="no-box">
+          <h4>✗ Not Accepted</h4>
+          <ul>
+            <li>Change of mind</li>
+            <li>Item already washed/used</li>
+            <li>Tags removed</li>
+            <li>Request after 7 days</li>
+            <li>Sale / discounted items</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="not-eligible">
+      <h2>2. Non-Returnable Items</h2>
+      <p>The following items cannot be returned or exchanged:</p>
+      <ul>
+        <li>Items purchased during flash sales, clearance, or with promo codes exceeding 20% discount.</li>
+        <li>Customised or personalised jerseys (printed name/number).</li>
+        <li>Items returned without original packaging, tags, or labels.</li>
+        <li>Items that have been washed, worn, or altered in any way.</li>
+        <li>Accessories and add-on items (socks, badges, etc.) unless defective.</li>
+      </ul>
+    </section>
+
+    <section id="how-to">
+      <h2>3. How to Initiate a Return</h2>
+      <p>Follow these steps to raise a return request:</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Contact Us</h4>
+            <p>Email support@jersify.online within 7 days of delivery with your Order ID and reason for return.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Share Evidence</h4>
+            <p>Attach clear photos/videos of the item showing the issue (defect, wrong item, etc.).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Get Approval</h4>
+            <p>Our team will review and respond within 48 business hours with approval or further instructions.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Ship the Item</h4>
+            <p>Pack the item securely in original packaging and ship it to the address provided by our team. Keep the tracking number.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Refund / Exchange</h4>
+            <p>Once we receive and inspect the return, your refund or exchange will be processed within 7–10 business days.</p>
+          </div>
+        </div>
+      </div>
+      <div class="highlight-box">
+        <strong>Important:</strong> Returns sent without prior approval from our team will not be accepted and may not be returned to you.
+      </div>
+    </section>
+
+    <section id="refund-process">
+      <h2>4. Refund Process</h2>
+      <p>All refunds are issued to the <strong>original payment method</strong> used at checkout, processed via Razorpay.</p>
+
+      <div class="razorpay-note">
+        <span class="rp-icon">RazorPay</span>
+        <div>
+          <strong style="color:#fff;">Refunds via Razorpay</strong><br>
+          Refunds are initiated by Jersify and processed by Razorpay to your original payment instrument. Credit/debit card refunds: 5–7 business days. UPI refunds: 1–3 business days. Net banking: 3–7 business days. Wallet refunds: instant to 24 hours. Timelines depend on your bank or payment provider.
+        </div>
+      </div>
+
+      <ul>
+        <li>Refund will be for the item value only. Shipping charges are non-refundable unless the return is due to our error.</li>
+        <li>You will receive an email confirmation when your refund is initiated.</li>
+        <li>If your refund has not appeared after 10 business days, please contact your bank before reaching out to us.</li>
+      </ul>
+    </section>
+
+    <section id="exchange">
+      <h2>5. Size Exchanges</h2>
+      <p>We offer free size exchanges for items delivered in the wrong size compared to what was ordered. For other size-related requests (customer changed their mind), a reorder will be required.</p>
+      <ul>
+        <li>Exchange is subject to availability of the requested size.</li>
+        <li>Only one exchange per order is permitted.</li>
+        <li>Exchange shipping costs (return leg) are borne by the customer unless it was our error.</li>
+      </ul>
+    </section>
+
+    <section id="damaged">
+      <h2>6. Damaged or Wrong Items</h2>
+      <p>If you receive a damaged, defective, or incorrect item, we sincerely apologise. Please:</p>
+      <ul>
+        <li>Do not use or wash the item.</li>
+        <li>Email us at support@jersify.online within 48 hours of delivery.</li>
+        <li>Include your Order ID, photos/video of the item and packaging.</li>
+      </ul>
+      <p>In such cases, Jersify will cover all return shipping costs and offer a full refund or replacement at no additional charge.</p>
+    </section>
+
+    <section id="cancelled">
+      <h2>7. Order Cancellation</h2>
+      <ul>
+        <li>Orders can be cancelled within <strong>12 hours of placement</strong>, provided they have not yet been dispatched.</li>
+        <li>To cancel, email support@jersify.online immediately with your Order ID.</li>
+        <li>If already dispatched, the cancellation request cannot be accepted — please initiate a return after delivery.</li>
+        <li>Approved cancellations will be fully refunded to the original payment method via Razorpay within 7–10 business days.</li>
+      </ul>
+    </section>
+
+    <section id="payment-fail">
+      <h2>8. Payment Failures &amp; Double Charges</h2>
+      <div class="razorpay-note">
+        <span class="rp-icon">RazorPay</span>
+        <div>
+          <strong style="color:#fff;">Payment Failure Policy</strong><br>
+          If your payment fails at checkout, no amount will be deducted. If your bank debits the amount due to a gateway error, the funds will be automatically reversed to your account within 5–7 business days by Razorpay. If you see a deduction without a confirmed order, contact us with your bank transaction reference.
+        </div>
+      </div>
+      <ul>
+        <li>Do not attempt to repay if you see a deduction — check with your bank first.</li>
+        <li>Jersify is not liable for delays caused by the banking system in reversing failed transactions.</li>
+      </ul>
+    </section>
+
+    <section id="contact">
+      <h2>9. Contact Us</h2>
+      <p>For return requests, refund status, or any order issues:</p>
+      <ul>
+        <li>Email: support@jersify.online</li>
+        <li>Response time: Within 24–48 business hours</li>
+        <li>Website: <a href="https://www.jersify.online" style="color:var(--accent);">www.jersify.online</a></li>
+      </ul>
+      <div class="highlight-box">
+        Always quote your <strong>Order ID</strong> in all correspondence to help us resolve your issue faster.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <p>© 2025 Jersify. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="terms.html">Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="refund.html">Refund Policy</a>
+  </div>
+</footer>
+
+</body>
+</html>
