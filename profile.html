@@ -394,6 +394,39 @@
     }
     .danger-btn:hover { background: rgba(198,31,47,.1); }
 
+    /* ── FOOTER LINKS ── */
+    .page-footer {
+      padding: 16px 16px 24px;
+      text-align: center;
+    }
+    .footer-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .footer-link {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .2s;
+      padding: 2px 0;
+    }
+    .footer-link:hover { color: var(--accent); }
+    .footer-dot {
+      font-size: 10px;
+      color: #d0d0d0;
+      user-select: none;
+    }
+    .footer-copy {
+      font-size: 10px;
+      color: #c0c0c0;
+      letter-spacing: .3px;
+    }
+
     /* ── MODALS ── */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 100;
@@ -798,6 +831,18 @@
       </div>
 
     </div><!-- /profileContent -->
+
+    <!-- PAGE FOOTER -->
+    <footer class="page-footer">
+      <div class="footer-links">
+        <a href="term.html" class="footer-link">Terms of Service</a>
+        <span class="footer-dot">•</span>
+        <a href="privacy.html" class="footer-link">Privacy Policy</a>
+        <span class="footer-dot">•</span>
+        <a href="refund.html" class="footer-link">Refund Policy</a>
+      </div>
+      <div class="footer-copy">© 2025 Jersify. All rights reserved.</div>
+    </footer>
 
   </div><!-- /page -->
 
