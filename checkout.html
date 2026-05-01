@@ -38,7 +38,6 @@
       padding-bottom: 120px;
     }
 
-    /* ── Topbar ── */
     .topbar {
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
       padding: 16px 16px 10px;
@@ -63,7 +62,6 @@
 
     .content { padding: 12px 16px; }
 
-    /* ── Cards ── */
     .card {
       background: #fff; border-radius: 22px; border: 1px solid var(--line);
       padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow);
@@ -81,13 +79,11 @@
     }
     .card-header svg { width: 14px; height: 14px; opacity: .8 }
 
-    /* ── Loading ── */
     #loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 14px; }
     .spinner { width: 36px; height: 36px; border: 3px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg) } }
     #loading p { font-size: 13px; color: var(--muted); font-weight: 600; }
 
-    /* ── Cart Items ── */
     .cart-item { display: flex; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
     .cart-item:last-child { border-bottom: none; padding-bottom: 0; }
     .ci-img {
@@ -96,7 +92,6 @@
       display: grid; place-items: center; flex-shrink: 0; overflow: hidden;
     }
     .ci-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
-    .ci-img-placeholder { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: rgba(255,255,255,.55); }
     .ci-info { flex: 1; }
     .ci-name { font-size: 14px; font-weight: 800; margin-bottom: 3px; line-height: 1.3; }
     .ci-meta { font-size: 11px; color: var(--muted); margin-bottom: 7px; }
@@ -110,7 +105,6 @@
     .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
     .qty-display { font-size: 14px; font-weight: 800; min-width: 20px; text-align: center; }
 
-    /* ── Product (single buy) ── */
     .product-row { display: flex; gap: 14px; align-items: center; }
     .product-img {
       width: 80px; height: 100px; border-radius: 16px;
@@ -118,13 +112,11 @@
       display: grid; place-items: center; flex-shrink: 0; overflow: hidden;
     }
     .product-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
-    .product-img-placeholder { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: rgba(255,255,255,.55); }
     .product-info { flex: 1; }
     .product-name { font-size: 16px; font-weight: 900; margin-bottom: 4px; }
     .product-team { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
     .product-price { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--accent); letter-spacing: 1px; }
 
-    /* ── Empty Cart ── */
     .empty-cart-hint { text-align: center; padding: 20px 0 8px; }
     .empty-cart-hint svg { width: 44px; height: 44px; opacity: .18; margin-bottom: 10px; }
     .empty-cart-hint p { font-size: 13px; color: var(--muted); font-weight: 500; line-height: 1.6; }
@@ -135,7 +127,6 @@
     }
     .browse-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-    /* ── Size Grid ── */
     .size-grid { display: flex; gap: 8px; flex-wrap: wrap; }
     .size-btn {
       width: 46px; height: 40px; border-radius: 10px; border: 1.5px solid var(--line);
@@ -145,7 +136,6 @@
     .size-btn:hover { border-color: var(--accent); color: var(--accent); }
     .size-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(198,31,47,.25); }
 
-    /* ── Addresses ── */
     .saved-addr {
       border: 1.5px solid var(--line); border-radius: 14px; padding: 12px 14px;
       margin-bottom: 10px; cursor: pointer; transition: all .22s;
@@ -169,7 +159,6 @@
     .new-addr-toggle:hover { border-color: var(--accent); color: var(--accent); }
     .new-addr-toggle svg { width: 15px; height: 15px; }
 
-    /* ── Address Form ── */
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 10px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1.2px; }
     .form-input {
@@ -196,7 +185,6 @@
     .save-addr-checkbox { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
     .save-addr-row label { font-size: 12px; color: var(--muted); cursor: pointer; }
 
-    /* ── Coupon ── */
     .coupon-row { display: flex; gap: 8px; }
     .coupon-input {
       flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 11px 13px;
@@ -216,7 +204,6 @@
     .coupon-msg.success { color: var(--success); display: block; }
     .coupon-msg.error { color: var(--accent); display: block; }
 
-    /* ── Payment Options ── */
     .pay-opt {
       display: flex; align-items: center; gap: 13px;
       border: 1.5px solid var(--line); border-radius: 14px; padding: 13px 15px;
@@ -230,7 +217,6 @@
     .pay-opt-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
     .pay-opt-icon { width: 38px; height: 38px; border-radius: 10px; background: #f4f4f4; display: grid; place-items: center; font-size: 18px; }
 
-    /* ── Payment Failed Banner ── */
     .pay-failed-banner {
       display: none;
       background: rgba(198,31,47,.05);
@@ -258,7 +244,6 @@
     }
     .pay-failed-cod:hover { border-color: var(--text); }
 
-    /* ── Order Summary ── */
     .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 13px; font-weight: 500; color: var(--muted); }
     .summary-row span:last-child { color: var(--text); font-weight: 700; }
     .discount-row span { color: var(--success) !important; }
@@ -267,7 +252,6 @@
     .summary-total-label { font-size: 16px; font-weight: 900; }
     .summary-total-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--accent); letter-spacing: 1px; }
 
-    /* ── Confirm Button ── */
     .confirm-btn {
       width: 100%; border: none; border-radius: 14px; padding: 16px;
       font-size: 14px; font-weight: 800; letter-spacing: .5px; color: #fff; cursor: pointer;
@@ -308,7 +292,6 @@
     }
     .success-btn:hover { transform: translateY(-2px); }
 
-    /* ── Footer ── */
     .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0; }
     .footer h4 { font-size: 18px; margin-bottom: 8px; font-weight: 900; }
     .footer p { font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: 12px; }
@@ -316,7 +299,6 @@
     .footer-links a { color: rgba(255,255,255,.9); }
     .copy { font-size: 11px; color: rgba(255,255,255,.55); border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; }
 
-    /* ── Bottom Nav ── */
     .bottom-nav {
       position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px;
       width: min(100%, calc(var(--maxw) - 16px));
@@ -329,7 +311,6 @@
     .nav-item.active { color: var(--accent); font-weight: 800; }
     .nav-item:hover:not(.active) { color: #111; }
 
-    /* ── User Badge ── */
     .user-badge {
       display: none; align-items: center; gap: 6px;
       background: rgba(198,31,47,.08); border: 1px solid rgba(198,31,47,.18);
@@ -411,7 +392,6 @@
     .auth-gradient-bar { height: 3px; background: linear-gradient(90deg, var(--accent), #ff6b35, var(--gold), var(--accent)); background-size: 200% 100%; animation: gradientShift 3s linear infinite; }
     @keyframes gradientShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 
-    /* ── Auth Banners ── */
     #authSignedInBanner { display: none; align-items: center; gap: 12px; background: rgba(30,140,74,.06); border: 1.5px solid rgba(30,140,74,.2); border-radius: 16px; padding: 12px 16px; margin-bottom: 14px; animation: fadeInUp .3s ease both; }
     #authSignedInBanner.show { display: flex; }
     .signed-in-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
@@ -454,7 +434,6 @@
     .processing-sub { font-size: 12px; color: var(--muted); line-height: 1.6; }
   </style>
 
-  <!-- ══ Razorpay Checkout JS SDK ══ -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
@@ -482,7 +461,6 @@
   <div id="checkoutContent" style="display:none">
     <div class="content">
 
-      <!-- Auth banners -->
       <div id="authSignedInBanner">
         <span class="signed-in-icon">✅</span>
         <div class="signed-in-info">
@@ -506,20 +484,18 @@
         </div>
       </div>
 
-      <!-- Payment failed banner -->
       <div class="pay-failed-banner" id="payFailedBanner">
         <div class="pay-failed-header">
           <span class="pay-failed-icon">⚠️</span>
           <span class="pay-failed-title">Payment Failed</span>
         </div>
-        <div class="pay-failed-desc" id="payFailedDesc">Your payment could not be processed. Try again or switch to Cash on Delivery.</div>
+        <div class="pay-failed-desc" id="payFailedDesc">Your payment could not be processed.</div>
         <div class="pay-failed-actions">
           <button class="pay-failed-retry" onclick="retryPayment()">Try Again →</button>
           <button class="pay-failed-cod" onclick="switchToCOD()">Switch to COD</button>
         </div>
       </div>
 
-      <!-- Order Items -->
       <div class="card" id="orderItemsCard">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
@@ -528,7 +504,6 @@
         <div id="orderItemsBody"></div>
       </div>
 
-      <!-- Size Selector -->
       <div class="card" id="sizeCard" style="display:none;">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
@@ -537,7 +512,6 @@
         <div class="size-grid" id="sizeGrid"></div>
       </div>
 
-      <!-- Shipping Address -->
       <div class="card">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -577,7 +551,6 @@
         </div>
       </div>
 
-      <!-- Coupon -->
       <div class="card">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5" rx="1"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
@@ -590,13 +563,11 @@
         <div class="coupon-msg" id="couponMsg"></div>
       </div>
 
-      <!-- Payment Method -->
       <div class="card">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
           Payment Method
         </div>
-        <!-- ══ Razorpay option replaces Cashfree ══ -->
         <label class="pay-opt active" onclick="selPay('razorpay')">
           <input type="radio" name="paymethod" id="pay_rzp" checked value="razorpay">
           <div class="pay-opt-content">
@@ -615,7 +586,6 @@
         </label>
       </div>
 
-      <!-- Order Summary -->
       <div class="card">
         <div class="card-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -654,7 +624,6 @@
   </div>
 </div>
 
-<!-- Bottom Nav -->
 <nav class="bottom-nav">
   <a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg><div>Home</div></a>
   <a href="shop.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16"/><path d="M5 10l1-5h12l1 5"/><path d="M4 10v8h16v-8"/><path d="M9 18v-4h6v4"/></svg><div>Shop</div></a>
@@ -662,7 +631,6 @@
   <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div>Profile</div></a>
 </nav>
 
-<!-- Processing Overlay -->
 <div id="processingOverlay">
   <div class="processing-box">
     <div class="processing-spinner"></div>
@@ -671,7 +639,6 @@
   </div>
 </div>
 
-<!-- Auth Modal -->
 <div id="authBackdrop" onclick="closeAuthModal()"></div>
 <div id="authModal" role="dialog" aria-modal="true">
   <div class="auth-gradient-bar"></div>
@@ -745,19 +712,17 @@
 </div>
 
 <script type="module">
-  import { initializeApp }                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { initializeApp }      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import {
     getAuth, onAuthStateChanged, signInWithEmailAndPassword,
     createUserWithEmailAndPassword, sendPasswordResetEmail,
     GoogleAuthProvider, signInWithPopup, signOut, updateProfile
-  }                                           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  }                             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import {
-    getDatabase, ref, get, child, set
-  }                                           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    getDatabase, ref, get, set, child, push
+  }                             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  /* ─────────────────────────────────────────────
-     FIREBASE CONFIG
-  ───────────────────────────────────────────── */
+  /* ── Firebase Config ── */
   const firebaseConfig = {
     apiKey:            "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
     authDomain:        "jersify-f9b5e.firebaseapp.com",
@@ -768,38 +733,15 @@
     databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
   };
 
-  /* ══════════════════════════════════════════════
-     RAZORPAY CONFIG
-     Live key embedded directly — no backend needed
-     for opening the checkout modal.
-     Order verification/save still goes through your
-     existing Firebase Functions endpoint below.
-  ══════════════════════════════════════════════ */
+  /* ── Razorpay Key ── */
   const RAZORPAY_KEY_ID = "rzp_live_omDNDSL8gmUBCZ";
 
-  /**
-   * Firebase Functions base URL — keep for saveOrder,
-   * sendOrderEmail, sendSMS, sendWhatsApp calls.
-   * Update after: firebase deploy --only functions
-   */
-  const FUNCTIONS_BASE = "https://createcashfreeorder-cb3aepnlna-uc.a.run.app";
+  /* ── Redirect target after success ── */
+  const SUCCESS_REDIRECT = "https://waveridrentals.vercel.app/index.html";
 
-  /* ─── Convenience POST helper ─── */
-  async function callFn(name, body) {
-    const r = await fetch(`${FUNCTIONS_BASE}/${name}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await r.json();
-    if (!r.ok || !data.ok) throw new Error(data.error || `${name} failed`);
-    return data;
-  }
-
-  const app       = initializeApp(firebaseConfig);
-  const auth      = getAuth(app);
-  const db        = getDatabase(app);
-  const dbRef     = ref(db);
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getDatabase(app);
   const gProvider = new GoogleAuthProvider();
 
   /* ── State ── */
@@ -813,9 +755,35 @@
   let couponsMap        = {};
   let currentUser       = null;
 
-  /* ─────────────────────────────────────────────
-     PROCESSING OVERLAY HELPERS
-  ───────────────────────────────────────────── */
+  /* ══════════════════════════════════════════
+     SAVE ORDER DIRECTLY TO FIREBASE RTDB
+     (replaces the broken callFn approach)
+  ══════════════════════════════════════════ */
+  async function saveOrderToFirebase(orderData) {
+    const ordersRef = ref(db, 'orders');
+    const newOrderRef = push(ordersRef);          // auto-generates a unique key
+    await set(newOrderRef, {
+      ...orderData,
+      createdAt: new Date().toISOString(),
+    });
+    return newOrderRef.key;                        // return the Firebase key
+  }
+
+  /* ══════════════════════════════════════════
+     OPTIONAL: fire-and-forget notification
+     via your existing Cloud Function URL.
+     If it fails, the order is already saved.
+  ══════════════════════════════════════════ */
+  function fireNotification(path, body) {
+    const FUNCTIONS_BASE = "https://createcashfreeorder-cb3aepnlna-uc.a.run.app";
+    fetch(`${FUNCTIONS_BASE}/${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }).catch(() => {}); // silently ignore failures
+  }
+
+  /* ── Processing overlay ── */
   function showProcessing(title = 'Processing…', sub = 'Please wait, do not close this page.') {
     document.getElementById('processingTitle').textContent = title;
     document.getElementById('processingSub').textContent   = sub;
@@ -825,31 +793,26 @@
     document.getElementById('processingOverlay').classList.remove('show');
   }
 
-  /* ─────────────────────────────────────────────
-     CONFIRM BUTTON STATE
-  ───────────────────────────────────────────── */
+  /* ── Confirm button state ── */
   function setConfirmBtn(loading, text = 'Confirm Order →') {
-    const btn   = document.getElementById('confirmBtn');
-    const txtEl = document.getElementById('confirmBtnText');
+    const btn = document.getElementById('confirmBtn');
     btn.disabled = loading;
     btn.classList.toggle('loading', loading);
-    txtEl.textContent = text;
+    document.getElementById('confirmBtnText').textContent = text;
   }
 
-  /* ════════════════════════════════════
-     AUTH HELPERS
-  ════════════════════════════════════ */
-  window.openAuthModal   = (tab = 'signin') => { switchAuthTab(tab); clearAuthMessages(); document.getElementById('authModal').classList.add('show'); document.getElementById('authBackdrop').classList.add('show'); document.body.style.overflow = 'hidden'; };
-  window.closeAuthModal  = () => { document.getElementById('authModal').classList.remove('show'); document.getElementById('authBackdrop').classList.remove('show'); document.body.style.overflow = ''; };
-  window.switchAuthTab   = (tab) => { const s = tab === 'signin'; document.getElementById('tabSignin').classList.toggle('active', s); document.getElementById('tabSignup').classList.toggle('active', !s); document.getElementById('signinPanel').style.display = s ? 'block' : 'none'; document.getElementById('signupPanel').style.display = !s ? 'block' : 'none'; document.getElementById('resetPanel').style.display = 'none'; clearAuthMessages(); };
-  window.showResetPanel  = () => { document.getElementById('signinPanel').style.display = 'none'; document.getElementById('resetPanel').style.display = 'block'; clearAuthMessages(); };
-  window.hideResetPanel  = () => { document.getElementById('resetPanel').style.display = 'none'; document.getElementById('signinPanel').style.display = 'block'; clearAuthMessages(); };
-  window.togglePw        = (id, btn) => { const inp = document.getElementById(id); const s = inp.type === 'text'; inp.type = s ? 'password' : 'text'; btn.innerHTML = s ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`; };
+  /* ── Auth helpers ── */
+  window.openAuthModal  = (tab = 'signin') => { switchAuthTab(tab); clearAuthMessages(); document.getElementById('authModal').classList.add('show'); document.getElementById('authBackdrop').classList.add('show'); document.body.style.overflow = 'hidden'; };
+  window.closeAuthModal = () => { document.getElementById('authModal').classList.remove('show'); document.getElementById('authBackdrop').classList.remove('show'); document.body.style.overflow = ''; };
+  window.switchAuthTab  = (tab) => { const s = tab === 'signin'; document.getElementById('tabSignin').classList.toggle('active', s); document.getElementById('tabSignup').classList.toggle('active', !s); document.getElementById('signinPanel').style.display = s ? 'block' : 'none'; document.getElementById('signupPanel').style.display = !s ? 'block' : 'none'; document.getElementById('resetPanel').style.display = 'none'; clearAuthMessages(); };
+  window.showResetPanel = () => { document.getElementById('signinPanel').style.display = 'none'; document.getElementById('resetPanel').style.display = 'block'; clearAuthMessages(); };
+  window.hideResetPanel = () => { document.getElementById('resetPanel').style.display = 'none'; document.getElementById('signinPanel').style.display = 'block'; clearAuthMessages(); };
+  window.togglePw       = (id, btn) => { const inp = document.getElementById(id); const s = inp.type === 'text'; inp.type = s ? 'password' : 'text'; btn.innerHTML = s ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`; };
 
   function setAuthLoading(id, v) { const b = document.getElementById(id); if (b) { b.classList.toggle('loading', v); b.disabled = v; } }
-  function showAuthError(m)      { const e = document.getElementById('authError'); e.textContent = m; e.classList.add('show'); document.getElementById('authSuccess').classList.remove('show'); }
-  function showAuthSuccess(m)    { const e = document.getElementById('authSuccess'); e.textContent = m; e.classList.add('show'); document.getElementById('authError').classList.remove('show'); }
-  function clearAuthMessages()   { document.getElementById('authError').classList.remove('show'); document.getElementById('authSuccess').classList.remove('show'); }
+  function showAuthError(m)   { const e = document.getElementById('authError');   e.textContent = m; e.classList.add('show'); document.getElementById('authSuccess').classList.remove('show'); }
+  function showAuthSuccess(m) { const e = document.getElementById('authSuccess'); e.textContent = m; e.classList.add('show'); document.getElementById('authError').classList.remove('show'); }
+  function clearAuthMessages(){ document.getElementById('authError').classList.remove('show'); document.getElementById('authSuccess').classList.remove('show'); }
 
   window.doSignIn = async () => {
     const email = document.getElementById('siEmail').value.trim();
@@ -887,11 +850,8 @@
     const email = document.getElementById('resetEmail').value.trim();
     if (!email) { showAuthError('Please enter your email address.'); return; }
     setAuthLoading('resetBtn', true); clearAuthMessages();
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setAuthLoading('resetBtn', false);
-      showAuthSuccess('Reset link sent! Check your inbox.');
-    } catch (err) { setAuthLoading('resetBtn', false); showAuthError(friendlyAuthError(err.code)); }
+    try { await sendPasswordResetEmail(auth, email); setAuthLoading('resetBtn', false); showAuthSuccess('Reset link sent! Check your inbox.'); }
+    catch (err) { setAuthLoading('resetBtn', false); showAuthError(friendlyAuthError(err.code)); }
   };
 
   window.handleSignOut = async () => { if (!confirm('Sign out?')) return; await signOut(auth); };
@@ -931,35 +891,29 @@
   }
 
   function updateUserBadge(user) {
-    const badge   = document.getElementById('userBadge');
-    const avatar  = document.getElementById('userAvatar');
-    const nameEl  = document.getElementById('userNameBadge');
-    const titleEl = document.getElementById('topbarTitle');
+    const badge  = document.getElementById('userBadge');
+    const avatar = document.getElementById('userAvatar');
+    const nameEl = document.getElementById('userNameBadge');
+    const titleEl= document.getElementById('topbarTitle');
     if (user) {
       badge.classList.add('visible'); titleEl.style.display = 'none';
-      avatar.innerHTML = user.photoURL
-        ? `<img src="${user.photoURL}" alt="avatar">`
-        : (user.displayName || user.email || '?').slice(0, 2).toUpperCase();
+      avatar.innerHTML = user.photoURL ? `<img src="${user.photoURL}" alt="avatar">` : (user.displayName || user.email || '?').slice(0,2).toUpperCase();
       nameEl.textContent = (user.displayName || user.email || '').split(' ')[0];
     } else {
       badge.classList.remove('visible'); titleEl.style.display = '';
     }
   }
 
-  /* ─────────────────────────────────────────────
-     LOCAL STORAGE HELPERS
-  ───────────────────────────────────────────── */
+  /* ── Local storage helpers ── */
   const getCart           = () => { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } };
   const saveCart          = c  => localStorage.setItem('jersify_cart', JSON.stringify(c));
   const getSavedAddresses = () => { try { return JSON.parse(localStorage.getItem('jersify_addresses') || '[]'); } catch { return []; } };
-  const saveAddressLocal  = a  => { const addrs = getSavedAddresses(); addrs.unshift({ ...a, id: Date.now(), tag: 'Home' }); localStorage.setItem('jersify_addresses', JSON.stringify(addrs.slice(0, 5))); };
+  const saveAddressLocal  = a  => { const addrs = getSavedAddresses(); addrs.unshift({ ...a, id: Date.now(), tag: 'Home' }); localStorage.setItem('jersify_addresses', JSON.stringify(addrs.slice(0,5))); };
 
-  /* ─────────────────────────────────────────────
-     LOAD COUPONS FROM FIREBASE
-  ───────────────────────────────────────────── */
+  /* ── Load coupons from Firebase ── */
   async function loadCoupons() {
     try {
-      const snap = await get(child(dbRef, 'coupons'));
+      const snap = await get(child(ref(db), 'coupons'));
       if (snap.exists()) {
         Object.entries(snap.val()).forEach(([key, val]) => {
           if (val.active !== false) {
@@ -971,15 +925,11 @@
     } catch (_) {}
   }
 
-  /* ─────────────────────────────────────────────
-     PREFILL USER INFO
-  ───────────────────────────────────────────── */
+  /* ── Prefill user info ── */
   async function prefillUserInfo(user) {
-    let name  = user.displayName || '';
-    let email = user.email || '';
-    let phone = user.phoneNumber || '';
+    let name = user.displayName || '', email = user.email || '', phone = user.phoneNumber || '';
     try {
-      const snap = await get(child(dbRef, `users/${user.uid}`));
+      const snap = await get(ref(db, `users/${user.uid}`));
       if (snap.exists()) {
         const u = snap.val(), p = u.profile || {};
         name  = p.name  || u.name  || name;
@@ -988,14 +938,10 @@
       }
     } catch (_) {}
     const setIfEmpty = (id, val) => { const el = document.getElementById(id); if (el && !el.value && val) el.value = val; };
-    setIfEmpty('custName',  name);
-    setIfEmpty('custEmail', email);
-    setIfEmpty('custPhone', phone);
+    setIfEmpty('custName', name); setIfEmpty('custEmail', email); setIfEmpty('custPhone', phone);
   }
 
-  /* ─────────────────────────────────────────────
-     SAVED ADDRESSES
-  ───────────────────────────────────────────── */
+  /* ── Saved addresses ── */
   function renderSavedAddresses() {
     const addrs   = getSavedAddresses();
     const section = document.getElementById('savedAddressesSection');
@@ -1028,24 +974,19 @@
   window.toggleNewAddress = () => {
     newAddrVisible = !newAddrVisible;
     document.getElementById('addressForm').style.display = newAddrVisible ? 'block' : 'none';
-    document.getElementById('saveAddrRow').style.display = newAddrVisible ? 'flex'  : 'none';
+    document.getElementById('saveAddrRow').style.display = newAddrVisible ? 'flex' : 'none';
     if (newAddrVisible) { selectedSavedAddr = null; document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected')); }
   };
 
   window.selectSize = btn => { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
-
-  /* ── Updated selPay for Razorpay ── */
   window.selPay = method => {
     document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
     document.getElementById(method === 'razorpay' ? 'pay_rzp' : 'pay_cod').parentElement.classList.add('active');
   };
 
-  /* ─────────────────────────────────────────────
-     GEOLOCATION
-  ───────────────────────────────────────────── */
+  /* ── Geolocation ── */
   window.getLocation = () => {
-    const btn  = document.getElementById('locationBtn');
-    const text = document.getElementById('locationText');
+    const btn = document.getElementById('locationBtn'), text = document.getElementById('locationText');
     if (!navigator.geolocation) { text.textContent = 'Geolocation not supported'; return; }
     btn.classList.add('loading'); text.textContent = 'Detecting your location…';
     navigator.geolocation.getCurrentPosition(async pos => {
@@ -1067,9 +1008,7 @@
     }, () => { text.textContent = 'Location denied. Enter manually.'; btn.classList.remove('loading'); }, { enableHighAccuracy: true, timeout: 10000 });
   };
 
-  /* ─────────────────────────────────────────────
-     COUPON
-  ───────────────────────────────────────────── */
+  /* ── Coupon ── */
   window.applyCoupon = () => {
     const code  = document.getElementById('couponInput').value.trim().toUpperCase();
     const msgEl = document.getElementById('couponMsg');
@@ -1079,9 +1018,9 @@
     if (!coupon)       { msgEl.textContent = 'Invalid coupon code.';           msgEl.className = 'coupon-msg error'; return; }
     discountAmount = coupon.type === 'percent' ? Math.round(orderPrice * coupon.value / 100) : coupon.value;
     if (discountAmount > orderPrice) discountAmount = orderPrice;
-    couponApplied      = true;
-    msgEl.textContent  = `${coupon.desc} applied! You save ₹${discountAmount}`;
-    msgEl.className    = 'coupon-msg success';
+    couponApplied = true;
+    msgEl.textContent = `${coupon.desc} applied! You save ₹${discountAmount}`;
+    msgEl.className   = 'coupon-msg success';
     document.getElementById('discountRow').style.display = 'flex';
     document.getElementById('discountVal').textContent   = `-₹${discountAmount}`;
     updateTotal();
@@ -1091,9 +1030,7 @@
     document.getElementById('finalTotal').textContent = `₹${(orderPrice - discountAmount).toLocaleString('en-IN')}`;
   }
 
-  /* ─────────────────────────────────────────────
-     QTY CHANGE (cart mode)
-  ───────────────────────────────────────────── */
+  /* ── Qty change ── */
   window.changeQty = (key, delta) => {
     const cart = getCart(), item = cart.find(i => i.key === key);
     if (!item) return;
@@ -1105,7 +1042,7 @@
 
   function recalcCartTotal() {
     const cart = getCart();
-    orderPrice     = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
     discountAmount = 0; couponApplied = false;
     document.getElementById('subTotal').textContent      = `₹${orderPrice.toLocaleString('en-IN')}`;
     document.getElementById('finalTotal').textContent    = `₹${orderPrice.toLocaleString('en-IN')}`;
@@ -1113,9 +1050,7 @@
     document.getElementById('discountRow').style.display = 'none';
   }
 
-  /* ─────────────────────────────────────────────
-     PAYMENT FAILED BANNER
-  ───────────────────────────────────────────── */
+  /* ── Payment failed banner ── */
   function showPaymentFailed(reason) {
     const banner = document.getElementById('payFailedBanner');
     document.getElementById('payFailedDesc').textContent = (reason || 'Payment could not be processed.') + ' Your items are still here — try again or switch to Cash on Delivery.';
@@ -1127,61 +1062,38 @@
   window.retryPayment = () => { document.getElementById('payFailedBanner').classList.remove('visible'); document.getElementById('confirmBtn').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
   window.switchToCOD  = () => { document.getElementById('payFailedBanner').classList.remove('visible'); selPay('cod'); document.getElementById('pay_cod').parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
 
-  /* ════════════════════════════════════════════════
-     RAZORPAY PAYMENT — opens checkout modal
-     Returns a Promise that resolves with the
-     Razorpay payment response on success or
-     rejects on failure / dismissal.
-  ════════════════════════════════════════════════ */
-  function openRazorpay({ amount, orderId, name, email, phone, description }) {
+  /* ══════════════════════════════════════════
+     RAZORPAY — open checkout modal
+  ══════════════════════════════════════════ */
+  function openRazorpay({ amount, name, email, phone, description }) {
     return new Promise((resolve, reject) => {
       const options = {
-        key:          RAZORPAY_KEY_ID,
-        amount:       amount * 100,          // Razorpay expects paise
-        currency:     "INR",
-        name:         "JERSIFY",
-        description:  description || "Jersey Purchase",
-        order_id:     orderId,               // Razorpay Order ID from your backend (optional for client-only flow)
-        prefill: {
-          name:    name  || "",
-          email:   email || "",
-          contact: phone || "",
-        },
-        theme: {
-          color: "#c61f2f",                  // Matches Jersify accent
-        },
-        modal: {
-          ondismiss: () => reject(new Error("Payment was cancelled.")),
-        },
-        handler: (response) => resolve(response),
+        key:         RAZORPAY_KEY_ID,
+        amount:      amount * 100,        // paise
+        currency:    "INR",
+        name:        "JERSIFY",
+        description: description || "Jersey Purchase",
+        prefill:     { name: name || "", email: email || "", contact: phone || "" },
+        theme:       { color: "#c61f2f" },
+        modal:       { ondismiss: () => reject(new Error("Payment was cancelled.")) },
+        handler:     (response) => resolve(response),
       };
-
-      /* Razorpay is loaded as a global from the <script> tag above */
       const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', (resp) => {
-        reject(new Error(resp.error?.description || "Payment failed."));
-      });
+      rzp.on('payment.failed', resp => reject(new Error(resp.error?.description || "Payment failed.")));
       rzp.open();
     });
   }
 
-  /* ════════════════════════════════════════════════
-     PROCESS ORDER — Main order flow
-  ════════════════════════════════════════════════ */
+  /* ══════════════════════════════════════════
+     PROCESS ORDER
+  ══════════════════════════════════════════ */
   window.processOrder = async () => {
     if (orderPrice === 0) { alert('Your cart is empty.'); return; }
-
-    if (!currentUser) {
-      openAuthModal('signin');
-      const btn = document.getElementById('confirmBtn');
-      btn.style.animation = 'shake .4s ease';
-      setTimeout(() => btn.style.animation = '', 500);
-      return;
-    }
+    if (!currentUser)     { openAuthModal('signin'); shakeField('confirmBtn'); return; }
 
     document.getElementById('payFailedBanner').classList.remove('visible');
 
-    /* ── Collect address fields ── */
+    /* ── Collect address ── */
     let name, phone, email, address, city, state, pincode, country;
     if (selectedSavedAddr) {
       ({ name, phone, email, address, city, state, pincode } = selectedSavedAddr);
@@ -1203,10 +1115,10 @@
       if (document.getElementById('saveAddrCheck').checked) saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
     }
 
-    const isRZP       = document.getElementById('pay_rzp').checked;
-    const finalPrice  = orderPrice - discountAmount;
+    const isRZP        = document.getElementById('pay_rzp').checked;
+    const finalPrice   = orderPrice - discountAmount;
     const selectedSize = document.querySelector('.size-btn.active')?.textContent || 'M';
-    const orderId     = `JRS-${Date.now()}`;
+    const orderId      = `JRS-${Date.now()}`;
 
     const orderPayload = {
       orderId, userId: currentUser.uid,
@@ -1215,80 +1127,59 @@
       items: orderItems, subtotal: orderPrice,
       discount: discountAmount, total: finalPrice,
       selectedSize, paymentMethod: isRZP ? 'razorpay' : 'cod',
+      status: 'processing',
     };
 
     if (isRZP) {
-      /* ──────────────────────────────────────
-         ONLINE PAYMENT via Razorpay
-      ────────────────────────────────────── */
+      /* ── Online Payment via Razorpay ── */
       setConfirmBtn(true, 'Opening payment…');
-
       try {
-        /* ── Open Razorpay checkout modal ── */
-        const rzpResponse = await openRazorpay({
-          amount:      finalPrice,
-          orderId:     null,            // Pass Razorpay Order ID here if you create one server-side
-          name,
-          email,
-          phone,
-          description: orderItems.map(i => i.name).join(', '),
-        });
+        const rzpResponse = await openRazorpay({ amount: finalPrice, name, email, phone, description: orderItems.map(i => i.name).join(', ') });
 
-        /*
-         * rzpResponse contains:
-         *   razorpay_payment_id  — the payment ID to store
-         *   razorpay_order_id    — present if you passed an order_id above
-         *   razorpay_signature   — for server-side verification
-         */
-
+        /* Payment succeeded — now save the order */
         setConfirmBtn(false);
-        showProcessing('Payment received!', 'Saving your order, please wait…');
+        showProcessing('Payment received! 🎉', 'Saving your order, please wait…');
 
-        /* ── Save order to Firebase via existing function ── */
         try {
-          await callFn('saveOrder', {
+          await saveOrderToFirebase({
             ...orderPayload,
-            paymentId:     rzpResponse.razorpay_payment_id,
-            razorpayOrderId: rzpResponse.razorpay_order_id || null,
-            razorpaySignature: rzpResponse.razorpay_signature || null,
-            paymentMethod: 'razorpay',
-            status:        'processing',
+            paymentId:        rzpResponse.razorpay_payment_id,
+            razorpayOrderId:  rzpResponse.razorpay_order_id  || null,
+            razorpaySignature:rzpResponse.razorpay_signature || null,
+            paymentMethod:    'razorpay',
+            status:           'processing',
           });
-        } catch (err) {
-          hideProcessing(); setConfirmBtn(false);
-          alert('Order save failed: ' + err.message);
+        } catch (dbErr) {
+          hideProcessing();
+          alert('Payment was successful but order save failed: ' + dbErr.message + '\nPlease contact support with your payment ID: ' + rzpResponse.razorpay_payment_id);
           return;
         }
 
-        /* Fire-and-forget notifications */
-        callFn('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Online Payment (Razorpay)', items: orderItems }).catch(console.warn);
-        callFn('sendSMS',        { orderId, name, phone, total: finalPrice }).catch(console.warn);
-        callFn('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Online Payment (Razorpay)', items: orderItems }).catch(console.warn);
+        /* Fire-and-forget notifications (won't block the flow) */
+        fireNotification('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Online Payment (Razorpay)', items: orderItems });
+        fireNotification('sendSMS',        { orderId, name, phone, total: finalPrice });
+        fireNotification('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Online Payment (Razorpay)', items: orderItems });
 
         localStorage.removeItem('jersify_cart');
-        hideProcessing(); setConfirmBtn(false);
+        hideProcessing();
         showSuccess(orderId, name, finalPrice, selectedSize, 'Online Payment');
 
       } catch (err) {
-        /* Payment dismissed or failed inside Razorpay modal */
+        /* Razorpay modal was dismissed or payment failed */
         setConfirmBtn(false);
         showPaymentFailed(err?.message || 'Payment could not be processed.');
       }
 
     } else {
-      /* ──────────────────────────────────────
-         CASH ON DELIVERY
-      ────────────────────────────────────── */
+      /* ── Cash on Delivery ── */
       setConfirmBtn(true, 'Placing order…');
       showProcessing('Placing your order…', 'Saving your order details.');
-
       try {
-        await callFn('saveOrder', { ...orderPayload, status: 'processing' });
+        await saveOrderToFirebase(orderPayload);
 
-        /* Fire-and-forget notifications */
-        callFn('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems }).catch(console.warn);
-        callFn('sendSMS',        { orderId, name, phone, total: finalPrice }).catch(console.warn);
-        callFn('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems }).catch(console.warn);
+        fireNotification('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems });
+        fireNotification('sendSMS',        { orderId, name, phone, total: finalPrice });
+        fireNotification('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Cash on Delivery', items: orderItems });
 
         localStorage.removeItem('jersify_cart');
         hideProcessing(); setConfirmBtn(false);
@@ -1301,14 +1192,11 @@
     }
   };
 
-  /* ─────────────────────────────────────────────
-     DOMContentLoaded — Bootstrap
-  ───────────────────────────────────────────── */
+  /* ── DOMContentLoaded ── */
   window.addEventListener('DOMContentLoaded', async () => {
     loadCoupons();
     renderSavedAddresses();
 
-    /* Load products / cart */
     const params    = new URLSearchParams(window.location.search);
     const pid       = params.get('id');
     const paramSize = params.get('size');
@@ -1316,9 +1204,8 @@
     const orderBody = document.getElementById('orderItemsBody');
 
     if (pid) {
-      /* Single product buy */
       try {
-        const snap = await get(child(dbRef, `products/${pid}`));
+        const snap = await get(ref(db, `products/${pid}`));
         if (snap.exists()) {
           const p = snap.val(), name = p.name || 'Jersify Kit';
           orderPrice = p.price ? parseInt(p.price) : 1499;
@@ -1326,7 +1213,7 @@
           orderBody.innerHTML = `
             <div class="product-row">
               <div class="product-img">
-                ${p.imgUrl ? `<img src="${p.imgUrl}" alt="${name}">` : '<span class="product-img-placeholder">10</span>'}
+                ${p.imgUrl ? `<img src="${p.imgUrl}" alt="${name}">` : '<span style="font-family:Bebas Neue,sans-serif;font-size:28px;color:rgba(255,255,255,.55)">10</span>'}
               </div>
               <div class="product-info">
                 <div class="product-name">${name}</div>
@@ -1335,7 +1222,7 @@
               </div>
             </div>`;
           document.getElementById('sizeCard').style.display = 'block';
-          const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+          const sizes = ['XS','S','M','L','XL','XXL'];
           document.getElementById('sizeGrid').innerHTML = sizes.map(sz =>
             `<button class="size-btn${(paramSize || 'M').toUpperCase() === sz ? ' active' : ''}" onclick="selectSize(this)">${sz}</button>`
           ).join('');
@@ -1347,7 +1234,6 @@
       }
 
     } else if (cart.length > 0) {
-      /* Cart mode */
       isCartMode = true;
       orderItems = cart;
       orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -1356,7 +1242,7 @@
         return `
           <div class="cart-item">
             <div class="ci-img">
-              ${item.imageUrl || item.imgUrl ? `<img src="${item.imageUrl || item.imgUrl}" alt="${item.name}">` : '<span class="ci-img-placeholder">👕</span>'}
+              ${item.imageUrl || item.imgUrl ? `<img src="${item.imageUrl || item.imgUrl}" alt="${item.name}">` : '<span style="font-size:24px">👕</span>'}
             </div>
             <div class="ci-info">
               <div class="ci-name">${item.name}</div>
@@ -1372,7 +1258,6 @@
       }).join('');
 
     } else {
-      /* Empty cart */
       orderBody.innerHTML = `
         <div class="empty-cart-hint">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"/></svg>
@@ -1381,15 +1266,15 @@
         </div>`;
     }
 
-    document.getElementById('subTotal').textContent   = `₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('finalTotal').textContent  = `₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('loading').style.display        = 'none';
-    document.getElementById('checkoutContent').style.display = 'block';
+    document.getElementById('subTotal').textContent            = `₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('finalTotal').textContent          = `₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('loading').style.display           = 'none';
+    document.getElementById('checkoutContent').style.display   = 'block';
   });
 
-  /* ─────────────────────────────────────────────
-     SUCCESS SCREEN
-  ───────────────────────────────────────────── */
+  /* ══════════════════════════════════════════
+     SUCCESS SCREEN — then redirect to homepage
+  ══════════════════════════════════════════ */
   function showSuccess(orderId, name, total, size, payMethod) {
     let countdown = 5;
     document.querySelector('.content').innerHTML = `
@@ -1404,20 +1289,23 @@
           ${!isCartMode ? `<div class="success-detail-row"><span>Size</span><span>${size}</span></div>` : ''}
         </div>
         <div class="success-msg">Thank you for shopping with Jersify! Your kit is being packed and will be on its way soon. 🚚</div>
-        <button class="success-btn" onclick="window.location.href='profile.html'">View My Orders →</button>
+        <button class="success-btn" onclick="window.location.href='${SUCCESS_REDIRECT}'">Back to Home →</button>
         <div class="success-redirect">Redirecting in <span id="countdownNum">${countdown}</span>s…</div>
       </div>`;
+
+    /* Auto-redirect countdown */
     const interval = setInterval(() => {
       countdown--;
       const el = document.getElementById('countdownNum');
       if (el) el.textContent = countdown;
-      if (countdown <= 0) { clearInterval(interval); window.location.href = 'profile.html'; }
+      if (countdown <= 0) {
+        clearInterval(interval);
+        window.location.href = SUCCESS_REDIRECT;
+      }
     }, 1000);
   }
 
-  /* ─────────────────────────────────────────────
-     FIELD SHAKE ANIMATION
-  ───────────────────────────────────────────── */
+  /* ── Shake animation helper ── */
   function shakeField(id) {
     const el = document.getElementById(id); if (!el) return;
     el.style.borderColor = 'var(--accent)'; el.style.animation = 'shake .4s ease';
