@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms & Conditions — Jersify</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --dark: #111111;
+    --card: #161616;
+    --border: #222222;
+    --accent: #e8ff3c;
+    --accent-dim: rgba(232,255,60,0.08);
+    --white: #f5f5f5;
+    --muted: #888888;
+    --red: #ff3c3c;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 40px;
+  }
+  .logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 1.6rem; letter-spacing: 0.08em;
+    color: var(--white); text-decoration: none;
+  }
+  .logo span { color: var(--accent); }
+  nav a.back {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600; font-size: 0.85rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+    text-decoration: none; transition: color 0.2s;
+  }
+  nav a.back:hover { color: var(--accent); }
+
+  /* HERO BAND */
+  .hero-band {
+    background: linear-gradient(135deg, #0f1a00 0%, #0a0a0a 60%);
+    border-bottom: 1px solid var(--border);
+    padding: 64px 40px 48px;
+    position: relative; overflow: hidden;
+  }
+  .hero-band::before {
+    content: 'T&C';
+    position: absolute; right: -20px; top: -20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 18rem; line-height: 1;
+    color: rgba(232,255,60,0.03); pointer-events: none;
+  }
+  .tag {
+    display: inline-block;
+    background: var(--accent-dim);
+    border: 1px solid rgba(232,255,60,0.2);
+    color: var(--accent);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 0.7rem; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 4px 12px; border-radius: 2px; margin-bottom: 16px;
+  }
+  .hero-band h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: clamp(2.8rem, 6vw, 5rem);
+    line-height: 0.95; text-transform: uppercase; letter-spacing: 0.02em;
+    margin-bottom: 16px;
+  }
+  .hero-band p {
+    color: var(--muted); font-size: 0.9rem; max-width: 520px;
+  }
+  .updated {
+    margin-top: 20px;
+    font-size: 0.78rem; color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.08em;
+  }
+
+  /* LAYOUT */
+  .container {
+    max-width: 900px; margin: 0 auto;
+    padding: 60px 40px;
+    display: grid; grid-template-columns: 220px 1fr; gap: 60px;
+    align-items: start;
+  }
+
+  /* SIDEBAR TOC */
+  .toc {
+    position: sticky; top: 80px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px; padding: 24px;
+  }
+  .toc h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .toc a {
+    display: block;
+    font-size: 0.82rem; color: var(--muted);
+    text-decoration: none; padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.2s;
+  }
+  .toc a:last-child { border-bottom: none; }
+  .toc a:hover { color: var(--white); }
+
+  /* CONTENT */
+  .content section { margin-bottom: 52px; }
+  .content h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800; font-size: 1.6rem; letter-spacing: 0.04em;
+    text-transform: uppercase; margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+  .content p { color: #ccc; font-size: 0.92rem; margin-bottom: 14px; }
+  .content ul { list-style: none; padding: 0; }
+  .content ul li {
+    color: #ccc; font-size: 0.92rem;
+    padding: 6px 0 6px 20px; position: relative;
+  }
+  .content ul li::before {
+    content: '→';
+    position: absolute; left: 0;
+    color: var(--accent); font-weight: 700;
+  }
+  .highlight-box {
+    background: var(--accent-dim);
+    border-left: 3px solid var(--accent);
+    border-radius: 2px; padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 0.88rem; color: #ddd;
+  }
+  .highlight-box strong { color: var(--accent); }
+
+  /* RAZORPAY NOTE */
+  .razorpay-note {
+    background: #0e0e1a;
+    border: 1px solid #2a2a6a;
+    border-radius: 4px; padding: 16px 20px;
+    margin: 20px 0; font-size: 0.85rem; color: #aaa;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .razorpay-note .rp-icon {
+    flex-shrink: 0;
+    background: #2563EB; color: white;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 0.65rem; letter-spacing: 0.05em;
+    padding: 3px 7px; border-radius: 2px; margin-top: 2px;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  footer p { font-size: 0.8rem; color: var(--muted); }
+  .footer-links a {
+    font-size: 0.8rem; color: var(--muted);
+    text-decoration: none; margin-left: 20px;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  @media (max-width: 700px) {
+    nav { padding: 14px 20px; }
+    .hero-band { padding: 48px 20px 36px; }
+    .container { grid-template-columns: 1fr; padding: 40px 20px; gap: 40px; }
+    .toc { position: static; }
+    footer { padding: 24px 20px; flex-direction: column; }
+    .footer-links a { margin-left: 0; margin-right: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">JERS<span>I</span>FY</a>
+  <a href="index.html" class="back">← Back to Store</a>
+</nav>
+
+<div class="hero-band">
+  <div class="tag">Legal</div>
+  <h1>Terms &amp;<br>Conditions</h1>
+  <p>Please read these terms carefully before using Jersify or making any purchase on our platform.</p>
+  <div class="updated">Last updated: May 1, 2025 &nbsp;·&nbsp; Effective immediately</div>
+</div>
+
+<div class="container">
+  <aside class="toc">
+    <h3>Contents</h3>
+    <a href="#acceptance">1. Acceptance</a>
+    <a href="#eligibility">2. Eligibility</a>
+    <a href="#products">3. Products</a>
+    <a href="#orders">4. Orders &amp; Payment</a>
+    <a href="#shipping">5. Shipping</a>
+    <a href="#returns">6. Returns</a>
+    <a href="#ip">7. Intellectual Property</a>
+    <a href="#liability">8. Liability</a>
+    <a href="#privacy">9. Privacy</a>
+    <a href="#governing">10. Governing Law</a>
+    <a href="#contact">11. Contact</a>
+  </aside>
+
+  <main class="content">
+
+    <section id="acceptance">
+      <h2>1. Acceptance of Terms</h2>
+      <p>By accessing or using <strong>Jersify</strong> (jersify.online), placing an order, or making a payment through our platform, you agree to be bound by these Terms and Conditions. If you do not agree, please do not use our website or services.</p>
+      <p>We reserve the right to modify these terms at any time. Continued use of the site after changes constitutes acceptance.</p>
+    </section>
+
+    <section id="eligibility">
+      <h2>2. Eligibility</h2>
+      <p>You must be at least 18 years old, or have parental/guardian consent, to make purchases on Jersify. By using this site you confirm that all information you provide is accurate and truthful.</p>
+    </section>
+
+    <section id="products">
+      <h2>3. Products &amp; Descriptions</h2>
+      <p>Jersify offers premium imported football jerseys and fan apparel. We strive to display products accurately, however:</p>
+      <ul>
+        <li>Colours may slightly vary due to screen calibration differences.</li>
+        <li>All products are described as "fan edition / replica" unless explicitly stated otherwise.</li>
+        <li>Jersify does not claim any official affiliation with football clubs or governing bodies.</li>
+        <li>Sizes follow standard international charts — please refer to our size guide before ordering.</li>
+      </ul>
+    </section>
+
+    <section id="orders">
+      <h2>4. Orders &amp; Payment</h2>
+      <p>All orders placed on Jersify are subject to acceptance and availability. We reserve the right to cancel or refuse any order at our discretion.</p>
+
+      <div class="razorpay-note">
+        <span class="rp-icon">RazorPay</span>
+        <div>
+          <strong style="color:#fff;">Payment Processing via Razorpay</strong><br>
+          All payments are securely processed by <strong>Razorpay Software Pvt. Ltd.</strong>, a PCI-DSS compliant payment gateway. By completing a purchase, you also agree to Razorpay's Terms of Service at <a href="https://razorpay.com/terms/" style="color:#7c9ff0;" target="_blank">razorpay.com/terms</a>. Jersify does not store your card or banking details.
+        </div>
+      </div>
+
+      <ul>
+        <li>Accepted: UPI, Credit/Debit Cards, Net Banking, Wallets (via Razorpay).</li>
+        <li>All prices are in Indian Rupees (INR) and inclusive of applicable taxes.</li>
+        <li>Order confirmation will be sent to your registered email after successful payment.</li>
+        <li>In case of payment failure, no amount will be deducted. If debited, it will be reversed within 5–7 business days.</li>
+      </ul>
+    </section>
+
+    <section id="shipping">
+      <h2>5. Shipping &amp; Delivery</h2>
+      <ul>
+        <li>We ship across India. Estimated delivery: 5–10 business days from dispatch.</li>
+        <li>Tracking details will be shared via email/WhatsApp after dispatch.</li>
+        <li>Jersify is not liable for delays caused by courier partners, customs, or force majeure events.</li>
+        <li>Delivery to remote pin codes may take additional time.</li>
+      </ul>
+    </section>
+
+    <section id="returns">
+      <h2>6. Returns &amp; Refunds</h2>
+      <p>Please refer to our <a href="refund.html" style="color:var(--accent);">Refund &amp; Return Policy</a> for full details. In brief:</p>
+      <ul>
+        <li>Returns accepted within 7 days of delivery for defective or incorrect items.</li>
+        <li>Items must be unused, unwashed, and in original packaging.</li>
+        <li>Refunds are processed to the original payment method via Razorpay within 7–10 business days.</li>
+      </ul>
+    </section>
+
+    <section id="ip">
+      <h2>7. Intellectual Property</h2>
+      <p>All content on jersify.online — including logos, images, design, and copy — is the property of Jersify and protected by applicable copyright laws. Unauthorised reproduction is prohibited.</p>
+    </section>
+
+    <section id="liability">
+      <h2>8. Limitation of Liability</h2>
+      <p>Jersify's total liability in connection with any order shall not exceed the amount paid by the customer for that specific order. We are not liable for indirect, incidental, or consequential damages.</p>
+      <div class="highlight-box">
+        <strong>Note:</strong> Jersify sells fan/replica merchandise. We are not responsible for any restrictions on use imposed by third-party sporting bodies or organisations.
+      </div>
+    </section>
+
+    <section id="privacy">
+      <h2>9. Privacy</h2>
+      <p>Your personal data is handled in accordance with our <a href="privacy.html" style="color:var(--accent);">Privacy Policy</a>. By using Jersify, you consent to the collection and use of your information as described therein.</p>
+    </section>
+
+    <section id="governing">
+      <h2>10. Governing Law</h2>
+      <p>These Terms shall be governed by and construed in accordance with the laws of <strong>India</strong>. Any disputes arising shall be subject to the exclusive jurisdiction of courts in West Bengal, India.</p>
+    </section>
+
+    <section id="contact">
+      <h2>11. Contact Us</h2>
+      <p>For any questions regarding these terms, reach us at:</p>
+      <ul>
+        <li>Email: support@jersify.online</li>
+        <li>Website: <a href="https://www.jersify.online" style="color:var(--accent);">www.jersify.online</a></li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <p>© 2025 Jersify. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="terms.html">Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="refund.html">Refund Policy</a>
+  </div>
+</footer>
+
+</body>
+</html>
