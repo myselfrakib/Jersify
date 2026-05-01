@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Jersify</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --dark: #111111;
+    --card: #161616;
+    --border: #222222;
+    --accent: #e8ff3c;
+    --accent-dim: rgba(232,255,60,0.08);
+    --white: #f5f5f5;
+    --muted: #888888;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 40px;
+  }
+  .logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 1.6rem; letter-spacing: 0.08em;
+    color: var(--white); text-decoration: none;
+  }
+  .logo span { color: var(--accent); }
+  nav a.back {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600; font-size: 0.85rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+    text-decoration: none; transition: color 0.2s;
+  }
+  nav a.back:hover { color: var(--accent); }
+
+  .hero-band {
+    background: linear-gradient(135deg, #0a0f1a 0%, #0a0a0a 60%);
+    border-bottom: 1px solid var(--border);
+    padding: 64px 40px 48px;
+    position: relative; overflow: hidden;
+  }
+  .hero-band::before {
+    content: 'PRIV';
+    position: absolute; right: -40px; top: -10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 16rem; line-height: 1;
+    color: rgba(232,255,60,0.025); pointer-events: none;
+  }
+  .tag {
+    display: inline-block;
+    background: var(--accent-dim);
+    border: 1px solid rgba(232,255,60,0.2);
+    color: var(--accent);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 0.7rem; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 4px 12px; border-radius: 2px; margin-bottom: 16px;
+  }
+  .hero-band h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: clamp(2.8rem, 6vw, 5rem);
+    line-height: 0.95; text-transform: uppercase; letter-spacing: 0.02em;
+    margin-bottom: 16px;
+  }
+  .hero-band p { color: var(--muted); font-size: 0.9rem; max-width: 520px; }
+  .updated { margin-top: 20px; font-size: 0.78rem; color: var(--muted); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.08em; }
+
+  .container {
+    max-width: 900px; margin: 0 auto;
+    padding: 60px 40px;
+    display: grid; grid-template-columns: 220px 1fr; gap: 60px;
+    align-items: start;
+  }
+  .toc {
+    position: sticky; top: 80px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px; padding: 24px;
+  }
+  .toc h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+  }
+  .toc a {
+    display: block; font-size: 0.82rem; color: var(--muted);
+    text-decoration: none; padding: 5px 0;
+    border-bottom: 1px solid var(--border); transition: color 0.2s;
+  }
+  .toc a:last-child { border-bottom: none; }
+  .toc a:hover { color: var(--white); }
+
+  .content section { margin-bottom: 52px; }
+  .content h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800; font-size: 1.6rem; letter-spacing: 0.04em;
+    text-transform: uppercase; margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+  .content p { color: #ccc; font-size: 0.92rem; margin-bottom: 14px; }
+  .content ul { list-style: none; padding: 0; }
+  .content ul li {
+    color: #ccc; font-size: 0.92rem;
+    padding: 6px 0 6px 20px; position: relative;
+  }
+  .content ul li::before {
+    content: '→'; position: absolute; left: 0;
+    color: var(--accent); font-weight: 700;
+  }
+
+  .data-table {
+    width: 100%; border-collapse: collapse;
+    margin: 20px 0; font-size: 0.86rem;
+  }
+  .data-table th {
+    background: var(--card); color: var(--accent);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 10px 14px; text-align: left;
+    border: 1px solid var(--border);
+  }
+  .data-table td {
+    padding: 10px 14px; color: #ccc;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .razorpay-note {
+    background: #0e0e1a; border: 1px solid #2a2a6a;
+    border-radius: 4px; padding: 16px 20px;
+    margin: 20px 0; font-size: 0.85rem; color: #aaa;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .razorpay-note .rp-icon {
+    flex-shrink: 0; background: #2563EB; color: white;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 0.65rem; letter-spacing: 0.05em;
+    padding: 3px 7px; border-radius: 2px; margin-top: 2px;
+  }
+  .highlight-box {
+    background: var(--accent-dim); border-left: 3px solid var(--accent);
+    border-radius: 2px; padding: 16px 20px; margin: 20px 0;
+    font-size: 0.88rem; color: #ddd;
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  footer p { font-size: 0.8rem; color: var(--muted); }
+  .footer-links a {
+    font-size: 0.8rem; color: var(--muted);
+    text-decoration: none; margin-left: 20px; transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  @media (max-width: 700px) {
+    nav { padding: 14px 20px; }
+    .hero-band { padding: 48px 20px 36px; }
+    .container { grid-template-columns: 1fr; padding: 40px 20px; gap: 40px; }
+    .toc { position: static; }
+    footer { padding: 24px 20px; flex-direction: column; }
+    .data-table { font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">JERS<span>I</span>FY</a>
+  <a href="index.html" class="back">← Back to Store</a>
+</nav>
+
+<div class="hero-band">
+  <div class="tag">Legal</div>
+  <h1>Privacy<br>Policy</h1>
+  <p>Your privacy matters to us. This policy explains what data we collect, how we use it, and your rights.</p>
+  <div class="updated">Last updated: May 1, 2025 &nbsp;·&nbsp; Effective immediately</div>
+</div>
+
+<div class="container">
+  <aside class="toc">
+    <h3>Contents</h3>
+    <a href="#who">1. Who We Are</a>
+    <a href="#collect">2. Data We Collect</a>
+    <a href="#how">3. How We Use It</a>
+    <a href="#payment">4. Payment Data</a>
+    <a href="#sharing">5. Data Sharing</a>
+    <a href="#cookies">6. Cookies</a>
+    <a href="#storage">7. Data Storage</a>
+    <a href="#rights">8. Your Rights</a>
+    <a href="#children">9. Children</a>
+    <a href="#changes">10. Policy Changes</a>
+    <a href="#contact">11. Contact</a>
+  </aside>
+
+  <main class="content">
+
+    <section id="who">
+      <h2>1. Who We Are</h2>
+      <p><strong>Jersify</strong> (jersify.online) is an online retailer of premium football jerseys and fan apparel. This Privacy Policy applies to all information collected through our website and related services.</p>
+    </section>
+
+    <section id="collect">
+      <h2>2. Data We Collect</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Category</th><th>Data Points</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Identity</td><td>Name, email address</td><td>Account creation, order confirmation</td></tr>
+          <tr><td>Contact</td><td>Phone number, shipping address</td><td>Delivery &amp; customer support</td></tr>
+          <tr><td>Transaction</td><td>Order history, items purchased</td><td>Fulfillment &amp; returns</td></tr>
+          <tr><td>Technical</td><td>IP address, browser, device type</td><td>Security &amp; analytics</td></tr>
+          <tr><td>Marketing</td><td>Purchase preferences (optional)</td><td>Personalised offers</td></tr>
+        </tbody>
+      </table>
+      <p>We do <strong>not</strong> collect sensitive personal data such as government IDs, biometric data, or health information.</p>
+    </section>
+
+    <section id="how">
+      <h2>3. How We Use Your Data</h2>
+      <ul>
+        <li>Processing and fulfilling your orders.</li>
+        <li>Sending order confirmations and shipping updates.</li>
+        <li>Responding to customer support queries.</li>
+        <li>Improving our website and product offerings.</li>
+        <li>Sending promotional emails (only with your consent — unsubscribe anytime).</li>
+        <li>Complying with legal and regulatory obligations.</li>
+      </ul>
+    </section>
+
+    <section id="payment">
+      <h2>4. Payment Data &amp; Razorpay</h2>
+      <div class="razorpay-note">
+        <span class="rp-icon">RazorPay</span>
+        <div>
+          <strong style="color:#fff;">Secure Payments via Razorpay</strong><br>
+          All payment transactions are processed by <strong>Razorpay Software Pvt. Ltd.</strong>, a PCI-DSS Level 1 certified payment gateway. <strong>Jersify never stores, sees, or has access to your card number, CVV, or banking credentials.</strong> Payment data is collected and encrypted directly by Razorpay. Refer to Razorpay's Privacy Policy at <a href="https://razorpay.com/privacy/" target="_blank" style="color:#7c9ff0;">razorpay.com/privacy</a>.
+        </div>
+      </div>
+      <p>We receive only a transaction confirmation and masked payment reference from Razorpay to complete your order.</p>
+    </section>
+
+    <section id="sharing">
+      <h2>5. Data Sharing</h2>
+      <p>We do not sell your personal data. We share data only with trusted partners necessary for operations:</p>
+      <ul>
+        <li><strong>Razorpay</strong> — payment processing.</li>
+        <li><strong>Shipping / courier partners</strong> — name, address, phone for delivery.</li>
+        <li><strong>Analytics tools</strong> — anonymised usage data only.</li>
+        <li><strong>Legal authorities</strong> — only when required by law.</li>
+      </ul>
+    </section>
+
+    <section id="cookies">
+      <h2>6. Cookies</h2>
+      <p>We use cookies to keep your cart active, remember your preferences, and analyse site traffic. Types we use:</p>
+      <ul>
+        <li><strong>Essential cookies</strong> — required for the site to function (cart, session).</li>
+        <li><strong>Analytics cookies</strong> — help us understand how visitors use the site.</li>
+        <li><strong>Marketing cookies</strong> — used to show relevant promotions (optional).</li>
+      </ul>
+      <p>You can disable non-essential cookies in your browser settings at any time.</p>
+    </section>
+
+    <section id="storage">
+      <h2>7. Data Storage &amp; Security</h2>
+      <p>Your data is stored on secure servers. We implement appropriate technical and organisational measures to protect your data against unauthorised access, loss, or misuse.</p>
+      <div class="highlight-box">
+        We retain your personal data for as long as your account is active or as needed to provide services, comply with legal obligations, and resolve disputes. You may request deletion at any time.
+      </div>
+    </section>
+
+    <section id="rights">
+      <h2>8. Your Rights</h2>
+      <p>Under applicable Indian data protection laws, you have the right to:</p>
+      <ul>
+        <li>Access the personal data we hold about you.</li>
+        <li>Request correction of inaccurate data.</li>
+        <li>Request deletion of your data ("right to be forgotten").</li>
+        <li>Opt out of marketing communications at any time.</li>
+        <li>Withdraw consent where processing is based on consent.</li>
+      </ul>
+      <p>To exercise any of these rights, email us at <strong>support@jersify.online</strong>.</p>
+    </section>
+
+    <section id="children">
+      <h2>9. Children's Privacy</h2>
+      <p>Our services are not directed to individuals under the age of 13. We do not knowingly collect personal data from children. If you believe a child has provided us with personal information, please contact us immediately.</p>
+    </section>
+
+    <section id="changes">
+      <h2>10. Changes to This Policy</h2>
+      <p>We may update this Privacy Policy from time to time. When we do, we will revise the "Last updated" date at the top of this page. We encourage you to review this policy periodically.</p>
+    </section>
+
+    <section id="contact">
+      <h2>11. Contact Us</h2>
+      <p>For privacy-related queries or to exercise your rights:</p>
+      <ul>
+        <li>Email: support@jersify.online</li>
+        <li>Website: <a href="https://www.jersify.online" style="color:var(--accent);">www.jersify.online</a></li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <p>© 2025 Jersify. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="terms.html">Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="refund.html">Refund Policy</a>
+  </div>
+</footer>
+
+</body>
+</html>
