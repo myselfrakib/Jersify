@@ -454,8 +454,8 @@
     .processing-sub { font-size: 12px; color: var(--muted); line-height: 1.6; }
   </style>
 
-  <!-- Cashfree JS SDK v3 -->
-  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+  <!-- ══ Razorpay Checkout JS SDK ══ -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
 <div class="page">
@@ -596,11 +596,12 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
           Payment Method
         </div>
-        <label class="pay-opt active" onclick="selPay('cashfree')">
-          <input type="radio" name="paymethod" id="pay_cf" checked value="cashfree">
+        <!-- ══ Razorpay option replaces Cashfree ══ -->
+        <label class="pay-opt active" onclick="selPay('razorpay')">
+          <input type="radio" name="paymethod" id="pay_rzp" checked value="razorpay">
           <div class="pay-opt-content">
             <div class="pay-opt-text">Pay Online</div>
-            <div class="pay-opt-sub">UPI, Cards, Net Banking via Cashfree</div>
+            <div class="pay-opt-sub">UPI, Cards, Net Banking via Razorpay</div>
           </div>
           <div class="pay-opt-icon">💳</div>
         </label>
@@ -767,9 +768,19 @@
     databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
   };
 
+  /* ══════════════════════════════════════════════
+     RAZORPAY CONFIG
+     Live key embedded directly — no backend needed
+     for opening the checkout modal.
+     Order verification/save still goes through your
+     existing Firebase Functions endpoint below.
+  ══════════════════════════════════════════════ */
+  const RAZORPAY_KEY_ID = "rzp_live_omDNDSL8gmUBCZ";
+
   /**
-   * Your deployed Firebase Functions base URL.
-   * Update this after running: firebase deploy --only functions
+   * Firebase Functions base URL — keep for saveOrder,
+   * sendOrderEmail, sendSMS, sendWhatsApp calls.
+   * Update after: firebase deploy --only functions
    */
   const FUNCTIONS_BASE = "https://createcashfreeorder-cb3aepnlna-uc.a.run.app";
 
@@ -807,7 +818,7 @@
   ───────────────────────────────────────────── */
   function showProcessing(title = 'Processing…', sub = 'Please wait, do not close this page.') {
     document.getElementById('processingTitle').textContent = title;
-    document.getElementById('processingSub').textContent = sub;
+    document.getElementById('processingSub').textContent   = sub;
     document.getElementById('processingOverlay').classList.add('show');
   }
   function hideProcessing() {
@@ -818,7 +829,7 @@
      CONFIRM BUTTON STATE
   ───────────────────────────────────────────── */
   function setConfirmBtn(loading, text = 'Confirm Order →') {
-    const btn = document.getElementById('confirmBtn');
+    const btn   = document.getElementById('confirmBtn');
     const txtEl = document.getElementById('confirmBtnText');
     btn.disabled = loading;
     btn.classList.toggle('loading', loading);
@@ -836,9 +847,9 @@
   window.togglePw        = (id, btn) => { const inp = document.getElementById(id); const s = inp.type === 'text'; inp.type = s ? 'password' : 'text'; btn.innerHTML = s ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`; };
 
   function setAuthLoading(id, v) { const b = document.getElementById(id); if (b) { b.classList.toggle('loading', v); b.disabled = v; } }
-  function showAuthError(m) { const e = document.getElementById('authError'); e.textContent = m; e.classList.add('show'); document.getElementById('authSuccess').classList.remove('show'); }
-  function showAuthSuccess(m) { const e = document.getElementById('authSuccess'); e.textContent = m; e.classList.add('show'); document.getElementById('authError').classList.remove('show'); }
-  function clearAuthMessages() { document.getElementById('authError').classList.remove('show'); document.getElementById('authSuccess').classList.remove('show'); }
+  function showAuthError(m)      { const e = document.getElementById('authError'); e.textContent = m; e.classList.add('show'); document.getElementById('authSuccess').classList.remove('show'); }
+  function showAuthSuccess(m)    { const e = document.getElementById('authSuccess'); e.textContent = m; e.classList.add('show'); document.getElementById('authError').classList.remove('show'); }
+  function clearAuthMessages()   { document.getElementById('authError').classList.remove('show'); document.getElementById('authSuccess').classList.remove('show'); }
 
   window.doSignIn = async () => {
     const email = document.getElementById('siEmail').value.trim();
@@ -938,10 +949,10 @@
   /* ─────────────────────────────────────────────
      LOCAL STORAGE HELPERS
   ───────────────────────────────────────────── */
-  const getCart            = () => { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } };
-  const saveCart           = c  => localStorage.setItem('jersify_cart', JSON.stringify(c));
-  const getSavedAddresses  = () => { try { return JSON.parse(localStorage.getItem('jersify_addresses') || '[]'); } catch { return []; } };
-  const saveAddressLocal   = a  => { const addrs = getSavedAddresses(); addrs.unshift({ ...a, id: Date.now(), tag: 'Home' }); localStorage.setItem('jersify_addresses', JSON.stringify(addrs.slice(0, 5))); };
+  const getCart           = () => { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } };
+  const saveCart          = c  => localStorage.setItem('jersify_cart', JSON.stringify(c));
+  const getSavedAddresses = () => { try { return JSON.parse(localStorage.getItem('jersify_addresses') || '[]'); } catch { return []; } };
+  const saveAddressLocal  = a  => { const addrs = getSavedAddresses(); addrs.unshift({ ...a, id: Date.now(), tag: 'Home' }); localStorage.setItem('jersify_addresses', JSON.stringify(addrs.slice(0, 5))); };
 
   /* ─────────────────────────────────────────────
      LOAD COUPONS FROM FIREBASE
@@ -977,7 +988,7 @@
       }
     } catch (_) {}
     const setIfEmpty = (id, val) => { const el = document.getElementById(id); if (el && !el.value && val) el.value = val; };
-    setIfEmpty('custName', name);
+    setIfEmpty('custName',  name);
     setIfEmpty('custEmail', email);
     setIfEmpty('custPhone', phone);
   }
@@ -1000,8 +1011,8 @@
         </div>
       </div>`).join('');
     selectSavedAddr(0, encodeURIComponent(JSON.stringify(addrs[0])));
-    document.getElementById('addressForm').style.display  = 'none';
-    document.getElementById('saveAddrRow').style.display  = 'none';
+    document.getElementById('addressForm').style.display = 'none';
+    document.getElementById('saveAddrRow').style.display = 'none';
     newAddrVisible = false;
   }
 
@@ -1009,20 +1020,25 @@
     document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected'));
     document.getElementById(`savedAddr_${idx}`)?.classList.add('selected');
     selectedSavedAddr = JSON.parse(decodeURIComponent(encoded));
-    document.getElementById('addressForm').style.display  = 'none';
-    document.getElementById('saveAddrRow').style.display  = 'none';
+    document.getElementById('addressForm').style.display = 'none';
+    document.getElementById('saveAddrRow').style.display = 'none';
     newAddrVisible = false;
   };
 
   window.toggleNewAddress = () => {
     newAddrVisible = !newAddrVisible;
-    document.getElementById('addressForm').style.display  = newAddrVisible ? 'block' : 'none';
-    document.getElementById('saveAddrRow').style.display  = newAddrVisible ? 'flex'  : 'none';
+    document.getElementById('addressForm').style.display = newAddrVisible ? 'block' : 'none';
+    document.getElementById('saveAddrRow').style.display = newAddrVisible ? 'flex'  : 'none';
     if (newAddrVisible) { selectedSavedAddr = null; document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected')); }
   };
 
   window.selectSize = btn => { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
-  window.selPay     = method => { document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active')); document.getElementById(method === 'cashfree' ? 'pay_cf' : 'pay_cod').parentElement.classList.add('active'); };
+
+  /* ── Updated selPay for Razorpay ── */
+  window.selPay = method => {
+    document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
+    document.getElementById(method === 'razorpay' ? 'pay_rzp' : 'pay_cod').parentElement.classList.add('active');
+  };
 
   /* ─────────────────────────────────────────────
      GEOLOCATION
@@ -1058,14 +1074,14 @@
     const code  = document.getElementById('couponInput').value.trim().toUpperCase();
     const msgEl = document.getElementById('couponMsg');
     if (!code)         { msgEl.textContent = 'Please enter a coupon code.'; msgEl.className = 'coupon-msg error'; return; }
-    if (couponApplied) { msgEl.textContent = 'A coupon is already applied.'; msgEl.className = 'coupon-msg error'; return; }
+    if (couponApplied) { msgEl.textContent = 'A coupon is already applied.';  msgEl.className = 'coupon-msg error'; return; }
     const coupon = couponsMap[code];
-    if (!coupon)       { msgEl.textContent = 'Invalid coupon code.'; msgEl.className = 'coupon-msg error'; return; }
+    if (!coupon)       { msgEl.textContent = 'Invalid coupon code.';           msgEl.className = 'coupon-msg error'; return; }
     discountAmount = coupon.type === 'percent' ? Math.round(orderPrice * coupon.value / 100) : coupon.value;
     if (discountAmount > orderPrice) discountAmount = orderPrice;
-    couponApplied = true;
-    msgEl.textContent = `${coupon.desc} applied! You save ₹${discountAmount}`;
-    msgEl.className   = 'coupon-msg success';
+    couponApplied      = true;
+    msgEl.textContent  = `${coupon.desc} applied! You save ₹${discountAmount}`;
+    msgEl.className    = 'coupon-msg success';
     document.getElementById('discountRow').style.display = 'flex';
     document.getElementById('discountVal').textContent   = `-₹${discountAmount}`;
     updateTotal();
@@ -1091,9 +1107,9 @@
     const cart = getCart();
     orderPrice     = cart.reduce((s, i) => s + i.price * i.qty, 0);
     discountAmount = 0; couponApplied = false;
-    document.getElementById('subTotal').textContent   = `₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('finalTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('couponMsg').className    = 'coupon-msg';
+    document.getElementById('subTotal').textContent      = `₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('finalTotal').textContent    = `₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('couponMsg').className       = 'coupon-msg';
     document.getElementById('discountRow').style.display = 'none';
   }
 
@@ -1110,6 +1126,44 @@
 
   window.retryPayment = () => { document.getElementById('payFailedBanner').classList.remove('visible'); document.getElementById('confirmBtn').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
   window.switchToCOD  = () => { document.getElementById('payFailedBanner').classList.remove('visible'); selPay('cod'); document.getElementById('pay_cod').parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+
+  /* ════════════════════════════════════════════════
+     RAZORPAY PAYMENT — opens checkout modal
+     Returns a Promise that resolves with the
+     Razorpay payment response on success or
+     rejects on failure / dismissal.
+  ════════════════════════════════════════════════ */
+  function openRazorpay({ amount, orderId, name, email, phone, description }) {
+    return new Promise((resolve, reject) => {
+      const options = {
+        key:          RAZORPAY_KEY_ID,
+        amount:       amount * 100,          // Razorpay expects paise
+        currency:     "INR",
+        name:         "JERSIFY",
+        description:  description || "Jersey Purchase",
+        order_id:     orderId,               // Razorpay Order ID from your backend (optional for client-only flow)
+        prefill: {
+          name:    name  || "",
+          email:   email || "",
+          contact: phone || "",
+        },
+        theme: {
+          color: "#c61f2f",                  // Matches Jersify accent
+        },
+        modal: {
+          ondismiss: () => reject(new Error("Payment was cancelled.")),
+        },
+        handler: (response) => resolve(response),
+      };
+
+      /* Razorpay is loaded as a global from the <script> tag above */
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', (resp) => {
+        reject(new Error(resp.error?.description || "Payment failed."));
+      });
+      rzp.open();
+    });
+  }
 
   /* ════════════════════════════════════════════════
      PROCESS ORDER — Main order flow
@@ -1141,15 +1195,15 @@
       state   = document.getElementById('custState').value.trim();
       pincode = document.getElementById('custPincode').value.trim();
       country = document.getElementById('custCountry').value.trim() || 'India';
-      if (!name)                    { shakeField('custName');    alert('Please enter your name.');             return; }
-      if (!phone || phone.length < 10) { shakeField('custPhone'); alert('Please enter a valid phone number.'); return; }
-      if (!address)                 { shakeField('custAddress'); alert('Please enter your address.');          return; }
-      if (!city)                    { shakeField('custCity');    alert('Please enter your city.');             return; }
+      if (!name)                       { shakeField('custName');    alert('Please enter your name.');             return; }
+      if (!phone || phone.length < 10) { shakeField('custPhone');   alert('Please enter a valid phone number.'); return; }
+      if (!address)                    { shakeField('custAddress'); alert('Please enter your address.');          return; }
+      if (!city)                       { shakeField('custCity');    alert('Please enter your city.');             return; }
       if (!pincode || pincode.length < 4) { shakeField('custPincode'); alert('Please enter a valid pincode.'); return; }
       if (document.getElementById('saveAddrCheck').checked) saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
     }
 
-    const isCF        = document.getElementById('pay_cf').checked;
+    const isRZP       = document.getElementById('pay_rzp').checked;
     const finalPrice  = orderPrice - discountAmount;
     const selectedSize = document.querySelector('.size-btn.active')?.textContent || 'M';
     const orderId     = `JRS-${Date.now()}`;
@@ -1160,90 +1214,64 @@
       address, city, state, pincode, country,
       items: orderItems, subtotal: orderPrice,
       discount: discountAmount, total: finalPrice,
-      selectedSize, paymentMethod: isCF ? 'cashfree' : 'cod',
+      selectedSize, paymentMethod: isRZP ? 'razorpay' : 'cod',
     };
 
-    if (isCF) {
+    if (isRZP) {
       /* ──────────────────────────────────────
-         ONLINE PAYMENT via Cashfree
+         ONLINE PAYMENT via Razorpay
       ────────────────────────────────────── */
-      setConfirmBtn(true, 'Creating order…');
+      setConfirmBtn(true, 'Opening payment…');
 
-      let sessionId;
       try {
-        const result = await callFn('createCashfreeOrder', {
-          orderId, amount: finalPrice,
-          customerName: name, customerEmail: email, customerPhone: phone,
-          returnUrl: `${window.location.origin}/checkout.html?cf_order_id={order_id}&status={order_status}`,
+        /* ── Open Razorpay checkout modal ── */
+        const rzpResponse = await openRazorpay({
+          amount:      finalPrice,
+          orderId:     null,            // Pass Razorpay Order ID here if you create one server-side
+          name,
+          email,
+          phone,
+          description: orderItems.map(i => i.name).join(', '),
         });
-        sessionId = result.payment_session_id;
-      } catch (err) {
-        setConfirmBtn(false);
-        showPaymentFailed(`Could not initiate payment: ${err.message}`);
-        return;
-      }
 
-      setConfirmBtn(false);
-
-      /* ── Launch Cashfree payment modal ── */
-      try {
         /*
-         * FIX: Use Cashfree() constructor (global from SDK script),
-         * NOT load() which is undefined in module scope.
-         * Change mode to "production" when going live.
+         * rzpResponse contains:
+         *   razorpay_payment_id  — the payment ID to store
+         *   razorpay_order_id    — present if you passed an order_id above
+         *   razorpay_signature   — for server-side verification
          */
-        const cashfree = Cashfree({ mode: "sandbox" }); // ← FIXED
 
-        showProcessing('Opening payment…', 'Complete payment in the Cashfree window.');
+        setConfirmBtn(false);
+        showProcessing('Payment received!', 'Saving your order, please wait…');
 
-        const result = await cashfree.checkout({
-          paymentSessionId: sessionId,
-          redirectTarget:   "_modal",
-        });
-
-        hideProcessing();
-
-        if (result.error) {
-          showPaymentFailed(result.error.message || 'Payment was not completed.');
+        /* ── Save order to Firebase via existing function ── */
+        try {
+          await callFn('saveOrder', {
+            ...orderPayload,
+            paymentId:     rzpResponse.razorpay_payment_id,
+            razorpayOrderId: rzpResponse.razorpay_order_id || null,
+            razorpaySignature: rzpResponse.razorpay_signature || null,
+            paymentMethod: 'razorpay',
+            status:        'processing',
+          });
+        } catch (err) {
+          hideProcessing(); setConfirmBtn(false);
+          alert('Order save failed: ' + err.message);
           return;
         }
 
-        if (result.paymentDetails) {
-          /* ── Payment success — verify then save ── */
-          showProcessing('Verifying payment…', 'Almost done, please wait.');
+        /* Fire-and-forget notifications */
+        callFn('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Online Payment (Razorpay)', items: orderItems }).catch(console.warn);
+        callFn('sendSMS',        { orderId, name, phone, total: finalPrice }).catch(console.warn);
+        callFn('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Online Payment (Razorpay)', items: orderItems }).catch(console.warn);
 
-          try {
-            const verify = await callFn('verifyCashfreePayment', { cf_order_id: orderId });
-            if (verify.status !== 'SUCCESS') throw new Error('Payment not verified');
-          } catch (err) {
-            console.warn('Verification warning:', err.message);
-            // Proceed anyway — Cashfree SDK confirmed success
-          }
-
-          showProcessing('Saving your order…', 'Wrapping things up…');
-          try {
-            await callFn('saveOrder', { ...orderPayload, paymentId: sessionId, paymentMethod: 'cashfree', status: 'processing' });
-          } catch (err) {
-            hideProcessing(); setConfirmBtn(false);
-            alert('Order save failed: ' + err.message);
-            return;
-          }
-
-          /* Fire-and-forget notifications */
-          callFn('sendOrderEmail', { orderId, name, email, total: finalPrice, payMethod: 'Online Payment', items: orderItems }).catch(console.warn);
-          callFn('sendSMS',        { orderId, name, phone, total: finalPrice }).catch(console.warn);
-          callFn('sendWhatsApp',   { orderId, name, phone, total: finalPrice, payMethod: 'Online Payment', items: orderItems }).catch(console.warn);
-
-          localStorage.removeItem('jersify_cart');
-          hideProcessing(); setConfirmBtn(false);
-          showSuccess(orderId, name, finalPrice, selectedSize, 'Online Payment');
-        } else {
-          // Modal closed without completing
-          showPaymentFailed('Payment was cancelled or not completed.');
-        }
+        localStorage.removeItem('jersify_cart');
+        hideProcessing(); setConfirmBtn(false);
+        showSuccess(orderId, name, finalPrice, selectedSize, 'Online Payment');
 
       } catch (err) {
-        hideProcessing(); setConfirmBtn(false);
+        /* Payment dismissed or failed inside Razorpay modal */
+        setConfirmBtn(false);
         showPaymentFailed(err?.message || 'Payment could not be processed.');
       }
 
@@ -1274,61 +1302,17 @@
   };
 
   /* ─────────────────────────────────────────────
-     HANDLE CASHFREE REDIRECT RETURN
-     (fallback for non-modal / redirect flow)
-  ───────────────────────────────────────────── */
-  async function handleCashfreeReturn() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const cfOrderId = urlParams.get('cf_order_id');
-    const cfStatus  = urlParams.get('status');
-    if (!cfOrderId || !cfStatus) return false;
-
-    // Clean URL
-    window.history.replaceState({}, document.title, window.location.pathname);
-
-    if (cfStatus === 'SUCCESS') {
-      const stored = JSON.parse(sessionStorage.getItem('jersify_pending_order') || '{}');
-      if (stored.orderId) {
-        try {
-          showProcessing('Saving your order…', 'Please wait…');
-          await callFn('saveOrder', { ...stored, paymentId: cfOrderId, paymentMethod: 'cashfree', status: 'processing' });
-          callFn('sendOrderEmail', { orderId: stored.orderId, name: stored.customerName, email: stored.email, total: stored.total, payMethod: 'Online Payment', items: stored.items || [] }).catch(console.warn);
-          callFn('sendSMS',        { orderId: stored.orderId, name: stored.customerName, phone: stored.phone, total: stored.total }).catch(console.warn);
-          localStorage.removeItem('jersify_cart');
-          sessionStorage.removeItem('jersify_pending_order');
-          hideProcessing();
-          document.getElementById('loading').style.display        = 'none';
-          document.getElementById('checkoutContent').style.display = 'block';
-          showSuccess(stored.orderId, stored.customerName, stored.total, stored.selectedSize || 'M', 'Online Payment');
-          return true;
-        } catch (e) { hideProcessing(); console.error(e); }
-      }
-    } else {
-      // Payment failed on redirect
-      document.getElementById('loading').style.display        = 'none';
-      document.getElementById('checkoutContent').style.display = 'block';
-      showPaymentFailed('Payment was not successful. Please try again.');
-      return true;
-    }
-    return false;
-  }
-
-  /* ─────────────────────────────────────────────
      DOMContentLoaded — Bootstrap
   ───────────────────────────────────────────── */
   window.addEventListener('DOMContentLoaded', async () => {
     loadCoupons();
     renderSavedAddresses();
 
-    // Handle Cashfree redirect return first
-    const handled = await handleCashfreeReturn();
-    if (handled) return;
-
     /* Load products / cart */
-    const params   = new URLSearchParams(window.location.search);
-    const pid      = params.get('id');
+    const params    = new URLSearchParams(window.location.search);
+    const pid       = params.get('id');
     const paramSize = params.get('size');
-    const cart     = getCart();
+    const cart      = getCart();
     const orderBody = document.getElementById('orderItemsBody');
 
     if (pid) {
@@ -1337,8 +1321,8 @@
         const snap = await get(child(dbRef, `products/${pid}`));
         if (snap.exists()) {
           const p = snap.val(), name = p.name || 'Jersify Kit';
-          orderPrice  = p.price ? parseInt(p.price) : 1499;
-          orderItems  = [{ id: pid, name, price: orderPrice, size: paramSize || 'M', team: p.team || '', imgUrl: p.imgUrl || '', qty: 1 }];
+          orderPrice = p.price ? parseInt(p.price) : 1499;
+          orderItems = [{ id: pid, name, price: orderPrice, size: paramSize || 'M', team: p.team || '', imgUrl: p.imgUrl || '', qty: 1 }];
           orderBody.innerHTML = `
             <div class="product-row">
               <div class="product-img">
@@ -1364,9 +1348,9 @@
 
     } else if (cart.length > 0) {
       /* Cart mode */
-      isCartMode  = true;
-      orderItems  = cart;
-      orderPrice  = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      isCartMode = true;
+      orderItems = cart;
+      orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
       orderBody.innerHTML = cart.map(item => {
         const safeKey = item.key.replace(/[^a-zA-Z0-9]/g, '_');
         return `
