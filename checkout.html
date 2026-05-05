@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JERSIFY — Checkout</title>
   <style>
@@ -1033,8 +1034,63 @@
     }
 
     /* ── Online: encode payload and redirect ── */
-    setConfirmBtn(true, 'Redirecting…');
-    showProcessing('Redirecting to payment…', 'You\'ll be back in seconds after paying.');
+    // ADD this instead (after the COD block):
+setConfirmBtn(true, 'Opening payment…');
+showProcessing('Opening payment…', 'Complete payment to place your order.');
+
+const razorpayKey = 'rzp_live_omDNDSL8gmUBCZ'; // same key WaveRide uses
+const options = {
+  key: razorpayKey,
+  amount: Math.round(finalPrice * 100),
+  currency: 'INR',
+  name: 'Jersify',
+  description: `Order ${orderId}`,
+  prefill: { name, email, contact: phone },
+  notes: { orderId, source: 'jersify' },
+  handler: async (res) => {
+    hideProcessing();
+    showProcessing('Saving your order…', 'Almost done!');
+    try {
+      const { ref: rRef, set: rSet, push: rPush } =
+        await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+      const newRef = rPush(rRef(db, 'orders'));
+      await rSet(newRef, {
+        orderId, userId: currentUser.uid,
+        userEmail: currentUser.email || '',
+        customerName: name, phone, email,
+        address, city, state, pincode, country,
+        items: orderItems,
+        subtotal: orderPrice, discount: discountAmount, total: finalPrice,
+        selectedSize, paymentMethod: 'razorpay',
+        paymentId: res.razorpay_payment_id,
+        status: 'confirmed',
+        createdAt: new Date().toISOString()
+      });
+      localStorage.removeItem('jersify_cart');
+      hideProcessing();
+      setConfirmBtn(false);
+      showSuccessScreen(orderId, name, finalPrice, selectedSize, 'Online Payment');
+    } catch (err) {
+      hideProcessing();
+      setConfirmBtn(false);
+      alert('Payment successful but order save failed. Payment ID: ' + res.razorpay_payment_id + '. Contact support.');
+    }
+  },
+  theme: { color: '#c61f2f' },
+  modal: {
+    ondismiss: () => { hideProcessing(); setConfirmBtn(false, 'Proceed to Payment →'); }
+  }
+};
+
+try {
+  hideProcessing();
+  const rzp = new Razorpay(options);
+  rzp.open();
+} catch (err) {
+  hideProcessing();
+  setConfirmBtn(false, 'Proceed to Payment →');
+  alert('Could not open payment gateway. Try again.');
+}
 
     /* Store a snapshot in sessionStorage as fallback */
     try { sessionStorage.setItem('jersify_pending_order', JSON.stringify({ ...payload, items: orderItems })); } catch (_) {}
