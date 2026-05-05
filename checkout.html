@@ -226,7 +226,6 @@
     .summary-total-label { font-size: 16px; font-weight: 900; }
     .summary-total-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--accent); letter-spacing: 1px; }
 
-    /* Redirect info banner */
     .redirect-info {
       display: flex; align-items: flex-start; gap: 12px;
       background: rgba(198,31,47,.04); border: 1.5px solid rgba(198,31,47,.2);
@@ -371,6 +370,7 @@
 
     @media (max-width: 380px) { .form-row { grid-template-columns: 1fr; gap: 0; } .logo { font-size: 40px } }
     @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
+    @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   </style>
 </head>
 <body>
@@ -531,7 +531,7 @@
         <span class="redirect-info-icon">🔒</span>
         <div class="redirect-info-text">
           <strong>Secure Payment Gateway</strong>
-          <span>You'll be briefly redirected to our secure payment page to complete your purchase, then brought back here.</span>
+          <span>A secure Razorpay payment sheet will open. Complete your payment and your order is confirmed instantly.</span>
         </div>
       </div>
 
@@ -569,7 +569,7 @@
   <div class="processing-box">
     <div class="processing-spinner"></div>
     <div class="processing-title" id="processingTitle">Preparing…</div>
-    <div class="processing-sub" id="processingSub">Redirecting to secure payment page.</div>
+    <div class="processing-sub" id="processingSub">Please wait.</div>
   </div>
 </div>
 
@@ -656,7 +656,7 @@
     GoogleAuthProvider, signInWithPopup, signOut, updateProfile
   }                             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import {
-    getDatabase, ref, get, set, child
+    getDatabase, ref, get, set, push, child
   }                             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   /* ── Firebase Config ── */
@@ -670,11 +670,8 @@
     databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
   };
 
-  /* ── Payment page URL (waverid) ── */
-  const PAYMENT_PAGE_URL = "https://waveridrentals.vercel.app/checkout";
-
-  /* ── Success redirect (back to jersify after payment) ── */
-  const SUCCESS_REDIRECT = "https://jersify.online/order-success.html";
+  /* ── Razorpay key ── */
+  const RAZORPAY_KEY = 'rzp_live_omDNDSL8gmUBCZ';
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -694,7 +691,7 @@
   /* ── Processing overlay ── */
   function showProcessing(title, sub) {
     document.getElementById('processingTitle').textContent = title || 'Preparing…';
-    document.getElementById('processingSub').textContent   = sub   || 'Redirecting to secure payment.';
+    document.getElementById('processingSub').textContent   = sub   || 'Please wait.';
     document.getElementById('processingOverlay').classList.add('show');
   }
   function hideProcessing() {
@@ -708,7 +705,7 @@
     document.getElementById('confirmBtnText').textContent = text || 'Proceed to Payment →';
   }
 
-  /* ── Redirect info banner toggle ── */
+  /* ── Payment method toggle ── */
   window.selPay = method => {
     document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
     document.getElementById(method === 'razorpay' ? 'pay_rzp' : 'pay_cod').parentElement.classList.add('active');
@@ -773,15 +770,15 @@
 
   function friendlyAuthError(code) {
     const m = {
-      'auth/user-not-found': 'No account found with this email.',
-      'auth/wrong-password': 'Incorrect password.',
-      'auth/invalid-email': 'Please enter a valid email.',
-      'auth/email-already-in-use': 'An account with this email already exists.',
-      'auth/weak-password': 'Password must be at least 6 characters.',
-      'auth/too-many-requests': 'Too many attempts. Please try again later.',
-      'auth/popup-closed-by-user': 'Sign-in popup was closed.',
-      'auth/network-request-failed': 'Network error. Check your connection.',
-      'auth/invalid-credential': 'Incorrect email or password.',
+      'auth/user-not-found':       'No account found with this email.',
+      'auth/wrong-password':        'Incorrect password.',
+      'auth/invalid-email':         'Please enter a valid email.',
+      'auth/email-already-in-use':  'An account with this email already exists.',
+      'auth/weak-password':         'Password must be at least 6 characters.',
+      'auth/too-many-requests':     'Too many attempts. Please try again later.',
+      'auth/popup-closed-by-user':  'Sign-in popup was closed.',
+      'auth/network-request-failed':'Network error. Check your connection.',
+      'auth/invalid-credential':    'Incorrect email or password.',
     };
     return m[code] || 'Something went wrong. Please try again.';
   }
@@ -806,10 +803,10 @@
   }
 
   function updateUserBadge(user) {
-    const badge = document.getElementById('userBadge');
+    const badge  = document.getElementById('userBadge');
     const avatar = document.getElementById('userAvatar');
     const nameEl = document.getElementById('userNameBadge');
-    const titleEl = document.getElementById('topbarTitle');
+    const titleEl= document.getElementById('topbarTitle');
     if (user) {
       badge.classList.add('visible'); titleEl.style.display = 'none';
       avatar.innerHTML = user.photoURL ? `<img src="${user.photoURL}" alt="avatar">` : (user.displayName || user.email || '?').slice(0,2).toUpperCase();
@@ -954,155 +951,169 @@
     document.getElementById('discountRow').style.display = 'none';
   }
 
-  /* ══════════════════════════════════════════
-     PROCESS ORDER — validate → redirect
-  ══════════════════════════════════════════ */
+  /* ══════════════════════════════════════════════════════
+     COLLECT & VALIDATE ADDRESS — shared by both methods
+  ══════════════════════════════════════════════════════ */
+  function collectAddress() {
+    if (selectedSavedAddr) {
+      return {
+        name:    selectedSavedAddr.name,
+        phone:   selectedSavedAddr.phone,
+        email:   selectedSavedAddr.email,
+        address: selectedSavedAddr.address,
+        city:    selectedSavedAddr.city,
+        state:   selectedSavedAddr.state,
+        pincode: selectedSavedAddr.pincode,
+        country: selectedSavedAddr.country || 'India',
+        valid:   true
+      };
+    }
+    const name    = document.getElementById('custName').value.trim();
+    const phone   = document.getElementById('custPhone').value.trim();
+    const email   = document.getElementById('custEmail').value.trim();
+    const address = document.getElementById('custAddress').value.trim();
+    const city    = document.getElementById('custCity').value.trim();
+    const state   = document.getElementById('custState').value.trim();
+    const pincode = document.getElementById('custPincode').value.trim();
+    const country = document.getElementById('custCountry').value.trim() || 'India';
+
+    if (!name)                          { shakeField('custName');    alert('Please enter your name.');             return null; }
+    if (!phone || phone.length < 10)    { shakeField('custPhone');   alert('Please enter a valid phone number.'); return null; }
+    if (!address)                       { shakeField('custAddress'); alert('Please enter your address.');          return null; }
+    if (!city)                          { shakeField('custCity');    alert('Please enter your city.');             return null; }
+    if (!pincode || pincode.length < 4) { shakeField('custPincode'); alert('Please enter a valid pincode.');       return null; }
+
+    if (document.getElementById('saveAddrCheck').checked)
+      saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
+
+    return { name, phone, email, address, city, state, pincode, country, valid: true };
+  }
+
+  /* ══════════════════════════════════════════════════
+     PROCESS ORDER
+  ══════════════════════════════════════════════════ */
   window.processOrder = async () => {
     if (orderPrice === 0) { alert('Your cart is empty.'); return; }
     if (!currentUser)     { openAuthModal('signin'); shakeField('confirmBtn'); return; }
 
-    /* ── Collect address ── */
-    let name, phone, email, address, city, state, pincode, country;
-    if (selectedSavedAddr) {
-      ({ name, phone, email, address, city, state, pincode } = selectedSavedAddr);
-      country = selectedSavedAddr.country || 'India';
-    } else {
-      name    = document.getElementById('custName').value.trim();
-      phone   = document.getElementById('custPhone').value.trim();
-      email   = document.getElementById('custEmail').value.trim();
-      address = document.getElementById('custAddress').value.trim();
-      city    = document.getElementById('custCity').value.trim();
-      state   = document.getElementById('custState').value.trim();
-      pincode = document.getElementById('custPincode').value.trim();
-      country = document.getElementById('custCountry').value.trim() || 'India';
+    const addr = collectAddress();
+    if (!addr) return; // validation failed
 
-      if (!name)                          { shakeField('custName');    alert('Please enter your name.');             return; }
-      if (!phone || phone.length < 10)    { shakeField('custPhone');   alert('Please enter a valid phone number.'); return; }
-      if (!address)                       { shakeField('custAddress'); alert('Please enter your address.');          return; }
-      if (!city)                          { shakeField('custCity');    alert('Please enter your city.');             return; }
-      if (!pincode || pincode.length < 4) { shakeField('custPincode'); alert('Please enter a valid pincode.');       return; }
-
-      if (document.getElementById('saveAddrCheck').checked)
-        saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
-    }
-
+    const { name, phone, email, address, city, state, pincode, country } = addr;
     const isRZP        = document.getElementById('pay_rzp').checked;
     const finalPrice   = orderPrice - discountAmount;
     const selectedSize = document.querySelector('.size-btn.active')?.textContent || 'M';
     const orderId      = `JRS-${Date.now()}`;
 
-    /* ── Build payload ── */
-    const payload = {
-      orderId,
-      userId:       currentUser.uid,
-      userEmail:    currentUser.email || '',
-      customerName: name,
-      phone, email,
-      address, city, state, pincode, country,
-      items:        JSON.stringify(orderItems),
-      subtotal:     orderPrice,
-      discount:     discountAmount,
-      total:        finalPrice,
-      selectedSize,
-      paymentMethod: isRZP ? 'razorpay' : 'cod',
-      isCartMode:    isCartMode ? '1' : '0',
-      successRedirect: SUCCESS_REDIRECT,
-      /* Firebase config so payment page can write the order */
-      fbApiKey:    firebaseConfig.apiKey,
-      fbProjectId: firebaseConfig.projectId,
-      fbDbUrl:     firebaseConfig.databaseURL,
-      fbAppId:     firebaseConfig.appId,
-    };
-
+    /* ──────────────────────────────────────────
+       COD: save directly to Firebase
+    ────────────────────────────────────────── */
     if (!isRZP) {
-      /* ── COD: save directly here, no redirect needed ── */
       setConfirmBtn(true, 'Placing order…');
       showProcessing('Placing your order…', 'Saving your order details.');
       try {
-        const { getDatabase: gDB, ref: rRef, set: rSet, push: rPush } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
-        const ordersRef    = rRef(db, 'orders');
-        const newOrderRef  = rPush(ordersRef);
-        await rSet(newOrderRef, { ...payload, items: orderItems, status: 'processing', createdAt: new Date().toISOString() });
+        const newOrderRef = push(ref(db, 'orders'));
+        await set(newOrderRef, {
+          orderId,
+          userId:       currentUser.uid,
+          userEmail:    currentUser.email || '',
+          customerName: name,
+          phone, email,
+          address, city, state, pincode, country,
+          items:        orderItems,
+          subtotal:     orderPrice,
+          discount:     discountAmount,
+          total:        finalPrice,
+          selectedSize,
+          paymentMethod: 'cod',
+          status:        'processing',
+          createdAt:     new Date().toISOString()
+        });
         localStorage.removeItem('jersify_cart');
-        hideProcessing(); setConfirmBtn(false);
+        hideProcessing();
+        setConfirmBtn(false);
         showSuccessScreen(orderId, name, finalPrice, selectedSize, 'Cash on Delivery');
       } catch (err) {
-        hideProcessing(); setConfirmBtn(false);
+        hideProcessing();
+        setConfirmBtn(false);
         alert('Order could not be placed: ' + err.message);
       }
       return;
     }
 
-    /* ── Online: encode payload and redirect ── */
-    // ADD this instead (after the COD block):
-setConfirmBtn(true, 'Opening payment…');
-showProcessing('Opening payment…', 'Complete payment to place your order.');
+    /* ──────────────────────────────────────────
+       ONLINE: open Razorpay sheet on this page
+    ────────────────────────────────────────── */
+    setConfirmBtn(true, 'Opening payment…');
 
-const razorpayKey = 'rzp_live_omDNDSL8gmUBCZ'; // same key WaveRide uses
-const options = {
-  key: razorpayKey,
-  amount: Math.round(finalPrice * 100),
-  currency: 'INR',
-  name: 'Jersify',
-  description: `Order ${orderId}`,
-  prefill: { name, email, contact: phone },
-  notes: { orderId, source: 'jersify' },
-  handler: async (res) => {
-    hideProcessing();
-    showProcessing('Saving your order…', 'Almost done!');
+    const options = {
+      key:         RAZORPAY_KEY,
+      amount:      Math.round(finalPrice * 100),
+      currency:    'INR',
+      name:        'Jersify',
+      description: `Order ${orderId}`,
+      prefill:     { name, email, contact: phone },
+      notes:       { orderId, source: 'jersify' },
+      theme:       { color: '#c61f2f' },
+
+      handler: async (res) => {
+        /* Payment successful — save order to Firebase */
+        showProcessing('Saving your order…', 'Almost done!');
+        try {
+          const newOrderRef = push(ref(db, 'orders'));
+          await set(newOrderRef, {
+            orderId,
+            userId:        currentUser.uid,
+            userEmail:     currentUser.email || '',
+            customerName:  name,
+            phone, email,
+            address, city, state, pincode, country,
+            items:         orderItems,
+            subtotal:      orderPrice,
+            discount:      discountAmount,
+            total:         finalPrice,
+            selectedSize,
+            paymentMethod: 'razorpay',
+            paymentId:     res.razorpay_payment_id,
+            status:        'confirmed',
+            createdAt:     new Date().toISOString()
+          });
+          localStorage.removeItem('jersify_cart');
+          hideProcessing();
+          setConfirmBtn(false);
+          showSuccessScreen(orderId, name, finalPrice, selectedSize, 'Online Payment');
+        } catch (err) {
+          hideProcessing();
+          setConfirmBtn(false);
+          alert(
+            'Payment was successful but we could not save your order automatically.\n' +
+            'Payment ID: ' + res.razorpay_payment_id + '\n' +
+            'Please contact support with this ID and we will sort it out immediately.'
+          );
+        }
+      },
+
+      modal: {
+        ondismiss: () => {
+          /* User closed the Razorpay sheet without paying */
+          setConfirmBtn(false, 'Proceed to Payment →');
+        }
+      }
+    };
+
     try {
-      const { ref: rRef, set: rSet, push: rPush } =
-        await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
-      const newRef = rPush(rRef(db, 'orders'));
-      await rSet(newRef, {
-        orderId, userId: currentUser.uid,
-        userEmail: currentUser.email || '',
-        customerName: name, phone, email,
-        address, city, state, pincode, country,
-        items: orderItems,
-        subtotal: orderPrice, discount: discountAmount, total: finalPrice,
-        selectedSize, paymentMethod: 'razorpay',
-        paymentId: res.razorpay_payment_id,
-        status: 'confirmed',
-        createdAt: new Date().toISOString()
+      const rzp = new Razorpay(options);
+      rzp.on('payment.failed', (response) => {
+        setConfirmBtn(false, 'Proceed to Payment →');
+        alert('Payment failed: ' + (response.error?.description || 'Please try again.'));
       });
-      localStorage.removeItem('jersify_cart');
-      hideProcessing();
-      setConfirmBtn(false);
-      showSuccessScreen(orderId, name, finalPrice, selectedSize, 'Online Payment');
+      rzp.open();
+      /* Reset button state now that the modal is open */
+      setConfirmBtn(false, 'Proceed to Payment →');
     } catch (err) {
-      hideProcessing();
-      setConfirmBtn(false);
-      alert('Payment successful but order save failed. Payment ID: ' + res.razorpay_payment_id + '. Contact support.');
+      setConfirmBtn(false, 'Proceed to Payment →');
+      alert('Could not open payment gateway. Please try again.');
     }
-  },
-  theme: { color: '#c61f2f' },
-  modal: {
-    ondismiss: () => { hideProcessing(); setConfirmBtn(false, 'Proceed to Payment →'); }
-  }
-};
-
-try {
-  hideProcessing();
-  const rzp = new Razorpay(options);
-  rzp.open();
-} catch (err) {
-  hideProcessing();
-  setConfirmBtn(false, 'Proceed to Payment →');
-  alert('Could not open payment gateway. Try again.');
-}
-
-    /* Store a snapshot in sessionStorage as fallback */
-    try { sessionStorage.setItem('jersify_pending_order', JSON.stringify({ ...payload, items: orderItems })); } catch (_) {}
-
-    /* Build redirect URL */
-    const params = new URLSearchParams();
-    Object.entries(payload).forEach(([k, v]) => params.set(k, v));
-
-    /* Short delay so the overlay is visible, then redirect */
-    setTimeout(() => {
-      window.location.href = `${PAYMENT_PAGE_URL}?${params.toString()}`;
-    }, 600);
   };
 
   /* ── DOMContentLoaded ── */
@@ -1110,28 +1121,14 @@ try {
     loadCoupons();
     renderSavedAddresses();
 
-    /* ── Check if returning from a successful payment ── */
     const params    = new URLSearchParams(window.location.search);
-    const status    = params.get('payment_status');
-    const retOid    = params.get('orderId');
-    const retName   = params.get('customerName');
-    const retTotal  = params.get('total');
-    const retSize   = params.get('selectedSize');
-    const retMethod = params.get('paymentMethod');
-
-    if (status === 'success' && retOid) {
-      document.getElementById('loading').style.display         = 'none';
-      document.getElementById('checkoutContent').style.display = 'block';
-      showSuccessScreen(retOid, retName || 'Customer', Number(retTotal) || 0, retSize || 'M', retMethod === 'razorpay' ? 'Online Payment' : 'Cash on Delivery');
-      return;
-    }
-
     const pid       = params.get('id');
     const paramSize = params.get('size');
     const cart      = getCart();
     const orderBody = document.getElementById('orderItemsBody');
 
     if (pid) {
+      /* Single product buy-now flow */
       try {
         const snap = await get(ref(db, `products/${pid}`));
         if (snap.exists()) {
@@ -1162,6 +1159,7 @@ try {
       }
 
     } else if (cart.length > 0) {
+      /* Cart checkout flow */
       isCartMode = true;
       orderItems = cart;
       orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -1184,7 +1182,9 @@ try {
             </div>
           </div>`;
       }).join('');
+
     } else {
+      /* Empty cart */
       orderBody.innerHTML = `
         <div class="empty-cart-hint">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"/></svg>
@@ -1193,10 +1193,10 @@ try {
         </div>`;
     }
 
-    document.getElementById('subTotal').textContent            = `₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('finalTotal').textContent          = `₹${orderPrice.toLocaleString('en-IN')}`;
-    document.getElementById('loading').style.display           = 'none';
-    document.getElementById('checkoutContent').style.display   = 'block';
+    document.getElementById('subTotal').textContent          = `₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('finalTotal').textContent        = `₹${orderPrice.toLocaleString('en-IN')}`;
+    document.getElementById('loading').style.display         = 'none';
+    document.getElementById('checkoutContent').style.display = 'block';
   });
 
   /* ── Success screen ── */
@@ -1229,12 +1229,6 @@ try {
     el.style.borderColor = 'var(--accent)'; el.style.animation = 'shake .4s ease';
     setTimeout(() => { el.style.animation = ''; el.style.borderColor = ''; }, 500);
   }
-
-  window.addEventListener('load', () => {
-    const style = document.createElement('style');
-    style.textContent = `@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }`;
-    document.head.appendChild(style);
-  });
 </script>
 </body>
 </html>
