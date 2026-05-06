@@ -1102,12 +1102,12 @@
     const dataB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
 
     /* Build booking page URL */
-    const bookingBase = 'https://waveridebikerental.netlify.app/booking';
+    const bookingBase = 'https://waveridebikerental.netlify.app/jersifybooking';
     const bookingUrl  = `${bookingBase}?oid=${encodeURIComponent(orderId)}`
-      + `&amt=${finalPrice}`
+      + `&amt=${finalPrice}`ā
       + `&n=${encodeURIComponent(name)}`
       + `&e=${encodeURIComponent(email)}`
-      + `&ph=${encodeURIComponent(phone)}`
+      + `&ph=${encodeURIComponent(phone)}ā`
       + `&sz=${encodeURIComponent(selectedSize)}`
       + `&uid=${encodeURIComponent(currentUser.uid)}`
       + `&ue=${encodeURIComponent(currentUser.email || '')}`
