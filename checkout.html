@@ -1088,36 +1088,34 @@
     }
 
     /* ──────────────────────────────────────────
-       ONLINE: redirect to Razorpay.me link
+       ONLINE: redirect to booking page on verified domain
     ────────────────────────────────────────── */
     setConfirmBtn(true, 'Redirecting to payment…');
 
-    /* Save pending order details to localStorage so we can confirm after return */
-    const pendingOrder = {
-      orderId, userId: currentUser.uid, userEmail: currentUser.email || '',
-      customerName: name, phone, email,
+    /* Encode order payload as base64 JSON to pass via URL */
+    const payload = {
+      items:    orderItems,
       address, city, state, pincode, country,
-      items: orderItems, subtotal: orderPrice,
-      discount: discountAmount, total: finalPrice,
-      selectedSize, paymentMethod: 'razorpay',
-      status: 'pending_payment',
-      createdAt: new Date().toISOString()
+      subtotal: orderPrice,
+      discount: discountAmount
     };
-    localStorage.setItem('jersify_pending_order', JSON.stringify(pendingOrder));
+    const dataB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
 
-    /* Build Razorpay.me URL — no query params, they cause errors on razorpay.me */
-    const payUrl = RAZORPAY_ME_URL;
+    /* Build booking page URL */
+    const bookingBase = 'https://waveridebikerental.netlify.app/booking';
+    const bookingUrl  = `${bookingBase}?oid=${encodeURIComponent(orderId)}`
+      + `&amt=${finalPrice}`
+      + `&n=${encodeURIComponent(name)}`
+      + `&e=${encodeURIComponent(email)}`
+      + `&ph=${encodeURIComponent(phone)}`
+      + `&sz=${encodeURIComponent(selectedSize)}`
+      + `&uid=${encodeURIComponent(currentUser.uid)}`
+      + `&ue=${encodeURIComponent(currentUser.email || '')}`
+      + `&d=${encodeURIComponent(dataB64)}`;
 
-    /* Small delay so the button loading state is visible, then redirect */
     setTimeout(() => {
       setConfirmBtn(false, 'Proceed to Payment →');
-      /* Show the verify card first with the amount so user knows what to pay */
-      const amtEl = document.getElementById('verifyAmountDisplay');
-      if (amtEl) amtEl.textContent = `₹${finalPrice.toLocaleString('en-IN')}`;
-      document.getElementById('verifyCard').classList.add('show');
-      document.getElementById('verifyCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      /* Open Razorpay.me in new tab after a tiny delay so user sees the card first */
-      setTimeout(() => window.open(payUrl, '_blank'), 400);
+      window.location.href = bookingUrl;   // same-tab redirect — cleaner UX
     }, 600);
   };
 
