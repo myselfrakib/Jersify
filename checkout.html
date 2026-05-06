@@ -2507,14 +2507,75 @@
 
 
 
+    async function handleOnlinePaymentCallback(params) {
+      document.getElementById('checkoutContent').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+      const orderId = params.get('oid');
+      const paymentId = params.get('paymentId');
+      const dataB64 = params.get('d');
+      if (!orderId || !dataB64) {
+        alert('Invalid callback data.');
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      try {
+        const payload = JSON.parse(decodeURIComponent(escape(atob(dataB64))));
+        const name = params.get('n') || 'Customer';
+        const finalPrice = params.get('amt') || '0';
+        const selectedSize = params.get('sz') || 'M';
+        const uid = params.get('uid') || 'anonymous';
+        const ue = params.get('ue') || '';
+        const email = params.get('e') || '';
+        const phone = params.get('ph') || '';
+        
+        const orderRef = dbRef(rtdb, `orders/${orderId}`);
+        await set(orderRef, {
+          orderId,
+          userId: uid,
+          userEmail: ue,
+          customerName: name,
+          phone, email,
+          address: payload.address || '',
+          city: payload.city || '',
+          state: payload.state || '',
+          pincode: payload.pincode || '',
+          country: payload.country || '',
+          items: payload.items || [],
+          subtotal: payload.subtotal || 0,
+          discount: payload.discount || 0,
+          total: parseFloat(finalPrice),
+          selectedSize,
+          paymentMethod: 'online',
+          paymentId,
+          status: 'confirmed',
+          source: 'jersify.online callback',
+          createdAt: new Date().toISOString(),
+          confirmedAt: new Date().toISOString()
+        });
+        localStorage.removeItem('jersify_cart');
+        document.getElementById('loading').style.display = 'none';
+        showSuccessScreen(orderId, name, finalPrice, selectedSize, 'Online Payment');
+      } catch(err) {
+        alert('Failed to save order: ' + err.message);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('checkoutContent').style.display = 'block';
+      }
+    }
+
     /* ── DOMContentLoaded ── */
     window.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const paymentId = params.get('paymentId');
+      
+      if (paymentId) {
+        handleOnlinePaymentCallback(params);
+        return;
+      }
+
       loadCoupons();
       renderSavedAddresses();
 
-
-
-      const params = new URLSearchParams(window.location.search);
       const pid = params.get('id');
       const paramSize = params.get('size');
       const cart = getCart();
