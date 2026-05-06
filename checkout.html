@@ -565,7 +565,15 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/></svg>
           Confirm Your Payment
         </div>
-        <p class="verify-note">Paid on Razorpay? Enter the <strong>Payment ID</strong> from your Razorpay confirmation email or SMS (starts with <strong>pay_</strong>) to confirm your order.</p>
+        <!-- Amount to pay box -->
+        <div style="background:rgba(30,140,74,.06);border:1.5px solid rgba(30,140,74,.25);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <div>
+            <div style="font-size:10px;font-weight:800;color:var(--success);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Pay This Amount on Razorpay</div>
+            <div id="verifyAmountDisplay" style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--success);letter-spacing:1px;">₹—</div>
+          </div>
+          <a href="https://razorpay.me/@waveridebikerentalservice" target="_blank" style="display:inline-flex;align-items:center;gap:6px;border:none;border-radius:10px;padding:10px 14px;background:var(--success);color:#fff;font-size:12px;font-weight:800;cursor:pointer;text-decoration:none;flex-shrink:0;">Open Payment Link →</a>
+        </div>
+        <p class="verify-note">After paying, check your <strong>email or SMS</strong> from Razorpay for the <strong>Payment ID</strong> (starts with <strong>pay_</strong>). Paste it below to confirm your order.</p>
         <div class="verify-input-row">
           <input type="text" id="paymentIdInput" class="verify-input" placeholder="pay_XXXXXXXXXXXXXXXX" autocomplete="off" spellcheck="false">
           <button class="verify-btn" id="verifyBtn" onclick="verifyAndConfirm()">CONFIRM</button>
@@ -1097,16 +1105,19 @@
     };
     localStorage.setItem('jersify_pending_order', JSON.stringify(pendingOrder));
 
-    /* Build Razorpay.me URL with amount pre-filled (in paise → but .me uses rupees) */
-    const payUrl = `${RAZORPAY_ME_URL}?amount=${finalPrice}&name=${encodeURIComponent(name)}&contact=${encodeURIComponent(phone)}&email=${encodeURIComponent(email)}&description=${encodeURIComponent('Jersify Order ' + orderId)}`;
+    /* Build Razorpay.me URL — no query params, they cause errors on razorpay.me */
+    const payUrl = RAZORPAY_ME_URL;
 
     /* Small delay so the button loading state is visible, then redirect */
     setTimeout(() => {
       setConfirmBtn(false, 'Proceed to Payment →');
-      window.open(payUrl, '_blank');
-      /* Show the verify card so user can confirm on return */
+      /* Show the verify card first with the amount so user knows what to pay */
+      const amtEl = document.getElementById('verifyAmountDisplay');
+      if (amtEl) amtEl.textContent = `₹${finalPrice.toLocaleString('en-IN')}`;
       document.getElementById('verifyCard').classList.add('show');
       document.getElementById('verifyCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      /* Open Razorpay.me in new tab after a tiny delay so user sees the card first */
+      setTimeout(() => window.open(payUrl, '_blank'), 400);
     }, 600);
   };
 
@@ -1163,8 +1174,15 @@
     renderSavedAddresses();
 
     /* If user came back from Razorpay.me with a pending order, show verify card */
-    if (localStorage.getItem('jersify_pending_order')) {
-      document.getElementById('verifyCard').classList.add('show');
+    const pendingRaw = localStorage.getItem('jersify_pending_order');
+    if (pendingRaw) {
+      try {
+        const pending = JSON.parse(pendingRaw);
+        document.getElementById('verifyCard').classList.add('show');
+        /* Restore the amount display */
+        const amtEl = document.getElementById('verifyAmountDisplay');
+        if (amtEl && pending.total) amtEl.textContent = `₹${Number(pending.total).toLocaleString('en-IN')}`;
+      } catch(_) {}
       /* Scroll to it after render */
       setTimeout(() => document.getElementById('verifyCard').scrollIntoView({ behavior: 'smooth', block: 'center' }), 800);
     }
