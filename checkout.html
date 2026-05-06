@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- Razorpay.me payment link flow (no domain verification needed) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JERSIFY — Checkout</title>
   <style>
@@ -236,6 +236,30 @@
     .redirect-info-text { flex: 1; }
     .redirect-info-text strong { display: block; font-size: 13px; font-weight: 800; margin-bottom: 3px; }
     .redirect-info-text span { font-size: 11px; color: var(--muted); line-height: 1.6; }
+
+    /* Verify payment card */
+    #verifyCard { display: none; }
+    #verifyCard.show { display: block; }
+    .verify-note { font-size: 12px; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+    .verify-note strong { color: var(--text); }
+    .verify-input-row { display: flex; gap: 8px; }
+    .verify-input {
+      flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 11px 13px;
+      font-size: 13px; font-weight: 600; letter-spacing: .5px;
+      background: #fafafa; color: var(--text); outline: none; transition: all .22s;
+    }
+    .verify-input:focus { border-color: var(--success); background: #fff; box-shadow: 0 0 0 3px rgba(30,140,74,.1); }
+    .verify-btn {
+      border: none; border-radius: 12px; padding: 0 18px;
+      background: linear-gradient(135deg, var(--success), #166638);
+      color: #fff; font-size: 12px; font-weight: 800; letter-spacing: .5px;
+      cursor: pointer; transition: all .2s; white-space: nowrap;
+    }
+    .verify-btn:hover { transform: scale(1.03); box-shadow: 0 4px 14px rgba(30,140,74,.3); }
+    .verify-btn:disabled { opacity: .55; pointer-events: none; }
+    .verify-msg { font-size: 11px; margin-top: 8px; font-weight: 600; display: none; }
+    .verify-msg.success { color: var(--success); display: block; }
+    .verify-msg.error   { color: var(--accent);  display: block; }
 
     .confirm-btn {
       width: 100%; border: none; border-radius: 14px; padding: 16px;
@@ -528,11 +552,25 @@
 
       <!-- Info banner shown when Razorpay is selected -->
       <div class="redirect-info" id="redirectInfo">
-        <span class="redirect-info-icon">🔒</span>
+        <span class="redirect-info-icon">🔗</span>
         <div class="redirect-info-text">
-          <strong>Secure Payment Gateway</strong>
-          <span>A secure Razorpay payment sheet will open. Complete your payment and your order is confirmed instantly.</span>
+          <strong>Razorpay Payment Link</strong>
+          <span>You'll be redirected to our secure Razorpay payment page. After paying, come back and enter your Payment ID below to confirm your order.</span>
         </div>
+      </div>
+
+      <!-- Verify payment card (shown after returning from Razorpay.me) -->
+      <div class="card" id="verifyCard">
+        <div class="card-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/></svg>
+          Confirm Your Payment
+        </div>
+        <p class="verify-note">Paid on Razorpay? Enter the <strong>Payment ID</strong> from your Razorpay confirmation email or SMS (starts with <strong>pay_</strong>) to confirm your order.</p>
+        <div class="verify-input-row">
+          <input type="text" id="paymentIdInput" class="verify-input" placeholder="pay_XXXXXXXXXXXXXXXX" autocomplete="off" spellcheck="false">
+          <button class="verify-btn" id="verifyBtn" onclick="verifyAndConfirm()">CONFIRM</button>
+        </div>
+        <div class="verify-msg" id="verifyMsg"></div>
       </div>
 
       <button class="confirm-btn" id="confirmBtn" onclick="processOrder()">
@@ -670,8 +708,8 @@
     databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
   };
 
-  /* ── Razorpay key ── */
-  const RAZORPAY_KEY = 'rzp_live_omDNDSL8gmUBCZ';
+  /* ── Razorpay.me payment link (domain-verification-free) ── */
+  const RAZORPAY_ME_URL = 'https://razorpay.me/@waveridebikerentalservice';
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -1042,77 +1080,80 @@
     }
 
     /* ──────────────────────────────────────────
-       ONLINE: open Razorpay sheet on this page
+       ONLINE: redirect to Razorpay.me link
     ────────────────────────────────────────── */
-    setConfirmBtn(true, 'Opening payment…');
+    setConfirmBtn(true, 'Redirecting to payment…');
 
-    const options = {
-      key:         RAZORPAY_KEY,
-      amount:      Math.round(finalPrice * 100),
-      currency:    'INR',
-      name:        'Jersify',
-      description: `Order ${orderId}`,
-      prefill:     { name, email, contact: phone },
-      notes:       { orderId, source: 'jersify' },
-      theme:       { color: '#c61f2f' },
-
-      handler: async (res) => {
-        /* Payment successful — save order to Firebase */
-        showProcessing('Saving your order…', 'Almost done!');
-        try {
-          const newOrderRef = push(ref(db, 'orders'));
-          await set(newOrderRef, {
-            orderId,
-            userId:        currentUser.uid,
-            userEmail:     currentUser.email || '',
-            customerName:  name,
-            phone, email,
-            address, city, state, pincode, country,
-            items:         orderItems,
-            subtotal:      orderPrice,
-            discount:      discountAmount,
-            total:         finalPrice,
-            selectedSize,
-            paymentMethod: 'razorpay',
-            paymentId:     res.razorpay_payment_id,
-            status:        'confirmed',
-            createdAt:     new Date().toISOString()
-          });
-          localStorage.removeItem('jersify_cart');
-          hideProcessing();
-          setConfirmBtn(false);
-          showSuccessScreen(orderId, name, finalPrice, selectedSize, 'Online Payment');
-        } catch (err) {
-          hideProcessing();
-          setConfirmBtn(false);
-          alert(
-            'Payment was successful but we could not save your order automatically.\n' +
-            'Payment ID: ' + res.razorpay_payment_id + '\n' +
-            'Please contact support with this ID and we will sort it out immediately.'
-          );
-        }
-      },
-
-      modal: {
-        ondismiss: () => {
-          /* User closed the Razorpay sheet without paying */
-          setConfirmBtn(false, 'Proceed to Payment →');
-        }
-      }
+    /* Save pending order details to localStorage so we can confirm after return */
+    const pendingOrder = {
+      orderId, userId: currentUser.uid, userEmail: currentUser.email || '',
+      customerName: name, phone, email,
+      address, city, state, pincode, country,
+      items: orderItems, subtotal: orderPrice,
+      discount: discountAmount, total: finalPrice,
+      selectedSize, paymentMethod: 'razorpay',
+      status: 'pending_payment',
+      createdAt: new Date().toISOString()
     };
+    localStorage.setItem('jersify_pending_order', JSON.stringify(pendingOrder));
+
+    /* Build Razorpay.me URL with amount pre-filled (in paise → but .me uses rupees) */
+    const payUrl = `${RAZORPAY_ME_URL}?amount=${finalPrice}&name=${encodeURIComponent(name)}&contact=${encodeURIComponent(phone)}&email=${encodeURIComponent(email)}&description=${encodeURIComponent('Jersify Order ' + orderId)}`;
+
+    /* Small delay so the button loading state is visible, then redirect */
+    setTimeout(() => {
+      setConfirmBtn(false, 'Proceed to Payment →');
+      window.open(payUrl, '_blank');
+      /* Show the verify card so user can confirm on return */
+      document.getElementById('verifyCard').classList.add('show');
+      document.getElementById('verifyCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 600);
+  };
+
+  /* ──────────────────────────────────────────────────────
+     VERIFY & CONFIRM: user enters Razorpay payment ID
+  ────────────────────────────────────────────────────── */
+  window.verifyAndConfirm = async () => {
+    const paymentId = document.getElementById('paymentIdInput').value.trim();
+    const msgEl     = document.getElementById('verifyMsg');
+    const btn       = document.getElementById('verifyBtn');
+
+    if (!paymentId) {
+      msgEl.textContent = 'Please enter your Payment ID.'; msgEl.className = 'verify-msg error'; return;
+    }
+    if (!paymentId.startsWith('pay_')) {
+      msgEl.textContent = 'Invalid Payment ID. It should start with pay_'; msgEl.className = 'verify-msg error'; return;
+    }
+
+    const pendingRaw = localStorage.getItem('jersify_pending_order');
+    if (!pendingRaw) {
+      msgEl.textContent = 'No pending order found. Please start checkout again.'; msgEl.className = 'verify-msg error'; return;
+    }
+
+    const pending = JSON.parse(pendingRaw);
+    if (!currentUser) { openAuthModal('signin'); return; }
+
+    btn.disabled = true; btn.textContent = 'Confirming…';
+    msgEl.className = 'verify-msg';
+    showProcessing('Confirming your order…', 'Saving payment details.');
 
     try {
-      const rzp = new Razorpay(options);
-      rzp.on('payment.failed', (response) => {
-        setConfirmBtn(false, 'Proceed to Payment →');
-        alert('Payment failed: ' + (response.error?.description || 'Please try again.'));
+      const newOrderRef = push(ref(db, 'orders'));
+      await set(newOrderRef, {
+        ...pending,
+        paymentId,
+        status: 'confirmed',
+        confirmedAt: new Date().toISOString()
       });
-      rzp.open();
-      /* Reset button state now that the modal is open */
-      setConfirmBtn(false, 'Proceed to Payment →');
+      localStorage.removeItem('jersify_pending_order');
+      localStorage.removeItem('jersify_cart');
+      hideProcessing();
+      btn.disabled = false; btn.textContent = 'CONFIRM';
+      showSuccessScreen(pending.orderId, pending.customerName, pending.total, pending.selectedSize, 'Online Payment (Razorpay)');
     } catch (err) {
-      setConfirmBtn(false, 'Proceed to Payment →');
-      alert('Could not open payment gateway. Please try again.');
+      hideProcessing();
+      btn.disabled = false; btn.textContent = 'CONFIRM';
+      msgEl.textContent = 'Could not confirm order: ' + err.message; msgEl.className = 'verify-msg error';
     }
   };
 
@@ -1120,6 +1161,13 @@
   window.addEventListener('DOMContentLoaded', async () => {
     loadCoupons();
     renderSavedAddresses();
+
+    /* If user came back from Razorpay.me with a pending order, show verify card */
+    if (localStorage.getItem('jersify_pending_order')) {
+      document.getElementById('verifyCard').classList.add('show');
+      /* Scroll to it after render */
+      setTimeout(() => document.getElementById('verifyCard').scrollIntoView({ behavior: 'smooth', block: 'center' }), 800);
+    }
 
     const params    = new URLSearchParams(window.location.search);
     const pid       = params.get('id');
