@@ -2537,7 +2537,7 @@
       const dataB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
 
       /* Build booking page URL */
-      const bookingBase = 'https://waveridebikerental.netlify.app/jersifybooking';
+      const bookingBase = 'https://waveridebikerental.netlify.app/jersifybooking.html';
       const bookingUrl = `${bookingBase}?oid=${encodeURIComponent(orderId)}`
         + `&amt=${finalPrice}`ā
       + `&n=${encodeURIComponent(name)}`
