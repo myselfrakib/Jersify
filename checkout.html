@@ -3,7 +3,6 @@
 
 <head>
   <meta charset="UTF-8" />
-  <!-- Razorpay.me payment link flow (no domain verification needed) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JERSIFY — Checkout</title>
   <style>
@@ -1862,7 +1861,7 @@
             <input type="radio" name="paymethod" id="pay_rzp" checked value="razorpay">
             <div class="pay-opt-content">
               <div class="pay-opt-text">Pay Online</div>
-              <div class="pay-opt-sub">UPI, Cards, Net Banking via Razorpay</div>
+              <div class="pay-opt-sub">UPI, Cards, Net Banking</div>
             </div>
             <div class="pay-opt-icon">💳</div>
           </label>
@@ -1898,51 +1897,6 @@
             <div class="summary-total-label">Total</div>
             <div class="summary-total-val" id="finalTotal">₹0</div>
           </div>
-        </div>
-
-        <!-- Info banner shown when Razorpay is selected -->
-        <div class="redirect-info" id="redirectInfo">
-          <span class="redirect-info-icon">🔗</span>
-          <div class="redirect-info-text">
-            <strong>Razorpay Payment Link</strong>
-            <span>You'll be redirected to our secure Razorpay payment page. After paying, come back and enter your
-              Payment ID below to confirm your order.</span>
-          </div>
-        </div>
-
-        <!-- Verify payment card (shown after returning from Razorpay.me) -->
-        <div class="card" id="verifyCard">
-          <div class="card-header">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 12l2 2 4-4" />
-              <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z" />
-            </svg>
-            Confirm Your Payment
-          </div>
-          <!-- Amount to pay box -->
-          <div
-            style="background:rgba(30,140,74,.06);border:1.5px solid rgba(30,140,74,.25);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
-            <div>
-              <div
-                style="font-size:10px;font-weight:800;color:var(--success);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">
-                Pay This Amount on Razorpay</div>
-              <div id="verifyAmountDisplay"
-                style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--success);letter-spacing:1px;">₹—
-              </div>
-            </div>
-            <a href="https://razorpay.me/@waveridebikerentalservice" target="_blank"
-              style="display:inline-flex;align-items:center;gap:6px;border:none;border-radius:10px;padding:10px 14px;background:var(--success);color:#fff;font-size:12px;font-weight:800;cursor:pointer;text-decoration:none;flex-shrink:0;">Open
-              Payment Link →</a>
-          </div>
-          <p class="verify-note">After paying, check your <strong>email or SMS</strong> from Razorpay for the
-            <strong>Payment ID</strong> (starts with <strong>pay_</strong>). Paste it below to confirm your order.
-          </p>
-          <div class="verify-input-row">
-            <input type="text" id="paymentIdInput" class="verify-input" placeholder="pay_XXXXXXXXXXXXXXXX"
-              autocomplete="off" spellcheck="false">
-            <button class="verify-btn" id="verifyBtn" onclick="verifyAndConfirm()">CONFIRM</button>
-          </div>
-          <div class="verify-msg" id="verifyMsg"></div>
         </div>
 
         <button class="confirm-btn" id="confirmBtn" onclick="processOrder()">
@@ -2151,8 +2105,6 @@
       databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
     };
 
-    /* ── Razorpay.me payment link (domain-verification-free) ── */
-    const RAZORPAY_ME_URL = 'https://razorpay.me/@waveridebikerentalservice';
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -2190,7 +2142,6 @@
     window.selPay = method => {
       document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
       document.getElementById(method === 'razorpay' ? 'pay_rzp' : 'pay_cod').parentElement.classList.add('active');
-      document.getElementById('redirectInfo').style.display = method === 'razorpay' ? 'flex' : 'none';
       document.getElementById('confirmBtnText').textContent = method === 'razorpay' ? 'Proceed to Payment →' : 'Confirm Order →';
     };
 
@@ -2537,10 +2488,10 @@
       const dataB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
 
       /* Build booking page URL */
-      const bookingBase = 'https://waveridebikerental.vercel.app/jersifybooking';
+      const bookingBase = 'https://waveridrentals.vercel.app/jersifybooking.html';
       const bookingUrl = `${bookingBase}?oid=${encodeURIComponent(orderId)}`
         + `&amt=${finalPrice}`
-      + `&n=${encodeURIComponent(name)}`
+        + `&n=${encodeURIComponent(name)}`
         + `&e=${encodeURIComponent(email)}`
         + `&ph=${encodeURIComponent(phone)}`
         + `&sz=${encodeURIComponent(selectedSize)}`
@@ -2554,71 +2505,14 @@
       }, 600);
     };
 
-    /* ──────────────────────────────────────────────────────
-       VERIFY & CONFIRM: user enters Razorpay payment ID
-    ────────────────────────────────────────────────────── */
-    window.verifyAndConfirm = async () => {
-      const paymentId = document.getElementById('paymentIdInput').value.trim();
-      const msgEl = document.getElementById('verifyMsg');
-      const btn = document.getElementById('verifyBtn');
 
-      if (!paymentId) {
-        msgEl.textContent = 'Please enter your Payment ID.'; msgEl.className = 'verify-msg error'; return;
-      }
-      if (!paymentId.startsWith('pay_')) {
-        msgEl.textContent = 'Invalid Payment ID. It should start with pay_'; msgEl.className = 'verify-msg error'; return;
-      }
-
-      const pendingRaw = localStorage.getItem('jersify_pending_order');
-      if (!pendingRaw) {
-        msgEl.textContent = 'No pending order found. Please start checkout again.'; msgEl.className = 'verify-msg error'; return;
-      }
-
-      const pending = JSON.parse(pendingRaw);
-      if (!currentUser) { openAuthModal('signin'); return; }
-
-      btn.disabled = true; btn.textContent = 'Confirming…';
-      msgEl.className = 'verify-msg';
-      showProcessing('Confirming your order…', 'Saving payment details.');
-
-      try {
-        const newOrderRef = push(ref(db, 'orders'));
-        await set(newOrderRef, {
-          ...pending,
-          paymentId,
-          status: 'confirmed',
-          confirmedAt: new Date().toISOString()
-        });
-        localStorage.removeItem('jersify_pending_order');
-        localStorage.removeItem('jersify_cart');
-        hideProcessing();
-        btn.disabled = false; btn.textContent = 'CONFIRM';
-        showSuccessScreen(pending.orderId, pending.customerName, pending.total, pending.selectedSize, 'Online Payment (Razorpay)');
-      } catch (err) {
-        hideProcessing();
-        btn.disabled = false; btn.textContent = 'CONFIRM';
-        msgEl.textContent = 'Could not confirm order: ' + err.message; msgEl.className = 'verify-msg error';
-      }
-    };
 
     /* ── DOMContentLoaded ── */
     window.addEventListener('DOMContentLoaded', async () => {
       loadCoupons();
       renderSavedAddresses();
 
-      /* If user came back from Razorpay.me with a pending order, show verify card */
-      const pendingRaw = localStorage.getItem('jersify_pending_order');
-      if (pendingRaw) {
-        try {
-          const pending = JSON.parse(pendingRaw);
-          document.getElementById('verifyCard').classList.add('show');
-          /* Restore the amount display */
-          const amtEl = document.getElementById('verifyAmountDisplay');
-          if (amtEl && pending.total) amtEl.textContent = `₹${Number(pending.total).toLocaleString('en-IN')}`;
-        } catch (_) { }
-        /* Scroll to it after render */
-        setTimeout(() => document.getElementById('verifyCard').scrollIntoView({ behavior: 'smooth', block: 'center' }), 800);
-      }
+
 
       const params = new URLSearchParams(window.location.search);
       const pid = params.get('id');
