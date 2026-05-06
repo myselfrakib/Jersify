@@ -2444,7 +2444,7 @@
         setConfirmBtn(true, 'Placing order…');
         showProcessing('Placing your order…', 'Saving your order details.');
         try {
-          const newOrderRef = dbRef(rtdb, `orders/${orderId}`);
+          const newOrderRef = ref(db, `orders/${orderId}`);
           await set(newOrderRef, {
             orderId,
             userId: currentUser.uid,
@@ -2529,7 +2529,7 @@
         const email = params.get('e') || '';
         const phone = params.get('ph') || '';
         
-        const orderRef = dbRef(rtdb, `orders/${orderId}`);
+        const orderRef = ref(db, `orders/${orderId}`);
         await set(orderRef, {
           orderId,
           userId: uid,
