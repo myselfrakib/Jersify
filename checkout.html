@@ -2145,6 +2145,15 @@
       document.getElementById('confirmBtnText').textContent = method === 'razorpay' ? 'Proceed to Payment →' : 'Confirm Order →';
     };
 
+    /* ── Size toggle (Buy Now mode) ── */
+    window.selectSize = btn => {
+      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (!isCartMode && orderItems.length > 0) {
+        orderItems[0].size = btn.textContent.trim();
+      }
+    };
+
     /* ── Auth helpers ── */
     window.openAuthModal = (tab = 'signin') => { switchAuthTab(tab); clearAuthMessages(); document.getElementById('authModal').classList.add('show'); document.getElementById('authBackdrop').classList.add('show'); document.body.style.overflow = 'hidden'; };
     window.closeAuthModal = () => { document.getElementById('authModal').classList.remove('show'); document.getElementById('authBackdrop').classList.remove('show'); document.body.style.overflow = ''; };
@@ -2434,7 +2443,7 @@
       const { name, phone, email, address, city, state, pincode, country } = addr;
       const isRZP = document.getElementById('pay_rzp').checked;
       const finalPrice = orderPrice - discountAmount;
-      const selectedSize = document.querySelector('.size-btn.active')?.textContent || 'M';
+      const selectedSize = isCartMode ? 'Mixed' : (document.querySelector('.size-btn.active')?.textContent || 'M');
       const orderId = `JRS-${Date.now()}`;
 
       /* ──────────────────────────────────────────
