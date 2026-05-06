@@ -2444,7 +2444,7 @@
         setConfirmBtn(true, 'Placing order…');
         showProcessing('Placing your order…', 'Saving your order details.');
         try {
-          const newOrderRef = push(ref(db, 'orders'));
+          const newOrderRef = dbRef(rtdb, `orders/${orderId}`);
           await set(newOrderRef, {
             orderId,
             userId: currentUser.uid,
