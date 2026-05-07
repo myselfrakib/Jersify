@@ -2667,6 +2667,7 @@
     /* ── Success screen ── */
     function showSuccessScreen(orderId, name, total, size, payMethod) {
       let countdown = 5;
+      const profileUrl = `profile.html?newOrder=${encodeURIComponent(orderId)}`;
       document.querySelector('.content').innerHTML = `
       <div style="text-align:center;padding:60px 16px 40px;">
         <span style="font-size:64px;display:block;margin-bottom:16px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both">🎉</span>
@@ -2678,14 +2679,14 @@
           <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Payment</span><span style="font-weight:700;">${payMethod}</span></div>
         </div>
         <div style="font-size:13px;color:var(--muted);line-height:1.7;max-width:280px;margin:0 auto 24px;">Thank you for shopping with Jersify! Your kit is being packed. 🚚</div>
-        <button onclick="window.location.href='index.html'" style="border:none;border-radius:14px;padding:14px 32px;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 10px 28px rgba(198,31,47,.28);">Back to Home →</button>
-        <div style="font-size:12px;color:var(--muted);margin-top:16px;">Redirecting in <span id="countdownNum">${countdown}</span>s…</div>
+        <button onclick="window.location.href='${profileUrl}'" style="border:none;border-radius:14px;padding:14px 32px;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 10px 28px rgba(198,31,47,.28);">View My Order →</button>
+        <div style="font-size:12px;color:var(--muted);margin-top:16px;">Redirecting to your profile in <span id="countdownNum">${countdown}</span>s…</div>
       </div>`;
       const interval = setInterval(() => {
         countdown--;
         const el = document.getElementById('countdownNum');
         if (el) el.textContent = countdown;
-        if (countdown <= 0) { clearInterval(interval); window.location.href = 'index.html'; }
+        if (countdown <= 0) { clearInterval(interval); window.location.href = profileUrl; }
       }, 1000);
     }
 
