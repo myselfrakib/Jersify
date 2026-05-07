@@ -1129,6 +1129,30 @@
         document.getElementById("statOrders").textContent   = orders.length;
         document.getElementById("loyaltyBadge").textContent = `${orders.length} Order${orders.length !== 1 ? "s" : ""}`;
 
+        /* ── Auto-open latest order if redirected from checkout ── */
+        const urlParams = new URLSearchParams(window.location.search);
+        const newOrderId = urlParams.get("newOrder");
+        if (newOrderId && orders.length > 0) {
+          // Clean the URL without reloading
+          window.history.replaceState({}, "", window.location.pathname);
+
+          // Show a success toast
+          setTimeout(() => showToast("🎉 Order placed successfully!"), 400);
+
+          // Scroll to orders section
+          setTimeout(() => {
+            const ordersSection = document.querySelector("#ordersContainer")?.closest(".section");
+            if (ordersSection) ordersSection.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 600);
+
+          // Find the matching order index and auto-open it
+          const matchIdx = orders.findIndex(o => (o.orderId || o._id) === newOrderId);
+          const targetIdx = matchIdx >= 0 ? matchIdx : 0; // fallback to latest
+          setTimeout(() => {
+            if (window.openOrderDetail) window.openOrderDetail(targetIdx);
+          }, 1200);
+        }
+
       } catch(e) {
         console.error("loadOrders failed:", e);
         container.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">Could not load orders</div>`;
