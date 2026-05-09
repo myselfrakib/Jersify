@@ -19,14 +19,38 @@
       --shadow-soft: 0 8px 18px rgba(0, 0, 0, .06);
       --success: #1e8c4a;
       --gold: #c49a00;
-      --maxw: 430px;
+      --maxw: 100%;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0 }
-    html, body { min-height: 100% }
-    body { font-family: 'Poppins', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    a { text-decoration: none; color: inherit }
-    button, input, select, textarea { font: inherit }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html,
+    body {
+      min-height: 100%
+    }
+
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit
+    }
 
     .page {
       width: min(100%, var(--maxw));
@@ -34,8 +58,8 @@
       min-height: 100vh;
       background: #fff;
       position: relative;
-      border-left: 1px solid rgba(0,0,0,.04);
-      border-right: 1px solid rgba(0,0,0,.04);
+      border-left: 1px solid rgba(0, 0, 0, .04);
+      border-right: 1px solid rgba(0, 0, 0, .04);
       padding-bottom: 120px;
     }
 
@@ -47,464 +71,1627 @@
       padding: 16px 16px 10px;
       position: sticky;
       top: 0;
-      background: rgba(255,255,255,.98);
+      background: rgba(255, 255, 255, .98);
       backdrop-filter: blur(8px);
       z-index: 30;
-      border-bottom: 1px solid rgba(0,0,0,.04);
+      border-bottom: 1px solid rgba(0, 0, 0, .04);
     }
-    .topbar-left { display: flex; align-items: center; gap: 10px; }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .back-btn {
-      width: 36px; height: 36px;
-      border: none; border-radius: 50%; background: #111; color: #fff;
-      display: grid; place-items: center; cursor: pointer;
-      box-shadow: var(--shadow-soft); transition: transform .2s ease; flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: #111;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-soft);
+      transition: transform .2s ease;
+      flex-shrink: 0;
     }
-    .back-btn:hover { transform: translateY(-2px) }
-    .back-btn svg { width: 17px; height: 17px }
+
+    .back-btn:hover {
+      transform: translateY(-2px)
+    }
+
+    .back-btn svg {
+      width: 17px;
+      height: 17px
+    }
+
     .logo {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 44px; letter-spacing: 2.5px; line-height: 1;
-      color: #111; text-transform: uppercase; white-space: nowrap;
-    }
-    .topbar-title {
-      font-size: 11px; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 1px; margin-left: auto;
+      font-size: 44px;
+      letter-spacing: 2.5px;
+      line-height: 1;
+      color: #111;
+      text-transform: uppercase;
+      white-space: nowrap;
     }
 
-    .content { padding: 12px 16px; }
+    .topbar-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-left: auto;
+    }
+
+    .content {
+      padding: 12px 16px;
+    }
 
     .card {
-      background: #fff; border-radius: 22px; border: 1px solid var(--line);
-      padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow);
+      background: #fff;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
       animation: fadeInUp .35s ease both;
     }
+
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    .card:nth-child(1) { animation-delay: .00s }
-    .card:nth-child(2) { animation-delay: .05s }
-    .card:nth-child(3) { animation-delay: .10s }
-    .card:nth-child(4) { animation-delay: .15s }
-    .card:nth-child(5) { animation-delay: .20s }
-    .card:nth-child(6) { animation-delay: .25s }
-    .card:nth-child(7) { animation-delay: .30s }
+
+    .card:nth-child(1) {
+      animation-delay: .00s
+    }
+
+    .card:nth-child(2) {
+      animation-delay: .05s
+    }
+
+    .card:nth-child(3) {
+      animation-delay: .10s
+    }
+
+    .card:nth-child(4) {
+      animation-delay: .15s
+    }
+
+    .card:nth-child(5) {
+      animation-delay: .20s
+    }
+
+    .card:nth-child(6) {
+      animation-delay: .25s
+    }
+
+    .card:nth-child(7) {
+      animation-delay: .30s
+    }
 
     .card-header {
-      font-size: 11px; font-weight: 800; text-transform: uppercase;
-      letter-spacing: 1.2px; color: var(--accent); margin-bottom: 14px;
-      display: flex; align-items: center; gap: 7px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--accent);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
     }
-    .card-header svg { width: 14px; height: 14px; opacity: .8 }
+
+    .card-header svg {
+      width: 14px;
+      height: 14px;
+      opacity: .8
+    }
 
     #loading {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; padding: 80px 20px; gap: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+      gap: 14px;
     }
+
     .spinner {
-      width: 36px; height: 36px; border: 3px solid var(--line);
-      border-top-color: var(--accent); border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--line);
+      border-top-color: var(--accent);
+      border-radius: 50%;
       animation: spin .7s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg) } }
-    #loading p { font-size: 13px; color: var(--muted); font-weight: 600; }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    #loading p {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
 
     .cart-item {
-      display: flex; gap: 14px; align-items: center;
-      padding: 12px 0; border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
     }
-    .cart-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .cart-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
     .ci-img {
-      width: 72px; height: 88px; border-radius: 14px;
-      background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 30%), linear-gradient(180deg, #131313, #262626);
-      display: grid; place-items: center; flex-shrink: 0; overflow: hidden;
+      width: 72px;
+      height: 88px;
+      border-radius: 14px;
+      background: radial-gradient(circle at top left, rgba(198, 31, 47, .18), transparent 30%), linear-gradient(180deg, #131313, #262626);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      overflow: hidden;
     }
-    .ci-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
-    .ci-info { flex: 1; }
-    .ci-name { font-size: 14px; font-weight: 800; margin-bottom: 3px; line-height: 1.3; }
-    .ci-meta { font-size: 11px; color: var(--muted); margin-bottom: 7px; }
-    .ci-price { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--accent); letter-spacing: .8px; }
-    .ci-qty { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+
+    .ci-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 14px;
+    }
+
+    .ci-info {
+      flex: 1;
+    }
+
+    .ci-name {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 3px;
+      line-height: 1.3;
+    }
+
+    .ci-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    .ci-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      color: var(--accent);
+      letter-spacing: .8px;
+    }
+
+    .ci-qty {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
     .qty-btn {
-      width: 26px; height: 26px; border: 1.5px solid var(--line); border-radius: 7px;
-      background: #f8f8f8; color: var(--text); font-size: 14px; font-weight: 700;
-      cursor: pointer; display: grid; place-items: center; transition: all .18s;
+      width: 26px;
+      height: 26px;
+      border: 1.5px solid var(--line);
+      border-radius: 7px;
+      background: #f8f8f8;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all .18s;
     }
-    .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .qty-display { font-size: 14px; font-weight: 800; min-width: 20px; text-align: center; }
 
-    .product-row { display: flex; gap: 14px; align-items: center; }
+    .qty-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .qty-display {
+      font-size: 14px;
+      font-weight: 800;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .product-row {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
     .product-img {
-      width: 80px; height: 100px; border-radius: 16px;
-      background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 30%), linear-gradient(180deg, #131313, #262626);
-      display: grid; place-items: center; flex-shrink: 0; overflow: hidden;
+      width: 80px;
+      height: 100px;
+      border-radius: 16px;
+      background: radial-gradient(circle at top left, rgba(198, 31, 47, .18), transparent 30%), linear-gradient(180deg, #131313, #262626);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      overflow: hidden;
     }
-    .product-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
-    .product-info { flex: 1; }
-    .product-name { font-size: 16px; font-weight: 900; margin-bottom: 4px; }
-    .product-team { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
-    .product-price { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--accent); letter-spacing: 1px; }
 
-    .empty-cart-hint { text-align: center; padding: 20px 0 8px; }
-    .empty-cart-hint svg { width: 44px; height: 44px; opacity: .18; margin-bottom: 10px; }
-    .empty-cart-hint p { font-size: 13px; color: var(--muted); font-weight: 500; line-height: 1.6; }
+    .product-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+    }
+
+    .product-info {
+      flex: 1;
+    }
+
+    .product-name {
+      font-size: 16px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .product-team {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .product-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+
+    .empty-cart-hint {
+      text-align: center;
+      padding: 20px 0 8px;
+    }
+
+    .empty-cart-hint svg {
+      width: 44px;
+      height: 44px;
+      opacity: .18;
+      margin-bottom: 10px;
+    }
+
+    .empty-cart-hint p {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
     .browse-btn {
-      display: inline-block; margin-top: 14px; padding: 10px 24px;
-      border: 1.5px solid #222; border-radius: 99px; font-size: 13px;
-      font-weight: 700; color: var(--text); transition: all .2s;
+      display: inline-block;
+      margin-top: 14px;
+      padding: 10px 24px;
+      border: 1.5px solid #222;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      transition: all .2s;
     }
-    .browse-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-    /* ── Size grid ── */
-    .size-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+    .browse-btn:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .size-grid {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
     .size-btn {
-      width: 54px; height: 44px; border-radius: 10px;
-      border: 1.5px solid var(--line); background: #fff;
-      font-size: 12px; font-weight: 700; cursor: pointer;
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; color: var(--text); transition: all .2s;
-      position: relative; gap: 2px;
+      width: 46px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1.5px solid var(--line);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      transition: all .2s;
     }
-    .size-btn:hover:not(.oos) { border-color: var(--accent); color: var(--accent); }
+
+    .size-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
     .size-btn.active {
-      border-color: var(--accent); background: var(--accent); color: #fff;
-      box-shadow: 0 4px 14px rgba(198,31,47,.25);
-    }
-    .size-btn.active .size-stock { color: rgba(255,255,255,.75); }
-
-    /* Out-of-stock size */
-    .size-btn.oos {
-      border-color: #e0e0e0; background: #f8f8f8; color: #bbb;
-      cursor: not-allowed; pointer-events: none;
-    }
-    .size-btn.oos::after {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%,-50%) rotate(-45deg);
-      width: 70%; height: 1.5px;
-      background: #ccc;
-      border-radius: 2px;
-    }
-    .size-stock {
-      font-size: 8px; font-weight: 600; color: var(--muted);
-      letter-spacing: .2px; line-height: 1;
-    }
-    .size-stock.low { color: #e07b00; }
-
-    .size-loading {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 12px; color: var(--muted); font-weight: 600;
-    }
-    .size-loading .mini-spin {
-      width: 14px; height: 14px; border: 2px solid var(--line);
-      border-top-color: var(--accent); border-radius: 50%;
-      animation: spin .6s linear infinite;
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(198, 31, 47, .25);
     }
 
-    .size-error {
-      font-size: 12px; color: var(--accent); font-weight: 600;
-      background: rgba(198,31,47,.06); border-radius: 10px; padding: 10px 12px;
-    }
-
-    .size-required-hint {
-      display: none; margin-top: 10px;
-      font-size: 11px; color: var(--accent); font-weight: 700;
-      background: rgba(198,31,47,.07); border-radius: 8px; padding: 7px 10px;
-      animation: shake .4s ease;
-    }
-    .size-required-hint.show { display: block; }
-
-    /* ── Address ── */
     .saved-addr {
-      border: 1.5px solid var(--line); border-radius: 14px; padding: 12px 14px;
-      margin-bottom: 10px; cursor: pointer; transition: all .22s;
-      display: flex; align-items: flex-start; gap: 12px; background: #fff;
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all .22s;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: #fff;
     }
-    .saved-addr:hover { border-color: var(--accent); }
+
+    .saved-addr:hover {
+      border-color: var(--accent);
+    }
+
     .saved-addr.selected {
-      border-color: var(--accent); background: rgba(198,31,47,.04);
-      box-shadow: 0 0 0 3px rgba(198,31,47,.08);
+      border-color: var(--accent);
+      background: rgba(198, 31, 47, .04);
+      box-shadow: 0 0 0 3px rgba(198, 31, 47, .08);
     }
+
     .saved-addr-radio {
-      width: 18px; height: 18px; border: 2px solid #ccc; border-radius: 50%;
-      flex-shrink: 0; margin-top: 2px; display: grid; place-items: center;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #ccc;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: grid;
+      place-items: center;
       transition: border-color .2s;
     }
-    .saved-addr.selected .saved-addr-radio { border-color: var(--accent); }
+
+    .saved-addr.selected .saved-addr-radio {
+      border-color: var(--accent);
+    }
+
     .saved-addr.selected .saved-addr-radio::after {
-      content: ''; width: 8px; height: 8px; background: var(--accent); border-radius: 50%;
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
     }
-    .addr-info { flex: 1; }
+
+    .addr-info {
+      flex: 1;
+    }
+
     .addr-tag {
-      font-size: 9px; font-weight: 800; background: rgba(198,31,47,.1);
-      color: var(--accent); padding: 2px 8px; border-radius: 99px;
-      text-transform: uppercase; letter-spacing: .5px;
-      display: inline-block; margin-bottom: 4px;
+      font-size: 9px;
+      font-weight: 800;
+      background: rgba(198, 31, 47, .1);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      display: inline-block;
+      margin-bottom: 4px;
     }
-    .addr-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-    .addr-text { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+    .addr-name {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .addr-text {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
 
     .new-addr-toggle {
-      display: flex; align-items: center; gap: 10px;
-      border: 1.5px dashed rgba(0,0,0,.14); border-radius: 12px;
-      padding: 11px 14px; color: var(--muted); font-size: 12px; font-weight: 700;
-      cursor: pointer; transition: all .22s; margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1.5px dashed rgba(0, 0, 0, .14);
+      border-radius: 12px;
+      padding: 11px 14px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .22s;
+      margin-top: 4px;
     }
-    .new-addr-toggle:hover { border-color: var(--accent); color: var(--accent); }
-    .new-addr-toggle svg { width: 15px; height: 15px; }
 
-    .form-group { margin-bottom: 12px; }
+    .new-addr-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .new-addr-toggle svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
     .form-group label {
-      display: block; font-size: 10px; font-weight: 700; color: var(--muted);
-      margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1.2px;
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
     }
+
     .form-input {
-      width: 100%; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px;
-      padding: 11px 13px; font-size: 13px; font-weight: 500;
-      background: #fafafa; color: var(--text); outline: none; transition: all .22s;
+      width: 100%;
+      border: 1.5px solid rgba(0, 0, 0, .12);
+      border-radius: 12px;
+      padding: 11px 13px;
+      font-size: 13px;
+      font-weight: 500;
+      background: #fafafa;
+      color: var(--text);
+      outline: none;
+      transition: all .22s;
     }
-    .form-input::placeholder { color: #bbb; }
+
+    .form-input::placeholder {
+      color: #bbb;
+    }
+
     .form-input:focus {
-      border-color: var(--accent); background: #fff;
-      box-shadow: 0 0 0 3px rgba(198,31,47,.08);
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(198, 31, 47, .08);
     }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    textarea.form-input { resize: none; min-height: 68px; line-height: 1.5; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    textarea.form-input {
+      resize: none;
+      min-height: 68px;
+      line-height: 1.5;
+    }
 
     .location-btn {
-      display: flex; align-items: center; gap: 9px;
-      border: 1.5px dashed rgba(30,140,74,.35); border-radius: 12px;
-      padding: 10px 14px; background: rgba(30,140,74,.05); color: var(--success);
-      font-size: 12px; font-weight: 700; cursor: pointer; width: 100%;
-      transition: all .22s; margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border: 1.5px dashed rgba(30, 140, 74, .35);
+      border-radius: 12px;
+      padding: 10px 14px;
+      background: rgba(30, 140, 74, .05);
+      color: var(--success);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: all .22s;
+      margin-top: 8px;
     }
-    .location-btn:hover { background: rgba(30,140,74,.1); border-color: rgba(30,140,74,.55); }
-    .location-btn.loading { pointer-events: none; opacity: .65; }
-    .location-btn.success { border-style: solid; border-color: rgba(30,140,74,.5); background: rgba(30,140,74,.08); }
-    .location-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-    .save-addr-row { display: flex; align-items: center; gap: 9px; margin-top: 10px; }
-    .save-addr-checkbox { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
-    .save-addr-row label { font-size: 12px; color: var(--muted); cursor: pointer; }
+    .location-btn:hover {
+      background: rgba(30, 140, 74, .1);
+      border-color: rgba(30, 140, 74, .55);
+    }
 
-    /* ── Coupon ── */
-    .coupon-row { display: flex; gap: 8px; }
+    .location-btn.loading {
+      pointer-events: none;
+      opacity: .65;
+    }
+
+    .location-btn.success {
+      border-style: solid;
+      border-color: rgba(30, 140, 74, .5);
+      background: rgba(30, 140, 74, .08);
+    }
+
+    .location-btn svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    .save-addr-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 10px;
+    }
+
+    .save-addr-checkbox {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .save-addr-row label {
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .coupon-row {
+      display: flex;
+      gap: 8px;
+    }
+
     .coupon-input {
-      flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px;
-      padding: 11px 13px; font-size: 13px; font-weight: 700; letter-spacing: 1px;
-      text-transform: uppercase; background: #fafafa; color: var(--text); outline: none; transition: all .22s;
+      flex: 1;
+      border: 1.5px solid rgba(0, 0, 0, .12);
+      border-radius: 12px;
+      padding: 11px 13px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: #fafafa;
+      color: var(--text);
+      outline: none;
+      transition: all .22s;
     }
-    .coupon-input::placeholder { color: #bbb; text-transform: none; font-weight: 400; letter-spacing: 0; }
-    .coupon-input:focus { border-color: var(--gold); background: #fff; box-shadow: 0 0 0 3px rgba(196,154,0,.1); }
+
+    .coupon-input::placeholder {
+      color: #bbb;
+      text-transform: none;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .coupon-input:focus {
+      border-color: var(--gold);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(196, 154, 0, .1);
+    }
+
     .coupon-apply-btn {
-      border: none; border-radius: 12px; padding: 0 18px;
-      background: linear-gradient(135deg, #c49a00, #9a7800); color: #fff;
-      font-size: 12px; font-weight: 800; letter-spacing: .5px; cursor: pointer; transition: all .2s; white-space: nowrap;
+      border: none;
+      border-radius: 12px;
+      padding: 0 18px;
+      background: linear-gradient(135deg, #c49a00, #9a7800);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
     }
-    .coupon-apply-btn:hover { transform: scale(1.03); box-shadow: 0 4px 14px rgba(196,154,0,.3); }
-    .coupon-msg { font-size: 11px; margin-top: 8px; font-weight: 600; display: none; }
-    .coupon-msg.success { color: var(--success); display: block; }
-    .coupon-msg.error { color: var(--accent); display: block; }
 
-    /* ── Payment ── */
+    .coupon-apply-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 14px rgba(196, 154, 0, .3);
+    }
+
+    .coupon-msg {
+      font-size: 11px;
+      margin-top: 8px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .coupon-msg.success {
+      color: var(--success);
+      display: block;
+    }
+
+    .coupon-msg.error {
+      color: var(--accent);
+      display: block;
+    }
+
     .pay-opt {
-      display: flex; align-items: center; gap: 13px;
-      border: 1.5px solid var(--line); border-radius: 14px; padding: 13px 15px;
-      margin-bottom: 10px; cursor: pointer; transition: all .22s; background: #fff;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
+      padding: 13px 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all .22s;
+      background: #fff;
     }
-    .pay-opt:hover { border-color: rgba(198,31,47,.3); background: rgba(198,31,47,.02); }
+
+    .pay-opt:hover {
+      border-color: rgba(198, 31, 47, .3);
+      background: rgba(198, 31, 47, .02);
+    }
+
     .pay-opt.active {
-      border-color: var(--accent); background: rgba(198,31,47,.04);
-      box-shadow: 0 0 0 3px rgba(198,31,47,.08);
+      border-color: var(--accent);
+      background: rgba(198, 31, 47, .04);
+      box-shadow: 0 0 0 3px rgba(198, 31, 47, .08);
     }
-    .pay-opt input[type="radio"] { accent-color: var(--accent); transform: scale(1.2); cursor: pointer; }
-    .pay-opt-content { flex: 1; }
-    .pay-opt-text { font-size: 14px; font-weight: 800; }
-    .pay-opt-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .pay-opt-icon { width: 38px; height: 38px; border-radius: 10px; background: #f4f4f4; display: grid; place-items: center; font-size: 18px; }
 
-    /* ── Summary ── */
+    .pay-opt input[type="radio"] {
+      accent-color: var(--accent);
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+
+    .pay-opt-content {
+      flex: 1;
+    }
+
+    .pay-opt-text {
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .pay-opt-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .pay-opt-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #f4f4f4;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+    }
+
     .summary-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 7px 0; font-size: 13px; font-weight: 500; color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
     }
-    .summary-row span:last-child { color: var(--text); font-weight: 700; }
-    .discount-row span { color: var(--success) !important; }
-    .summary-divider { height: 1px; background: var(--line); margin: 8px 0; }
-    .summary-total {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 0 2px; border-top: 2px solid #111; margin-top: 6px;
-    }
-    .summary-total-label { font-size: 16px; font-weight: 900; }
-    .summary-total-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--accent); letter-spacing: 1px; }
 
-    /* ── Confirm button ── */
+    .summary-row span:last-child {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .discount-row span {
+      color: var(--success) !important;
+    }
+
+    .summary-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 8px 0;
+    }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0 2px;
+      border-top: 2px solid #111;
+      margin-top: 6px;
+    }
+
+    .summary-total-label {
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .summary-total-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 30px;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+
+    .redirect-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: rgba(198, 31, 47, .04);
+      border: 1.5px solid rgba(198, 31, 47, .2);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      animation: fadeInUp .3s ease both;
+    }
+
+    .redirect-info-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .redirect-info-text {
+      flex: 1;
+    }
+
+    .redirect-info-text strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+
+    .redirect-info-text span {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Verify payment card */
+    #verifyCard {
+      display: none;
+    }
+
+    #verifyCard.show {
+      display: block;
+    }
+
+    .verify-note {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+
+    .verify-note strong {
+      color: var(--text);
+    }
+
+    .verify-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .verify-input {
+      flex: 1;
+      border: 1.5px solid rgba(0, 0, 0, .12);
+      border-radius: 12px;
+      padding: 11px 13px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      background: #fafafa;
+      color: var(--text);
+      outline: none;
+      transition: all .22s;
+    }
+
+    .verify-input:focus {
+      border-color: var(--success);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(30, 140, 74, .1);
+    }
+
+    .verify-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 0 18px;
+      background: linear-gradient(135deg, var(--success), #166638);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+
+    .verify-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 14px rgba(30, 140, 74, .3);
+    }
+
+    .verify-btn:disabled {
+      opacity: .55;
+      pointer-events: none;
+    }
+
+    .verify-msg {
+      font-size: 11px;
+      margin-top: 8px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .verify-msg.success {
+      color: var(--success);
+      display: block;
+    }
+
+    .verify-msg.error {
+      color: var(--accent);
+      display: block;
+    }
+
     .confirm-btn {
-      width: 100%; border: none; border-radius: 14px; padding: 16px;
-      font-size: 14px; font-weight: 800; letter-spacing: .5px; color: #fff; cursor: pointer;
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      color: #fff;
+      cursor: pointer;
       background: linear-gradient(180deg, var(--accent), var(--accent2));
-      box-shadow: 0 10px 28px rgba(198,31,47,.28);
+      box-shadow: 0 10px 28px rgba(198, 31, 47, .28);
       transition: transform .2s ease, box-shadow .2s ease;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
-    .confirm-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(198,31,47,.38); }
-    .confirm-btn:active { transform: translateY(0); }
-    .confirm-btn:disabled { opacity: .55; pointer-events: none; }
+
+    .confirm-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 34px rgba(198, 31, 47, .38);
+    }
+
+    .confirm-btn:active {
+      transform: translateY(0);
+    }
+
+    .confirm-btn:disabled {
+      opacity: .55;
+      pointer-events: none;
+    }
+
     .confirm-btn .btn-spinner {
-      width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4);
-      border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, .4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      display: none;
     }
-    .confirm-btn.loading .btn-spinner { display: block; }
+
+    .confirm-btn.loading .btn-spinner {
+      display: block;
+    }
 
     .secure-badge {
-      display: flex; align-items: center; justify-content: center; gap: 7px;
-      margin-top: 14px; padding: 10px; font-size: 11px; font-weight: 600;
-      color: var(--muted); letter-spacing: .4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 14px;
+      padding: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .4px;
     }
-    .secure-badge svg { width: 13px; height: 13px; opacity: .5; }
 
-    /* ── Auth banners ── */
+    .secure-badge svg {
+      width: 13px;
+      height: 13px;
+      opacity: .5;
+    }
+
+    .footer {
+      margin-top: 6px;
+      background: linear-gradient(180deg, #111, #1a1a1a);
+      color: #fff;
+      padding: 22px 16px 24px;
+      border-radius: 24px 24px 0 0;
+    }
+
+    .footer h4 {
+      font-size: 18px;
+      margin-bottom: 8px;
+      font-weight: 900;
+    }
+
+    .footer p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .75);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, .9);
+    }
+
+    .copy {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .55);
+      border-top: 1px solid rgba(255, 255, 255, .1);
+      padding-top: 12px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 12px;
+      width: min(100%, calc(var(--maxw) - 16px));
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 0, 0, .06);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 8px;
+      z-index: 50;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #555;
+      min-width: 56px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color .2s ease;
+    }
+
+    .nav-item svg {
+      width: 19px;
+      height: 19px
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .nav-item:hover:not(.active) {
+      color: #111;
+    }
+
+    .user-badge {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: rgba(198, 31, 47, .08);
+      border: 1px solid rgba(198, 31, 47, .18);
+      border-radius: 99px;
+      padding: 4px 10px 4px 5px;
+    }
+
+    .user-badge.visible {
+      display: flex;
+    }
+
+    .user-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .user-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      max-width: 80px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     #authSignedInBanner {
-      display: none; align-items: center; gap: 12px;
-      background: rgba(30,140,74,.06); border: 1.5px solid rgba(30,140,74,.2);
-      border-radius: 16px; padding: 12px 16px; margin-bottom: 14px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      background: rgba(30, 140, 74, .06);
+      border: 1.5px solid rgba(30, 140, 74, .2);
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
       animation: fadeInUp .3s ease both;
     }
-    #authSignedInBanner.show { display: flex; }
-    .signed-in-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
-    .signed-in-info { flex: 1; }
-    .signed-in-info strong { font-size: 13px; font-weight: 800; color: var(--success); display: block; }
-    .signed-in-info span { font-size: 11px; color: var(--muted); }
-    .sign-out-btn {
-      border: 1px solid rgba(0,0,0,.12); border-radius: 8px; padding: 5px 12px;
-      background: #fff; color: var(--muted); font-size: 11px; font-weight: 700;
-      cursor: pointer; transition: all .2s; flex-shrink: 0;
+
+    #authSignedInBanner.show {
+      display: flex;
     }
-    .sign-out-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .signed-in-icon {
+      font-size: 22px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .signed-in-info {
+      flex: 1;
+    }
+
+    .signed-in-info strong {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--success);
+      display: block;
+    }
+
+    .signed-in-info span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .sign-out-btn {
+      border: 1px solid rgba(0, 0, 0, .12);
+      border-radius: 8px;
+      padding: 5px 12px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+
+    .sign-out-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
 
     #authPromptCard {
-      display: none; border: 1.5px dashed rgba(198,31,47,.3); border-radius: 18px;
-      padding: 16px; margin-bottom: 14px; background: rgba(198,31,47,.02);
+      display: none;
+      border: 1.5px dashed rgba(198, 31, 47, .3);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
+      background: rgba(198, 31, 47, .02);
       animation: fadeInUp .3s ease both;
     }
-    #authPromptCard.show { display: block; }
-    .auth-prompt-inner { display: flex; align-items: center; gap: 14px; }
-    .auth-prompt-icon { font-size: 28px; line-height: 1; flex-shrink: 0; }
-    .auth-prompt-text { flex: 1; }
-    .auth-prompt-text strong { font-size: 13px; font-weight: 900; display: block; margin-bottom: 3px; }
-    .auth-prompt-text span { font-size: 11px; color: var(--muted); line-height: 1.5; }
-    .auth-prompt-actions { display: flex; gap: 8px; margin-top: 12px; }
+
+    #authPromptCard.show {
+      display: block;
+    }
+
+    .auth-prompt-inner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .auth-prompt-icon {
+      font-size: 28px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .auth-prompt-text {
+      flex: 1;
+    }
+
+    .auth-prompt-text strong {
+      font-size: 13px;
+      font-weight: 900;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .auth-prompt-text span {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .auth-prompt-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
     .auth-prompt-signin {
-      flex: 1; border: none; border-radius: 10px; padding: 11px;
+      flex: 1;
+      border: none;
+      border-radius: 10px;
+      padding: 11px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; font-size: 12px; font-weight: 800; cursor: pointer;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
     }
+
     .auth-prompt-signup {
-      flex: 1; border: 1.5px solid rgba(0,0,0,.12); border-radius: 10px;
-      padding: 11px; background: #fff; color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer;
+      flex: 1;
+      border: 1.5px solid rgba(0, 0, 0, .12);
+      border-radius: 10px;
+      padding: 11px;
+      background: #fff;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
     }
 
-    /* ── Auth Modal ── */
+    /* Auth Modal */
     #authBackdrop {
-      position: fixed; inset: 0; background: rgba(0,0,0,0); z-index: 190;
-      pointer-events: none; transition: background .35s ease;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0);
+      z-index: 190;
+      pointer-events: none;
+      transition: background .35s ease;
     }
-    #authBackdrop.show { background: rgba(0,0,0,.55); pointer-events: auto; }
+
+    #authBackdrop.show {
+      background: rgba(0, 0, 0, .55);
+      pointer-events: auto;
+    }
+
     #authModal {
-      position: fixed; left: 50%; bottom: 0;
+      position: fixed;
+      left: 50%;
+      bottom: 0;
       transform: translateX(-50%) translateY(100%);
-      width: min(100%, var(--maxw)); background: #fff; border-radius: 28px 28px 0 0;
-      z-index: 200; box-shadow: 0 -20px 60px rgba(0,0,0,.18);
-      transition: transform .42s cubic-bezier(.34,1.15,.64,1);
-      padding-bottom: env(safe-area-inset-bottom, 0px); overflow: hidden;
-      max-height: 92vh; overflow-y: auto;
+      width: min(100%, var(--maxw));
+      background: #fff;
+      border-radius: 28px 28px 0 0;
+      z-index: 200;
+      box-shadow: 0 -20px 60px rgba(0, 0, 0, .18);
+      transition: transform .42s cubic-bezier(.34, 1.15, .64, 1);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      overflow: hidden;
+      max-height: 92vh;
+      overflow-y: auto;
     }
-    #authModal.show { transform: translateX(-50%) translateY(0); }
-    .auth-modal-handle { width: 40px; height: 4px; background: #e0e0e0; border-radius: 99px; margin: 14px auto 0; }
-    .auth-modal-header { padding: 18px 20px 0; display: flex; align-items: flex-start; justify-content: space-between; }
-    .auth-modal-branding { display: flex; flex-direction: column; gap: 2px; }
-    .auth-modal-logo { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: #111; letter-spacing: 2px; line-height: 1; }
-    .auth-modal-logo span { color: var(--accent); }
-    .auth-modal-tagline { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
-    .auth-modal-close { width: 32px; height: 32px; border: none; border-radius: 50%; background: #f3f3f3; color: #555; font-size: 15px; cursor: pointer; display: grid; place-items: center; }
-    .auth-tabs { display: flex; margin: 20px 20px 0; background: #f5f5f5; border-radius: 14px; padding: 4px; }
-    .auth-tab { flex: 1; border: none; border-radius: 10px; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; background: transparent; color: var(--muted); }
-    .auth-tab.active { background: #fff; color: var(--text); box-shadow: 0 2px 10px rgba(0,0,0,.08); }
-    .auth-body { padding: 20px 20px 28px; }
-    .auth-welcome-title { font-size: 20px; font-weight: 900; margin-bottom: 4px; }
-    .auth-welcome-sub { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; }
-    .auth-form-group { margin-bottom: 12px; position: relative; }
-    .auth-form-group label { display: block; font-size: 10px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1.2px; }
-    .auth-input { width: 100%; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 12px 14px; font-size: 13px; font-weight: 500; background: #fafafa; color: var(--text); outline: none; transition: all .22s; }
-    .auth-input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(198,31,47,.08); }
-    .auth-input.has-icon { padding-right: 44px; }
-    .pw-toggle { position: absolute; right: 12px; bottom: 12px; background: none; border: none; cursor: pointer; color: var(--muted); display: grid; place-items: center; }
-    .pw-toggle svg { width: 17px; height: 17px; }
-    .auth-error { background: rgba(198,31,47,.06); border: 1px solid rgba(198,31,47,.2); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 14px; display: none; }
-    .auth-error.show { display: block; }
-    .auth-success-msg { background: rgba(30,140,74,.06); border: 1px solid rgba(30,140,74,.2); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: var(--success); font-weight: 600; margin-bottom: 14px; display: none; }
-    .auth-success-msg.show { display: block; }
-    .auth-submit-btn { width: 100%; border: none; border-radius: 14px; padding: 15px; font-size: 14px; font-weight: 800; color: #fff; cursor: pointer; background: linear-gradient(180deg, var(--accent), var(--accent2)); box-shadow: 0 8px 24px rgba(198,31,47,.28); display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .auth-btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: none; }
-    .auth-submit-btn.loading .auth-btn-spinner { display: block; }
-    .auth-submit-btn:disabled { opacity: .6; pointer-events: none; }
-    .auth-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
-    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
-    .auth-divider span { font-size: 11px; color: var(--muted); font-weight: 600; }
-    .auth-google-btn { width: 100%; border: 1.5px solid rgba(0,0,0,.12); border-radius: 12px; padding: 13px; background: #fff; color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
-    .auth-forgot { display: block; text-align: right; font-size: 11px; font-weight: 700; color: var(--accent); margin-top: -4px; margin-bottom: 12px; cursor: pointer; }
-    #resetPanel { display: none; }
-    #resetPanel.show { display: block; }
-    .auth-terms { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.6; margin-top: 14px; }
-    .auth-terms a { color: var(--accent); font-weight: 700; }
-    .auth-gradient-bar { height: 3px; background: linear-gradient(90deg, var(--accent), #ff6b35, var(--gold), var(--accent)); background-size: 200% 100%; animation: gradientShift 3s linear infinite; }
-    @keyframes gradientShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-    .google-icon { width: 18px; height: 18px; }
 
-    /* ── Processing overlay ── */
-    #processingOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 300; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-    #processingOverlay.show { display: flex; }
-    .processing-box { background: #fff; border-radius: 24px; padding: 32px 28px; text-align: center; max-width: 280px; width: 90%; }
-    .processing-spinner { width: 48px; height: 48px; border: 4px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 16px; }
-    .processing-title { font-size: 16px; font-weight: 900; margin-bottom: 6px; }
-    .processing-sub { font-size: 12px; color: var(--muted); line-height: 1.6; }
-
-    /* ── Footer ── */
-    .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0; }
-    .footer h4 { font-size: 18px; margin-bottom: 8px; font-weight: 900; }
-    .footer p { font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: 12px; }
-    .footer-links { display: flex; flex-wrap: wrap; gap: 10px 14px; font-size: 12px; margin-bottom: 14px; }
-    .footer-links a { color: rgba(255,255,255,.9); }
-    .copy { font-size: 11px; color: rgba(255,255,255,.55); border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; }
-
-    /* ── Bottom nav ── */
-    .bottom-nav {
-      position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px;
-      width: min(100%, calc(var(--maxw) - 16px));
-      background: rgba(255,255,255,.96); backdrop-filter: blur(10px);
-      border: 1px solid rgba(0,0,0,.06); border-radius: 22px; box-shadow: var(--shadow);
-      display: flex; justify-content: space-around; padding: 10px 8px; z-index: 50;
+    #authModal.show {
+      transform: translateX(-50%) translateY(0);
     }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: #555; min-width: 56px; cursor: pointer; text-decoration: none; transition: color .2s ease; }
-    .nav-item svg { width: 19px; height: 19px }
-    .nav-item.active { color: var(--accent); font-weight: 800; }
-    .nav-item:hover:not(.active) { color: #111; }
 
-    /* ── User badge ── */
-    .user-badge { display: none; align-items: center; gap: 6px; background: rgba(198,31,47,.08); border: 1px solid rgba(198,31,47,.18); border-radius: 99px; padding: 4px 10px 4px 5px; }
-    .user-badge.visible { display: flex; }
-    .user-avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 10px; font-weight: 900; display: grid; place-items: center; overflow: hidden; flex-shrink: 0; }
-    .user-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-    .user-name { font-size: 11px; font-weight: 700; color: var(--accent); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .auth-modal-handle {
+      width: 40px;
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 99px;
+      margin: 14px auto 0;
+    }
+
+    .auth-modal-header {
+      padding: 18px 20px 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .auth-modal-branding {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .auth-modal-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      color: #111;
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    .auth-modal-logo span {
+      color: var(--accent);
+    }
+
+    .auth-modal-tagline {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .auth-modal-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: #f3f3f3;
+      color: #555;
+      font-size: 15px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+
+    .auth-tabs {
+      display: flex;
+      margin: 20px 20px 0;
+      background: #f5f5f5;
+      border-radius: 14px;
+      padding: 4px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .auth-tab.active {
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
+    }
+
+    .auth-body {
+      padding: 20px 20px 28px;
+    }
+
+    .auth-welcome-title {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .auth-welcome-sub {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .auth-form-group {
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .auth-form-group label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+
+    .auth-input {
+      width: 100%;
+      border: 1.5px solid rgba(0, 0, 0, .12);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      background: #fafafa;
+      color: var(--text);
+      outline: none;
+      transition: all .22s;
+    }
+
+    .auth-input:focus {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(198, 31, 47, .08);
+    }
+
+    .auth-input.has-icon {
+      padding-right: 44px;
+    }
+
+    .pw-toggle {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+    }
+
+    .pw-toggle svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .auth-error {
+      background: rgba(198, 31, 47, .06);
+      border: 1px solid rgba(198, 31, 47, .2);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .auth-error.show {
+      display: block;
+    }
+
+    .auth-success-msg {
+      background: rgba(30, 140, 74, .06);
+      border: 1px solid rgba(30, 140, 74, .2);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--success);
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .auth-success-msg.show {
+      display: block;
+    }
+
+    .auth-submit-btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 15px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      box-shadow: 0 8px 24px rgba(198, 31, 47, .28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .auth-btn-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, .4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      display: none;
+    }
+
+    .auth-submit-btn.loading .auth-btn-spinner {
+      display: block;
+    }
+
+    .auth-submit-btn:disabled {
+      opacity: .6;
+      pointer-events: none;
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .auth-divider span {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .auth-google-btn {
+      width: 100%;
+      border: 1.5px solid rgba(0, 0, 0, .12);
+      border-radius: 12px;
+      padding: 13px;
+      background: #fff;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .auth-forgot {
+      display: block;
+      text-align: right;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-top: -4px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    #resetPanel {
+      display: none;
+    }
+
+    #resetPanel.show {
+      display: block;
+    }
+
+    .auth-terms {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+      margin-top: 14px;
+    }
+
+    .auth-terms a {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .auth-gradient-bar {
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #ff6b35, var(--gold), var(--accent));
+      background-size: 200% 100%;
+      animation: gradientShift 3s linear infinite;
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      100% {
+        background-position: 200% 50%;
+      }
+    }
+
+    .google-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Processing overlay */
+    #processingOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .6);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    #processingOverlay.show {
+      display: flex;
+    }
+
+    .processing-box {
+      background: #fff;
+      border-radius: 24px;
+      padding: 32px 28px;
+      text-align: center;
+      max-width: 280px;
+      width: 90%;
+    }
+
+    .processing-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--line);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    .processing-title {
+      font-size: 16px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .processing-sub {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
 
     @media (max-width: 380px) {
-      .form-row { grid-template-columns: 1fr; gap: 0; }
-      .logo { font-size: 40px }
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .logo {
+        font-size: 40px
+      }
     }
-    @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
-    @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20%,
+      60% {
+        transform: translateX(-5px);
+      }
+
+      40%,
+      80% {
+        transform: translateX(5px);
+      }
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 
@@ -561,74 +1748,79 @@
         <div class="card" id="orderItemsCard">
           <div class="card-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
-              <line x1="7" y1="7" x2="7.01" y2="7"/>
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+              <line x1="7" y1="7" x2="7.01" y2="7" />
             </svg>
             Your Order
           </div>
           <div id="orderItemsBody"></div>
         </div>
 
-        <!-- Size card — shown only in Buy Now mode -->
         <div class="card" id="sizeCard" style="display:none;">
           <div class="card-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <line x1="3" y1="9" x2="21" y2="9"/>
-              <line x1="9" y1="21" x2="9" y2="9"/>
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <line x1="3" y1="9" x2="21" y2="9" />
+              <line x1="9" y1="21" x2="9" y2="9" />
             </svg>
             Select Size
           </div>
-          <div id="sizeGrid" class="size-grid">
-            <div class="size-loading">
-              <div class="mini-spin"></div>
-              Loading available sizes…
-            </div>
-          </div>
-          <div class="size-required-hint" id="sizeRequiredHint">
-            ⚠️ Please select a size to continue.
-          </div>
+          <div class="size-grid" id="sizeGrid"></div>
         </div>
 
         <div class="card">
           <div class="card-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-              <circle cx="12" cy="10" r="3"/>
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+              <circle cx="12" cy="10" r="3" />
             </svg>
             Shipping Address
           </div>
           <div id="savedAddressesSection" style="display:none;">
-            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;">Saved</div>
+            <div
+              style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;">
+              Saved</div>
             <div id="savedAddressList"></div>
             <div class="new-addr-toggle" id="newAddrToggle" onclick="toggleNewAddress()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+                <line x1="8" y1="12" x2="16" y2="12" />
               </svg>
               Add New Address
             </div>
           </div>
           <div id="addressForm">
-            <div class="form-group"><label>Full Name</label><input type="text" id="custName" class="form-input" placeholder="Enter your full name" autocomplete="name"></div>
+            <div class="form-group"><label>Full Name</label><input type="text" id="custName" class="form-input"
+                placeholder="Enter your full name" autocomplete="name"></div>
             <div class="form-row">
-              <div class="form-group"><label>Email</label><input type="email" id="custEmail" class="form-input" placeholder="you@email.com" autocomplete="email"></div>
-              <div class="form-group"><label>Phone</label><input type="tel" id="custPhone" class="form-input" placeholder="+91 98765 43210" autocomplete="tel"></div>
+              <div class="form-group"><label>Email</label><input type="email" id="custEmail" class="form-input"
+                  placeholder="you@email.com" autocomplete="email"></div>
+              <div class="form-group"><label>Phone</label><input type="tel" id="custPhone" class="form-input"
+                  placeholder="+91 98765 43210" autocomplete="tel"></div>
             </div>
-            <div class="form-group"><label>Street Address</label><textarea id="custAddress" class="form-input" placeholder="House no, Street, Landmark…" autocomplete="street-address"></textarea></div>
+            <div class="form-group"><label>Street Address</label><textarea id="custAddress" class="form-input"
+                placeholder="House no, Street, Landmark…" autocomplete="street-address"></textarea></div>
             <div class="form-row">
-              <div class="form-group"><label>City</label><input type="text" id="custCity" class="form-input" placeholder="City" autocomplete="address-level2"></div>
-              <div class="form-group"><label>State</label><input type="text" id="custState" class="form-input" placeholder="State" autocomplete="address-level1"></div>
+              <div class="form-group"><label>City</label><input type="text" id="custCity" class="form-input"
+                  placeholder="City" autocomplete="address-level2"></div>
+              <div class="form-group"><label>State</label><input type="text" id="custState" class="form-input"
+                  placeholder="State" autocomplete="address-level1"></div>
             </div>
             <div class="form-row">
-              <div class="form-group"><label>Pincode</label><input type="text" id="custPincode" class="form-input" placeholder="400001" maxlength="6" inputmode="numeric" autocomplete="postal-code"></div>
-              <div class="form-group"><label>Country</label><input type="text" id="custCountry" class="form-input" value="India" autocomplete="country-name"></div>
+              <div class="form-group"><label>Pincode</label><input type="text" id="custPincode" class="form-input"
+                  placeholder="400001" maxlength="6" inputmode="numeric" autocomplete="postal-code"></div>
+              <div class="form-group"><label>Country</label><input type="text" id="custCountry" class="form-input"
+                  value="India" autocomplete="country-name"></div>
             </div>
             <button class="location-btn" id="locationBtn" onclick="getLocation()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
-                <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
-                <circle cx="12" cy="12" r="3"/>
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="2" x2="12" y2="4" />
+                <line x1="12" y1="20" x2="12" y2="22" />
+                <line x1="2" y1="12" x2="4" y2="12" />
+                <line x1="20" y1="12" x2="22" y2="12" />
+                <circle cx="12" cy="12" r="3" />
               </svg>
               <span id="locationText">Auto Detect My Location</span>
             </button>
@@ -642,11 +1834,11 @@
         <div class="card">
           <div class="card-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 12 20 22 4 22 4 12"/>
-              <rect x="2" y="7" width="20" height="5" rx="1"/>
-              <line x1="12" y1="22" x2="12" y2="7"/>
-              <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/>
-              <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>
+              <polyline points="20 12 20 22 4 22 4 12" />
+              <rect x="2" y="7" width="20" height="5" rx="1" />
+              <line x1="12" y1="22" x2="12" y2="7" />
+              <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z" />
+              <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z" />
             </svg>
             Coupon Code
           </div>
@@ -660,8 +1852,8 @@
         <div class="card">
           <div class="card-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="1" y="4" width="22" height="16" rx="2"/>
-              <line x1="1" y1="10" x2="23" y2="10"/>
+              <rect x="1" y="4" width="22" height="16" rx="2" />
+              <line x1="1" y1="10" x2="23" y2="10" />
             </svg>
             Payment Method
           </div>
@@ -686,16 +1878,20 @@
         <div class="card">
           <div class="card-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
-              <line x1="8" y1="18" x2="21" y2="18"/>
-              <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/>
-              <line x1="3" y1="18" x2="3.01" y2="18"/>
+              <line x1="8" y1="6" x2="21" y2="6" />
+              <line x1="8" y1="12" x2="21" y2="12" />
+              <line x1="8" y1="18" x2="21" y2="18" />
+              <line x1="3" y1="6" x2="3.01" y2="6" />
+              <line x1="3" y1="12" x2="3.01" y2="12" />
+              <line x1="3" y1="18" x2="3.01" y2="18" />
             </svg>
             Order Summary
           </div>
           <div class="summary-row"><span>Subtotal</span><span id="subTotal">₹0</span></div>
-          <div class="summary-row"><span>Shipping</span><span style="color:var(--success);font-weight:700;">FREE</span></div>
-          <div class="summary-row discount-row" id="discountRow" style="display:none;"><span>Discount</span><span id="discountVal">-₹0</span></div>
+          <div class="summary-row"><span>Shipping</span><span style="color:var(--success);font-weight:700;">FREE</span>
+          </div>
+          <div class="summary-row discount-row" id="discountRow" style="display:none;"><span>Discount</span><span
+              id="discountVal">-₹0</span></div>
           <div class="summary-divider"></div>
           <div class="summary-total">
             <div class="summary-total-label">Total</div>
@@ -710,8 +1906,8 @@
 
         <div class="secure-badge">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2"/>
-            <path d="M7 11V7a5 5 0 0110 0v4"/>
+            <rect x="3" y="11" width="18" height="11" rx="2" />
+            <path d="M7 11V7a5 5 0 0110 0v4" />
           </svg>
           Secured with 256-bit SSL Encryption
         </div>
@@ -719,7 +1915,8 @@
 
       <footer class="footer">
         <h4>JERSIFY</h4>
-        <p>Premium football jerseys, clubwear, and fan drops designed for people who want style on and off the pitch.</p>
+        <p>Premium football jerseys, clubwear, and fan drops designed for people who want style on and off the pitch.
+        </p>
         <div class="footer-links">
           <a href="index.html">Home</a><a href="shop.html">Shop</a>
           <a href="checkout.html">Cart</a><a href="profile.html">Profile</a>
@@ -730,10 +1927,34 @@
   </div>
 
   <nav class="bottom-nav">
-    <a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg><div>Home</div></a>
-    <a href="shop.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16"/><path d="M5 10l1-5h12l1 5"/><path d="M4 10v8h16v-8"/><path d="M9 18v-4h6v4"/></svg><div>Shop</div></a>
-    <a href="checkout.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg><div>Cart</div></a>
-    <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div>Profile</div></a>
+    <a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 12l9-9 9 9" />
+        <path d="M5 10v10h14V10" />
+      </svg>
+      <div>Home</div>
+    </a>
+    <a href="shop.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 10h16" />
+        <path d="M5 10l1-5h12l1 5" />
+        <path d="M4 10v8h16v-8" />
+        <path d="M9 18v-4h6v4" />
+      </svg>
+      <div>Shop</div>
+    </a>
+    <a href="checkout.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2">
+        <path d="M6 6h15l-1.5 9h-12z" />
+        <circle cx="9" cy="20" r="1" />
+        <circle cx="18" cy="20" r="1" />
+      </svg>
+      <div>Cart</div>
+    </a>
+    <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+      <div>Profile</div>
+    </a>
   </nav>
 
   <div id="processingOverlay">
@@ -765,12 +1986,17 @@
       <div id="signinPanel">
         <div class="auth-welcome-title">Welcome back 👋</div>
         <div class="auth-welcome-sub">Sign in to continue to your order.</div>
-        <div class="auth-form-group"><label>Email Address</label><input type="email" id="siEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
+        <div class="auth-form-group"><label>Email Address</label><input type="email" id="siEmail" class="auth-input"
+            placeholder="you@email.com" autocomplete="email"></div>
         <div class="auth-form-group">
           <label>Password</label>
-          <input type="password" id="siPassword" class="auth-input has-icon" placeholder="Your password" autocomplete="current-password">
+          <input type="password" id="siPassword" class="auth-input has-icon" placeholder="Your password"
+            autocomplete="current-password">
           <button type="button" class="pw-toggle" onclick="togglePw('siPassword',this)" tabindex="-1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
           </button>
         </div>
         <a class="auth-forgot" onclick="showResetPanel()">Forgot password?</a>
@@ -779,28 +2005,48 @@
         </button>
         <div class="auth-divider"><span>or continue with</span></div>
         <button class="auth-google-btn" id="siGoogleBtn" onclick="doGoogleSignIn()">
-          <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          <svg class="google-icon" viewBox="0 0 48 48">
+            <path fill="#EA4335"
+              d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+            <path fill="#4285F4"
+              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+            <path fill="#FBBC05"
+              d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+            <path fill="#34A853"
+              d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+          </svg>
           Continue with Google
         </button>
-        <div class="auth-terms">By signing in you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
+        <div class="auth-terms">By signing in you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.
+        </div>
       </div>
       <div id="signupPanel" style="display:none;">
         <div class="auth-welcome-title">Create account 🎽</div>
         <div class="auth-welcome-sub">Join Jersify and get exclusive drops & offers.</div>
-        <div class="auth-form-group"><label>Full Name</label><input type="text" id="suName" class="auth-input" placeholder="Your full name" autocomplete="name"></div>
-        <div class="auth-form-group"><label>Email Address</label><input type="email" id="suEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
+        <div class="auth-form-group"><label>Full Name</label><input type="text" id="suName" class="auth-input"
+            placeholder="Your full name" autocomplete="name"></div>
+        <div class="auth-form-group"><label>Email Address</label><input type="email" id="suEmail" class="auth-input"
+            placeholder="you@email.com" autocomplete="email"></div>
         <div class="auth-form-group">
           <label>Password</label>
-          <input type="password" id="suPassword" class="auth-input has-icon" placeholder="Min. 6 characters" autocomplete="new-password">
+          <input type="password" id="suPassword" class="auth-input has-icon" placeholder="Min. 6 characters"
+            autocomplete="new-password">
           <button type="button" class="pw-toggle" onclick="togglePw('suPassword',this)" tabindex="-1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
           </button>
         </div>
         <div class="auth-form-group">
           <label>Confirm Password</label>
-          <input type="password" id="suConfirm" class="auth-input has-icon" placeholder="Repeat password" autocomplete="new-password">
+          <input type="password" id="suConfirm" class="auth-input has-icon" placeholder="Repeat password"
+            autocomplete="new-password">
           <button type="button" class="pw-toggle" onclick="togglePw('suConfirm',this)" tabindex="-1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
           </button>
         </div>
         <button class="auth-submit-btn" id="suBtn" onclick="doSignUp()">
@@ -808,19 +2054,31 @@
         </button>
         <div class="auth-divider"><span>or continue with</span></div>
         <button class="auth-google-btn" id="suGoogleBtn" onclick="doGoogleSignIn()">
-          <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          <svg class="google-icon" viewBox="0 0 48 48">
+            <path fill="#EA4335"
+              d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+            <path fill="#4285F4"
+              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+            <path fill="#FBBC05"
+              d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+            <path fill="#34A853"
+              d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+          </svg>
           Continue with Google
         </button>
-        <div class="auth-terms">By creating an account you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
+        <div class="auth-terms">By creating an account you agree to our <a href="#">Terms</a> & <a href="#">Privacy
+            Policy</a>.</div>
       </div>
       <div id="resetPanel">
         <div class="auth-welcome-title">Reset Password 🔑</div>
         <div class="auth-welcome-sub">Enter your email and we'll send a reset link.</div>
-        <div class="auth-form-group"><label>Email Address</label><input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
+        <div class="auth-form-group"><label>Email Address</label><input type="email" id="resetEmail" class="auth-input"
+            placeholder="you@email.com" autocomplete="email"></div>
         <button class="auth-submit-btn" id="resetBtn" onclick="doResetPassword()">
           <div class="auth-btn-spinner"></div><span class="auth-btn-text">Send Reset Link</span>
         </button>
-        <div style="text-align:center;margin-top:14px;"><a onclick="hideResetPanel()" style="font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;">← Back to Sign In</a></div>
+        <div style="text-align:center;margin-top:14px;"><a onclick="hideResetPanel()"
+            style="font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;">← Back to Sign In</a></div>
       </div>
     </div>
   </div>
@@ -846,6 +2104,7 @@
       appId: "1:461181023878:web:6ebfbae603baf4a873c307",
       databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
     };
+
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -886,103 +2145,12 @@
       document.getElementById('confirmBtnText').textContent = method === 'razorpay' ? 'Proceed to Payment →' : 'Confirm Order →';
     };
 
-    /* ══════════════════════════════════════════════════════
-       SIZE SELECTION — fetch from Firebase, show only available
-    ══════════════════════════════════════════════════════ */
-    const SIZE_ORDER = ['xs', 's', 'm', 'l', 'xl', 'xxl'];
-    const SIZE_LABELS = { xs: 'XS', s: 'S', m: 'M', l: 'L', xl: 'XL', xxl: 'XXL' };
-
-    async function loadAndRenderSizes(productId, paramSize) {
-      const grid = document.getElementById('sizeGrid');
-      try {
-        const snap = await get(ref(db, `products/${productId}/sizes`));
-        if (!snap.exists()) {
-          // No sizes data — fall back to full size grid (all in-stock)
-          renderSizeGrid(null, paramSize);
-          return;
-        }
-        renderSizeGrid(snap.val(), paramSize);
-      } catch (err) {
-        grid.innerHTML = `<div class="size-error">⚠️ Couldn't load sizes. Please refresh.</div>`;
-      }
-    }
-
-    function renderSizeGrid(sizesObj, defaultSize) {
-      const grid = document.getElementById('sizeGrid');
-
-      // If no sizes object from DB, show all as in-stock
-      const hasSizesData = sizesObj && typeof sizesObj === 'object';
-
-      // Build sorted array of sizes to show
-      // Always show the canonical SIZE_ORDER; if DB has extra keys, include those too
-      const allKeys = hasSizesData
-        ? [...new Set([...SIZE_ORDER, ...Object.keys(sizesObj)])]
-        : SIZE_ORDER;
-
-      // Filter to sizes with any definition in the DB
-      // If no DB data, show all
-      const sizesToShow = hasSizesData
-        ? allKeys.filter(k => k in sizesObj) // only sizes the product has defined
-        : allKeys;
-
-      if (sizesToShow.length === 0) {
-        grid.innerHTML = `<div class="size-error">No sizes available for this product.</div>`;
-        return;
-      }
-
-      // Auto-select: prefer paramSize if in-stock, else first in-stock, else nothing
-      const defaultKey = defaultSize ? defaultSize.toLowerCase() : null;
-      const inStockSizes = sizesToShow.filter(k => !hasSizesData || (sizesObj[k] > 0));
-
-      let autoSelect = null;
-      if (defaultKey && inStockSizes.includes(defaultKey)) {
-        autoSelect = defaultKey;
-      } else if (inStockSizes.length > 0) {
-        autoSelect = inStockSizes[0]; // pick first in-stock
-      }
-
-      grid.innerHTML = sizesToShow.map(k => {
-        const stock = hasSizesData ? (sizesObj[k] || 0) : 999;
-        const inStock = stock > 0;
-        const label = SIZE_LABELS[k] || k.toUpperCase();
-        const isActive = inStock && k === autoSelect;
-        const isLow = inStock && stock <= 5 && stock > 0;
-
-        let stockTag = '';
-        if (!inStock) {
-          stockTag = `<span class="size-stock">Out of stock</span>`;
-        } else if (isLow) {
-          stockTag = `<span class="size-stock low">Only ${stock} left</span>`;
-        }
-
-        return `
-          <button
-            class="size-btn${isActive ? ' active' : ''}${!inStock ? ' oos' : ''}"
-            onclick="selectSize(this,'${k}')"
-            data-size="${k}"
-            data-stock="${stock}"
-            ${!inStock ? 'disabled title="Out of stock"' : ''}
-          >
-            ${label}
-            ${stockTag}
-          </button>`;
-      }).join('');
-
-      // Update orderItems with auto-selected size
-      if (autoSelect && orderItems.length > 0) {
-        orderItems[0].size = SIZE_LABELS[autoSelect] || autoSelect.toUpperCase();
-      }
-    }
-
-    window.selectSize = (btn, sizeKey) => {
-      if (btn.classList.contains('oos')) return;
+    /* ── Size toggle (Buy Now mode) ── */
+    window.selectSize = btn => {
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      // Hide the required hint if visible
-      document.getElementById('sizeRequiredHint').classList.remove('show');
-      // Update orderItems
       if (!isCartMode && orderItems.length > 0) {
-        orderItems[0].size = SIZE_LABELS[sizeKey] || sizeKey.toUpperCase();
+        orderItems[0].size = btn.textContent.trim();
       }
     };
 
@@ -1159,6 +2327,8 @@
       if (newAddrVisible) { selectedSavedAddr = null; document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected')); }
     };
 
+    window.selectSize = btn => { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
+
     window.getLocation = () => {
       const btn = document.getElementById('locationBtn'), text = document.getElementById('locationText');
       if (!navigator.geolocation) { text.textContent = 'Geolocation not supported'; return; }
@@ -1223,15 +2393,20 @@
     }
 
     /* ══════════════════════════════════════════════════════
-       COLLECT & VALIDATE ADDRESS
+       COLLECT & VALIDATE ADDRESS — shared by both methods
     ══════════════════════════════════════════════════════ */
     function collectAddress() {
       if (selectedSavedAddr) {
         return {
-          name: selectedSavedAddr.name, phone: selectedSavedAddr.phone,
-          email: selectedSavedAddr.email, address: selectedSavedAddr.address,
-          city: selectedSavedAddr.city, state: selectedSavedAddr.state,
-          pincode: selectedSavedAddr.pincode, country: selectedSavedAddr.country || 'India', valid: true
+          name: selectedSavedAddr.name,
+          phone: selectedSavedAddr.phone,
+          email: selectedSavedAddr.email,
+          address: selectedSavedAddr.address,
+          city: selectedSavedAddr.city,
+          state: selectedSavedAddr.state,
+          pincode: selectedSavedAddr.pincode,
+          country: selectedSavedAddr.country || 'India',
+          valid: true
         };
       }
       const name = document.getElementById('custName').value.trim();
@@ -1262,66 +2437,85 @@
       if (orderPrice === 0) { alert('Your cart is empty.'); return; }
       if (!currentUser) { openAuthModal('signin'); shakeField('confirmBtn'); return; }
 
-      // Validate size selection in Buy Now mode
-      if (!isCartMode) {
-        const activeSize = document.querySelector('.size-btn.active');
-        if (!activeSize) {
-          const hint = document.getElementById('sizeRequiredHint');
-          hint.classList.add('show');
-          hint.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          hint.style.animation = 'none';
-          void hint.offsetWidth; // reflow to restart animation
-          hint.style.animation = 'shake .4s ease';
-          return;
-        }
-      }
-
       const addr = collectAddress();
-      if (!addr) return;
+      if (!addr) return; // validation failed
 
       const { name, phone, email, address, city, state, pincode, country } = addr;
       const isRZP = document.getElementById('pay_rzp').checked;
       const finalPrice = orderPrice - discountAmount;
-      const selectedSize = isCartMode ? 'Mixed' : (document.querySelector('.size-btn.active')?.dataset?.size
-        ? SIZE_LABELS[document.querySelector('.size-btn.active').dataset.size] || document.querySelector('.size-btn.active').dataset.size.toUpperCase()
-        : (orderItems[0]?.size || 'M'));
+      const selectedSize = isCartMode ? 'Mixed' : (document.querySelector('.size-btn.active')?.textContent || 'M');
       const orderId = `JRS-${Date.now()}`;
 
-      /* COD */
+      /* ──────────────────────────────────────────
+         COD: save directly to Firebase
+      ────────────────────────────────────────── */
       if (!isRZP) {
         setConfirmBtn(true, 'Placing order…');
         showProcessing('Placing your order…', 'Saving your order details.');
         try {
           const newOrderRef = ref(db, `orders/${orderId}`);
           await set(newOrderRef, {
-            orderId, userId: currentUser.uid, userEmail: currentUser.email || '',
-            customerName: name, phone, email, address, city, state, pincode, country,
-            items: orderItems, subtotal: orderPrice, discount: discountAmount, total: finalPrice,
-            selectedSize, paymentMethod: 'cod', status: 'processing', createdAt: new Date().toISOString()
+            orderId,
+            userId: currentUser.uid,
+            userEmail: currentUser.email || '',
+            customerName: name,
+            phone, email,
+            address, city, state, pincode, country,
+            items: orderItems,
+            subtotal: orderPrice,
+            discount: discountAmount,
+            total: finalPrice,
+            selectedSize,
+            paymentMethod: 'cod',
+            status: 'processing',
+            createdAt: new Date().toISOString()
           });
           try { await update(ref(db, `users/${currentUser.uid}/orders`), { [orderId]: true }); } catch (e) {}
           localStorage.removeItem('jersify_cart');
-          hideProcessing(); setConfirmBtn(false);
+          hideProcessing();
+          setConfirmBtn(false);
           showSuccessScreen(orderId, name, finalPrice, selectedSize, 'Cash on Delivery');
         } catch (err) {
-          hideProcessing(); setConfirmBtn(false);
+          hideProcessing();
+          setConfirmBtn(false);
           alert('Order could not be placed: ' + err.message);
         }
         return;
       }
 
-      /* Online redirect */
+      /* ──────────────────────────────────────────
+         ONLINE: redirect to booking page on verified domain
+      ────────────────────────────────────────── */
       setConfirmBtn(true, 'Redirecting to payment…');
-      const payload = { items: orderItems, address, city, state, pincode, country, subtotal: orderPrice, discount: discountAmount };
+
+      /* Encode order payload as base64 JSON to pass via URL */
+      const payload = {
+        items: orderItems,
+        address, city, state, pincode, country,
+        subtotal: orderPrice,
+        discount: discountAmount
+      };
       const dataB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+
+      /* Build booking page URL */
       const bookingBase = 'https://waveridrentals.vercel.app/jersifybooking.html';
       const bookingUrl = `${bookingBase}?oid=${encodeURIComponent(orderId)}`
-        + `&amt=${finalPrice}&n=${encodeURIComponent(name)}&e=${encodeURIComponent(email)}`
-        + `&ph=${encodeURIComponent(phone)}&sz=${encodeURIComponent(selectedSize)}`
-        + `&uid=${encodeURIComponent(currentUser.uid)}&ue=${encodeURIComponent(currentUser.email || '')}`
+        + `&amt=${finalPrice}`
+        + `&n=${encodeURIComponent(name)}`
+        + `&e=${encodeURIComponent(email)}`
+        + `&ph=${encodeURIComponent(phone)}`
+        + `&sz=${encodeURIComponent(selectedSize)}`
+        + `&uid=${encodeURIComponent(currentUser.uid)}`
+        + `&ue=${encodeURIComponent(currentUser.email || '')}`
         + `&d=${encodeURIComponent(dataB64)}`;
-      setTimeout(() => { setConfirmBtn(false, 'Proceed to Payment →'); window.location.href = bookingUrl; }, 600);
+
+      setTimeout(() => {
+        setConfirmBtn(false, 'Proceed to Payment →');
+        window.location.href = bookingUrl;   // same-tab redirect — cleaner UX
+      }, 600);
     };
+
+
 
     async function handleOnlinePaymentCallback(params) {
       document.getElementById('checkoutContent').style.display = 'none';
@@ -1329,7 +2523,12 @@
       const orderId = params.get('oid');
       const paymentId = params.get('paymentId');
       const dataB64 = params.get('d');
-      if (!orderId || !dataB64) { alert('Invalid callback data.'); window.location.href = 'index.html'; return; }
+      if (!orderId || !dataB64) {
+        alert('Invalid callback data.');
+        window.location.href = 'index.html';
+        return;
+      }
+      
       try {
         const payload = JSON.parse(decodeURIComponent(escape(atob(dataB64))));
         const name = params.get('n') || 'Customer';
@@ -1339,21 +2538,36 @@
         const ue = params.get('ue') || '';
         const email = params.get('e') || '';
         const phone = params.get('ph') || '';
+        
         const orderRef = ref(db, `orders/${orderId}`);
         await set(orderRef, {
-          orderId, userId: uid, userEmail: ue, customerName: name, phone, email,
-          address: payload.address || '', city: payload.city || '', state: payload.state || '',
-          pincode: payload.pincode || '', country: payload.country || '',
-          items: payload.items || [], subtotal: payload.subtotal || 0, discount: payload.discount || 0,
-          total: parseFloat(finalPrice), selectedSize, paymentMethod: 'online', paymentId,
-          status: 'confirmed', source: 'jersify.online callback',
-          createdAt: new Date().toISOString(), confirmedAt: new Date().toISOString()
+          orderId,
+          userId: uid,
+          userEmail: ue,
+          customerName: name,
+          phone, email,
+          address: payload.address || '',
+          city: payload.city || '',
+          state: payload.state || '',
+          pincode: payload.pincode || '',
+          country: payload.country || '',
+          items: payload.items || [],
+          subtotal: payload.subtotal || 0,
+          discount: payload.discount || 0,
+          total: parseFloat(finalPrice),
+          selectedSize,
+          paymentMethod: 'online',
+          paymentId,
+          status: 'confirmed',
+          source: 'jersify.online callback',
+          createdAt: new Date().toISOString(),
+          confirmedAt: new Date().toISOString()
         });
-        try { if (uid && uid !== 'anonymous') await update(ref(db, `users/${uid}/orders`), { [orderId]: true }); } catch (e) {}
+        try { if(uid && uid !== 'anonymous') await update(ref(db, `users/${uid}/orders`), { [orderId]: true }); } catch (e) {}
         localStorage.removeItem('jersify_cart');
         document.getElementById('loading').style.display = 'none';
         showSuccessScreen(orderId, name, finalPrice, selectedSize, 'Online Payment');
-      } catch (err) {
+      } catch(err) {
         alert('Failed to save order: ' + err.message);
         document.getElementById('loading').style.display = 'none';
         document.getElementById('checkoutContent').style.display = 'block';
@@ -1364,8 +2578,11 @@
     window.addEventListener('DOMContentLoaded', async () => {
       const params = new URLSearchParams(window.location.search);
       const paymentId = params.get('paymentId');
-
-      if (paymentId) { handleOnlinePaymentCallback(params); return; }
+      
+      if (paymentId) {
+        handleOnlinePaymentCallback(params);
+        return;
+      }
 
       loadCoupons();
       renderSavedAddresses();
@@ -1394,11 +2611,11 @@
                 <div class="product-price">₹${orderPrice.toLocaleString('en-IN')}</div>
               </div>
             </div>`;
-
-            // Show size card and load stock-aware sizes from Firebase
             document.getElementById('sizeCard').style.display = 'block';
-            await loadAndRenderSizes(pid, paramSize);
-
+            const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+            document.getElementById('sizeGrid').innerHTML = sizes.map(sz =>
+              `<button class="size-btn${(paramSize || 'M').toUpperCase() === sz ? ' active' : ''}" onclick="selectSize(this)">${sz}</button>`
+            ).join('');
           } else {
             orderBody.innerHTML = '<p style="color:var(--muted);font-size:13px;text-align:center;padding:12px 0">Product not found.</p>';
           }
@@ -1407,7 +2624,7 @@
         }
 
       } else if (cart.length > 0) {
-        /* Cart checkout flow — sizes already chosen at add-to-cart time */
+        /* Cart checkout flow */
         isCartMode = true;
         orderItems = cart;
         orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -1480,4 +2697,5 @@
     }
   </script>
 </body>
+
 </html>
