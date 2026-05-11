@@ -188,7 +188,7 @@
     .chip-row::-webkit-scrollbar { display: none }
     .card-chip { flex: 0 0 var(--chip-w); background: #fff; border: 1px solid var(--line); border-radius: clamp(14px, 2vw, 20px); box-shadow: var(--shadow-card); padding: clamp(6px, 1.2vw, 10px); text-align: center; transition: box-shadow .2s, transform .2s; cursor: pointer; }
     .card-chip:hover { box-shadow: 0 14px 32px rgba(0,0,0,.14); transform: translateY(-2px); }
-    .card-chip .chip-img { width: var(--chip-img); height: var(--chip-img); border-radius: 50%; overflow: hidden; margin: 0 auto clamp(6px, 1vw, 10px); border: 2px solid #f1f1f1; background: #f8f8f8; display: grid; place-items: center; }
+    .card-chip .chip-img { width: var(--chip-img); height: var(--chip-img); border-radius: 50%; overflow: hidden; margin: 0 auto clamp(6px, 1vw, 10px); border: 2px solid #f1f1f1; background: #f8f8f8; display: grid; place-items: center; position: relative; }
     .card-chip .chip-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .card-chip .chip-name { font-size: clamp(9px, 1.2vw, 12px); font-weight: 800; line-height: 1.15; }
     .card-chip .chip-sub { font-size: clamp(7px, 1vw, 10px); color: var(--muted); margin-top: 2px; line-height: 1.1; }
@@ -297,6 +297,220 @@
     .pic-ghost { height: var(--pic-h); position: relative; overflow: hidden; background: linear-gradient(135deg, #ececec 0%, #f5f5f5 50%, #ececec 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite; display: flex; align-items: center; justify-content: center; }
     .pic-ghost::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
 
+    /* ══ IMAGE SKELETON SYSTEM ══
+       Wraps any <img> with a shimmer placeholder until it loads.
+       Usage: wrap img in .img-wrap, skeleton auto-shows/hides. */
+    .img-wrap {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    /* The skeleton overlay sitting behind/over the image */
+    .img-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(90deg, #ebebeb 25%, #f5f5f5 50%, #ebebeb 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: inherit;
+      transition: opacity .3s ease;
+      pointer-events: none;
+    }
+    /* Once the img has loaded, fade out the skeleton */
+    .img-wrap.loaded::before {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .img-wrap img,
+    .img-wrap video {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Chip image skeleton (circular) */
+    .chip-img-wrap {
+      position: relative;
+      width: var(--chip-img);
+      height: var(--chip-img);
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto clamp(6px, 1vw, 10px);
+      border: 2px solid #f1f1f1;
+      background: #f8f8f8;
+    }
+    .chip-img-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      border-radius: 50%;
+      background: linear-gradient(90deg, #ebebeb 25%, #f5f5f5 50%, #ebebeb 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      transition: opacity .3s ease;
+      pointer-events: none;
+    }
+    .chip-img-wrap.loaded::before { opacity: 0; }
+    .chip-img-wrap img {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 50%;
+    }
+
+    /* Hero slide skeleton */
+    .hero-img-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .hero-img-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(90deg, #ebebeb 25%, #f5f5f5 50%, #ebebeb 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      transition: opacity .35s ease;
+      pointer-events: none;
+    }
+    .hero-img-wrap.loaded::before { opacity: 0; }
+    .hero-img-wrap img,
+    .hero-img-wrap video {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Media space skeleton */
+    .media-img-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .media-img-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(90deg, #ebebeb 25%, #f5f5f5 50%, #ebebeb 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      transition: opacity .3s ease;
+      pointer-events: none;
+    }
+    .media-img-wrap.loaded::before { opacity: 0; }
+    .media-img-wrap img,
+    .media-img-wrap video {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Promo card skeleton */
+    .promo-img-wrap {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .promo-img-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(90deg, #1c1c1c 25%, #2c2c2c 50%, #1c1c1c 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      transition: opacity .3s ease;
+      pointer-events: none;
+    }
+    .promo-img-wrap.loaded::before { opacity: 0; }
+    .promo-img-wrap img,
+    .promo-img-wrap video {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Reel card skeleton */
+    .reel-img-wrap {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .reel-img-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(90deg, #151515 25%, #252525 50%, #151515 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      transition: opacity .35s ease;
+      pointer-events: none;
+    }
+    .reel-img-wrap.loaded::before { opacity: 0; }
+    .reel-img-wrap img,
+    .reel-img-wrap video {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Gallery item skeleton */
+    .gallery-img-wrap {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .gallery-img-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(90deg, #d8d8d8 25%, #ebebeb 50%, #d8d8d8 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      transition: opacity .3s ease;
+      pointer-events: none;
+    }
+    .gallery-img-wrap.loaded::before { opacity: 0; }
+    .gallery-img-wrap img,
+    .gallery-img-wrap video {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
     /* ── TABLET: 2-col layout tweaks ── */
     @media (min-width: 600px) {
       .all-products-grid {
@@ -382,7 +596,7 @@
       <div class="slider" id="heroSlider">
         <div class="slides" id="slides">
           <div class="slide" id="heroSkeleton" style="flex:0 0 100%;width:100%;height:100%;position:relative;overflow:hidden;">
-            <div style="position:absolute;inset:0;background:linear-gradient(90deg,#e8e8e8 25%,#f5f5f5 50%,#e8e8e8 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
+            <div style="position:absolute;inset:0;background:linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
           </div>
         </div>
         <div class="dots" id="dots"></div>
@@ -542,6 +756,50 @@
     </a>
   </nav>
 
+  <!-- ══ SKELETON HELPER ══ -->
+  <script>
+    /**
+     * imgSkeleton(img, wrapClass)
+     * Wraps an <img> or <video> element in a skeleton overlay div.
+     * The overlay fades out once the media has loaded.
+     */
+    function imgSkeleton(el, wrapClass) {
+      if (!el) return;
+      // Already wrapped
+      if (el.parentElement && el.parentElement.classList.contains(wrapClass)) {
+        attachLoaded(el, el.parentElement);
+        return;
+      }
+      const wrap = document.createElement("div");
+      wrap.className = wrapClass;
+      // Copy inline styles that affect sizing
+      const cs = window.getComputedStyle(el);
+      el.parentNode.insertBefore(wrap, el);
+      wrap.appendChild(el);
+      attachLoaded(el, wrap);
+    }
+
+    function attachLoaded(el, wrap) {
+      const tag = el.tagName.toLowerCase();
+      if (tag === "img") {
+        if (el.complete && el.naturalWidth > 0) {
+          wrap.classList.add("loaded");
+        } else {
+          el.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
+          el.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
+        }
+      } else if (tag === "video") {
+        // For video, mark loaded once metadata arrives (poster/first frame)
+        if (el.readyState >= 1) {
+          wrap.classList.add("loaded");
+        } else {
+          el.addEventListener("loadedmetadata", () => wrap.classList.add("loaded"), { once: true });
+          el.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
+        }
+      }
+    }
+  </script>
+
   <!-- ══ NON-FIREBASE JS (unchanged logic) ══ -->
   <script>
     const splashBar    = document.getElementById("splashBar");
@@ -655,6 +913,7 @@
         { name: "Spain",     sub: "National team", id: "spain",     svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>` },
         { name: "Portugal",  sub: "National team", id: "portugal",  svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>` }
       ];
+      // Country chips use inline SVG data URIs — no skeleton needed (renders instantly)
       document.getElementById("countryRow").innerHTML = countries.map(c =>
         `<div class="card-chip" onclick="goToTeam('${c.id}')">
           <div class="chip-img"><img src="data:image/svg+xml;charset=UTF-8,${encodeURIComponent(c.svg)}" alt="${c.name}"></div>
@@ -682,14 +941,34 @@
           `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cl${c.l}"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cl${c.l})"><rect width="120" height="120" fill="${c.bg}"/><circle cx="60" cy="56" r="30" fill="rgba(255,255,255,.18)"/><path d="M28 92c10-20 54-20 64 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/><text x="60" y="66" text-anchor="middle" font-size="34" font-family="Arial,sans-serif" font-weight="900" fill="${c.fg}">${c.l}</text><text x="60" y="98" text-anchor="middle" font-size="11" font-family="Arial,sans-serif" font-weight="700" fill="rgba(255,255,255,.9)">${safeName.toUpperCase()}</text></g></svg>`
         );
       }
-      document.getElementById("clubRow").innerHTML = clubs.map(c => {
+
+      const clubRow = document.getElementById("clubRow");
+      clubRow.innerHTML = clubs.map(c => {
         const imgSrc = c.img && c.img.trim() ? c.img.trim() : fallbackBadge(c);
         return `<div class="card-chip" onclick="goToTeam('${c.id}')">
-          <div class="chip-img"><img src="${imgSrc}" alt="${c.name}" loading="lazy" onerror="this.src='${fallbackBadge(c)}'"/></div>
+          <div class="chip-img-wrap" id="chip-${c.id}">
+            <img src="${imgSrc}" alt="${c.name}" loading="lazy"/>
+          </div>
           <div class="chip-name">${c.name}</div>
           <div class="chip-sub">Club crest</div>
         </div>`;
       }).join("");
+
+      // Attach skeleton load listeners for each club chip
+      clubs.forEach(c => {
+        const wrap = document.getElementById(`chip-${c.id}`);
+        if (!wrap) return;
+        const img = wrap.querySelector("img");
+        if (!img) return;
+        const fb = fallbackBadge(c);
+        img.addEventListener("error", () => { img.src = fb; }, { once: true });
+        if (img.complete && img.naturalWidth > 0) {
+          wrap.classList.add("loaded");
+        } else {
+          img.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
+          img.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
+        }
+      });
     })();
   </script>
 
@@ -720,6 +999,31 @@
     }
     function getUrl(item) { return item.mediaUrl || item.imgUrl || ""; }
 
+    /* Helper: wrap a media element in the appropriate skeleton wrapper */
+    function wrapMedia(el, wrapClass) {
+      if (!el) return;
+      const wrap = document.createElement("div");
+      wrap.className = wrapClass;
+      el.parentNode.insertBefore(wrap, el);
+      wrap.appendChild(el);
+      const tag = el.tagName.toLowerCase();
+      if (tag === "img") {
+        if (el.complete && el.naturalWidth > 0) {
+          wrap.classList.add("loaded");
+        } else {
+          el.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
+          el.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
+        }
+      } else if (tag === "video") {
+        if (el.readyState >= 1) {
+          wrap.classList.add("loaded");
+        } else {
+          el.addEventListener("loadedmetadata", () => wrap.classList.add("loaded"), { once: true });
+          el.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
+        }
+      }
+    }
+
     /* AUTH */
     onAuthStateChanged(auth, async user => {
       const profileBtn  = document.getElementById("profileBtn");
@@ -731,6 +1035,8 @@
           profileIcon.style.display = "none";
           const img = document.createElement("img"); img.src = user.photoURL; img.alt = user.displayName || "Profile";
           profileBtn.appendChild(img);
+          // skeleton for profile avatar
+          wrapMedia(img, "img-wrap");
         } else {
           const initials = (user.displayName || user.email || "U").split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
           profileIcon.style.display = "none";
@@ -760,13 +1066,22 @@
         const slidesEl = document.getElementById("slides");
         const skeleton = document.getElementById("heroSkeleton");
         if (skeleton) skeleton.remove();
+
         slidesEl.innerHTML = heroes.map(h => {
           const url = getUrl(h), link = h.link || "shop.html";
-          const media = isVideo(h)
+          const vid = isVideo(h);
+          const media = vid
             ? `<video class="slide-media-cover" src="${url}" autoplay muted loop playsinline preload="metadata"></video>`
             : `<img class="slide-media-cover" src="${url}" alt="Hero" loading="eager"/>`;
           return `<div class="slide" style="cursor:pointer" onclick="window.location.href='${link}'">${media}</div>`;
         }).join("");
+
+        // Wrap each slide's media in hero skeleton
+        slidesEl.querySelectorAll(".slide").forEach(slide => {
+          const media = slide.querySelector("img, video");
+          if (media) wrapMedia(media, "hero-img-wrap");
+        });
+
         heroTotal = heroes.length; buildDots(heroTotal); showHeroSlide(0); restartHero();
         const firstHero = heroes[0];
         if (!isVideo(firstHero)) { const pre = new Image(); pre.src = getUrl(firstHero); }
@@ -792,11 +1107,12 @@
 
         function loopCard(p, i) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
+          // Image pic: use img-wrap skeleton div; fallback mini-jersey has no skeleton needed
+          const picContent = p.imgUrl
+            ? `<div class="img-wrap"><img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy" style="pointer-events:none"/></div>`
+            : `<div class="mini-jersey ${colors[i%colors.length]}" style="pointer-events:none"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`;
           return `<article class="loop-card" data-pid="${p._id}">
-            <div class="pic">${p.imgUrl
-              ? `<img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy" style="pointer-events:none"/>`
-              : `<div class="mini-jersey ${colors[i%colors.length]}" style="pointer-events:none"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`
-            }</div>
+            <div class="pic">${picContent}</div>
             <div class="loop-info">
               ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ""}
               <h4>${p.name||'Jersify Kit'}</h4>
@@ -811,11 +1127,11 @@
 
         function gridCard(p, i) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
+          const picContent = p.imgUrl
+            ? `<div class="img-wrap"><img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy"/></div>`
+            : `<div class="mini-jersey ${colors[i%colors.length]}" style="width:72px;height:88px;"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`;
           return `<article class="grid-product-card" data-pid="${p._id}">
-            <div class="pic">${p.imgUrl
-              ? `<img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy"/>`
-              : `<div class="mini-jersey ${colors[i%colors.length]}" style="width:72px;height:88px;"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`
-            }</div>
+            <div class="pic">${picContent}</div>
             <div class="loop-info">
               ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ""}
               <h4>${p.name||'Jersify Kit'}</h4>
@@ -830,6 +1146,20 @@
 
         loopTrack.innerHTML       = products.slice(0,8).map((p,i)  => loopCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
         allProductsGrid.innerHTML = products.slice(0,10).map((p,i) => gridCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">No products available.</div>';
+
+        // Attach skeleton loaded listeners for product images
+        [loopTrack, allProductsGrid].forEach(container => {
+          container.querySelectorAll(".img-wrap img").forEach(img => {
+            const wrap = img.closest(".img-wrap");
+            if (!wrap) return;
+            if (img.complete && img.naturalWidth > 0) {
+              wrap.classList.add("loaded");
+            } else {
+              img.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
+              img.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
+            }
+          });
+        });
 
         function attachCardNav(container) {
           container.addEventListener("click", function(e) {
@@ -863,24 +1193,66 @@
         const reels    = items.filter(m => m.section === "reels"    && getUrl(m));
         const gallery  = items.filter(m => m.section === "gallery"  && getUrl(m));
 
+        /* ── MEDIA SPACE (featured[0]) ── */
         const ms = document.getElementById("mediaSpace");
         const f0 = featured[0];
         if (f0) {
           const url = getUrl(f0), link = f0.link || "shop.html", vid = isVideo(f0);
-          ms.innerHTML = vid
-            ? `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;" onclick="window.location.href='${link}'"></video>`
-            : `<img src="${url}" alt="Featured" style="width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;" onclick="window.location.href='${link}'" loading="lazy"/>`;
+          if (vid) {
+            const video = document.createElement("video");
+            video.src = url; video.autoplay = true; video.muted = true; video.loop = true; video.setAttribute("playsinline","");
+            video.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;";
+            video.onclick = () => window.location.href = link;
+            ms.innerHTML = "";
+            const wrap = document.createElement("div"); wrap.className = "media-img-wrap";
+            wrap.appendChild(video); ms.appendChild(wrap);
+            video.addEventListener("loadedmetadata", () => wrap.classList.add("loaded"), { once: true });
+            video.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
+          } else {
+            const img = document.createElement("img");
+            img.src = url; img.alt = "Featured"; img.loading = "lazy";
+            img.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;";
+            img.onclick = () => window.location.href = link;
+            ms.innerHTML = "";
+            const wrap = document.createElement("div"); wrap.className = "media-img-wrap";
+            wrap.appendChild(img); ms.appendChild(wrap);
+            if (img.complete && img.naturalWidth > 0) { wrap.classList.add("loaded"); }
+            else {
+              img.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
+              img.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
+            }
+          }
         } else {
           ms.innerHTML = `<div class="placeholder" style="font-size:13px;font-weight:700;color:#999;">No featured media</div>`;
         }
 
+        /* ── PROMOS (featured[1+]) ── */
         const promoTrack = document.getElementById("promoTrack");
         const blank1     = document.getElementById("promoBlank1");
         if (featured.length > 1) {
           featured.slice(1).forEach(m => {
             const url = getUrl(m), link = m.link || "shop.html", vid = isVideo(m);
-            const div = document.createElement("div"); div.className = "promo-card"; div.onclick = () => window.location.href = link;
-            div.innerHTML = vid ? `<video src="${url}" autoplay muted loop playsinline></video>` : `<img src="${url}" alt="Promo" loading="lazy"/><div class="promo-overlay"></div>`;
+            const div = document.createElement("div"); div.className = "promo-card";
+            div.onclick = () => window.location.href = link;
+
+            if (vid) {
+              const video = document.createElement("video");
+              video.src = url; video.autoplay = true; video.muted = true; video.loop = true; video.setAttribute("playsinline","");
+              const wrap = document.createElement("div"); wrap.className = "promo-img-wrap";
+              wrap.appendChild(video); div.appendChild(wrap);
+              video.addEventListener("loadedmetadata", () => wrap.classList.add("loaded"), { once: true });
+              video.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
+            } else {
+              const img = document.createElement("img"); img.src = url; img.alt = "Promo"; img.loading = "lazy";
+              const overlay = document.createElement("div"); overlay.className = "promo-overlay";
+              const wrap = document.createElement("div"); wrap.className = "promo-img-wrap";
+              wrap.appendChild(img); div.appendChild(wrap); div.appendChild(overlay);
+              if (img.complete && img.naturalWidth > 0) { wrap.classList.add("loaded"); }
+              else {
+                img.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
+                img.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
+              }
+            }
             promoTrack.insertBefore(div, blank1);
           });
         } else {
@@ -888,28 +1260,104 @@
           document.getElementById("promoBlank2").style.display = "flex";
         }
 
-        const reelsRow = document.getElementById("reelsRow");
+        /* ── REELS ── */
+        const reelsRow     = document.getElementById("reelsRow");
         const reelsSection = document.getElementById("reelsSection");
         if (reels.length > 0) {
           reelsRow.innerHTML = reels.map(m => {
             const url = getUrl(m), link = (m.link && m.link.trim()) ? m.link.trim() : "shop.html", vid = isVideo(m);
-            const media = vid ? `<video class="reel-vid" src="${url}" muted loop playsinline preload="metadata"></video>` : `<div class="thumb" style="background-image:url('${url}')"></div>`;
-            return `<div class="reel-card" data-src="${url}" data-link="${link}" onmouseenter="this.querySelector('video')?.play()" onmouseleave="const v=this.querySelector('video');if(v){v.pause();v.currentTime=0}">${media}<div class="reel-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div></div>`;
+            const mediaInner = vid
+              ? `<div class="reel-img-wrap"><video class="reel-vid" src="${url}" muted loop playsinline preload="metadata"></video></div>`
+              : `<div class="reel-img-wrap"><div class="thumb" style="background-image:url('${url}')"></div></div>`;
+            return `<div class="reel-card" data-src="${url}" data-link="${link}"
+              onmouseenter="this.querySelector('video')?.play()"
+              onmouseleave="const v=this.querySelector('video');if(v){v.pause();v.currentTime=0}">
+              ${mediaInner}
+              <div class="reel-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+            </div>`;
           }).join("");
           reelsSection.style.display = "block";
-          reelsRow.querySelectorAll(".reel-card").forEach(card => { card.addEventListener("click", () => openReel(card.dataset.src, card.dataset.link)); });
-          const obs = new IntersectionObserver(entries => { entries.forEach(e => { const v = e.target.querySelector("video"); if (!v) return; e.isIntersecting ? v.play().catch(()=>{}) : (v.pause(), v.currentTime=0); }); }, { threshold: 0.6 });
+
+          // Attach reel skeleton loaded listeners
+          reelsRow.querySelectorAll(".reel-img-wrap").forEach(wrap => {
+            const vid = wrap.querySelector("video");
+            const thumb = wrap.querySelector(".thumb");
+            if (vid) {
+              if (vid.readyState >= 1) { wrap.classList.add("loaded"); }
+              else {
+                vid.addEventListener("loadedmetadata", () => wrap.classList.add("loaded"), { once: true });
+                vid.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
+              }
+            } else if (thumb) {
+              // background-image thumb: create a hidden img to detect load
+              const bgUrl = (thumb.style.backgroundImage || "").replace(/^url\(['"]?/, "").replace(/['"]?\)$/, "");
+              if (bgUrl) {
+                const probe = new Image();
+                probe.onload  = () => wrap.classList.add("loaded");
+                probe.onerror = () => wrap.classList.add("loaded");
+                probe.src = bgUrl;
+              } else {
+                wrap.classList.add("loaded");
+              }
+            }
+          });
+
+          reelsRow.querySelectorAll(".reel-card").forEach(card => {
+            card.addEventListener("click", () => openReel(card.dataset.src, card.dataset.link));
+          });
+          const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+              const v = e.target.querySelector("video");
+              if (!v) return;
+              e.isIntersecting ? v.play().catch(()=>{}) : (v.pause(), v.currentTime=0);
+            });
+          }, { threshold: 0.6 });
           reelsRow.querySelectorAll(".reel-card").forEach(c => obs.observe(c));
         }
 
-        const galleryGrid = document.getElementById("galleryGrid");
+        /* ── GALLERY ── */
+        const galleryGrid    = document.getElementById("galleryGrid");
         const gallerySection = document.getElementById("gallerySection");
         if (gallery.length > 0) {
-          const [gA, gB] = gallery; let html = "";
-          if (gA) { const url = getUrl(gA), link = gA.link || "#", vid = isVideo(gA); html += `<div class="grid-item-a" onclick="window.location.href='${link}'">${vid ? `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>` : `<img src="${url}" alt="Gallery" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`}</div>`; }
-          if (gB) { const url = getUrl(gB), link = gB.link || "#", vid = isVideo(gB); html += `<div class="grid-item-b" onclick="window.location.href='${link}'">${vid ? `<video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>` : `<img src="${url}" alt="Gallery" loading="lazy" onerror="this.parentElement.style.background='#eee'"/>`}</div>`; }
+          const [gA, gB] = gallery;
+          let html = "";
+
+          if (gA) {
+            const url = getUrl(gA), link = gA.link || "#", vid = isVideo(gA);
+            const mediaEl = vid
+              ? `<div class="gallery-img-wrap"><video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>`
+              : `<div class="gallery-img-wrap"><img src="${url}" alt="Gallery" loading="lazy" onerror="this.parentElement.classList.add('loaded');this.parentElement.parentElement.style.background='#eee'"/></div>`;
+            html += `<div class="grid-item-a" onclick="window.location.href='${link}'">${mediaEl}</div>`;
+          }
+          if (gB) {
+            const url = getUrl(gB), link = gB.link || "#", vid = isVideo(gB);
+            const mediaEl = vid
+              ? `<div class="gallery-img-wrap"><video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>`
+              : `<div class="gallery-img-wrap"><img src="${url}" alt="Gallery" loading="lazy" onerror="this.parentElement.classList.add('loaded');this.parentElement.parentElement.style.background='#eee'"/></div>`;
+            html += `<div class="grid-item-b" onclick="window.location.href='${link}'">${mediaEl}</div>`;
+          }
+
           galleryGrid.innerHTML = html;
           gallerySection.style.display = "block";
+
+          // Attach gallery skeleton listeners
+          galleryGrid.querySelectorAll(".gallery-img-wrap").forEach(wrap => {
+            const img = wrap.querySelector("img");
+            const vid = wrap.querySelector("video");
+            if (img) {
+              if (img.complete && img.naturalWidth > 0) { wrap.classList.add("loaded"); }
+              else {
+                img.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
+                img.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
+              }
+            } else if (vid) {
+              if (vid.readyState >= 1) { wrap.classList.add("loaded"); }
+              else {
+                vid.addEventListener("loadedmetadata", () => wrap.classList.add("loaded"), { once: true });
+                vid.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
+              }
+            }
+          });
         }
       } catch (e) { console.error("Index media load failed", e); }
       setProgress(95, "Almost ready…");
