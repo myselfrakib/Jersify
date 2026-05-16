@@ -769,6 +769,32 @@
       font-size: 18px;
     }
 
+    /* COD advance notice banner */
+    .cod-advance-notice {
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      background: rgba(196, 154, 0, .07);
+      border: 1.5px solid rgba(196, 154, 0, .35);
+      border-radius: 12px;
+      padding: 11px 13px;
+      margin-top: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #7a5f00;
+      line-height: 1.6;
+    }
+
+    .cod-advance-notice.show {
+      display: flex;
+    }
+
+    .cod-advance-notice-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
     .summary-row {
       display: flex;
       justify-content: space-between;
@@ -815,124 +841,45 @@
       letter-spacing: 1px;
     }
 
-    .redirect-info {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      background: rgba(198, 31, 47, .04);
-      border: 1.5px solid rgba(198, 31, 47, .2);
-      border-radius: 16px;
-      padding: 14px 16px;
-      margin-bottom: 14px;
-      animation: fadeInUp .3s ease both;
-    }
-
-    .redirect-info-icon {
-      font-size: 20px;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    .redirect-info-text {
-      flex: 1;
-    }
-
-    .redirect-info-text strong {
-      display: block;
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 3px;
-    }
-
-    .redirect-info-text span {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    /* Verify payment card */
-    #verifyCard {
+    /* COD advance due now row */
+    .summary-advance-row {
       display: none;
-    }
-
-    #verifyCard.show {
-      display: block;
-    }
-
-    .verify-note {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.7;
-      margin-bottom: 14px;
-    }
-
-    .verify-note strong {
-      color: var(--text);
-    }
-
-    .verify-input-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    .verify-input {
-      flex: 1;
-      border: 1.5px solid rgba(0, 0, 0, .12);
-      border-radius: 12px;
-      padding: 11px 13px;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: .5px;
-      background: #fafafa;
-      color: var(--text);
-      outline: none;
-      transition: all .22s;
-    }
-
-    .verify-input:focus {
-      border-color: var(--success);
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(30, 140, 74, .1);
-    }
-
-    .verify-btn {
-      border: none;
-      border-radius: 12px;
-      padding: 0 18px;
-      background: linear-gradient(135deg, var(--success), #166638);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .5px;
-      cursor: pointer;
-      transition: all .2s;
-      white-space: nowrap;
-    }
-
-    .verify-btn:hover {
-      transform: scale(1.03);
-      box-shadow: 0 4px 14px rgba(30, 140, 74, .3);
-    }
-
-    .verify-btn:disabled {
-      opacity: .55;
-      pointer-events: none;
-    }
-
-    .verify-msg {
-      font-size: 11px;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: rgba(196, 154, 0, .07);
+      border: 1.5px solid rgba(196, 154, 0, .3);
+      border-radius: 10px;
       margin-top: 8px;
-      font-weight: 600;
+    }
+
+    .summary-advance-row.show {
+      display: flex;
+    }
+
+    .summary-advance-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #7a5f00;
+    }
+
+    .summary-advance-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      color: #9a7800;
+      letter-spacing: .8px;
+    }
+
+    .summary-cod-remain {
       display: none;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      text-align: right;
+      margin-top: 4px;
     }
 
-    .verify-msg.success {
-      color: var(--success);
-      display: block;
-    }
-
-    .verify-msg.error {
-      color: var(--accent);
+    .summary-cod-remain.show {
       display: block;
     }
 
@@ -1871,10 +1818,15 @@
             <input type="radio" name="paymethod" id="pay_cod" value="cod">
             <div class="pay-opt-content">
               <div class="pay-opt-text">Cash on Delivery</div>
-              <div class="pay-opt-sub">Pay when you receive your order</div>
+              <div class="pay-opt-sub">Pay remaining amount on delivery</div>
             </div>
             <div class="pay-opt-icon">💵</div>
           </label>
+          <!-- COD advance notice — shown when COD is selected -->
+          <div class="cod-advance-notice" id="codAdvanceNotice">
+            <span class="cod-advance-notice-icon">⚠️</span>
+            <span>Cash on Delivery requires a <strong>₹100 advance payment</strong> now to confirm your order. The remaining balance will be collected at delivery.</span>
+          </div>
         </div>
 
         <div class="card">
@@ -1899,6 +1851,12 @@
             <div class="summary-total-label">Total</div>
             <div class="summary-total-val" id="finalTotal">₹0</div>
           </div>
+          <!-- COD breakdown: advance due now + remaining on delivery -->
+          <div class="summary-advance-row" id="summaryAdvanceRow">
+            <span class="summary-advance-label">💳 Pay Now (Advance)</span>
+            <span class="summary-advance-val">₹100</span>
+          </div>
+          <div class="summary-cod-remain" id="summaryCodRemain"></div>
         </div>
 
         <button class="confirm-btn" id="confirmBtn" onclick="processOrder()">
@@ -2107,6 +2065,7 @@
       databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
     };
 
+    const COD_ADVANCE = 100; // ₹100 advance for COD orders
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -2144,7 +2103,24 @@
     window.selPay = method => {
       document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
       document.getElementById(method === 'razorpay' ? 'pay_rzp' : 'pay_cod').parentElement.classList.add('active');
-      document.getElementById('confirmBtnText').textContent = method === 'razorpay' ? 'Proceed to Payment →' : 'Confirm Order →';
+
+      const isCOD = method === 'cod';
+      // Show/hide COD advance notice
+      document.getElementById('codAdvanceNotice').classList.toggle('show', isCOD);
+      // Show/hide COD advance breakdown in summary
+      document.getElementById('summaryAdvanceRow').classList.toggle('show', isCOD);
+
+      if (isCOD) {
+        const finalPrice = orderPrice - discountAmount;
+        const remaining = finalPrice - COD_ADVANCE;
+        document.getElementById('summaryCodRemain').textContent =
+          `Remaining ₹${remaining.toLocaleString('en-IN')} paid at delivery`;
+        document.getElementById('summaryCodRemain').classList.add('show');
+        document.getElementById('confirmBtnText').textContent = `Pay ₹${COD_ADVANCE} Advance & Confirm →`;
+      } else {
+        document.getElementById('summaryCodRemain').classList.remove('show');
+        document.getElementById('confirmBtnText').textContent = 'Proceed to Payment →';
+      }
     };
 
     /* ── Size toggle (Buy Now mode) ── */
@@ -2329,8 +2305,6 @@
       if (newAddrVisible) { selectedSavedAddr = null; document.querySelectorAll('.saved-addr').forEach(el => el.classList.remove('selected')); }
     };
 
-    window.selectSize = btn => { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
-
     window.getLocation = () => {
       const btn = document.getElementById('locationBtn'), text = document.getElementById('locationText');
       if (!navigator.geolocation) { text.textContent = 'Geolocation not supported'; return; }
@@ -2372,7 +2346,14 @@
     };
 
     function updateTotal() {
-      document.getElementById('finalTotal').textContent = `₹${(orderPrice - discountAmount).toLocaleString('en-IN')}`;
+      const finalPrice = orderPrice - discountAmount;
+      document.getElementById('finalTotal').textContent = `₹${finalPrice.toLocaleString('en-IN')}`;
+      // refresh COD remaining if COD is selected
+      if (document.getElementById('pay_cod').checked) {
+        const remaining = finalPrice - COD_ADVANCE;
+        document.getElementById('summaryCodRemain').textContent =
+          `Remaining ₹${remaining.toLocaleString('en-IN')} paid at delivery`;
+      }
     }
 
     window.changeQty = (key, delta) => {
@@ -2392,10 +2373,15 @@
       document.getElementById('finalTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
       document.getElementById('couponMsg').className = 'coupon-msg';
       document.getElementById('discountRow').style.display = 'none';
+      // refresh COD remaining
+      if (document.getElementById('pay_cod').checked) {
+        document.getElementById('summaryCodRemain').textContent =
+          `Remaining ₹${(orderPrice - COD_ADVANCE).toLocaleString('en-IN')} paid at delivery`;
+      }
     }
 
     /* ══════════════════════════════════════════════════════
-       COLLECT & VALIDATE ADDRESS — shared by both methods
+       COLLECT & VALIDATE ADDRESS
     ══════════════════════════════════════════════════════ */
     function collectAddress() {
       if (selectedSavedAddr) {
@@ -2440,57 +2426,16 @@
       if (!currentUser) { openAuthModal('signin'); shakeField('confirmBtn'); return; }
 
       const addr = collectAddress();
-      if (!addr) return; // validation failed
+      if (!addr) return;
 
       const { name, phone, email, address, city, state, pincode, country } = addr;
       const isRZP = document.getElementById('pay_rzp').checked;
+      const isCOD = document.getElementById('pay_cod').checked;
       const finalPrice = orderPrice - discountAmount;
       const selectedSize = isCartMode ? 'Mixed' : (document.querySelector('.size-btn.active')?.textContent || 'M');
       const orderId = `JRS-${Date.now()}`;
 
-      /* ──────────────────────────────────────────
-         COD: save directly to Firebase
-      ────────────────────────────────────────── */
-      if (!isRZP) {
-        setConfirmBtn(true, 'Placing order…');
-        showProcessing('Placing your order…', 'Saving your order details.');
-        try {
-          const newOrderRef = ref(db, `orders/${orderId}`);
-          await set(newOrderRef, {
-            orderId,
-            userId: currentUser.uid,
-            userEmail: currentUser.email || '',
-            customerName: name,
-            phone, email,
-            address, city, state, pincode, country,
-            items: orderItems,
-            subtotal: orderPrice,
-            discount: discountAmount,
-            total: finalPrice,
-            selectedSize,
-            paymentMethod: 'cod',
-            status: 'processing',
-            createdAt: new Date().toISOString()
-          });
-          try { await update(ref(db, `users/${currentUser.uid}/orders`), { [orderId]: true }); } catch (e) {}
-          localStorage.removeItem('jersify_cart');
-          hideProcessing();
-          setConfirmBtn(false);
-          showSuccessScreen(orderId, name, finalPrice, selectedSize, 'Cash on Delivery');
-        } catch (err) {
-          hideProcessing();
-          setConfirmBtn(false);
-          alert('Order could not be placed: ' + err.message);
-        }
-        return;
-      }
-
-      /* ──────────────────────────────────────────
-         ONLINE: redirect to booking page on verified domain
-      ────────────────────────────────────────── */
-      setConfirmBtn(true, 'Redirecting to payment…');
-
-      /* Encode order payload as base64 JSON to pass via URL */
+      /* Build shared payload (used by both online & COD advance redirects) */
       const payload = {
         items: orderItems,
         address, city, state, pincode, country,
@@ -2498,9 +2443,37 @@
         discount: discountAmount
       };
       const dataB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-
-      /* Build booking page URL */
       const bookingBase = 'https://waveridrentals.vercel.app/jersifybooking.html';
+
+      /* ──────────────────────────────────────────
+         COD with ₹100 advance: redirect to payment
+         page with amt=100 and mode=cod_advance
+      ────────────────────────────────────────── */
+      if (isCOD) {
+        setConfirmBtn(true, 'Redirecting to advance payment…');
+        const bookingUrl = `${bookingBase}?oid=${encodeURIComponent(orderId)}`
+          + `&amt=${COD_ADVANCE}`
+          + `&n=${encodeURIComponent(name)}`
+          + `&e=${encodeURIComponent(email)}`
+          + `&ph=${encodeURIComponent(phone)}`
+          + `&sz=${encodeURIComponent(selectedSize)}`
+          + `&uid=${encodeURIComponent(currentUser.uid)}`
+          + `&ue=${encodeURIComponent(currentUser.email || '')}`
+          + `&d=${encodeURIComponent(dataB64)}`
+          + `&mode=cod_advance`           // ← signals COD advance on the booking page
+          + `&total=${finalPrice}`;        // ← full order total for record keeping
+
+        setTimeout(() => {
+          setConfirmBtn(false, 'Proceed to Payment →');
+          window.location.href = bookingUrl;
+        }, 600);
+        return;
+      }
+
+      /* ──────────────────────────────────────────
+         ONLINE: redirect to booking page
+      ────────────────────────────────────────── */
+      setConfirmBtn(true, 'Redirecting to payment…');
       const bookingUrl = `${bookingBase}?oid=${encodeURIComponent(orderId)}`
         + `&amt=${finalPrice}`
         + `&n=${encodeURIComponent(name)}`
@@ -2513,34 +2486,45 @@
 
       setTimeout(() => {
         setConfirmBtn(false, 'Proceed to Payment →');
-        window.location.href = bookingUrl;   // same-tab redirect — cleaner UX
+        window.location.href = bookingUrl;
       }, 600);
     };
 
-
-
+    /* ══════════════════════════════════════════════════
+       CALLBACK HANDLER (return from WaveRide after payment)
+    ══════════════════════════════════════════════════ */
     async function handleOnlinePaymentCallback(params) {
       document.getElementById('checkoutContent').style.display = 'none';
       document.getElementById('loading').style.display = 'block';
       const orderId = params.get('oid');
       const paymentId = params.get('paymentId');
       const dataB64 = params.get('d');
+      const mode = params.get('mode'); // 'cod_advance' or undefined (online)
+
       if (!orderId || !dataB64) {
         alert('Invalid callback data.');
         window.location.href = 'index.html';
         return;
       }
-      
+
       try {
         const payload = JSON.parse(decodeURIComponent(escape(atob(dataB64))));
         const name = params.get('n') || 'Customer';
-        const finalPrice = params.get('amt') || '0';
         const selectedSize = params.get('sz') || 'M';
         const uid = params.get('uid') || 'anonymous';
         const ue = params.get('ue') || '';
         const email = params.get('e') || '';
         const phone = params.get('ph') || '';
-        
+
+        const isCodAdvance = mode === 'cod_advance';
+        // For COD: amt in URL = ₹100 advance paid; total = full order total
+        // For online: amt = full payment
+        const advancePaid = isCodAdvance ? COD_ADVANCE : null;
+        const fullTotal = isCodAdvance
+          ? parseInt(params.get('total') || '0')
+          : parseInt(params.get('amt') || '0');
+        const remaining = isCodAdvance ? fullTotal - COD_ADVANCE : 0;
+
         const orderRef = ref(db, `orders/${orderId}`);
         await set(orderRef, {
           orderId,
@@ -2556,20 +2540,27 @@
           items: payload.items || [],
           subtotal: payload.subtotal || 0,
           discount: payload.discount || 0,
-          total: parseFloat(finalPrice),
+          total: fullTotal,
           selectedSize,
-          paymentMethod: 'online',
+          paymentMethod: isCodAdvance ? 'cod' : 'online',
           paymentId,
+          advancePaid: isCodAdvance ? COD_ADVANCE : null,
+          remainingOnDelivery: isCodAdvance ? remaining : null,
+          advancePaidAt: isCodAdvance ? new Date().toISOString() : null,
           status: 'confirmed',
           source: 'jersify.online callback',
           createdAt: new Date().toISOString(),
           confirmedAt: new Date().toISOString()
         });
-        try { if(uid && uid !== 'anonymous') await update(ref(db, `users/${uid}/orders`), { [orderId]: true }); } catch (e) {}
+        try { if (uid && uid !== 'anonymous') await update(ref(db, `users/${uid}/orders`), { [orderId]: true }); } catch (e) {}
         localStorage.removeItem('jersify_cart');
         document.getElementById('loading').style.display = 'none';
-        showSuccessScreen(orderId, name, finalPrice, selectedSize, 'Online Payment');
-      } catch(err) {
+
+        const payLabel = isCodAdvance
+          ? `Cash on Delivery (₹${COD_ADVANCE} advance paid)`
+          : 'Online Payment';
+        showSuccessScreen(orderId, name, fullTotal, selectedSize, payLabel, isCodAdvance ? remaining : null);
+      } catch (err) {
         alert('Failed to save order: ' + err.message);
         document.getElementById('loading').style.display = 'none';
         document.getElementById('checkoutContent').style.display = 'block';
@@ -2580,7 +2571,7 @@
     window.addEventListener('DOMContentLoaded', async () => {
       const params = new URLSearchParams(window.location.search);
       const paymentId = params.get('paymentId');
-      
+
       if (paymentId) {
         handleOnlinePaymentCallback(params);
         return;
@@ -2667,9 +2658,12 @@
     });
 
     /* ── Success screen ── */
-    function showSuccessScreen(orderId, name, total, size, payMethod) {
+    function showSuccessScreen(orderId, name, total, size, payMethod, remainingOnDelivery) {
       let countdown = 5;
       const profileUrl = `profile.html?newOrder=${encodeURIComponent(orderId)}`;
+      const remainingHtml = remainingOnDelivery
+        ? `<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Due at Delivery</span><span style="font-weight:700;color:var(--gold)">₹${Number(remainingOnDelivery).toLocaleString('en-IN')}</span></div>`
+        : '';
       document.querySelector('.content').innerHTML = `
       <div style="text-align:center;padding:60px 16px 40px;">
         <span style="font-size:64px;display:block;margin-bottom:16px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both">🎉</span>
@@ -2677,8 +2671,9 @@
         <div style="font-size:12px;font-weight:700;color:var(--muted);background:#f5f5f5;display:inline-block;padding:5px 14px;border-radius:99px;margin-bottom:16px;">Order ID: ${orderId}</div>
         <div style="background:#f9f9f9;border:1px solid var(--line);border-radius:18px;padding:16px;margin:0 auto 24px;max-width:320px;text-align:left;">
           <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Customer</span><span style="font-weight:700;">${name}</span></div>
-          <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Amount</span><span style="font-weight:700;">₹${Number(total).toLocaleString('en-IN')}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Order Total</span><span style="font-weight:700;">₹${Number(total).toLocaleString('en-IN')}</span></div>
           <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Payment</span><span style="font-weight:700;">${payMethod}</span></div>
+          ${remainingHtml}
         </div>
         <div style="font-size:13px;color:var(--muted);line-height:1.7;max-width:280px;margin:0 auto 24px;">Thank you for shopping with Jersify! Your kit is being packed. 🚚</div>
         <button onclick="window.location.href='${profileUrl}'" style="border:none;border-radius:14px;padding:14px 32px;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 10px 28px rgba(198,31,47,.28);">View My Order →</button>
