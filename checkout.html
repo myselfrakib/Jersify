@@ -154,33 +154,13 @@
       }
     }
 
-    .card:nth-child(1) {
-      animation-delay: .00s
-    }
-
-    .card:nth-child(2) {
-      animation-delay: .05s
-    }
-
-    .card:nth-child(3) {
-      animation-delay: .10s
-    }
-
-    .card:nth-child(4) {
-      animation-delay: .15s
-    }
-
-    .card:nth-child(5) {
-      animation-delay: .20s
-    }
-
-    .card:nth-child(6) {
-      animation-delay: .25s
-    }
-
-    .card:nth-child(7) {
-      animation-delay: .30s
-    }
+    .card:nth-child(1) { animation-delay: .00s }
+    .card:nth-child(2) { animation-delay: .05s }
+    .card:nth-child(3) { animation-delay: .10s }
+    .card:nth-child(4) { animation-delay: .15s }
+    .card:nth-child(5) { animation-delay: .20s }
+    .card:nth-child(6) { animation-delay: .25s }
+    .card:nth-child(7) { animation-delay: .30s }
 
     .card-header {
       font-size: 11px;
@@ -219,9 +199,7 @@
     }
 
     @keyframes spin {
-      to {
-        transform: rotate(360deg)
-      }
+      to { transform: rotate(360deg) }
     }
 
     #loading p {
@@ -769,32 +747,6 @@
       font-size: 18px;
     }
 
-    /* COD advance notice banner */
-    .cod-advance-notice {
-      display: none;
-      align-items: flex-start;
-      gap: 10px;
-      background: rgba(196, 154, 0, .07);
-      border: 1.5px solid rgba(196, 154, 0, .35);
-      border-radius: 12px;
-      padding: 11px 13px;
-      margin-top: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      color: #7a5f00;
-      line-height: 1.6;
-    }
-
-    .cod-advance-notice.show {
-      display: flex;
-    }
-
-    .cod-advance-notice-icon {
-      font-size: 16px;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
     .summary-row {
       display: flex;
       justify-content: space-between;
@@ -839,48 +791,6 @@
       font-size: 30px;
       color: var(--accent);
       letter-spacing: 1px;
-    }
-
-    /* COD advance due now row */
-    .summary-advance-row {
-      display: none;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      background: rgba(196, 154, 0, .07);
-      border: 1.5px solid rgba(196, 154, 0, .3);
-      border-radius: 10px;
-      margin-top: 8px;
-    }
-
-    .summary-advance-row.show {
-      display: flex;
-    }
-
-    .summary-advance-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: #7a5f00;
-    }
-
-    .summary-advance-val {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      color: #9a7800;
-      letter-spacing: .8px;
-    }
-
-    .summary-cod-remain {
-      display: none;
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 600;
-      text-align: right;
-      margin-top: 4px;
-    }
-
-    .summary-cod-remain.show {
-      display: block;
     }
 
     .confirm-btn {
@@ -1540,13 +1450,8 @@
     }
 
     @keyframes gradientShift {
-      0% {
-        background-position: 0% 50%;
-      }
-
-      100% {
-        background-position: 200% 50%;
-      }
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
     }
 
     .google-icon {
@@ -1606,40 +1511,18 @@
         grid-template-columns: 1fr;
         gap: 0;
       }
-
-      .logo {
-        font-size: 40px
-      }
+      .logo { font-size: 40px }
     }
 
     @keyframes shake {
-
-      0%,
-      100% {
-        transform: translateX(0);
-      }
-
-      20%,
-      60% {
-        transform: translateX(-5px);
-      }
-
-      40%,
-      80% {
-        transform: translateX(5px);
-      }
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
     }
 
     @keyframes popIn {
-      from {
-        transform: scale(0);
-        opacity: 0;
-      }
-
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
@@ -1726,9 +1609,7 @@
             Shipping Address
           </div>
           <div id="savedAddressesSection" style="display:none;">
-            <div
-              style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;">
-              Saved</div>
+            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;">Saved</div>
             <div id="savedAddressList"></div>
             <div class="new-addr-toggle" id="newAddrToggle" onclick="toggleNewAddress()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1740,27 +1621,19 @@
             </div>
           </div>
           <div id="addressForm">
-            <div class="form-group"><label>Full Name</label><input type="text" id="custName" class="form-input"
-                placeholder="Enter your full name" autocomplete="name"></div>
+            <div class="form-group"><label>Full Name</label><input type="text" id="custName" class="form-input" placeholder="Enter your full name" autocomplete="name"></div>
             <div class="form-row">
-              <div class="form-group"><label>Email</label><input type="email" id="custEmail" class="form-input"
-                  placeholder="you@email.com" autocomplete="email"></div>
-              <div class="form-group"><label>Phone</label><input type="tel" id="custPhone" class="form-input"
-                  placeholder="+91 98765 43210" autocomplete="tel"></div>
+              <div class="form-group"><label>Email</label><input type="email" id="custEmail" class="form-input" placeholder="you@email.com" autocomplete="email"></div>
+              <div class="form-group"><label>Phone</label><input type="tel" id="custPhone" class="form-input" placeholder="+91 98765 43210" autocomplete="tel"></div>
             </div>
-            <div class="form-group"><label>Street Address</label><textarea id="custAddress" class="form-input"
-                placeholder="House no, Street, Landmark…" autocomplete="street-address"></textarea></div>
+            <div class="form-group"><label>Street Address</label><textarea id="custAddress" class="form-input" placeholder="House no, Street, Landmark…" autocomplete="street-address"></textarea></div>
             <div class="form-row">
-              <div class="form-group"><label>City</label><input type="text" id="custCity" class="form-input"
-                  placeholder="City" autocomplete="address-level2"></div>
-              <div class="form-group"><label>State</label><input type="text" id="custState" class="form-input"
-                  placeholder="State" autocomplete="address-level1"></div>
+              <div class="form-group"><label>City</label><input type="text" id="custCity" class="form-input" placeholder="City" autocomplete="address-level2"></div>
+              <div class="form-group"><label>State</label><input type="text" id="custState" class="form-input" placeholder="State" autocomplete="address-level1"></div>
             </div>
             <div class="form-row">
-              <div class="form-group"><label>Pincode</label><input type="text" id="custPincode" class="form-input"
-                  placeholder="400001" maxlength="6" inputmode="numeric" autocomplete="postal-code"></div>
-              <div class="form-group"><label>Country</label><input type="text" id="custCountry" class="form-input"
-                  value="India" autocomplete="country-name"></div>
+              <div class="form-group"><label>Pincode</label><input type="text" id="custPincode" class="form-input" placeholder="400001" maxlength="6" inputmode="numeric" autocomplete="postal-code"></div>
+              <div class="form-group"><label>Country</label><input type="text" id="custCountry" class="form-input" value="India" autocomplete="country-name"></div>
             </div>
             <button class="location-btn" id="locationBtn" onclick="getLocation()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1806,7 +1679,7 @@
             </svg>
             Payment Method
           </div>
-          <label class="pay-opt active" onclick="selPay('razorpay')">
+          <label class="pay-opt active">
             <input type="radio" name="paymethod" id="pay_rzp" checked value="razorpay">
             <div class="pay-opt-content">
               <div class="pay-opt-text">Pay Online</div>
@@ -1814,19 +1687,6 @@
             </div>
             <div class="pay-opt-icon">💳</div>
           </label>
-          <label class="pay-opt" onclick="selPay('cod')">
-            <input type="radio" name="paymethod" id="pay_cod" value="cod">
-            <div class="pay-opt-content">
-              <div class="pay-opt-text">Cash on Delivery</div>
-              <div class="pay-opt-sub">Pay remaining amount on delivery</div>
-            </div>
-            <div class="pay-opt-icon">💵</div>
-          </label>
-          <!-- COD advance notice — shown when COD is selected -->
-          <div class="cod-advance-notice" id="codAdvanceNotice">
-            <span class="cod-advance-notice-icon">⚠️</span>
-            <span>Cash on Delivery requires a <strong>₹100 advance payment</strong> now to confirm your order. The remaining balance will be collected at delivery.</span>
-          </div>
         </div>
 
         <div class="card">
@@ -1842,21 +1702,13 @@
             Order Summary
           </div>
           <div class="summary-row"><span>Subtotal</span><span id="subTotal">₹0</span></div>
-          <div class="summary-row"><span>Shipping</span><span style="color:var(--success);font-weight:700;">FREE</span>
-          </div>
-          <div class="summary-row discount-row" id="discountRow" style="display:none;"><span>Discount</span><span
-              id="discountVal">-₹0</span></div>
+          <div class="summary-row"><span>Shipping</span><span style="color:var(--success);font-weight:700;">FREE</span></div>
+          <div class="summary-row discount-row" id="discountRow" style="display:none;"><span>Discount</span><span id="discountVal">-₹0</span></div>
           <div class="summary-divider"></div>
           <div class="summary-total">
             <div class="summary-total-label">Total</div>
             <div class="summary-total-val" id="finalTotal">₹0</div>
           </div>
-          <!-- COD breakdown: advance due now + remaining on delivery -->
-          <div class="summary-advance-row" id="summaryAdvanceRow">
-            <span class="summary-advance-label">💳 Pay Now (Advance)</span>
-            <span class="summary-advance-val">₹100</span>
-          </div>
-          <div class="summary-cod-remain" id="summaryCodRemain"></div>
         </div>
 
         <button class="confirm-btn" id="confirmBtn" onclick="processOrder()">
@@ -1875,8 +1727,7 @@
 
       <footer class="footer">
         <h4>JERSIFY</h4>
-        <p>Premium football jerseys, clubwear, and fan drops designed for people who want style on and off the pitch.
-        </p>
+        <p>Premium football jerseys, clubwear, and fan drops designed for people who want style on and off the pitch.</p>
         <div class="footer-links">
           <a href="index.html">Home</a><a href="shop.html">Shop</a>
           <a href="checkout.html">Cart</a><a href="profile.html">Profile</a>
@@ -1887,34 +1738,10 @@
   </div>
 
   <nav class="bottom-nav">
-    <a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 12l9-9 9 9" />
-        <path d="M5 10v10h14V10" />
-      </svg>
-      <div>Home</div>
-    </a>
-    <a href="shop.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M4 10h16" />
-        <path d="M5 10l1-5h12l1 5" />
-        <path d="M4 10v8h16v-8" />
-        <path d="M9 18v-4h6v4" />
-      </svg>
-      <div>Shop</div>
-    </a>
-    <a href="checkout.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2">
-        <path d="M6 6h15l-1.5 9h-12z" />
-        <circle cx="9" cy="20" r="1" />
-        <circle cx="18" cy="20" r="1" />
-      </svg>
-      <div>Cart</div>
-    </a>
-    <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
-      <div>Profile</div>
-    </a>
+    <a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9" /><path d="M5 10v10h14V10" /></svg><div>Home</div></a>
+    <a href="shop.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16" /><path d="M5 10l1-5h12l1 5" /><path d="M4 10v8h16v-8" /><path d="M9 18v-4h6v4" /></svg><div>Shop</div></a>
+    <a href="checkout.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z" /><circle cx="9" cy="20" r="1" /><circle cx="18" cy="20" r="1" /></svg><div>Cart</div></a>
+    <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg><div>Profile</div></a>
   </nav>
 
   <div id="processingOverlay">
@@ -1946,17 +1773,12 @@
       <div id="signinPanel">
         <div class="auth-welcome-title">Welcome back 👋</div>
         <div class="auth-welcome-sub">Sign in to continue to your order.</div>
-        <div class="auth-form-group"><label>Email Address</label><input type="email" id="siEmail" class="auth-input"
-            placeholder="you@email.com" autocomplete="email"></div>
+        <div class="auth-form-group"><label>Email Address</label><input type="email" id="siEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
         <div class="auth-form-group">
           <label>Password</label>
-          <input type="password" id="siPassword" class="auth-input has-icon" placeholder="Your password"
-            autocomplete="current-password">
+          <input type="password" id="siPassword" class="auth-input has-icon" placeholder="Your password" autocomplete="current-password">
           <button type="button" class="pw-toggle" onclick="togglePw('siPassword',this)" tabindex="-1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
           </button>
         </div>
         <a class="auth-forgot" onclick="showResetPanel()">Forgot password?</a>
@@ -1965,48 +1787,28 @@
         </button>
         <div class="auth-divider"><span>or continue with</span></div>
         <button class="auth-google-btn" id="siGoogleBtn" onclick="doGoogleSignIn()">
-          <svg class="google-icon" viewBox="0 0 48 48">
-            <path fill="#EA4335"
-              d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-            <path fill="#4285F4"
-              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-            <path fill="#FBBC05"
-              d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
-            <path fill="#34A853"
-              d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-          </svg>
+          <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" /><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" /><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" /><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" /></svg>
           Continue with Google
         </button>
-        <div class="auth-terms">By signing in you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.
-        </div>
+        <div class="auth-terms">By signing in you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
       </div>
       <div id="signupPanel" style="display:none;">
         <div class="auth-welcome-title">Create account 🎽</div>
         <div class="auth-welcome-sub">Join Jersify and get exclusive drops & offers.</div>
-        <div class="auth-form-group"><label>Full Name</label><input type="text" id="suName" class="auth-input"
-            placeholder="Your full name" autocomplete="name"></div>
-        <div class="auth-form-group"><label>Email Address</label><input type="email" id="suEmail" class="auth-input"
-            placeholder="you@email.com" autocomplete="email"></div>
+        <div class="auth-form-group"><label>Full Name</label><input type="text" id="suName" class="auth-input" placeholder="Your full name" autocomplete="name"></div>
+        <div class="auth-form-group"><label>Email Address</label><input type="email" id="suEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
         <div class="auth-form-group">
           <label>Password</label>
-          <input type="password" id="suPassword" class="auth-input has-icon" placeholder="Min. 6 characters"
-            autocomplete="new-password">
+          <input type="password" id="suPassword" class="auth-input has-icon" placeholder="Min. 6 characters" autocomplete="new-password">
           <button type="button" class="pw-toggle" onclick="togglePw('suPassword',this)" tabindex="-1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
           </button>
         </div>
         <div class="auth-form-group">
           <label>Confirm Password</label>
-          <input type="password" id="suConfirm" class="auth-input has-icon" placeholder="Repeat password"
-            autocomplete="new-password">
+          <input type="password" id="suConfirm" class="auth-input has-icon" placeholder="Repeat password" autocomplete="new-password">
           <button type="button" class="pw-toggle" onclick="togglePw('suConfirm',this)" tabindex="-1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
           </button>
         </div>
         <button class="auth-submit-btn" id="suBtn" onclick="doSignUp()">
@@ -2014,31 +1816,19 @@
         </button>
         <div class="auth-divider"><span>or continue with</span></div>
         <button class="auth-google-btn" id="suGoogleBtn" onclick="doGoogleSignIn()">
-          <svg class="google-icon" viewBox="0 0 48 48">
-            <path fill="#EA4335"
-              d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-            <path fill="#4285F4"
-              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-            <path fill="#FBBC05"
-              d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
-            <path fill="#34A853"
-              d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-          </svg>
+          <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" /><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" /><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" /><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" /></svg>
           Continue with Google
         </button>
-        <div class="auth-terms">By creating an account you agree to our <a href="#">Terms</a> & <a href="#">Privacy
-            Policy</a>.</div>
+        <div class="auth-terms">By creating an account you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
       </div>
       <div id="resetPanel">
         <div class="auth-welcome-title">Reset Password 🔑</div>
         <div class="auth-welcome-sub">Enter your email and we'll send a reset link.</div>
-        <div class="auth-form-group"><label>Email Address</label><input type="email" id="resetEmail" class="auth-input"
-            placeholder="you@email.com" autocomplete="email"></div>
+        <div class="auth-form-group"><label>Email Address</label><input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
         <button class="auth-submit-btn" id="resetBtn" onclick="doResetPassword()">
           <div class="auth-btn-spinner"></div><span class="auth-btn-text">Send Reset Link</span>
         </button>
-        <div style="text-align:center;margin-top:14px;"><a onclick="hideResetPanel()"
-            style="font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;">← Back to Sign In</a></div>
+        <div style="text-align:center;margin-top:14px;"><a onclick="hideResetPanel()" style="font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;">← Back to Sign In</a></div>
       </div>
     </div>
   </div>
@@ -2054,7 +1844,6 @@
       getDatabase, ref, get, set, update, push, child
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    /* ── Firebase Config ── */
     const firebaseConfig = {
       apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
       authDomain: "jersify-f9b5e.firebaseapp.com",
@@ -2064,8 +1853,6 @@
       appId: "1:461181023878:web:6ebfbae603baf4a873c307",
       databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
     };
-
-    const COD_ADVANCE = 100; // ₹100 advance for COD orders
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -2082,16 +1869,6 @@
     let couponsMap = {};
     let currentUser = null;
 
-    /* ── Processing overlay ── */
-    function showProcessing(title, sub) {
-      document.getElementById('processingTitle').textContent = title || 'Preparing…';
-      document.getElementById('processingSub').textContent = sub || 'Please wait.';
-      document.getElementById('processingOverlay').classList.add('show');
-    }
-    function hideProcessing() {
-      document.getElementById('processingOverlay').classList.remove('show');
-    }
-
     function setConfirmBtn(loading, text) {
       const btn = document.getElementById('confirmBtn');
       btn.disabled = loading;
@@ -2099,31 +1876,6 @@
       document.getElementById('confirmBtnText').textContent = text || 'Proceed to Payment →';
     }
 
-    /* ── Payment method toggle ── */
-    window.selPay = method => {
-      document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('active'));
-      document.getElementById(method === 'razorpay' ? 'pay_rzp' : 'pay_cod').parentElement.classList.add('active');
-
-      const isCOD = method === 'cod';
-      // Show/hide COD advance notice
-      document.getElementById('codAdvanceNotice').classList.toggle('show', isCOD);
-      // Show/hide COD advance breakdown in summary
-      document.getElementById('summaryAdvanceRow').classList.toggle('show', isCOD);
-
-      if (isCOD) {
-        const finalPrice = orderPrice - discountAmount;
-        const remaining = finalPrice - COD_ADVANCE;
-        document.getElementById('summaryCodRemain').textContent =
-          `Remaining ₹${remaining.toLocaleString('en-IN')} paid at delivery`;
-        document.getElementById('summaryCodRemain').classList.add('show');
-        document.getElementById('confirmBtnText').textContent = `Pay ₹${COD_ADVANCE} Advance & Confirm →`;
-      } else {
-        document.getElementById('summaryCodRemain').classList.remove('show');
-        document.getElementById('confirmBtnText').textContent = 'Proceed to Payment →';
-      }
-    };
-
-    /* ── Size toggle (Buy Now mode) ── */
     window.selectSize = btn => {
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -2132,7 +1884,6 @@
       }
     };
 
-    /* ── Auth helpers ── */
     window.openAuthModal = (tab = 'signin') => { switchAuthTab(tab); clearAuthMessages(); document.getElementById('authModal').classList.add('show'); document.getElementById('authBackdrop').classList.add('show'); document.body.style.overflow = 'hidden'; };
     window.closeAuthModal = () => { document.getElementById('authModal').classList.remove('show'); document.getElementById('authBackdrop').classList.remove('show'); document.body.style.overflow = ''; };
     window.switchAuthTab = (tab) => { const s = tab === 'signin'; document.getElementById('tabSignin').classList.toggle('active', s); document.getElementById('tabSignup').classList.toggle('active', !s); document.getElementById('signinPanel').style.display = s ? 'block' : 'none'; document.getElementById('signupPanel').style.display = !s ? 'block' : 'none'; document.getElementById('resetPanel').style.display = 'none'; clearAuthMessages(); };
@@ -2348,12 +2099,6 @@
     function updateTotal() {
       const finalPrice = orderPrice - discountAmount;
       document.getElementById('finalTotal').textContent = `₹${finalPrice.toLocaleString('en-IN')}`;
-      // refresh COD remaining if COD is selected
-      if (document.getElementById('pay_cod').checked) {
-        const remaining = finalPrice - COD_ADVANCE;
-        document.getElementById('summaryCodRemain').textContent =
-          `Remaining ₹${remaining.toLocaleString('en-IN')} paid at delivery`;
-      }
     }
 
     window.changeQty = (key, delta) => {
@@ -2373,29 +2118,11 @@
       document.getElementById('finalTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
       document.getElementById('couponMsg').className = 'coupon-msg';
       document.getElementById('discountRow').style.display = 'none';
-      // refresh COD remaining
-      if (document.getElementById('pay_cod').checked) {
-        document.getElementById('summaryCodRemain').textContent =
-          `Remaining ₹${(orderPrice - COD_ADVANCE).toLocaleString('en-IN')} paid at delivery`;
-      }
     }
 
-    /* ══════════════════════════════════════════════════════
-       COLLECT & VALIDATE ADDRESS
-    ══════════════════════════════════════════════════════ */
     function collectAddress() {
       if (selectedSavedAddr) {
-        return {
-          name: selectedSavedAddr.name,
-          phone: selectedSavedAddr.phone,
-          email: selectedSavedAddr.email,
-          address: selectedSavedAddr.address,
-          city: selectedSavedAddr.city,
-          state: selectedSavedAddr.state,
-          pincode: selectedSavedAddr.pincode,
-          country: selectedSavedAddr.country || 'India',
-          valid: true
-        };
+        return { name: selectedSavedAddr.name, phone: selectedSavedAddr.phone, email: selectedSavedAddr.email, address: selectedSavedAddr.address, city: selectedSavedAddr.city, state: selectedSavedAddr.state, pincode: selectedSavedAddr.pincode, country: selectedSavedAddr.country || 'India', valid: true };
       }
       const name = document.getElementById('custName').value.trim();
       const phone = document.getElementById('custPhone').value.trim();
@@ -2405,74 +2132,27 @@
       const state = document.getElementById('custState').value.trim();
       const pincode = document.getElementById('custPincode').value.trim();
       const country = document.getElementById('custCountry').value.trim() || 'India';
-
       if (!name) { shakeField('custName'); alert('Please enter your name.'); return null; }
       if (!phone || phone.length < 10) { shakeField('custPhone'); alert('Please enter a valid phone number.'); return null; }
       if (!address) { shakeField('custAddress'); alert('Please enter your address.'); return null; }
       if (!city) { shakeField('custCity'); alert('Please enter your city.'); return null; }
       if (!pincode || pincode.length < 4) { shakeField('custPincode'); alert('Please enter a valid pincode.'); return null; }
-
-      if (document.getElementById('saveAddrCheck').checked)
-        saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
-
+      if (document.getElementById('saveAddrCheck').checked) saveAddressLocal({ name, phone, email, address, city, state, pincode, country });
       return { name, phone, email, address, city, state, pincode, country, valid: true };
     }
 
-    /* ══════════════════════════════════════════════════
-       PROCESS ORDER
-    ══════════════════════════════════════════════════ */
     window.processOrder = async () => {
       if (orderPrice === 0) { alert('Your cart is empty.'); return; }
       if (!currentUser) { openAuthModal('signin'); shakeField('confirmBtn'); return; }
-
       const addr = collectAddress();
       if (!addr) return;
-
       const { name, phone, email, address, city, state, pincode, country } = addr;
-      const isRZP = document.getElementById('pay_rzp').checked;
-      const isCOD = document.getElementById('pay_cod').checked;
       const finalPrice = orderPrice - discountAmount;
       const selectedSize = isCartMode ? 'Mixed' : (document.querySelector('.size-btn.active')?.textContent || 'M');
       const orderId = `JRS-${Date.now()}`;
-
-      /* Build shared payload (used by both online & COD advance redirects) */
-      const payload = {
-        items: orderItems,
-        address, city, state, pincode, country,
-        subtotal: orderPrice,
-        discount: discountAmount
-      };
+      const payload = { items: orderItems, address, city, state, pincode, country, subtotal: orderPrice, discount: discountAmount };
       const dataB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
       const bookingBase = 'https://waveridrentals.vercel.app/jersifybooking.html';
-
-      /* ──────────────────────────────────────────
-         COD with ₹100 advance: redirect to payment
-         page with amt=100 and mode=cod_advance
-      ────────────────────────────────────────── */
-      if (isCOD) {
-        setConfirmBtn(true, 'Redirecting to advance payment…');
-        const bookingUrl = `${bookingBase}?oid=${encodeURIComponent(orderId)}`
-          + `&amt=${COD_ADVANCE}`
-          + `&n=${encodeURIComponent(name)}`
-          + `&e=${encodeURIComponent(email)}`
-          + `&ph=${encodeURIComponent(phone)}`
-          + `&sz=${encodeURIComponent(selectedSize)}`
-          + `&uid=${encodeURIComponent(currentUser.uid)}`
-          + `&ue=${encodeURIComponent(currentUser.email || '')}`
-          + `&d=${encodeURIComponent(dataB64)}`
-          + `&mode=cod_advance`           // ← signals COD advance on the booking page
-          + `&total=${finalPrice}`;        // ← full order total for record keeping
-
-        setTimeout(() => {
-          setConfirmBtn(false, 'Proceed to Payment →');
-          window.location.href = bookingUrl;
-        }, 600);
-        return;
-      }
-
-      /* ──────────────────────────────────────────
-         ONLINE: redirect to booking page
-      ────────────────────────────────────────── */
       setConfirmBtn(true, 'Redirecting to payment…');
       const bookingUrl = `${bookingBase}?oid=${encodeURIComponent(orderId)}`
         + `&amt=${finalPrice}`
@@ -2483,30 +2163,19 @@
         + `&uid=${encodeURIComponent(currentUser.uid)}`
         + `&ue=${encodeURIComponent(currentUser.email || '')}`
         + `&d=${encodeURIComponent(dataB64)}`;
-
       setTimeout(() => {
         setConfirmBtn(false, 'Proceed to Payment →');
         window.location.href = bookingUrl;
       }, 600);
     };
 
-    /* ══════════════════════════════════════════════════
-       CALLBACK HANDLER (return from WaveRide after payment)
-    ══════════════════════════════════════════════════ */
     async function handleOnlinePaymentCallback(params) {
       document.getElementById('checkoutContent').style.display = 'none';
       document.getElementById('loading').style.display = 'block';
       const orderId = params.get('oid');
       const paymentId = params.get('paymentId');
       const dataB64 = params.get('d');
-      const mode = params.get('mode'); // 'cod_advance' or undefined (online)
-
-      if (!orderId || !dataB64) {
-        alert('Invalid callback data.');
-        window.location.href = 'index.html';
-        return;
-      }
-
+      if (!orderId || !dataB64) { alert('Invalid callback data.'); window.location.href = 'index.html'; return; }
       try {
         const payload = JSON.parse(decodeURIComponent(escape(atob(dataB64))));
         const name = params.get('n') || 'Customer';
@@ -2515,51 +2184,21 @@
         const ue = params.get('ue') || '';
         const email = params.get('e') || '';
         const phone = params.get('ph') || '';
-
-        const isCodAdvance = mode === 'cod_advance';
-        // For COD: amt in URL = ₹100 advance paid; total = full order total
-        // For online: amt = full payment
-        const advancePaid = isCodAdvance ? COD_ADVANCE : null;
-        const fullTotal = isCodAdvance
-          ? parseInt(params.get('total') || '0')
-          : parseInt(params.get('amt') || '0');
-        const remaining = isCodAdvance ? fullTotal - COD_ADVANCE : 0;
-
+        const fullTotal = parseInt(params.get('amt') || '0');
         const orderRef = ref(db, `orders/${orderId}`);
         await set(orderRef, {
-          orderId,
-          userId: uid,
-          userEmail: ue,
-          customerName: name,
-          phone, email,
-          address: payload.address || '',
-          city: payload.city || '',
-          state: payload.state || '',
-          pincode: payload.pincode || '',
-          country: payload.country || '',
-          items: payload.items || [],
-          subtotal: payload.subtotal || 0,
-          discount: payload.discount || 0,
-          total: fullTotal,
-          selectedSize,
-          paymentMethod: isCodAdvance ? 'cod' : 'online',
-          paymentId,
-          advancePaid: isCodAdvance ? COD_ADVANCE : null,
-          remainingOnDelivery: isCodAdvance ? remaining : null,
-          advancePaidAt: isCodAdvance ? new Date().toISOString() : null,
-          status: 'confirmed',
-          source: 'jersify.online callback',
-          createdAt: new Date().toISOString(),
-          confirmedAt: new Date().toISOString()
+          orderId, userId: uid, userEmail: ue, customerName: name, phone, email,
+          address: payload.address || '', city: payload.city || '', state: payload.state || '',
+          pincode: payload.pincode || '', country: payload.country || '',
+          items: payload.items || [], subtotal: payload.subtotal || 0, discount: payload.discount || 0,
+          total: fullTotal, selectedSize, paymentMethod: 'online', paymentId,
+          status: 'confirmed', source: 'jersify.online callback',
+          createdAt: new Date().toISOString(), confirmedAt: new Date().toISOString()
         });
         try { if (uid && uid !== 'anonymous') await update(ref(db, `users/${uid}/orders`), { [orderId]: true }); } catch (e) {}
         localStorage.removeItem('jersify_cart');
         document.getElementById('loading').style.display = 'none';
-
-        const payLabel = isCodAdvance
-          ? `Cash on Delivery (₹${COD_ADVANCE} advance paid)`
-          : 'Online Payment';
-        showSuccessScreen(orderId, name, fullTotal, selectedSize, payLabel, isCodAdvance ? remaining : null);
+        showSuccessScreen(orderId, name, fullTotal, selectedSize, 'Online Payment');
       } catch (err) {
         alert('Failed to save order: ' + err.message);
         document.getElementById('loading').style.display = 'none';
@@ -2567,26 +2206,18 @@
       }
     }
 
-    /* ── DOMContentLoaded ── */
     window.addEventListener('DOMContentLoaded', async () => {
       const params = new URLSearchParams(window.location.search);
       const paymentId = params.get('paymentId');
-
-      if (paymentId) {
-        handleOnlinePaymentCallback(params);
-        return;
-      }
-
+      if (paymentId) { handleOnlinePaymentCallback(params); return; }
       loadCoupons();
       renderSavedAddresses();
-
       const pid = params.get('id');
       const paramSize = params.get('size');
       const cart = getCart();
       const orderBody = document.getElementById('orderItemsBody');
 
       if (pid) {
-        /* Single product buy-now flow */
         try {
           const snap = await get(ref(db, `products/${pid}`));
           if (snap.exists()) {
@@ -2615,9 +2246,7 @@
         } catch {
           orderBody.innerHTML = '<p style="color:var(--accent);font-size:13px;text-align:center;padding:12px 0">Error loading product.</p>';
         }
-
       } else if (cart.length > 0) {
-        /* Cart checkout flow */
         isCartMode = true;
         orderItems = cart;
         orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
@@ -2640,9 +2269,7 @@
             </div>
           </div>`;
         }).join('');
-
       } else {
-        /* Empty cart */
         orderBody.innerHTML = `
         <div class="empty-cart-hint">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"/></svg>
@@ -2657,13 +2284,9 @@
       document.getElementById('checkoutContent').style.display = 'block';
     });
 
-    /* ── Success screen ── */
-    function showSuccessScreen(orderId, name, total, size, payMethod, remainingOnDelivery) {
+    function showSuccessScreen(orderId, name, total, size, payMethod) {
       let countdown = 5;
       const profileUrl = `profile.html?newOrder=${encodeURIComponent(orderId)}`;
-      const remainingHtml = remainingOnDelivery
-        ? `<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Due at Delivery</span><span style="font-weight:700;color:var(--gold)">₹${Number(remainingOnDelivery).toLocaleString('en-IN')}</span></div>`
-        : '';
       document.querySelector('.content').innerHTML = `
       <div style="text-align:center;padding:60px 16px 40px;">
         <span style="font-size:64px;display:block;margin-bottom:16px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both">🎉</span>
@@ -2673,7 +2296,6 @@
           <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Customer</span><span style="font-weight:700;">${name}</span></div>
           <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Order Total</span><span style="font-weight:700;">₹${Number(total).toLocaleString('en-IN')}</span></div>
           <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:12px;"><span style="color:var(--muted)">Payment</span><span style="font-weight:700;">${payMethod}</span></div>
-          ${remainingHtml}
         </div>
         <div style="font-size:13px;color:var(--muted);line-height:1.7;max-width:280px;margin:0 auto 24px;">Thank you for shopping with Jersify! Your kit is being packed. 🚚</div>
         <button onclick="window.location.href='${profileUrl}'" style="border:none;border-radius:14px;padding:14px 32px;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 10px 28px rgba(198,31,47,.28);">View My Order →</button>
