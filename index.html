@@ -95,13 +95,30 @@
     /* ── HEADER ── */
     .topbar {
       display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm);
-      padding: clamp(12px, 2vw, 20px) clamp(14px, 3vw, 40px) clamp(8px, 1.5vw, 14px);
+      padding: clamp(10px, 1.8vw, 16px) clamp(14px, 3vw, 40px);
       position: sticky; top: 0;
       background: rgba(255,255,255,.98); backdrop-filter: blur(8px);
       z-index: 30; border-bottom: 1px solid rgba(0,0,0,.04);
     }
-    .logo { font-family: 'Bebas Neue', sans-serif; font-size: var(--fs-logo); letter-spacing: 2.5px; line-height: 1; color: #111; text-transform: uppercase; white-space: nowrap; text-shadow: 0 1px 0 rgba(255,255,255,.8); }
-    .logo-sub { font-size: clamp(8px, 1vw, 11px); font-weight: 600; color: var(--muted); letter-spacing: .5px; margin-top: -2px; font-family: 'Poppins', sans-serif; }
+
+    /* ── LOGO IMAGE ── */
+    .logo-img-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .logo-img {
+      height: clamp(38px, 7vw, 64px);
+      width: auto;
+      max-width: clamp(140px, 28vw, 240px);
+      object-fit: contain;
+      object-position: left center;
+      display: block;
+    }
+    .logo-sub { font-size: clamp(8px, 1vw, 11px); font-weight: 600; color: var(--muted); letter-spacing: .5px; margin-top: 1px; font-family: 'Poppins', sans-serif; }
+
     .header-actions { display: flex; align-items: center; gap: var(--space-sm); flex-shrink: 0; }
     .shop-btn { border: none; background: #111; color: #fff; border-radius: 999px; padding: clamp(7px, 1.2vw, 11px) clamp(12px, 2vw, 18px); font-size: clamp(11px, 1.4vw, 13px); font-weight: 700; letter-spacing: .4px; cursor: pointer; box-shadow: var(--shadow-soft); }
     .icon-btn { width: clamp(34px, 5vw, 42px); height: clamp(34px, 5vw, 42px); border: none; border-radius: 50%; background: #111; color: #fff; display: grid; place-items: center; box-shadow: var(--shadow-soft); cursor: pointer; flex: 0 0 auto; transition: transform .2s ease; position: relative; }
@@ -249,7 +266,7 @@
     .grid-product-card { border-radius: clamp(18px, 2.5vw, 26px); background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow-card); overflow: hidden; cursor: pointer; transition: box-shadow .22s ease, transform .22s ease; }
     .grid-product-card:hover { box-shadow: 0 18px 44px rgba(0,0,0,.16), 0 3px 8px rgba(0,0,0,.09); transform: translateY(-3px); }
     .grid-product-card .pic { height: var(--pic-h); background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%); display: grid; place-items: center; position: relative; overflow: hidden; }
-    .grid-product-card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; }
+    .grid-product-card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .grid-product-card .loop-info { padding: clamp(8px, 1.5vw, 12px) clamp(10px, 1.8vw, 14px) clamp(10px, 1.8vw, 14px); }
     .grid-product-card .loop-info h4 { font-size: var(--fs-card-h); font-weight: 900; margin-bottom: 4px; }
     .grid-product-card .loop-info p { font-size: var(--fs-body); color: var(--muted); line-height: 1.35; min-height: 26px; }
@@ -297,9 +314,7 @@
     .pic-ghost { height: var(--pic-h); position: relative; overflow: hidden; background: linear-gradient(135deg, #ececec 0%, #f5f5f5 50%, #ececec 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite; display: flex; align-items: center; justify-content: center; }
     .pic-ghost::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
 
-    /* ══ IMAGE SKELETON SYSTEM ══
-       Wraps any <img> with a shimmer placeholder until it loads.
-       Usage: wrap img in .img-wrap, skeleton auto-shows/hides. */
+    /* ══ IMAGE SKELETON SYSTEM ══ */
     .img-wrap {
       position: relative;
       display: block;
@@ -307,7 +322,6 @@
       height: 100%;
       overflow: hidden;
     }
-    /* The skeleton overlay sitting behind/over the image */
     .img-wrap::before {
       content: "";
       position: absolute;
@@ -320,7 +334,6 @@
       transition: opacity .3s ease;
       pointer-events: none;
     }
-    /* Once the img has loaded, fade out the skeleton */
     .img-wrap.loaded::before {
       opacity: 0;
       pointer-events: none;
@@ -511,19 +524,18 @@
       display: block;
     }
 
-    /* ── TABLET: 2-col layout tweaks ── */
+    /* ── TABLET ── */
     @media (min-width: 600px) {
       .all-products-grid {
         grid-template-columns: repeat(auto-fill, minmax(clamp(160px, 25vw, 240px), 1fr));
       }
     }
 
-    /* ── DESKTOP: widen inner content, more columns ── */
+    /* ── DESKTOP ── */
     @media (min-width: 900px) {
       .all-products-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       }
-      /* Bump hero height proportionally on desktop */
       :root { --hero-h: clamp(260px, 30vw, 500px); }
     }
 
@@ -533,7 +545,7 @@
       }
     }
 
-    /* ── SMALL PHONE: tighten up ── */
+    /* ── SMALL PHONE ── */
     @media (max-width: 360px) {
       :root {
         --card-w: 145px;
@@ -566,10 +578,20 @@
 
     <!-- HEADER -->
     <header class="topbar">
-      <div>
-        <div class="logo">Jersify</div>
+      <!-- ══ IMAGE LOGO (replaces text logo) ══ -->
+      <div class="logo-img-wrap" onclick="window.location.href='index.html'">
+        <img
+          class="logo-img"
+          src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.jpg?alt=media&token=bb20658c-eb50-4bf6-9cfb-65880f832e26"
+          alt="Jersify"
+          loading="eager"
+          onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block';"
+        />
+        <!-- Fallback text if image fails -->
+        <div id="logoFallback" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:var(--fs-logo);letter-spacing:2.5px;line-height:1;color:#111;">Jersify</div>
         <div class="logo-sub" id="productCountLabel">Loading...</div>
       </div>
+
       <div class="header-actions">
         <button class="shop-btn" onclick="window.location.href='shop.html'">Shop</button>
         <button class="icon-btn" aria-label="Cart" onclick="window.location.href='checkout.html'">
@@ -758,22 +780,14 @@
 
   <!-- ══ SKELETON HELPER ══ -->
   <script>
-    /**
-     * imgSkeleton(img, wrapClass)
-     * Wraps an <img> or <video> element in a skeleton overlay div.
-     * The overlay fades out once the media has loaded.
-     */
     function imgSkeleton(el, wrapClass) {
       if (!el) return;
-      // Already wrapped
       if (el.parentElement && el.parentElement.classList.contains(wrapClass)) {
         attachLoaded(el, el.parentElement);
         return;
       }
       const wrap = document.createElement("div");
       wrap.className = wrapClass;
-      // Copy inline styles that affect sizing
-      const cs = window.getComputedStyle(el);
       el.parentNode.insertBefore(wrap, el);
       wrap.appendChild(el);
       attachLoaded(el, wrap);
@@ -789,7 +803,6 @@
           el.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
         }
       } else if (tag === "video") {
-        // For video, mark loaded once metadata arrives (poster/first frame)
         if (el.readyState >= 1) {
           wrap.classList.add("loaded");
         } else {
@@ -800,7 +813,7 @@
     }
   </script>
 
-  <!-- ══ NON-FIREBASE JS (unchanged logic) ══ -->
+  <!-- ══ NON-FIREBASE JS ══ -->
   <script>
     const splashBar    = document.getElementById("splashBar");
     const splashStatus = document.getElementById("splashStatus");
@@ -913,7 +926,6 @@
         { name: "Spain",     sub: "National team", id: "spain",     svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>` },
         { name: "Portugal",  sub: "National team", id: "portugal",  svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>` }
       ];
-      // Country chips use inline SVG data URIs — no skeleton needed (renders instantly)
       document.getElementById("countryRow").innerHTML = countries.map(c =>
         `<div class="card-chip" onclick="goToTeam('${c.id}')">
           <div class="chip-img"><img src="data:image/svg+xml;charset=UTF-8,${encodeURIComponent(c.svg)}" alt="${c.name}"></div>
@@ -954,7 +966,6 @@
         </div>`;
       }).join("");
 
-      // Attach skeleton load listeners for each club chip
       clubs.forEach(c => {
         const wrap = document.getElementById(`chip-${c.id}`);
         if (!wrap) return;
@@ -972,7 +983,7 @@
     })();
   </script>
 
-  <!-- ══ FIREBASE MODULE (unchanged) ══ -->
+  <!-- ══ FIREBASE MODULE ══ -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -999,7 +1010,6 @@
     }
     function getUrl(item) { return item.mediaUrl || item.imgUrl || ""; }
 
-    /* Helper: wrap a media element in the appropriate skeleton wrapper */
     function wrapMedia(el, wrapClass) {
       if (!el) return;
       const wrap = document.createElement("div");
@@ -1035,7 +1045,6 @@
           profileIcon.style.display = "none";
           const img = document.createElement("img"); img.src = user.photoURL; img.alt = user.displayName || "Profile";
           profileBtn.appendChild(img);
-          // skeleton for profile avatar
           wrapMedia(img, "img-wrap");
         } else {
           const initials = (user.displayName || user.email || "U").split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
@@ -1076,7 +1085,6 @@
           return `<div class="slide" style="cursor:pointer" onclick="window.location.href='${link}'">${media}</div>`;
         }).join("");
 
-        // Wrap each slide's media in hero skeleton
         slidesEl.querySelectorAll(".slide").forEach(slide => {
           const media = slide.querySelector("img, video");
           if (media) wrapMedia(media, "hero-img-wrap");
@@ -1107,7 +1115,6 @@
 
         function loopCard(p, i) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
-          // Image pic: use img-wrap skeleton div; fallback mini-jersey has no skeleton needed
           const picContent = p.imgUrl
             ? `<div class="img-wrap"><img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy" style="pointer-events:none"/></div>`
             : `<div class="mini-jersey ${colors[i%colors.length]}" style="pointer-events:none"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`;
@@ -1147,7 +1154,6 @@
         loopTrack.innerHTML       = products.slice(0,8).map((p,i)  => loopCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
         allProductsGrid.innerHTML = products.slice(0,10).map((p,i) => gridCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">No products available.</div>';
 
-        // Attach skeleton loaded listeners for product images
         [loopTrack, allProductsGrid].forEach(container => {
           container.querySelectorAll(".img-wrap img").forEach(img => {
             const wrap = img.closest(".img-wrap");
@@ -1193,7 +1199,7 @@
         const reels    = items.filter(m => m.section === "reels"    && getUrl(m));
         const gallery  = items.filter(m => m.section === "gallery"  && getUrl(m));
 
-        /* ── MEDIA SPACE (featured[0]) ── */
+        /* ── MEDIA SPACE ── */
         const ms = document.getElementById("mediaSpace");
         const f0 = featured[0];
         if (f0) {
@@ -1226,7 +1232,7 @@
           ms.innerHTML = `<div class="placeholder" style="font-size:13px;font-weight:700;color:#999;">No featured media</div>`;
         }
 
-        /* ── PROMOS (featured[1+]) ── */
+        /* ── PROMOS ── */
         const promoTrack = document.getElementById("promoTrack");
         const blank1     = document.getElementById("promoBlank1");
         if (featured.length > 1) {
@@ -1278,7 +1284,6 @@
           }).join("");
           reelsSection.style.display = "block";
 
-          // Attach reel skeleton loaded listeners
           reelsRow.querySelectorAll(".reel-img-wrap").forEach(wrap => {
             const vid = wrap.querySelector("video");
             const thumb = wrap.querySelector(".thumb");
@@ -1289,7 +1294,6 @@
                 vid.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
               }
             } else if (thumb) {
-              // background-image thumb: create a hidden img to detect load
               const bgUrl = (thumb.style.backgroundImage || "").replace(/^url\(['"]?/, "").replace(/['"]?\)$/, "");
               if (bgUrl) {
                 const probe = new Image();
@@ -1340,7 +1344,6 @@
           galleryGrid.innerHTML = html;
           gallerySection.style.display = "block";
 
-          // Attach gallery skeleton listeners
           galleryGrid.querySelectorAll(".gallery-img-wrap").forEach(wrap => {
             const img = wrap.querySelector("img");
             const vid = wrap.querySelector("video");
