@@ -70,7 +70,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      padding: 16px 16px 10px;
+      padding: 10px 16px 10px;
       position: sticky;
       top: 0;
       background: rgba(255, 255, 255, .98);
@@ -109,14 +109,12 @@
       height: 17px
     }
 
-    .logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 44px;
-      letter-spacing: 2.5px;
-      line-height: 1;
-      color: #111;
-      text-transform: uppercase;
-      white-space: nowrap;
+    /* Logo image in topbar */
+    .logo-img {
+      height: 42px;
+      width: auto;
+      object-fit: contain;
+      display: block;
     }
 
     .topbar-title {
@@ -623,13 +621,9 @@
       cursor: pointer;
     }
 
-    .coupon-row {
-      display: flex;
-      gap: 8px;
-    }
-
+    /* Coupon redesign — input full width, button below */
     .coupon-input {
-      flex: 1;
+      width: 100%;
       border: 1.5px solid rgba(0, 0, 0, .12);
       border-radius: 12px;
       padding: 11px 13px;
@@ -641,6 +635,7 @@
       color: var(--text);
       outline: none;
       transition: all .22s;
+      margin-bottom: 10px;
     }
 
     .coupon-input::placeholder {
@@ -657,21 +652,21 @@
     }
 
     .coupon-apply-btn {
+      width: 100%;
       border: none;
       border-radius: 12px;
-      padding: 0 18px;
+      padding: 12px;
       background: linear-gradient(135deg, #c49a00, #9a7800);
       color: #fff;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 800;
-      letter-spacing: .5px;
+      letter-spacing: .8px;
       cursor: pointer;
       transition: all .2s;
-      white-space: nowrap;
     }
 
     .coupon-apply-btn:hover {
-      transform: scale(1.03);
+      transform: scale(1.02);
       box-shadow: 0 4px 14px rgba(196, 154, 0, .3);
     }
 
@@ -1511,7 +1506,7 @@
         grid-template-columns: 1fr;
         gap: 0;
       }
-      .logo { font-size: 40px }
+      .logo-img { height: 36px }
     }
 
     @keyframes shake {
@@ -1523,6 +1518,42 @@
     @keyframes popIn {
       from { transform: scale(0); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
+    }
+
+    /* Free shipping banner */
+    .free-shipping-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(30,140,74,.07), rgba(30,140,74,.03));
+      border: 1.5px solid rgba(30,140,74,.2);
+      border-radius: 12px;
+      padding: 9px 13px;
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    .free-shipping-banner svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .free-shipping-progress {
+      height: 4px;
+      background: rgba(30,140,74,.15);
+      border-radius: 99px;
+      margin-top: 7px;
+      overflow: hidden;
+    }
+
+    .free-shipping-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1e8c4a, #34d06a);
+      border-radius: 99px;
+      transition: width .5s ease;
     }
   </style>
 </head>
@@ -1537,7 +1568,13 @@
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
         </button>
-        <div class="logo">Jersify</div>
+        <a href="index.html">
+          <img
+            src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3"
+            alt="Jersify"
+            class="logo-img"
+          />
+        </a>
       </div>
       <div class="user-badge" id="userBadge">
         <div class="user-avatar" id="userAvatar">?</div>
@@ -1586,6 +1623,16 @@
             Your Order
           </div>
           <div id="orderItemsBody"></div>
+          <!-- Free shipping progress bar -->
+          <div id="shippingProgressWrap" style="margin-top:12px;display:none;">
+            <div class="free-shipping-banner" id="shippingBannerBox">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              <span id="shippingBannerText">Loading…</span>
+            </div>
+            <div class="free-shipping-progress">
+              <div class="free-shipping-progress-fill" id="shippingProgressFill" style="width:0%"></div>
+            </div>
+          </div>
         </div>
 
         <div class="card" id="sizeCard" style="display:none;">
@@ -1664,10 +1711,8 @@
             </svg>
             Coupon Code
           </div>
-          <div class="coupon-row">
-            <input type="text" id="couponInput" class="coupon-input" placeholder="Enter coupon code" autocomplete="off">
-            <button class="coupon-apply-btn" onclick="applyCoupon()">APPLY</button>
-          </div>
+          <input type="text" id="couponInput" class="coupon-input" placeholder="Enter coupon code" autocomplete="off">
+          <button class="coupon-apply-btn" onclick="applyCoupon()">APPLY COUPON</button>
           <div class="coupon-msg" id="couponMsg"></div>
         </div>
 
@@ -1702,7 +1747,10 @@
             Order Summary
           </div>
           <div class="summary-row"><span>Subtotal</span><span id="subTotal">₹0</span></div>
-          <div class="summary-row"><span>Shipping</span><span style="color:var(--success);font-weight:700;">FREE</span></div>
+          <div class="summary-row" id="shippingRow">
+            <span>Shipping</span>
+            <span id="shippingVal" style="color:var(--success);font-weight:700;">FREE</span>
+          </div>
           <div class="summary-row discount-row" id="discountRow" style="display:none;"><span>Discount</span><span id="discountVal">-₹0</span></div>
           <div class="summary-divider"></div>
           <div class="summary-total">
@@ -1854,6 +1902,9 @@
       databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
     };
 
+    const FREE_SHIPPING_THRESHOLD = 1999;
+    const DELIVERY_FEE = 69;
+
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
@@ -1868,6 +1919,42 @@
     let newAddrVisible = true;
     let couponsMap = {};
     let currentUser = null;
+
+    function getShippingFee(subtotal) {
+      return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : DELIVERY_FEE;
+    }
+
+    function updateShippingUI(subtotal) {
+      const fee = getShippingFee(subtotal);
+      const shippingValEl = document.getElementById('shippingVal');
+      const progressWrap = document.getElementById('shippingProgressWrap');
+      const bannerText = document.getElementById('shippingBannerText');
+      const progressFill = document.getElementById('shippingProgressFill');
+
+      if (shippingValEl) {
+        if (fee === 0) {
+          shippingValEl.textContent = 'FREE';
+          shippingValEl.style.color = 'var(--success)';
+        } else {
+          shippingValEl.textContent = `₹${fee}`;
+          shippingValEl.style.color = 'var(--text)';
+        }
+      }
+
+      if (progressWrap && subtotal > 0) {
+        progressWrap.style.display = 'block';
+        const pct = Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100));
+        if (progressFill) progressFill.style.width = pct + '%';
+        if (bannerText) {
+          if (fee === 0) {
+            bannerText.textContent = '🎉 You\'ve unlocked FREE delivery!';
+          } else {
+            const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+            bannerText.textContent = `Add ₹${remaining.toLocaleString('en-IN')} more for FREE delivery`;
+          }
+        }
+      }
+    }
 
     function setConfirmBtn(loading, text) {
       const btn = document.getElementById('confirmBtn');
@@ -2097,8 +2184,10 @@
     };
 
     function updateTotal() {
-      const finalPrice = orderPrice - discountAmount;
+      const shipping = getShippingFee(orderPrice);
+      const finalPrice = orderPrice - discountAmount + shipping;
       document.getElementById('finalTotal').textContent = `₹${finalPrice.toLocaleString('en-IN')}`;
+      updateShippingUI(orderPrice);
     }
 
     window.changeQty = (key, delta) => {
@@ -2114,10 +2203,12 @@
       const cart = getCart();
       orderPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
       discountAmount = 0; couponApplied = false;
+      const shipping = getShippingFee(orderPrice);
       document.getElementById('subTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
-      document.getElementById('finalTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
+      document.getElementById('finalTotal').textContent = `₹${(orderPrice + shipping).toLocaleString('en-IN')}`;
       document.getElementById('couponMsg').className = 'coupon-msg';
       document.getElementById('discountRow').style.display = 'none';
+      updateShippingUI(orderPrice);
     }
 
     function collectAddress() {
@@ -2147,10 +2238,11 @@
       const addr = collectAddress();
       if (!addr) return;
       const { name, phone, email, address, city, state, pincode, country } = addr;
-      const finalPrice = orderPrice - discountAmount;
+      const shipping = getShippingFee(orderPrice);
+      const finalPrice = orderPrice - discountAmount + shipping;
       const selectedSize = isCartMode ? 'Mixed' : (document.querySelector('.size-btn.active')?.textContent || 'M');
       const orderId = `JRS-${Date.now()}`;
-      const payload = { items: orderItems, address, city, state, pincode, country, subtotal: orderPrice, discount: discountAmount };
+      const payload = { items: orderItems, address, city, state, pincode, country, subtotal: orderPrice, discount: discountAmount, shipping };
       const dataB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
       const bookingBase = 'https://waveridrentals.vercel.app/jersifybooking.html';
       setConfirmBtn(true, 'Redirecting to payment…');
@@ -2191,6 +2283,7 @@
           address: payload.address || '', city: payload.city || '', state: payload.state || '',
           pincode: payload.pincode || '', country: payload.country || '',
           items: payload.items || [], subtotal: payload.subtotal || 0, discount: payload.discount || 0,
+          shipping: payload.shipping || 0,
           total: fullTotal, selectedSize, paymentMethod: 'online', paymentId,
           status: 'confirmed', source: 'jersify.online callback',
           createdAt: new Date().toISOString(), confirmedAt: new Date().toISOString()
@@ -2278,8 +2371,10 @@
         </div>`;
       }
 
+      const shipping = getShippingFee(orderPrice);
       document.getElementById('subTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
-      document.getElementById('finalTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
+      document.getElementById('finalTotal').textContent = `₹${(orderPrice + shipping).toLocaleString('en-IN')}`;
+      updateShippingUI(orderPrice);
       document.getElementById('loading').style.display = 'none';
       document.getElementById('checkoutContent').style.display = 'block';
     });
