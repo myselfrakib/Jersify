@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>JERSIFY — Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<title>JERSIFY — Sign In</title>
+<link rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260510-WA0000%20(1).jpg?alt=media&token=f4429d90-710f-4ef2-8587-ef383e89e622"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <script type="module">
   import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import{getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,RecaptchaVerifier,signInWithPhoneNumber}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import{getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,updateProfile,RecaptchaVerifier,signInWithPhoneNumber}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import{getDatabase,ref,get,set,update}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
   const app=initializeApp({
     apiKey:"AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
@@ -19,226 +20,570 @@
     appId:"1:461181023878:web:6ebfbae603baf4a873c307"
   });
   const auth=getAuth(app),db=getDatabase(app),gp=new GoogleAuthProvider();
-  window.FB={auth,db,gp,ref,get,set,update,signInWithPopup,RecaptchaVerifier,signInWithPhoneNumber};
-  onAuthStateChanged(auth,u=>{if(u)location.href=new URLSearchParams(location.search).get('redirect')||'index.html';});
+  window.FB={auth,db,gp,ref,get,set,update,signInWithPopup,updateProfile,RecaptchaVerifier,signInWithPhoneNumber};
+  window._signingUp=false;
+  onAuthStateChanged(auth,u=>{
+    if(window._signingUp)return;
+    if(u)location.href=new URLSearchParams(location.search).get('redirect')||'index.html';
+  });
 </script>
 <style>
-:root{--r:#e63946;--a:#1a1a2e;--fd:'Bebas Neue',sans-serif;--fb:'Nunito',sans-serif}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--fb);min-height:100vh;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(145deg,#0a0a1a,#1a1a2e,#0f1a3e);padding:20px;overflow:hidden}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 80%,rgba(230,57,70,.18),transparent 55%),
-  radial-gradient(ellipse at 80% 20%,rgba(26,26,46,.25),transparent 55%);pointer-events:none}
-body::after{content:'JERSIFY';position:fixed;bottom:-30px;right:-20px;font-family:var(--fd);font-size:200px;
-  letter-spacing:10px;color:rgba(255,255,255,.025);pointer-events:none;user-select:none}
-.bar{position:fixed;top:0;left:0;right:0;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;z-index:10}
-.logo{font-family:var(--fd);font-size:22px;letter-spacing:3px;color:rgba(255,255,255,.7);text-decoration:none;display:flex;align-items:center;gap:7px}
-.logo:hover{color:#fff}.dot{width:7px;height:7px;background:var(--r);border-radius:50%}
-.back{font-size:13px;font-weight:700;color:rgba(255,255,255,.4);text-decoration:none}.back:hover{color:rgba(255,255,255,.8)}
-.card{background:rgba(255,255,255,.04);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.1);border-radius:32px;
-  width:100%;max-width:460px;overflow:hidden;position:relative;z-index:1;margin-top:60px;
-  box-shadow:0 40px 80px rgba(0,0,0,.5);animation:up .5s ease both}
-@keyframes up{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
-.top{padding:40px 40px 32px;color:#fff;text-align:center;border-bottom:1px solid rgba(255,255,255,.08)}
-.ico{width:68px;height:68px;border-radius:18px;background:linear-gradient(135deg,rgba(230,57,70,.3),rgba(230,57,70,.08));
-  border:1px solid rgba(230,57,70,.3);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 18px}
-.ttl{font-family:var(--fd);font-size:42px;letter-spacing:5px;margin-bottom:4px}
-.sub{font-size:12px;color:rgba(255,255,255,.4);font-weight:700;letter-spacing:2px;text-transform:uppercase}
-.body{padding:32px 40px 40px}
-.fg{margin-bottom:18px}
-.fl{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);display:block;margin-bottom:7px;text-transform:uppercase;letter-spacing:1.5px}
-.fi{width:100%;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);color:#fff;
-  padding:13px 16px;font-family:var(--fb);font-size:14px;font-weight:600;border-radius:12px;outline:none;transition:all .2s}
-.fi:focus{border-color:rgba(230,57,70,.6);background:rgba(255,255,255,.09);box-shadow:0 0 0 3px rgba(230,57,70,.1)}
-.fi::placeholder{color:rgba(255,255,255,.25)}
-.fgt{text-align:right;margin:-10px 0 18px}
-.fgt a{font-size:12px;font-weight:700;color:rgba(255,255,255,.4);text-decoration:none}.fgt a:hover{color:rgba(255,255,255,.8)}
-.sbtn{width:100%;padding:15px;background:linear-gradient(135deg,var(--r),#c0242f);color:#fff;border:none;
-  font-family:var(--fb);font-size:15px;font-weight:800;border-radius:14px;cursor:pointer;
-  box-shadow:0 8px 24px rgba(230,57,70,.3);transition:all .25s;margin-bottom:16px}
-.sbtn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(230,57,70,.45)}.sbtn:disabled{opacity:.6;cursor:not-allowed;transform:none}
-.div{text-align:center;position:relative;margin:14px 0}
-.div::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(255,255,255,.08)}
-.div span{position:relative;padding:0 12px;font-size:11px;color:rgba(255,255,255,.3);font-weight:700;text-transform:uppercase}
-.gbtn{width:100%;padding:13px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);
-  color:rgba(255,255,255,.8);font-family:var(--fb);font-size:14px;font-weight:700;border-radius:14px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
-.gbtn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
-.err{background:rgba(230,57,70,.12);border:1.5px solid rgba(230,57,70,.3);color:#ff6b75;
-  padding:11px 15px;font-size:13px;font-weight:600;border-radius:10px;margin-bottom:16px;display:none}
-.foot{text-align:center;margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,.07)}
-.foot span{font-size:14px;color:rgba(255,255,255,.4);font-weight:600}
-.foot a{font-size:14px;color:var(--r);font-weight:800;text-decoration:none}
-.sp{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;
-  animation:rot .6s linear infinite;display:inline-block;margin-right:8px}
-@keyframes rot{to{transform:rotate(360deg)}}
-.tw{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:9px}
-.toast{background:var(--a);color:#fff;border-radius:13px;padding:13px 18px;font-family:var(--fb);font-size:13px;
-  font-weight:700;min-width:260px;display:flex;align-items:center;gap:10px;animation:tin .3s ease both}
-.toast.ok{background:#10b981}.toast.er{background:var(--r)}
-@keyframes tin{from{opacity:0;transform:translateX(50px)}to{opacity:1;transform:none}}
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root{
+    --accent:#c61f2f;
+    --accent2:#8f0f1d;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --text:#111111;
+    --muted:#6f6f6f;
+    --line:#ececec;
+    --shadow:0 12px 32px rgba(0,0,0,.10);
+    --shadow-soft:0 4px 16px rgba(0,0,0,.07);
+    --radius:24px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Poppins',Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:0 16px 40px;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar{
+    width:100%;max-width:480px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 0 14px;
+  }
+  .logo-img{
+    height:44px;width:auto;max-width:180px;
+    object-fit:contain;object-position:left center;
+    display:block;cursor:pointer;
+  }
+  .back-link{
+    font-size:13px;font-weight:600;color:var(--muted);
+    text-decoration:none;display:flex;align-items:center;gap:5px;
+    transition:color .2s;
+  }
+  .back-link:hover{color:var(--text)}
+  .back-link svg{width:15px;height:15px}
+
+  /* ── CARD ── */
+  .card{
+    width:100%;max-width:480px;
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    border:1px solid var(--line);
+    animation:slideUp .4s cubic-bezier(.34,1.2,.64,1) both;
+  }
+  @keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+  /* ── TAB SWITCHER ── */
+  .tabs{display:flex;border-bottom:2px solid var(--line)}
+  .tab-btn{
+    flex:1;padding:16px 8px;background:none;border:none;
+    font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;
+    color:var(--muted);cursor:pointer;position:relative;transition:color .2s;
+    letter-spacing:.3px;
+  }
+  .tab-btn.active{color:var(--text)}
+  .tab-btn.active::after{
+    content:'';position:absolute;bottom:-2px;left:15%;right:15%;
+    height:2px;background:var(--accent);border-radius:2px;
+  }
+
+  /* ── SLIDER CONTAINER ── */
+  .slider-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+  .slider-track {
+    display: flex;
+    width: 200%;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .panel {
+    width: 50%;
+    flex-shrink: 0;
+    padding: 28px 28px 32px;
+    box-sizing: border-box;
+  }
+
+
+  /* ── LOGO HEADER ── */
+  .ph-logo-wrap{text-align:center;margin-bottom:6px}
+  .ph-logo{height:58px;width:auto;max-width:200px;object-fit:contain;display:inline-block}
+  .ph-sub{font-size:13px;color:var(--muted);font-weight:500;text-align:center;margin-bottom:22px;margin-top:2px}
+
+  /* ── NAME ROW ── */
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  /* ── FIELDS ── */
+  .fg{margin-bottom:14px}
+  .fl{font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase}
+  .fi{
+    width:100%;background:#fff;
+    border:1.5px solid var(--line);
+    color:var(--text);padding:12px 14px;
+    font-family:'Poppins',sans-serif;font-size:14px;font-weight:500;
+    border-radius:12px;outline:none;transition:all .2s;
+  }
+  .fi:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(198,31,47,.08)}
+  .fi::placeholder{color:#bbb}
+  select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236f6f6f' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+
+  /* ── PHONE ROW ── */
+  .phone-row{display:flex;gap:8px}
+  .cc{flex:0 0 100px;padding:12px 8px;text-align:center}
+
+  /* ── OTP ── */
+  .otp-input{text-align:center;font-family:monospace;letter-spacing:8px;font-size:20px;font-weight:700}
+  .resend{text-align:left;margin-top:8px}
+  .resend a{font-size:12px;font-weight:600;color:var(--accent);text-decoration:none}
+  .resend a:hover{text-decoration:underline}
+
+  /* ── TERMS ── */
+  .terms-row{
+    display:flex;align-items:flex-start;gap:10px;
+    padding:10px 12px;background:#fafafa;
+    border:1px solid var(--line);border-radius:10px;margin-bottom:14px;
+  }
+  .tc{width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;margin-top:2px;cursor:pointer}
+  .terms-txt{font-size:12px;color:var(--muted);font-weight:500;line-height:1.5}
+  .terms-txt a{color:var(--accent);font-weight:600;text-decoration:none}
+
+  /* ── SUBMIT BTN ── */
+  .sbtn{
+    width:100%;padding:14px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;border:none;
+    font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;
+    border-radius:14px;cursor:pointer;
+    box-shadow:0 8px 20px rgba(198,31,47,.25);
+    transition:all .22s;margin-bottom:12px;letter-spacing:.3px;
+  }
+  .sbtn:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(198,31,47,.35)}
+  .sbtn:active{transform:none}
+  .sbtn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+  /* ── DIVIDER ── */
+  .div{text-align:center;position:relative;margin:10px 0}
+  .div::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--line)}
+  .div span{position:relative;padding:0 12px;font-size:11px;color:var(--muted);font-weight:600;background:#fff;text-transform:uppercase;letter-spacing:.5px}
+
+  /* ── GOOGLE BTN ── */
+  .gbtn{
+    width:100%;padding:12px;
+    background:#fff;border:1.5px solid var(--line);
+    color:var(--text);font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;
+    border-radius:14px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    transition:all .2s;box-shadow:var(--shadow-soft);
+  }
+  .gbtn:hover{border-color:#ccc;background:#fafafa;box-shadow:0 6px 18px rgba(0,0,0,.1)}
+
+  /* ── ERROR ── */
+  .err{
+    background:rgba(198,31,47,.06);border:1.5px solid rgba(198,31,47,.2);
+    color:var(--accent);padding:10px 14px;font-size:13px;font-weight:600;
+    border-radius:10px;margin-bottom:12px;display:none;line-height:1.4;
+  }
+
+  /* ── ADMIN LINK ── */
+  .admin-link{text-align:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+  .admin-link span{font-size:12px;color:var(--muted);font-weight:500}
+  .admin-link a{font-size:12px;color:var(--accent);font-weight:700;text-decoration:none}
+  .admin-link a:hover{text-decoration:underline}
+
+  /* ── PERKS STRIP ── */
+  .perks{
+    display:flex;margin-bottom:16px;
+    background:#f9f9f9;border:1px solid var(--line);
+    border-radius:12px;overflow:hidden;
+  }
+  .perk{flex:1;padding:10px 4px;text-align:center;border-right:1px solid var(--line)}
+  .perk:last-child{border-right:none}
+  .perk-icon{font-size:16px;display:block;margin-bottom:3px}
+  .perk-txt{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.3px;line-height:1.3}
+
+  /* ── SPINNER ── */
+  .sp{width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;
+    border-radius:50%;animation:rot .6s linear infinite;display:inline-block;margin-right:8px;vertical-align:middle}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  /* ── TOAST ── */
+  .tw{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+  .toast{
+    background:#111;color:#fff;border-radius:999px;padding:11px 20px;
+    font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;
+    display:flex;align-items:center;gap:8px;
+    animation:toastIn .3s ease both;box-shadow:0 8px 24px rgba(0,0,0,.2);
+    white-space:nowrap;
+  }
+  .toast.ok{background:#10b981}
+  .toast.er{background:var(--accent)}
+  @keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+  /* ── MOBILE ── */
+  @media(max-width:520px){
+    .panel{padding:22px 20px 28px}
+    .form-row{grid-template-columns:1fr}
+  }
 </style>
 </head>
 <body>
-<div class="bar">
-  <a class="logo" href="index.html"><span class="dot"></span>JERSIFY</a>
-  <a class="back" href="index.html">← Back to Store</a>
-</div>
-<div class="card">
-  <div class="top"><div class="ico">👋</div><div class="ttl">WELCOME BACK</div><div class="sub">Sign in to your account</div></div>
-  <div class="body">
-    <div id="err" class="err"></div>
-    <div id="recaptcha-container" style="display:none;"></div>
 
-    <!-- Step 1: Mobile Input -->
-    <div id="step-phone" class="fg">
-      <label class="fl">Mobile Number</label>
-      <div style="display:flex; gap:8px;">
-        <select id="country-code" class="fi" style="flex:0 0 100px; text-align:center; padding:13px 8px;">
-          <option value="+91">+91 (IN)</option>
-          <option value="+1">+1 (US)</option>
-          <option value="+44">+44 (UK)</option>
-          <option value="+971">+971 (AE)</option>
-          <option value="+61">+61 (AU)</option>
-        </select>
-        <input class="fi" id="phone" type="tel" placeholder="9876543210" onkeydown="if(event.key==='Enter')sendOTP()"/>
+<!-- TOP BAR -->
+<div class="topbar" style="justify-content: flex-end;">
+  <a class="back-link" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 5l-7 7 7 7"/></svg>
+    Back to Store
+  </a>
+</div>
+
+<!-- CARD -->
+<div class="card">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+    <button class="tab-btn" id="tabSignup" onclick="switchTab('signup')">Create Account</button>
+  </div>
+
+  <!-- SLIDER WRAPPER -->
+  <div class="slider-container">
+    <div class="slider-track" id="sliderTrack">
+      <!-- ══════════ LOGIN PANEL ══════════ -->
+      <div id="panelLogin" class="panel">
+
+        <div class="ph-logo-wrap">
+          <img class="ph-logo"
+            src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3"
+            alt="Jersify"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+          />
+          <div style="display:none;font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:3px;color:#111">JERSIFY</div>
+        </div>
+        <p class="ph-sub">Sign in to your account</p>
+
+        <div id="loginErr" class="err"></div>
+        <div id="loginRecaptcha" style="display:none;"></div>
+
+        <!-- Step 1: Phone -->
+        <div id="lStepPhone">
+          <div class="fg">
+            <label class="fl">Mobile Number</label>
+            <div class="phone-row">
+              <select id="lCC" class="fi cc">
+                <option value="+91">+91 (IN)</option>
+                <option value="+1">+1 (US)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="+971">+971 (AE)</option>
+                <option value="+61">+61 (AU)</option>
+              </select>
+              <input class="fi" id="lPhone" type="tel" placeholder="9876543210" onkeydown="if(event.key==='Enter')loginAction()"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: OTP -->
+        <div id="lStepOtp" style="display:none;">
+          <div class="fg">
+            <label class="fl">Verification Code (OTP)</label>
+            <input class="fi otp-input" id="lOtp" type="text" maxlength="6" placeholder="• • • • • •" onkeydown="if(event.key==='Enter')loginAction()"/>
+            <div class="resend"><a href="#" onclick="loginResend(event)">↻ Resend Code</a></div>
+          </div>
+        </div>
+
+        <button class="sbtn" id="lBtn" onclick="loginAction()">Send OTP</button>
+
+        <div class="div"><span>or continue with</span></div>
+
+        <button class="gbtn" onclick="googleLogin()">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Google
+        </button>
+
+        <div class="admin-link">
+          <span>Admin access? </span><a href="admin-login.html">Go to Admin Panel →</a>
+        </div>
+      </div>
+
+      <!-- ══════════ SIGNUP PANEL ══════════ -->
+      <div id="panelSignup" class="panel">
+
+        <div class="ph-logo-wrap">
+          <img class="ph-logo"
+            src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3"
+            alt="Jersify"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='block';"
+          />
+          <div style="display:none;font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:3px;color:#111">JERSIFY</div>
+        </div>
+        <p class="ph-sub">Create your account — it's free</p>
+
+        <!-- Perks -->
+        <div class="perks">
+          <div class="perk"><span class="perk-icon">🔥</span><span class="perk-txt">Early Drop Access</span></div>
+          <div class="perk"><span class="perk-icon">📦</span><span class="perk-txt">Order Tracking</span></div>
+          <div class="perk"><span class="perk-icon">❤️</span><span class="perk-txt">Wishlist</span></div>
+          <div class="perk"><span class="perk-icon">⚡</span><span class="perk-txt">Fast Checkout</span></div>
+        </div>
+
+        <div id="signupErr" class="err"></div>
+        <div id="signupRecaptcha" style="display:none;"></div>
+
+        <!-- Name + Phone step -->
+        <div id="sStepName">
+          <div class="form-row">
+            <div class="fg">
+              <label class="fl">First Name *</label>
+              <input class="fi" id="sFirst" type="text" placeholder="Alex"/>
+            </div>
+            <div class="fg">
+              <label class="fl">Last Name</label>
+              <input class="fi" id="sLast" type="text" placeholder="Kim"/>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Mobile Number *</label>
+            <div class="phone-row">
+              <select id="sCC" class="fi cc">
+                <option value="+91">+91 (IN)</option>
+                <option value="+1">+1 (US)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="+971">+971 (AE)</option>
+                <option value="+61">+61 (AU)</option>
+              </select>
+              <input class="fi" id="sPhone" type="tel" placeholder="9876543210" onkeydown="if(event.key==='Enter')signupAction()"/>
+            </div>
+          </div>
+          <div class="terms-row">
+            <input class="tc" type="checkbox" id="sTerms"/>
+            <div class="terms-txt">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</div>
+          </div>
+        </div>
+
+        <!-- OTP step -->
+        <div id="sStepOtp" style="display:none;">
+          <div class="fg">
+            <label class="fl">Verification Code (OTP) *</label>
+            <input class="fi otp-input" id="sOtp" type="text" maxlength="6" placeholder="• • • • • •" onkeydown="if(event.key==='Enter')signupAction()"/>
+            <div class="resend"><a href="#" onclick="signupResend(event)">↻ Resend Code</a></div>
+          </div>
+        </div>
+
+        <button class="sbtn" id="sBtn" onclick="signupAction()">Send OTP</button>
+
+        <div class="div"><span>or continue with</span></div>
+
+        <button class="gbtn" onclick="googleSignup()">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Google
+        </button>
       </div>
     </div>
-
-    <!-- Step 2: OTP Verification Input -->
-    <div id="step-otp" class="fg" style="display:none;">
-      <label class="fl">Verification Code (OTP)</label>
-      <input class="fi" id="otp" type="text" maxlength="6" placeholder="••••••" style="text-align:center; font-family:monospace; letter-spacing:6px; font-size:18px;" onkeydown="if(event.key==='Enter')verifyOTP()"/>
-      <div class="fgt" style="margin-top:10px; text-align:left;"><a href="#" onclick="resendOTP(event)">Resend Code</a></div>
-    </div>
-
-    <button class="sbtn" id="btn" onclick="handleAuthAction()">Send OTP →</button>
-    <div class="div"><span>OR</span></div>
-    <button class="gbtn" onclick="doGoogle()">
-      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-      Continue with Google
-    </button>
-    <div class="foot"><span>No account? </span><a href="signup.html">Sign up →</a></div>
-    <div class="foot" style="margin-top:10px;border:none;padding:0"><span>Admin? </span><a href="admin-login.html">Admin Panel →</a></div>
   </div>
+
 </div>
+
 <div class="tw" id="tw"></div>
+
 <script>
-let _confirmationResult = null;
-let _recaptchaVerifier = null;
-
-function handleAuthAction() {
-  if (!_confirmationResult) {
-    sendOTP();
+/* ── Tab switching ── */
+function switchTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('tabLogin').classList.toggle('active', isLogin);
+  document.getElementById('tabSignup').classList.toggle('active', !isLogin);
+  
+  const track = document.getElementById('sliderTrack');
+  if (isLogin) {
+    track.style.transform = 'translateX(0%)';
   } else {
-    verifyOTP();
+    track.style.transform = 'translateX(-50%)';
   }
 }
 
-async function sendOTP() {
-  const code = document.getElementById('country-code').value;
-  const num = document.getElementById('phone').value.trim().replace(/\s+/g, '');
-  const err = document.getElementById('err'), btn = document.getElementById('btn');
+// Auto-open signup tab if ?tab=signup
+(function() {
+  if (new URLSearchParams(location.search).get('tab') === 'signup') switchTab('signup');
+})();
+
+/* ════════ LOGIN ════════ */
+let _lResult = null, _lRecaptcha = null;
+
+function loginAction() {
+  if (!_lResult) loginSendOTP(); else loginVerify();
+}
+
+async function loginSendOTP() {
+  const code = document.getElementById('lCC').value;
+  const num  = document.getElementById('lPhone').value.trim().replace(/\s+/g,'');
+  const err  = document.getElementById('loginErr'), btn = document.getElementById('lBtn');
   err.style.display = 'none';
-
-  if (!num) { err.textContent = '⛔ Please enter a mobile number.'; err.style.display = 'block'; return; }
-  if (num.length < 7) { err.textContent = '⛔ Please enter a valid mobile number.'; err.style.display = 'block'; return; }
-
-  const fullPhone = code + num;
+  if (!num || num.length < 7) { err.textContent = '⛔ Enter a valid mobile number.'; err.style.display = 'block'; return; }
   btn.innerHTML = '<span class="sp"></span>Sending OTP…'; btn.disabled = true;
-
   try {
-    if (!_recaptchaVerifier) {
-      _recaptchaVerifier = new FB.RecaptchaVerifier(FB.auth, 'recaptcha-container', {
-        'size': 'invisible'
-      });
-    }
-
-    const conf = await FB.signInWithPhoneNumber(FB.auth, fullPhone, _recaptchaVerifier);
-    _confirmationResult = conf;
-
-    document.getElementById('step-phone').style.display = 'none';
-    document.getElementById('step-otp').style.display = 'block';
-    
-    btn.innerHTML = 'Verify OTP →'; btn.disabled = false;
-    toast('OTP sent successfully! 💬', 'ok');
-  } catch (e) {
-    btn.innerHTML = 'Send OTP →'; btn.disabled = false;
-    err.textContent = '⛔ ' + (e.message || 'Failed to send OTP.');
-    err.style.display = 'block';
-    if (_recaptchaVerifier) {
-      _recaptchaVerifier.clear();
-      _recaptchaVerifier = null;
-    }
+    if (!_lRecaptcha) _lRecaptcha = new FB.RecaptchaVerifier(FB.auth,'loginRecaptcha',{size:'invisible'});
+    _lResult = await FB.signInWithPhoneNumber(FB.auth, code + num, _lRecaptcha);
+    document.getElementById('lStepPhone').style.display = 'none';
+    document.getElementById('lStepOtp').style.display = 'block';
+    btn.innerHTML = 'Verify OTP'; btn.disabled = false;
+    toast('OTP sent to your number 💬','ok');
+  } catch(e) {
+    btn.innerHTML = 'Send OTP'; btn.disabled = false;
+    err.textContent = '⛔ ' + (e.message||'Failed to send OTP.'); err.style.display = 'block';
+    if (_lRecaptcha) { _lRecaptcha.clear(); _lRecaptcha = null; }
+    _lResult = null;
   }
 }
 
-async function verifyOTP() {
-  const otpCode = document.getElementById('otp').value.trim();
-  const err = document.getElementById('err'), btn = document.getElementById('btn');
+async function loginVerify() {
+  const otp = document.getElementById('lOtp').value.trim();
+  const err = document.getElementById('loginErr'), btn = document.getElementById('lBtn');
   err.style.display = 'none';
-
-  if (!otpCode || otpCode.length !== 6) { err.textContent = '⛔ Enter a 6-digit OTP code.'; err.style.display = 'block'; return; }
-
+  if (!otp || otp.length !== 6) { err.textContent = '⛔ Enter the 6-digit OTP.'; err.style.display = 'block'; return; }
   btn.innerHTML = '<span class="sp"></span>Verifying…'; btn.disabled = true;
   try {
-    const cr = await _confirmationResult.confirm(otpCode);
-    const userRef = FB.ref(FB.db, 'users/' + cr.user.uid);
+    const cr = await _lResult.confirm(otp);
+    const userRef = FB.ref(FB.db,'users/'+cr.user.uid);
     const snap = await FB.get(userRef);
-
     if (!snap.exists()) {
-      // Create database profile for phone logins if new
-      await FB.set(userRef, {
-        uid: cr.user.uid,
-        firstName: '',
-        lastName: '',
-        displayName: 'Customer',
-        phone: cr.user.phoneNumber || '',
-        role: 'customer',
-        createdAt: Date.now(),
-        lastLogin: Date.now()
-      });
+      await FB.set(userRef,{uid:cr.user.uid,displayName:'Customer',phone:cr.user.phoneNumber||'',role:'customer',createdAt:Date.now(),lastLogin:Date.now()});
     } else {
-      await FB.update(userRef, {
-        lastLogin: Date.now(),
-        phone: cr.user.phoneNumber || ''
-      });
+      await FB.update(userRef,{lastLogin:Date.now(),phone:cr.user.phoneNumber||''});
     }
-
-    toast('Logged in successfully! 🔥', 'ok');
-  } catch (e) {
-    btn.innerHTML = 'Verify OTP →'; btn.disabled = false;
-    err.textContent = '⛔ ' + (e.code === 'auth/invalid-verification-code' ? 'Invalid OTP. Please try again.' : e.message || 'Verification failed.');
+    toast('Welcome back! 🎉','ok');
+  } catch(e) {
+    btn.innerHTML = 'Verify OTP'; btn.disabled = false;
+    err.textContent = '⛔ '+(e.code==='auth/invalid-verification-code'?'Invalid OTP. Please try again.':e.message||'Verification failed.');
     err.style.display = 'block';
   }
 }
 
-function resendOTP(e) {
+function loginResend(e) {
   e.preventDefault();
-  document.getElementById('step-otp').style.display = 'none';
-  document.getElementById('step-phone').style.display = 'block';
-  document.getElementById('btn').innerHTML = 'Send OTP →';
-  document.getElementById('otp').value = '';
-  _confirmationResult = null;
-  sendOTP();
+  document.getElementById('lStepOtp').style.display = 'none';
+  document.getElementById('lStepPhone').style.display = 'block';
+  document.getElementById('lBtn').innerHTML = 'Send OTP';
+  document.getElementById('lOtp').value = '';
+  _lResult = null; loginSendOTP();
 }
 
-async function doGoogle(){
-  const err=document.getElementById('err');err.style.display='none';
-  try{
-    const cr=await FB.signInWithPopup(FB.auth,FB.gp);
-    const snap=await FB.get(FB.ref(FB.db,'users/'+cr.user.uid));
-    if(!snap.exists()){
+async function googleLogin() {
+  const err = document.getElementById('loginErr'); err.style.display = 'none';
+  try {
+    const cr = await FB.signInWithPopup(FB.auth,FB.gp);
+    const snap = await FB.get(FB.ref(FB.db,'users/'+cr.user.uid));
+    if (!snap.exists()) {
       const np=(cr.user.displayName||'').split(' ');
-      await FB.set(FB.ref(FB.db,'users/'+cr.user.uid),{uid:cr.user.uid,firstName:np[0]||'',lastName:np.slice(1).join(' ')||'',
-        displayName:cr.user.displayName||'',email:cr.user.email,photoURL:cr.user.photoURL||'',role:'customer',createdAt:Date.now(),lastLogin:Date.now()});
-    }else await FB.update(FB.ref(FB.db,'users/'+cr.user.uid),{lastLogin:Date.now()});
-    toast('Logged in with Google! 🚀','ok');
-  }catch(e){err.textContent='⛔ Google sign-in failed. '+e.message;err.style.display='block';}
+      await FB.set(FB.ref(FB.db,'users/'+cr.user.uid),{uid:cr.user.uid,firstName:np[0]||'',lastName:np.slice(1).join(' ')||'',displayName:cr.user.displayName||'',email:cr.user.email,photoURL:cr.user.photoURL||'',role:'customer',createdAt:Date.now(),lastLogin:Date.now()});
+    } else await FB.update(FB.ref(FB.db,'users/'+cr.user.uid),{lastLogin:Date.now()});
+    toast('Signed in with Google! 🚀','ok');
+  } catch(e) { err.textContent='⛔ Google sign-in failed. '+e.message; err.style.display='block'; }
 }
 
-function toast(msg,type=''){
-  const t=document.createElement('div');t.className='toast'+(type?' '+type:'');
+/* ════════ SIGNUP ════════ */
+let _sResult = null, _sRecaptcha = null;
+
+function signupAction() {
+  if (!_sResult) signupSendOTP(); else signupVerify();
+}
+
+async function signupSendOTP() {
+  const first = document.getElementById('sFirst').value.trim();
+  const phone = document.getElementById('sPhone').value.trim().replace(/\s+/g,'');
+  const cc    = document.getElementById('sCC').value;
+  const terms = document.getElementById('sTerms').checked;
+  const err   = document.getElementById('signupErr'), btn = document.getElementById('sBtn');
+  err.style.display = 'none';
+  if (!first)           { err.textContent='⛔ First Name is required.'; err.style.display='block'; return; }
+  if (!phone||phone.length<7){ err.textContent='⛔ Enter a valid mobile number.'; err.style.display='block'; return; }
+  if (!terms)           { err.textContent='⛔ Please accept the Terms to continue.'; err.style.display='block'; return; }
+  btn.innerHTML = '<span class="sp"></span>Sending OTP…'; btn.disabled = true;
+  try {
+    if (!_sRecaptcha) _sRecaptcha = new FB.RecaptchaVerifier(FB.auth,'signupRecaptcha',{size:'invisible'});
+    _sResult = await FB.signInWithPhoneNumber(FB.auth, cc+phone, _sRecaptcha);
+    document.getElementById('sStepName').style.display = 'none';
+    document.getElementById('sStepOtp').style.display  = 'block';
+    btn.innerHTML = 'Verify & Register'; btn.disabled = false;
+    toast('OTP sent! 💬','ok');
+  } catch(e) {
+    btn.innerHTML = 'Send OTP'; btn.disabled = false;
+    err.textContent='⛔ '+(e.message||'Failed to send OTP.'); err.style.display='block';
+    if (_sRecaptcha) { _sRecaptcha.clear(); _sRecaptcha = null; }
+    _sResult = null;
+  }
+}
+
+async function signupVerify() {
+  const otp   = document.getElementById('sOtp').value.trim();
+  const first = document.getElementById('sFirst').value.trim();
+  const last  = document.getElementById('sLast').value.trim();
+  const err   = document.getElementById('signupErr'), btn = document.getElementById('sBtn');
+  err.style.display = 'none';
+  if (!otp||otp.length!==6) { err.textContent='⛔ Enter the 6-digit OTP.'; err.style.display='block'; return; }
+  btn.innerHTML='<span class="sp"></span>Verifying…'; btn.disabled=true;
+  window._signingUp=true;
+  try {
+    const cred=await _sResult.confirm(otp);
+    const uid=cred.user.uid;
+    const displayName=`${first} ${last}`.trim();
+    await FB.updateProfile(cred.user,{displayName});
+    await FB.set(FB.ref(FB.db,`users/${uid}`),{uid,firstName:first,lastName:last,displayName,phone:cred.user.phoneNumber||'',role:'customer',createdAt:Date.now(),lastLogin:Date.now()});
+    window._signingUp=false;
+    toast(`Welcome, ${first}! 🎉`,'ok');
+    setTimeout(()=>{location.href=new URLSearchParams(location.search).get('redirect')||'index.html';},1400);
+  } catch(e) {
+    window._signingUp=false;
+    btn.innerHTML='Verify & Register'; btn.disabled=false;
+    err.textContent='⛔ '+(e.code==='auth/invalid-verification-code'?'Invalid OTP. Try again.':e.message||'Verification failed.');
+    err.style.display='block';
+  }
+}
+
+function signupResend(e) {
+  e.preventDefault();
+  document.getElementById('sStepOtp').style.display  = 'none';
+  document.getElementById('sStepName').style.display = 'block';
+  document.getElementById('sBtn').innerHTML='Send OTP';
+  document.getElementById('sOtp').value='';
+  _sResult=null; signupSendOTP();
+}
+
+async function googleSignup() {
+  const err=document.getElementById('signupErr'); err.style.display='none';
+  window._signingUp=true;
+  try {
+    const cred=await FB.signInWithPopup(FB.auth,FB.gp);
+    const user=cred.user;
+    const snap=await FB.get(FB.ref(FB.db,`users/${user.uid}`));
+    if (!snap.exists()) {
+      const np=(user.displayName||'').split(' ');
+      await FB.set(FB.ref(FB.db,`users/${user.uid}`),{uid:user.uid,firstName:np[0]||'',lastName:np.slice(1).join(' ')||'',displayName:user.displayName||'',email:user.email,photoURL:user.photoURL||'',role:'customer',createdAt:Date.now(),lastLogin:Date.now()});
+    }
+    window._signingUp=false;
+    toast('Welcome to JERSIFY! 🚀','ok');
+    setTimeout(()=>{location.href=new URLSearchParams(location.search).get('redirect')||'index.html';},1200);
+  } catch(e) {
+    window._signingUp=false;
+    err.textContent='⛔ Google sign-up failed. '+(e.message||''); err.style.display='block';
+  }
+}
+
+/* ── Toast ── */
+function toast(msg,type='') {
+  const t=document.createElement('div');
+  t.className='toast'+(type?' '+type:'');
   t.innerHTML='<span>'+(type==='ok'?'✅':type==='er'?'⚠️':'ℹ️')+'</span>'+msg;
   document.getElementById('tw').appendChild(t);
   setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},3000);
