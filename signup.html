@@ -10,7 +10,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
@@ -29,7 +29,7 @@
   const db   = getDatabase(app);
   const googleProvider = new GoogleAuthProvider();
 
-  window.FB = { auth, db, googleProvider, ref, get, set, createUserWithEmailAndPassword, signInWithPopup, updateProfile };
+  window.FB = { auth, db, googleProvider, ref, get, set, signInWithPopup, updateProfile, RecaptchaVerifier, signInWithPhoneNumber };
 
   // Flag — skip redirect while signing up
   window._signingUp = false;
@@ -243,7 +243,7 @@ body::after {
 
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">First Name</label>
+        <label class="form-label">First Name *</label>
         <input class="form-input" id="firstName" type="text" placeholder="Alex"/>
       </div>
       <div class="form-group">
@@ -252,25 +252,28 @@ body::after {
       </div>
     </div>
 
-    <div class="form-group">
-      <label class="form-label">Email Address</label>
-      <input class="form-input" id="signupEmail" type="email" placeholder="you@email.com" oninput="validateEmail(this)"/>
-    </div>
+    <div id="recaptcha-container" style="display:none;"></div>
 
-    <div class="form-group">
-      <label class="form-label">Password</label>
-      <input class="form-input" id="signupPwd" type="password" placeholder="Min 6 characters" oninput="checkStrength(this.value)"/>
-      <div class="pwd-strength">
-        <div class="strength-bar" id="bar1"></div>
-        <div class="strength-bar" id="bar2"></div>
-        <div class="strength-bar" id="bar3"></div>
+    <!-- Step 1: Mobile Input -->
+    <div id="step-phone" class="form-group">
+      <label class="form-label">Mobile Number *</label>
+      <div style="display:flex; gap:8px;">
+        <select id="country-code" class="form-input" style="flex:0 0 100px; text-align:center; padding:13px 8px;">
+          <option value="+91">+91 (IN)</option>
+          <option value="+1">+1 (US)</option>
+          <option value="+44">+44 (UK)</option>
+          <option value="+971">+971 (AE)</option>
+          <option value="+61">+61 (AU)</option>
+        </select>
+        <input class="form-input" id="phone" type="tel" placeholder="9876543210" onkeydown="if(event.key==='Enter')sendOTP()"/>
       </div>
-      <div class="pwd-strength-label" id="strengthLabel" style="color:rgba(255,255,255,.3)"></div>
     </div>
 
-    <div class="form-group">
-      <label class="form-label">Confirm Password</label>
-      <input class="form-input" id="confirmPwd" type="password" placeholder="Re-enter password" onkeydown="if(event.key==='Enter')doSignup()"/>
+    <!-- Step 2: OTP Verification Input -->
+    <div id="step-otp" class="form-group" style="display:none;">
+      <label class="form-label">Verification Code (OTP) *</label>
+      <input class="form-input" id="otp" type="text" maxlength="6" placeholder="••••••" style="text-align:center; font-family:monospace; letter-spacing:6px; font-size:18px;" onkeydown="if(event.key==='Enter')verifyAndRegister()"/>
+      <div class="foot-row" style="margin:10px 0 0; border:none; padding:0; text-align:left;"><a href="#" onclick="resendOTP(event)">Resend Code</a></div>
     </div>
 
     <div class="terms-row">
@@ -280,7 +283,7 @@ body::after {
       </div>
     </div>
 
-    <button class="submit-btn" id="signupBtn" onclick="doSignup()">Create Account →</button>
+    <button class="submit-btn" id="signupBtn" onclick="handleSignupAction()">Send OTP →</button>
 
     <div class="divider"><span>OR</span></div>
 
@@ -305,119 +308,119 @@ body::after {
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
-// ── Password strength checker ──
-function checkStrength(val) {
-  const b1 = document.getElementById('bar1');
-  const b2 = document.getElementById('bar2');
-  const b3 = document.getElementById('bar3');
-  const lbl = document.getElementById('strengthLabel');
-  [b1,b2,b3].forEach(b => b.className = 'strength-bar');
+let _confirmationResult = null;
+let _recaptchaVerifier = null;
 
-  if (!val) { lbl.textContent = ''; return; }
-
-  const hasUpper = /[A-Z]/.test(val);
-  const hasNum   = /[0-9]/.test(val);
-  const hasSpec  = /[^A-Za-z0-9]/.test(val);
-  const score    = (val.length >= 8 ? 1 : 0) + (hasUpper || hasNum ? 1 : 0) + (hasSpec ? 1 : 0);
-
-  if (val.length < 6) {
-    b1.classList.add('weak');
-    lbl.textContent = 'Too short'; lbl.style.color = '#e63946';
-  } else if (score <= 1) {
-    b1.classList.add('weak');
-    lbl.textContent = 'Weak'; lbl.style.color = '#e63946';
-  } else if (score === 2) {
-    b1.classList.add('medium'); b2.classList.add('medium');
-    lbl.textContent = 'Medium'; lbl.style.color = '#f59e0b';
+function handleSignupAction() {
+  if (!_confirmationResult) {
+    sendOTP();
   } else {
-    b1.classList.add('strong'); b2.classList.add('strong'); b3.classList.add('strong');
-    lbl.textContent = 'Strong 💪'; lbl.style.color = '#10b981';
+    verifyAndRegister();
   }
 }
 
-function validateEmail(el) {
-  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value);
-  el.classList.toggle('valid', valid);
+async function sendOTP() {
+  const firstName = document.getElementById('firstName').value.trim();
+  const phone = document.getElementById('phone').value.trim().replace(/\s+/g, '');
+  const countryCode = document.getElementById('country-code').value;
+  const terms = document.getElementById('termsCheck').checked;
+  const errEl = document.getElementById('errMsg');
+  const btn = document.getElementById('signupBtn');
+  errEl.style.display = 'none';
+
+  if (!firstName) { errEl.textContent = '⛔ First Name is required.'; errEl.style.display = 'block'; return; }
+  if (!phone) { errEl.textContent = '⛔ Mobile Number is required.'; errEl.style.display = 'block'; return; }
+  if (phone.length < 7) { errEl.textContent = '⛔ Please enter a valid mobile number.'; errEl.style.display = 'block'; return; }
+  if (!terms) { errEl.textContent = '⛔ Please accept the Terms of Service to continue.'; errEl.style.display = 'block'; return; }
+
+  const fullPhone = countryCode + phone;
+  btn.innerHTML = '<span class="spinner"></span>Sending OTP...'; btn.disabled = true;
+
+  try {
+    if (!_recaptchaVerifier) {
+      _recaptchaVerifier = new FB.RecaptchaVerifier(FB.auth, 'recaptcha-container', {
+        'size': 'invisible'
+      });
+    }
+
+    const conf = await FB.signInWithPhoneNumber(FB.auth, fullPhone, _recaptchaVerifier);
+    _confirmationResult = conf;
+
+    document.getElementById('step-phone').style.display = 'none';
+    document.getElementById('step-otp').style.display = 'block';
+
+    btn.innerHTML = 'Verify & Register →'; btn.disabled = false;
+    showToast('OTP sent successfully! 💬', 'success');
+  } catch (e) {
+    btn.innerHTML = 'Send OTP →'; btn.disabled = false;
+    errEl.textContent = '⛔ ' + (e.message || 'Failed to send OTP.');
+    errEl.style.display = 'block';
+    if (_recaptchaVerifier) {
+      _recaptchaVerifier.clear();
+      _recaptchaVerifier = null;
+    }
+  }
 }
 
-// ── Sign Up ──
-async function doSignup() {
+async function verifyAndRegister() {
+  const otpCode = document.getElementById('otp').value.trim();
   const firstName = document.getElementById('firstName').value.trim();
-  const lastName  = document.getElementById('lastName').value.trim();
-  const email     = document.getElementById('signupEmail').value.trim();
-  const pass      = document.getElementById('signupPwd').value;
-  const confirm   = document.getElementById('confirmPwd').value;
-  const terms     = document.getElementById('termsCheck').checked;
-  const errEl     = document.getElementById('errMsg');
-  const succEl    = document.getElementById('succMsg');
-  const btn       = document.getElementById('signupBtn');
+  const lastName = document.getElementById('lastName').value.trim();
+  const errEl = document.getElementById('errMsg');
+  const succEl = document.getElementById('succMsg');
+  const btn = document.getElementById('signupBtn');
   errEl.style.display = 'none'; succEl.style.display = 'none';
 
-  // Validation
-  if (!firstName || !email || !pass) {
-    errEl.textContent = '⛔ Please fill in all required fields.';
-    errEl.style.display = 'block'; return;
-  }
-  if (pass.length < 6) {
-    errEl.textContent = '⛔ Password must be at least 6 characters.';
-    errEl.style.display = 'block'; return;
-  }
-  if (pass !== confirm) {
-    errEl.textContent = '⛔ Passwords do not match.';
-    errEl.style.display = 'block'; return;
-  }
-  if (!terms) {
-    errEl.textContent = '⛔ Please accept the Terms of Service to continue.';
-    errEl.style.display = 'block'; return;
-  }
+  if (!otpCode || otpCode.length !== 6) { errEl.textContent = '⛔ Enter a 6-digit OTP code.'; errEl.style.display = 'block'; return; }
 
-  btn.innerHTML = '<span class="spinner"></span>Creating account...'; btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Verifying...'; btn.disabled = true;
   window._signingUp = true;
 
   try {
-    // Step 1 — Create auth user
-    const cred = await FB.createUserWithEmailAndPassword(FB.auth, email, pass);
-    const uid  = cred.user.uid;
+    const cred = await _confirmationResult.confirm(otpCode);
+    const uid = cred.user.uid;
     const displayName = `${firstName} ${lastName}`.trim();
 
-    // Step 2 — Update display name in Auth
+    // Update display name in Firebase Auth
     await FB.updateProfile(cred.user, { displayName });
 
-    // Step 3 — Save user profile to Realtime Database /users/{uid}
+    // Save profile details to Realtime Database /users/{uid}
     await FB.set(FB.ref(FB.db, `users/${uid}`), {
-      uid, firstName, lastName, displayName, email,
-      role: 'customer', createdAt: Date.now(), lastLogin: Date.now()
+      uid,
+      firstName,
+      lastName,
+      displayName,
+      phone: cred.user.phoneNumber || '',
+      role: 'customer',
+      createdAt: Date.now(),
+      lastLogin: Date.now()
     });
 
     window._signingUp = false;
-
-    btn.innerHTML = 'Create Account →'; btn.disabled = false;
-    succEl.textContent = `✅ Account created! Welcome to JERSIFY, ${firstName}! Redirecting...`;
+    btn.innerHTML = 'Verify & Register →'; btn.disabled = false;
+    succEl.textContent = `✅ Account verified and registered! Welcome, ${firstName}! Redirecting...`;
     succEl.style.display = 'block';
     showToast(`Welcome, ${firstName}! 🎉`, 'success');
 
     setTimeout(() => { window.location.href = 'index.html'; }, 1800);
-
-  } catch(e) {
+  } catch (e) {
     window._signingUp = false;
-    btn.innerHTML = 'Create Account →'; btn.disabled = false;
-    const code = e.code || '';
-    if (code.includes('email-already-in-use')) {
-      errEl.textContent = '⛔ This email is already registered. Try logging in instead.';
-    } else if (code.includes('invalid-email')) {
-      errEl.textContent = '⛔ Invalid email address format.';
-    } else if (code.includes('weak-password')) {
-      errEl.textContent = '⛔ Password is too weak. Please choose a stronger password.';
-    } else if (code.includes('network-request-failed')) {
-      errEl.textContent = '⛔ Network error. Check your connection and try again.';
-    } else {
-      errEl.textContent = '⛔ ' + (e.message || 'Sign up failed. Try again.');
-    }
+    btn.innerHTML = 'Verify & Register →'; btn.disabled = false;
+    errEl.textContent = '⛔ ' + (e.code === 'auth/invalid-verification-code' ? 'Invalid OTP code. Please try again.' : e.message || 'Verification failed.');
     errEl.style.display = 'block';
   }
 }
 
-// ── Google Sign Up ──
+function resendOTP(e) {
+  e.preventDefault();
+  document.getElementById('step-otp').style.display = 'none';
+  document.getElementById('step-phone').style.display = 'block';
+  document.getElementById('btn').innerHTML = 'Send OTP →';
+  document.getElementById('otp').value = '';
+  _confirmationResult = null;
+  sendOTP();
+}
+
 async function doGoogleSignup() {
   const errEl = document.getElementById('errMsg');
   errEl.style.display = 'none';
@@ -427,7 +430,6 @@ async function doGoogleSignup() {
     const cred = await FB.signInWithPopup(FB.auth, FB.googleProvider);
     const user = cred.user;
 
-    // Save to Firestore if new user
     const nameParts = (user.displayName || '').split(' ');
     const snap = await FB.get(FB.ref(FB.db, `users/${user.uid}`));
     if (!snap.exists()) {
