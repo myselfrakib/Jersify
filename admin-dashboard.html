@@ -387,62 +387,123 @@
         border: 1px solid var(--border);
         border-radius: var(--radius);
         padding: 14px;
-        margin-bottom: 12px;
+        margin-bottom: 16px;
         box-shadow: var(--shadow-sm);
         position: relative;
+        overflow: hidden;
       }
       td {
         border: none;
-        border-bottom: 1px dashed var(--border);
+        border-bottom: 1px solid var(--border-light, rgba(0,0,0,0.05));
         position: relative;
-        padding-left: 50% !important;
+        padding: 10px 14px 10px 42% !important;
         text-align: right;
-        min-height: 38px;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
+        min-height: 42px;
+        display: block;
+        font-size: 13px;
+        color: var(--text);
+        box-sizing: border-box;
+      }
+      .dark-theme td {
+        border-bottom: 1px solid rgba(255,255,255,0.05);
       }
       td::before {
         content: attr(data-label);
         position: absolute;
         left: 14px;
-        width: 45%;
-        padding-right: 10px;
+        top: 13px;
+        width: 35%;
         white-space: nowrap;
         text-align: left;
         font-weight: 700;
         color: var(--muted);
-        font-size: 11px;
+        font-size: 10px;
         text-transform: uppercase;
         letter-spacing: .5px;
       }
       td:last-child { border-bottom: none; }
       td div { text-align: right; justify-content: flex-end; }
 
-      /* Special Header/Footer card structure on mobile */
-      tr td:first-child {
-        padding-left: 14px !important;
+      /* Special Header/Footer card structure on mobile dynamically matched by data-labels */
+      tr td[data-label="Product"],
+      tr td[data-label="Order ID"],
+      tr td[data-label="User"],
+      tr td[data-label="Code"] {
+        padding: 12px 14px !important;
         text-align: left;
         font-size: 15px;
         border-bottom: 2px solid var(--border);
         justify-content: flex-start;
         background: var(--surface2);
         margin: -14px -14px 10px -14px;
-        padding: 10px 14px !important;
         border-radius: var(--radius) var(--radius) 0 0;
+        display: flex;
+        align-items: center;
+        min-height: auto;
       }
-      tr td:first-child::before { display: none; }
+      tr td[data-label="Product"]::before,
+      tr td[data-label="Order ID"]::before,
+      tr td[data-label="User"]::before,
+      tr td[data-label="Code"]::before {
+        display: none !important;
+      }
+      tr td[data-label="Product"] div,
+      tr td[data-label="Order ID"] div,
+      tr td[data-label="User"] div,
+      tr td[data-label="Code"] div {
+        text-align: left;
+        justify-content: flex-start;
+      }
 
-      tr td:last-child {
-        padding-left: 14px !important;
+      /* Card Footers (for action buttons) */
+      tr td[data-label="Actions"],
+      tr td[data-label="Action"] {
+        padding: 10px 14px !important;
         justify-content: center;
         border-top: 1px solid var(--border);
         margin: 10px -14px -14px -14px;
-        padding: 10px 14px !important;
         background: var(--surface2);
         border-radius: 0 0 var(--radius) var(--radius);
+        display: flex;
+        align-items: center;
+        min-height: auto;
+        border-bottom: none !important;
       }
-      tr td:last-child::before { display: none; }
+      tr td[data-label="Actions"]::before,
+      tr td[data-label="Action"]::before {
+        display: none !important;
+      }
+      tr td[data-label="Actions"] div,
+      tr td[data-label="Action"] div {
+        text-align: center;
+        justify-content: center;
+        width: 100%;
+      }
+
+      /* Hide redundant columns on mobile to keep Products card super clean */
+      tr td[data-label="Images"] {
+        display: none !important;
+      }
+
+      /* Make description and items list look beautiful & full-width instead of side-by-side squished */
+      tr td[data-label="Items"],
+      tr td[data-label="Description"] {
+        padding: 10px 14px !important;
+        text-align: left;
+        display: block;
+        min-height: auto;
+      }
+      tr td[data-label="Items"]::before,
+      tr td[data-label="Description"]::before {
+        position: static;
+        display: block;
+        margin-bottom: 6px;
+        width: auto;
+      }
+      tr td[data-label="Items"] {
+        white-space: normal !important;
+        word-break: break-word;
+      }
 
       /* Modal Bottom Sheets on mobile */
       .modal-overlay {
