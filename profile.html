@@ -1041,6 +1041,9 @@
       document.getElementById("profileEmail").textContent = email;
       document.getElementById("infoEmail").textContent    = email || "–";
       document.getElementById("infoName").textContent     = name || "–";
+      if (user.phoneNumber) {
+        document.getElementById("infoPhone").textContent = user.phoneNumber;
+      }
 
       const initials = name.split(" ").filter(Boolean).map(w => w[0]).join("").toUpperCase().slice(0,2) || "??";
       setAvatarDisplay(user.photoURL, initials);
@@ -1056,14 +1059,15 @@
         if (snap.exists()) {
           userData = snap.val();
 
-          const dbName = userData.displayName || userData.profile?.name || "";
-          if (!name && dbName) {
+          const dbName = userData.displayName || (userData.firstName ? `${userData.firstName} ${userData.lastName || ''}`.trim() : "") || userData.profile?.name || "";
+          if (dbName) {
             name = dbName;
             document.getElementById("profileName").textContent = dbName;
             document.getElementById("infoName").textContent    = dbName;
           }
 
-          if (userData.phone) document.getElementById("infoPhone").textContent = userData.phone;
+          const dbPhone = userData.phone || user.phoneNumber || "";
+          if (dbPhone) document.getElementById("infoPhone").textContent = dbPhone;
           if (userData.dob)   document.getElementById("infoDob").textContent   = userData.dob;
 
           const photo = user.photoURL || userData.photoURL;
