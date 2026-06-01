@@ -2290,7 +2290,22 @@ function renderSalesChart(orders) {
   orders.forEach(o => {
     if ((o.status || 'pending') === 'cancelled') return;
     if (!o.createdAt) return;
-    const oDate = o.createdAt.split('T')[0];
+    // createdAt may be an ISO string ("2026-06-01T...") OR a numeric Unix timestamp (ms)
+    let oDate;
+    try {
+      const ts = o.createdAt;
+      if (typeof ts === 'number') {
+        oDate = new Date(ts).toISOString().split('T')[0];
+      } else {
+        // Could still be a numeric string like "1748780400000"
+        const asNum = Number(ts);
+        if (!isNaN(asNum) && asNum > 1_000_000_000_000) {
+          oDate = new Date(asNum).toISOString().split('T')[0];
+        } else {
+          oDate = String(ts).split('T')[0];
+        }
+      }
+    } catch (_) { return; }
     const idx = dayKeys.indexOf(oDate);
     if (idx !== -1) {
       revenue[idx] += parseFloat(o.total) || 0;
