@@ -1704,7 +1704,11 @@ function filterOrders() {
   const tbody = document.getElementById('ordersTable');
   if (!data.length) { tbody.innerHTML = emptyRow(8, f ? `No ${f} orders` : 'No orders found'); return; }
 
-  const sorted = [...data].sort((a, b) => (b.createdAt||0) - (a.createdAt||0));
+  const sorted = [...data].sort((a, b) => {
+    const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return timeB - timeA;
+  });
   tbody.innerHTML = sorted.map(o => {
     const st = o.status || 'pending';
     const badge = { pending:'badge-orange', confirmed:'badge-blue', shipped:'badge-purple', delivered:'badge-green', cancelled:'badge-red' }[st] || 'badge-gray';
