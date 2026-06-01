@@ -692,8 +692,8 @@
       <h2>Welcome to Jersify</h2>
       <p>Sign in to view your orders, manage your profile, and track deliveries.</p>
       <div class="auth-gate-btns">
-        <button class="auth-primary-btn" id="showSignInBtn">Sign In</button>
-        <button class="auth-secondary-btn" id="showSignUpBtn">Create Account</button>
+        <button class="auth-primary-btn" onclick="window.location.href='login.html?redirect=profile.html'">Sign In</button>
+        <button class="auth-secondary-btn" onclick="window.location.href='login.html?tab=signup&redirect=profile.html'">Create Account</button>
       </div>
     </div>
 
@@ -1009,8 +1009,9 @@
         document.getElementById("profileContent").classList.remove("hidden");
         await loadUserProfile(user);
       } else {
-        document.getElementById("authGate").classList.remove("hidden");
-        document.getElementById("profileContent").classList.add("hidden");
+        // Redirect unauthenticated users to the unified login page
+        window.location.href = 'login.html?redirect=profile.html';
+        return;
       }
       updateCartBadge();
     });
@@ -1527,48 +1528,7 @@
       } catch(e) { showToast("Could not save address"); }
     });
 
-    /* ── AUTH MODAL ── */
-    let isSignUp = false;
-
-    function setupAuthModal() {
-      document.getElementById("authModalTitle").textContent  = isSignUp ? "Create Account" : "Sign In";
-      document.getElementById("authSubmitBtn").textContent   = isSignUp ? "Create Account" : "Sign In";
-      document.getElementById("authNameField").style.display = isSignUp ? "block" : "none";
-      document.getElementById("authToggleText").textContent  = isSignUp ? "Already have an account?" : "Don't have an account?";
-      document.getElementById("authToggleBtn").textContent   = isSignUp ? "Sign In" : "Sign Up";
-      document.getElementById("authError").style.display     = "none";
-    }
-
-    document.getElementById("showSignInBtn").addEventListener("click", () => { isSignUp = false; setupAuthModal(); openModal("authModal"); });
-    document.getElementById("showSignUpBtn").addEventListener("click", () => { isSignUp = true;  setupAuthModal(); openModal("authModal"); });
-    document.getElementById("authToggleBtn").addEventListener("click", () => { isSignUp = !isSignUp; setupAuthModal(); });
-
-    document.getElementById("authSubmitBtn").addEventListener("click", async () => {
-      const email    = document.getElementById("authEmail").value.trim();
-      const password = document.getElementById("authPassword").value;
-      const name     = document.getElementById("authName").value.trim();
-      const errEl    = document.getElementById("authError");
-      errEl.style.display = "none";
-      try {
-        if (isSignUp) {
-          const cred = await createUserWithEmailAndPassword(auth, email, password);
-          if (name) await updateProfile(cred.user, { displayName: name });
-          await set(dbRef(rtdb, `users/${cred.user.uid}`), {
-            displayName: name,
-            email,
-            createdAt: Date.now(),
-            notifications: { emailNotif: true, smsNotif: false, pushNotif: true }
-          });
-        } else {
-          await signInWithEmailAndPassword(auth, email, password);
-        }
-        closeModal("authModal");
-        showToast(isSignUp ? "Account created! Welcome 🎉" : "Welcome back!");
-      } catch(e) {
-        errEl.textContent   = e.message?.replace("Firebase: ", "") || "Authentication failed";
-        errEl.style.display = "block";
-      }
-    });
+    /* ── AUTH MODAL (removed — auth is handled by login.html) ── */
 
     /* ── LOGOUT ── */
     document.getElementById("logoutBtn").addEventListener("click", async () => {
