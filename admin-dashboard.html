@@ -6,6 +6,15 @@
   <title>JERSIFY — Admin Panel</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 
+  <script>
+    (function() {
+      const saved = localStorage.getItem('jersify_theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+  </script>
+
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
     import { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
@@ -74,6 +83,26 @@
       --radius-sm: 8px;
       --nav-w: 240px;
     }
+
+    .dark-theme {
+      --bg: #121212;
+      --surface: #1e1e1e;
+      --surface2: #272727;
+      --surface3: #2d2d2d;
+      --border: #333333;
+      --border2: #444444;
+      --text: #e0e0e0;
+      --text2: #a0a0a0;
+      --muted: #707070;
+      --accent-bg: #2d181a;
+      --accent-border: #5a1c22;
+      --green-bg: #142a1d;
+      --orange-bg: #2d2013;
+      --blue-bg: #141f30;
+      --purple-bg: #221530;
+      --gold-bg: #2a2314;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
     body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
@@ -318,12 +347,26 @@
     /* ── CONFIRM MODAL ── */
     .confirm-modal .modal { width: 360px; }
 
-    .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 99; }
+    .sidebar-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      backdrop-filter: blur(0px);
+      z-index: 99;
+      pointer-events: none;
+      transition: background 0.3s ease, backdrop-filter 0.3s ease;
+    }
+    .sidebar-backdrop.show {
+      background: rgba(0,0,0,.35);
+      backdrop-filter: blur(4px);
+      pointer-events: auto;
+    }
+
+    .mo-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
 
     @media(max-width: 768px) {
       .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); z-index: 100; }
       .sidebar.open { transform: translateX(0); }
-      .sidebar-backdrop.show { display: block; }
       .burger-btn { display: flex; }
       .sync-pill { display: none; }
       .search-input { width: 160px; }
@@ -331,6 +374,92 @@
       .stats-grid { grid-template-columns: 1fr 1fr; }
       .form-grid { grid-template-columns: 1fr; }
       .form-group.span-2, .form-group.span-3 { grid-column: span 1; }
+
+      .mo-grid { grid-template-columns: 1fr; gap: 15px; }
+      .mo-grid > div:last-child { border-left: none !important; padding-left: 0 !important; border-top: 1px solid var(--border); padding-top: 15px; }
+
+      /* Table to card layout on mobile */
+      .table-wrap { overflow-x: visible; }
+      table, thead, tbody, th, td, tr { display: block; }
+      thead tr { position: absolute; top: -9999px; left: -9999px; } /* hide headers */
+      tr {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px;
+        margin-bottom: 12px;
+        box-shadow: var(--shadow-sm);
+        position: relative;
+      }
+      td {
+        border: none;
+        border-bottom: 1px dashed var(--border);
+        position: relative;
+        padding-left: 50% !important;
+        text-align: right;
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 14px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: 700;
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+      }
+      td:last-child { border-bottom: none; }
+      td div { text-align: right; justify-content: flex-end; }
+
+      /* Special Header/Footer card structure on mobile */
+      tr td:first-child {
+        padding-left: 14px !important;
+        text-align: left;
+        font-size: 15px;
+        border-bottom: 2px solid var(--border);
+        justify-content: flex-start;
+        background: var(--surface2);
+        margin: -14px -14px 10px -14px;
+        padding: 10px 14px !important;
+        border-radius: var(--radius) var(--radius) 0 0;
+      }
+      tr td:first-child::before { display: none; }
+
+      tr td:last-child {
+        padding-left: 14px !important;
+        justify-content: center;
+        border-top: 1px solid var(--border);
+        margin: 10px -14px -14px -14px;
+        padding: 10px 14px !important;
+        background: var(--surface2);
+        border-radius: 0 0 var(--radius) var(--radius);
+      }
+      tr td:last-child::before { display: none; }
+
+      /* Modal Bottom Sheets on mobile */
+      .modal-overlay {
+        align-items: flex-end;
+      }
+      .modal {
+        width: 100vw !important;
+        max-width: 100% !important;
+        border-radius: 20px 20px 0 0 !important;
+        transform: translateY(100%) scale(1) !important;
+        max-height: 85vh !important;
+        margin: 0 !important;
+        transition: transform .3s cubic-bezier(.4, 0, .2, 1) !important;
+      }
+      .modal-overlay.open .modal {
+        transform: translateY(0) !important;
+      }
     }
   </style>
 </head>
@@ -381,7 +510,11 @@
       Page Settings
     </button>
 
-    <div class="sidebar-footer">
+    <div class="sidebar-footer" style="display:flex; flex-direction:column; gap:8px;">
+      <button class="logout-btn" onclick="toggleTheme()" style="color:var(--text2)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon" style="width: 15px; height: 15px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span id="theme-lbl">Dark Mode</span>
+      </button>
       <button class="logout-btn" onclick="doLogout()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Sign Out
@@ -415,13 +548,32 @@
           <div class="stat-card blue"><div class="stat-val" id="statUsers">—</div><div class="stat-label">Users</div><div class="stat-icon">👤</div></div>
           <div class="stat-card orange"><div class="stat-val" id="statRevenue">—</div><div class="stat-label">Revenue</div><div class="stat-icon">💰</div></div>
         </div>
+
+        <!-- ══ SALES TREND CHART ══ -->
+        <div class="card" id="salesChartCard" style="margin-bottom: 20px;">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-title">Sales Trend (Last 7 Days)</div>
+              <div class="card-subtitle">Daily revenue trajectory from orders</div>
+            </div>
+          </div>
+          <div class="card-body" style="padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 180px; position: relative;">
+            <svg id="salesSvgChart" width="100%" height="150" viewBox="0 0 600 150" style="overflow: visible; font-family: inherit;">
+              <text x="300" y="75" fill="var(--muted)" font-size="12" text-anchor="middle">Loading chart data...</text>
+            </svg>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-header">
             <div class="card-header-left"><div class="card-title">Products / Kits</div><div class="card-subtitle">Manage your jersey catalog</div></div>
-            <button class="btn btn-primary btn-sm" onclick="openProductModal()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Add Product
-            </button>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-ghost btn-sm" onclick="exportCSV('products')">📥 Export CSV</button>
+              <button class="btn btn-primary btn-sm" onclick="openProductModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Product
+              </button>
+            </div>
           </div>
           <div class="table-wrap">
             <table>
@@ -480,6 +632,11 @@
                 <option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option>
               </select>
               <button class="btn btn-ghost btn-sm" onclick="manualRefreshOrders()">↻ Refresh</button>
+              <button class="btn btn-ghost btn-sm" onclick="exportCSV('orders')">📥 Export CSV</button>
+              <button class="btn btn-primary btn-sm" onclick="openManualOrderModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Place Order
+              </button>
             </div>
           </div>
           <div class="table-wrap">
@@ -494,7 +651,10 @@
       <!-- ══ USERS TAB ══ -->
       <div class="tab-pane" id="tab-users">
         <div class="card">
-          <div class="card-header"><div class="card-header-left"><div class="card-title">Registered Users</div></div></div>
+          <div class="card-header">
+            <div class="card-header-left"><div class="card-title">Registered Users</div></div>
+            <button class="btn btn-ghost btn-sm" onclick="exportCSV('users')">📥 Export CSV</button>
+          </div>
           <div class="table-wrap">
             <table>
               <thead><tr><th>User</th><th>Email</th><th>Phone</th><th>Orders</th><th>Joined</th><th>Status</th></tr></thead>
@@ -627,6 +787,99 @@
   </div>
 </div>
 
+<!-- ══ MANUAL ORDER MODAL ══ -->
+<div class="modal-overlay" id="manualOrderModal">
+  <div class="modal" style="width: min(720px, 95vw);">
+    <div class="modal-header">
+      <div class="modal-title">Place Manual Order</div>
+      <button class="modal-close" onclick="closeModal('manualOrderModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- 2-column form: Customer details on left/top, Order items on right/bottom -->
+      <div class="mo-grid">
+        
+        <!-- Left Column: Customer details -->
+        <div>
+          <div style="font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; color:var(--accent);">Customer Details</div>
+          <div class="form-grid" style="grid-template-columns: 1fr; gap: 10px;">
+            <div class="form-group"><label>Customer Name *</label><input type="text" id="mo_name" placeholder="John Doe"/></div>
+            <div class="form-group"><label>Email Address</label><input type="email" id="mo_email" placeholder="john@example.com"/></div>
+            <div class="form-group"><label>Phone Number *</label><input type="text" id="mo_phone" placeholder="9876543210"/></div>
+            <div class="form-group"><label>Shipping Address *</label><textarea id="mo_address" placeholder="Flat, Street, Area..."></textarea></div>
+            <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="form-group"><label>City *</label><input type="text" id="mo_city" placeholder="Mumbai"/></div>
+              <div class="form-group"><label>State *</label><input type="text" id="mo_state" placeholder="Maharashtra"/></div>
+            </div>
+            <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="form-group"><label>Pincode *</label><input type="text" id="mo_pincode" placeholder="400001"/></div>
+              <div class="form-group"><label>Country *</label><input type="text" id="mo_country" value="India"/></div>
+            </div>
+            <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="form-group">
+                <label>Payment Method</label>
+                <select id="mo_payment_method"><option value="cod">Cash on Delivery (COD)</option><option value="online">Prepaid / Online</option></select>
+              </div>
+              <div class="form-group">
+                <label>Order Status</label>
+                <select id="mo_status"><option value="pending">Pending</option><option value="confirmed" selected>Confirmed</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option></select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Cart / Items -->
+        <div style="display:flex; flex-direction:column; gap:14px; border-left:1px solid var(--border); padding-left:20px;">
+          <div style="font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--accent);">Select Items</div>
+          
+          <div class="form-group">
+            <label>Product</label>
+            <select id="mo_prod_select" onchange="onManualOrderProductChange()"><option value="">-- Choose Product --</option></select>
+          </div>
+          
+          <div class="form-grid" style="grid-template-columns: 1fr 1.2fr; gap: 10px; align-items: flex-end;">
+            <div class="form-group">
+              <label>Size</label>
+              <select id="mo_size_select"><option value="">Select Size</option></select>
+            </div>
+            <div class="form-group">
+              <label>Qty</label>
+              <div style="display:flex; gap:6px;">
+                <input type="number" id="mo_qty_input" value="1" min="1" style="text-align:center; padding:7px;"/>
+                <button class="btn btn-ghost" onclick="addManualOrderItem()" style="padding:8px 12px; height: 38px;">Add</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-top:10px; color:var(--muted);">Added Items</div>
+          <div id="mo_cart_list" style="max-height: 160px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); padding: 8px; font-size:12px;">
+            <div style="color:var(--muted); text-align:center; padding:12px;">No items added yet</div>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:6px; font-size:13px;">
+            <div style="display:flex; justify-content:space-between;"><span>Subtotal:</span><strong id="mo_subtotal_lbl">₹0.00</strong></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Discount (₹ or %):</span>
+              <input type="text" id="mo_discount" placeholder="0" style="width: 80px; text-align: right; padding: 4px 8px; font-size:12px;" oninput="recalcManualOrderTotals()"/>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Shipping Fee:</span>
+              <input type="number" id="mo_shipping" value="0" min="0" style="width: 80px; text-align: right; padding: 4px 8px; font-size:12px;" oninput="recalcManualOrderTotals()"/>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:700; border-top:2px solid var(--border); padding-top:6px; margin-top:4px;">
+              <span>Total:</span><strong id="mo_total_lbl" style="color:var(--accent)">₹0.00</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('manualOrderModal')">Cancel</button>
+      <button class="btn btn-primary" id="saveManualOrderBtn" onclick="saveManualOrder()">Place Order</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ COUPON MODAL ══ -->
 <div class="modal-overlay" id="couponModal">
   <div class="modal">
@@ -755,6 +1008,9 @@ async function initApp() {
 document.addEventListener('DOMContentLoaded', () => {
   buildMediaPage();
   buildProductImgSlots();
+  if (typeof updateThemeUI === 'function') {
+    updateThemeUI(document.documentElement.classList.contains('dark-theme'));
+  }
 });
 
 async function listenCol(col, cb) {
@@ -817,6 +1073,11 @@ function updateStats(col, data) {
     setEl('orderBadgeNav', data.length);
     const rev = data.reduce((s, o) => s + (parseFloat(o.total) || 0), 0);
     setEl('statRevenue', '₹' + (rev >= 1000 ? (rev / 1000).toFixed(1) + 'K' : rev.toFixed(0)));
+    
+    // Render daily sales chart
+    if (typeof renderSalesChart === 'function') {
+      renderSalesChart(data);
+    }
   }
   if (col === 'users') {
     setEl('statUsers', data.length);
@@ -1248,14 +1509,16 @@ function renderProducts(data) {
     const totalStock = (sz.xs||0)+(sz.s||0)+(sz.m||0)+(sz.l||0)+(sz.xl||0);
     const stockBadge = totalStock === 0
       ? `<span class="badge badge-red">Out of Stock</span>`
-      : `<span class="badge badge-green">${totalStock} units</span>`;
+      : totalStock < 5
+        ? `<span class="badge badge-green">${totalStock} units</span><br><span class="badge badge-red" style="font-size:9px;margin-top:2px;padding:1px 4px;">Low Stock</span>`
+        : `<span class="badge badge-green">${totalStock} units</span>`;
 
     const imgs = Array.isArray(p.images) && p.images.length ? p.images : (p.imgUrl ? [p.imgUrl] : []);
     const primaryImg = imgs[0] || '';
     const imgCountBadge = imgs.length > 1 ? `<span style="font-size:9px;color:var(--muted);display:block;margin-top:2px">📷 ${imgs.length} photos</span>` : '';
 
     return `<tr>
-      <td>
+      <td data-label="Product">
         <div style="display:flex;align-items:center;gap:10px">
           ${primaryImg
             ? `<img src="${primaryImg}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display='none'"/>`
@@ -1267,19 +1530,19 @@ function renderProducts(data) {
           </div>
         </div>
       </td>
-      <td>${esc(p.team||'—')}</td>
-      <td><span class="badge badge-gray">${esc(p.type||'Kit')}</span></td>
-      <td><strong>₹${esc(String(p.price||'—'))}</strong></td>
-      <td>${stockBadge}</td>
-      <td>
+      <td data-label="Team">${esc(p.team||'—')}</td>
+      <td data-label="Type"><span class="badge badge-gray">${esc(p.type||'Kit')}</span></td>
+      <td data-label="Price"><strong>₹${esc(String(p.price||'—'))}</strong></td>
+      <td data-label="Stock">${stockBadge}</td>
+      <td data-label="Images">
         <div style="display:flex;gap:3px">
           ${imgs.slice(0,5).map((u,i) => `<div style="width:22px;height:22px;border-radius:4px;overflow:hidden;border:1px solid var(--border)"><img src="${u}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.style.background='var(--surface3)'"/></div>`).join('')}
           ${imgs.length === 0 ? '<span style="font-size:11px;color:var(--muted)">—</span>' : ''}
         </div>
         ${imgCountBadge}
       </td>
-      <td><span class="badge ${p.status==='active'?'badge-green':'badge-red'}">${p.status||'active'}</span></td>
-      <td><div style="display:flex;gap:6px">
+      <td data-label="Status"><span class="badge ${p.status==='active'?'badge-green':'badge-red'}">${p.status||'active'}</span></td>
+      <td data-label="Actions"><div style="display:flex;gap:6px">
         <button class="btn btn-ghost btn-sm" onclick="editProduct('${p.id}')">Edit</button>
         <button class="btn btn-danger btn-sm" onclick="deleteItem('products','${p.id}')">Delete</button>
       </div></td>
@@ -1390,14 +1653,14 @@ function filterOrders() {
       : (o.productName || '—');
     const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
     return `<tr>
-      <td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(displayId)}</span></td>
-      <td><strong>${esc(o.customerName||o.name||'—')}</strong><br><span style="font-size:11px;color:var(--muted)">${esc(o.email||o.phone||'')}</span></td>
-      <td style="max-width:180px;font-size:12px;white-space:normal">${esc(itemsSummary)}</td>
-      <td><strong>₹${parseFloat(o.total||0).toFixed(2)}</strong></td>
-      <td><span class="badge ${o.paymentMethod==='cod'?'badge-orange':'badge-blue'}">${(o.paymentMethod||'online').toUpperCase()}</span></td>
-      <td><span class="badge ${badge}">${st}</span></td>
-      <td style="font-size:12px;color:var(--muted)">${date}</td>
-      <td><button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">View</button></td>
+      <td data-label="Order ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(displayId)}</span></td>
+      <td data-label="Customer"><strong>${esc(o.customerName||o.name||'—')}</strong><br><span style="font-size:11px;color:var(--muted)">${esc(o.email||o.phone||'')}</span></td>
+      <td data-label="Items" style="max-width:180px;font-size:12px;white-space:normal">${esc(itemsSummary)}</td>
+      <td data-label="Total"><strong>₹${parseFloat(o.total||0).toFixed(2)}</strong></td>
+      <td data-label="Payment"><span class="badge ${o.paymentMethod==='cod'?'badge-orange':'badge-blue'}">${(o.paymentMethod||'online').toUpperCase()}</span></td>
+      <td data-label="Status"><span class="badge ${badge}">${st}</span></td>
+      <td data-label="Date" style="font-size:12px;color:var(--muted)">${date}</td>
+      <td data-label="Action"><button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">View</button></td>
     </tr>`;
   }).join('');
 }
@@ -1476,12 +1739,12 @@ function renderUsers(data) {
       ? `<img src="${u.photoURL}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display='none'"/>`
       : `<div class="user-avatar" style="background:${color}">${initials}</div>`;
     return `<tr>
-      <td><div style="display:flex;align-items:center;gap:10px">${avatarHtml}<strong>${esc(u.name)}</strong></div></td>
-      <td style="font-size:12px;color:var(--text2)">${esc(u.email||'—')}</td>
-      <td style="font-size:12px">${esc(u.phone||'—')}</td>
-      <td><span class="badge badge-blue">${orderCount}</span></td>
-      <td style="font-size:12px;color:var(--muted)">${joined}</td>
-      <td><span class="badge ${u.status==='blocked'?'badge-red':'badge-green'}">${u.status}</span></td>
+      <td data-label="User"><div style="display:flex;align-items:center;gap:10px">${avatarHtml}<strong>${esc(u.name)}</strong></div></td>
+      <td data-label="Email" style="font-size:12px;color:var(--text2)">${esc(u.email||'—')}</td>
+      <td data-label="Phone" style="font-size:12px">${esc(u.phone||'—')}</td>
+      <td data-label="Orders"><span class="badge badge-blue">${orderCount}</span></td>
+      <td data-label="Joined" style="font-size:12px;color:var(--muted)">${joined}</td>
+      <td data-label="Status"><span class="badge ${u.status==='blocked'?'badge-red':'badge-green'}">${u.status}</span></td>
     </tr>`;
   }).join('');
 }
@@ -1511,17 +1774,17 @@ function renderCoupons(data) {
     const isActive = c.active !== false;
     const valueDisplay = c.type === 'flat' ? `₹${c.value} OFF` : `${c.value}% OFF`;
     return `<tr>
-      <td><span class="coupon-code-badge">${esc(c.code)}</span></td>
-      <td><span class="badge ${c.type==='flat'?'badge-blue':'badge-purple'}">${c.type==='flat'?'Flat':'Percent'}</span></td>
-      <td><strong>${esc(valueDisplay)}</strong></td>
-      <td style="color:var(--text2);font-size:12px">${esc(c.desc||'—')}</td>
-      <td>
+      <td data-label="Code"><span class="coupon-code-badge">${esc(c.code)}</span></td>
+      <td data-label="Type"><span class="badge ${c.type==='flat'?'badge-blue':'badge-purple'}">${c.type==='flat'?'Flat':'Percent'}</span></td>
+      <td data-label="Value"><strong>${esc(valueDisplay)}</strong></td>
+      <td data-label="Description" style="color:var(--text2);font-size:12px">${esc(c.desc||'—')}</td>
+      <td data-label="Active">
         <label class="toggle">
           <input type="checkbox" ${isActive?'checked':''} onchange="toggleCoupon('${esc(c.code)}',this.checked)"/>
           <span class="toggle-track"></span>
         </label>
       </td>
-      <td><div style="display:flex;gap:6px">
+      <td data-label="Actions"><div style="display:flex;gap:6px">
         <button class="btn btn-ghost btn-sm" onclick="editCoupon('${esc(c.code)}')">Edit</button>
         <button class="btn btn-danger btn-sm" onclick="deleteCouponById('${esc(c.code)}')">Delete</button>
       </div></td>
@@ -1698,6 +1961,251 @@ function deleteItem(col, id) {
 }
 
 /* ═══════════════════════════════════════════════
+   MANUAL ORDER PLACEMENT
+═══════════════════════════════════════════════ */
+let _moCart = [];
+
+function openManualOrderModal() {
+  setV('mo_name', '');
+  setV('mo_email', '');
+  setV('mo_phone', '');
+  setV('mo_address', '');
+  setV('mo_city', '');
+  setV('mo_state', '');
+  setV('mo_pincode', '');
+  setV('mo_country', 'India');
+  setV('mo_discount', '0');
+  setV('mo_shipping', '0');
+  setV('mo_payment_method', 'cod');
+  setV('mo_status', 'confirmed');
+  
+  _moCart = [];
+  
+  // Populate products selection dropdown (only active products)
+  const prodSelect = document.getElementById('mo_prod_select');
+  prodSelect.innerHTML = '<option value="">-- Choose Product --</option>' + 
+    _allProducts.filter(p => p.status !== 'inactive').map(p => 
+      `<option value="${p.id}">${esc(p.name)} - ₹${p.price}</option>`
+    ).join('');
+    
+  onManualOrderProductChange();
+  renderManualOrderCart();
+  openModal('manualOrderModal');
+}
+
+function onManualOrderProductChange() {
+  const prodId = document.getElementById('mo_prod_select').value;
+  const sizeSelect = document.getElementById('mo_size_select');
+  if (!prodId) {
+    sizeSelect.innerHTML = '<option value="">Select Size</option>';
+    return;
+  }
+  
+  const p = _allProducts.find(x => x.id === prodId);
+  if (!p) return;
+  
+  const sizes = p.sizes || {};
+  const sizeKeys = ['xs', 's', 'm', 'l', 'xl'];
+  
+  sizeSelect.innerHTML = '<option value="">Select Size</option>' + 
+    sizeKeys.map(k => {
+      const stock = sizes[k] || 0;
+      const disabledAttr = stock <= 0 ? 'disabled' : '';
+      const stockLabel = stock <= 0 ? 'Out of stock' : `${stock} units`;
+      return `<option value="${k.toUpperCase()}" ${disabledAttr}>${k.toUpperCase()} (${stockLabel})</option>`;
+    }).join('');
+}
+
+function addManualOrderItem() {
+  const prodId = document.getElementById('mo_prod_select').value;
+  const size = document.getElementById('mo_size_select').value;
+  const qty = parseInt(document.getElementById('mo_qty_input').value) || 1;
+  
+  if (!prodId || !size) {
+    toast('Please select a product and size', 'error');
+    return;
+  }
+  
+  const p = _allProducts.find(x => x.id === prodId);
+  if (!p) return;
+  
+  // Check stock
+  const sizeStock = (p.sizes || {})[size.toLowerCase()] || 0;
+  
+  // Check if item is already in cart, sum the qty
+  const existingItem = _moCart.find(i => i.id === prodId && i.size === size);
+  const cartQty = existingItem ? existingItem.qty : 0;
+  
+  if (cartQty + qty > sizeStock) {
+    toast(`Insufficient stock! Live stock for ${size} is ${sizeStock}`, 'error');
+    return;
+  }
+  
+  if (existingItem) {
+    existingItem.qty += qty;
+  } else {
+    _moCart.push({
+      id: prodId,
+      name: p.name,
+      team: p.team || '',
+      price: parseFloat(p.price) || 0,
+      size: size,
+      qty: qty,
+      imgUrl: p.imgUrl || ''
+    });
+  }
+  
+  // Reset item selection fields
+  document.getElementById('mo_prod_select').value = '';
+  document.getElementById('mo_qty_input').value = '1';
+  onManualOrderProductChange();
+  
+  renderManualOrderCart();
+  toast('Item added to cart', 'success');
+}
+
+function renderManualOrderCart() {
+  const list = document.getElementById('mo_cart_list');
+  if (!_moCart.length) {
+    list.innerHTML = '<div style="color:var(--muted); text-align:center; padding:12px;">No items added yet</div>';
+    recalcManualOrderTotals();
+    return;
+  }
+  
+  list.innerHTML = _moCart.map((item, idx) => `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-weight:600">${esc(item.name)} <span class="badge badge-gray" style="font-size:10px; padding:1px 4px;">${item.size}</span></div>
+        <div style="font-size:11px; color:var(--muted)">₹${item.price} × ${item.qty}</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <strong>₹${item.price * item.qty}</strong>
+        <button onclick="removeManualOrderItem(${idx})" style="border:none; background:none; color:var(--accent); font-size:14px; cursor:pointer; font-weight:700;">×</button>
+      </div>
+    </div>
+  `).join('');
+  
+  recalcManualOrderTotals();
+}
+
+function removeManualOrderItem(idx) {
+  _moCart.splice(idx, 1);
+  renderManualOrderCart();
+}
+
+function recalcManualOrderTotals() {
+  const subtotal = _moCart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  document.getElementById('mo_subtotal_lbl').textContent = `₹${subtotal.toFixed(2)}`;
+  
+  const discountInput = getV('mo_discount');
+  let discountVal = parseFloat(discountInput) || 0;
+  const isPercent = discountInput.includes('%');
+  const discountAbs = isPercent ? Math.round(subtotal * discountVal / 100) : discountVal;
+  
+  const shippingVal = parseFloat(getV('mo_shipping')) || 0;
+  const total = Math.max(0, subtotal - discountAbs + shippingVal);
+  
+  document.getElementById('mo_total_lbl').textContent = `₹${total.toFixed(2)}`;
+}
+
+async function saveManualOrder() {
+  const name = getV('mo_name');
+  const phone = getV('mo_phone');
+  const address = getV('mo_address');
+  const city = getV('mo_city');
+  const state = getV('mo_state');
+  const pincode = getV('mo_pincode');
+  const country = getV('mo_country');
+  
+  if (!name || !phone || !address || !city || !state || !pincode || !country) {
+    toast('Please fill in all required customer details (*)', 'error');
+    return;
+  }
+  if (!_moCart.length) {
+    toast('Please add at least one item to the order', 'error');
+    return;
+  }
+  
+  const btn = document.getElementById('saveManualOrderBtn');
+  btn.disabled = true;
+  btn.textContent = 'Processing…';
+  
+  try {
+    const subtotal = _moCart.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const discountInput = getV('mo_discount');
+    let discountVal = parseFloat(discountInput) || 0;
+    const isPercent = discountInput.includes('%');
+    const discountAbs = isPercent ? Math.round(subtotal * discountVal / 100) : discountVal;
+    const shippingVal = parseFloat(getV('mo_shipping')) || 0;
+    const total = Math.max(0, subtotal - discountAbs + shippingVal);
+    
+    const { db, dbRef, set, update, get } = await waitFb();
+    const orderId = `JRS-M-${Date.now()}`;
+    
+    // Check and deduct stock
+    for (const item of _moCart) {
+      const prodSnap = await get(dbRef(db, `products/${item.id}/sizes`));
+      if (prodSnap.exists()) {
+        const sizesObj = prodSnap.val();
+        const currentStock = parseInt(sizesObj[item.size.toLowerCase()]) || 0;
+        if (currentStock < item.qty) {
+          throw new Error(`Insufficient stock for ${item.name} (${item.size})!`);
+        }
+      } else {
+        throw new Error(`Could not find size list for product ${item.name}`);
+      }
+    }
+    
+    // Deduct stock in DB
+    for (const item of _moCart) {
+      const prodSnap = await get(dbRef(db, `products/${item.id}/sizes`));
+      const sizesObj = prodSnap.val();
+      const currentStock = parseInt(sizesObj[item.size.toLowerCase()]) || 0;
+      await update(dbRef(db, `products/${item.id}/sizes`), {
+        [item.size.toLowerCase()]: currentStock - item.qty
+      });
+    }
+    
+    // Save order
+    const orderData = {
+      orderId,
+      userId: 'admin_manual',
+      userEmail: getV('mo_email') || 'manual_order@jersify.online',
+      customerName: name,
+      phone,
+      email: getV('mo_email') || '',
+      address,
+      city,
+      state,
+      pincode,
+      country,
+      items: _moCart,
+      subtotal,
+      discount: discountAbs,
+      shipping: shippingVal,
+      total,
+      selectedSize: _moCart.length === 1 ? _moCart[0].size : 'Mixed',
+      paymentMethod: document.getElementById('mo_payment_method').value,
+      status: document.getElementById('mo_status').value,
+      source: 'Admin Manual Placement',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    await set(dbRef(db, `orders/${orderId}`), orderData);
+    
+    closeModal('manualOrderModal');
+    toast(`Order ${orderId} created successfully! 📦`, 'success');
+  } catch(err) {
+    console.error('Manual order creation failed:', err);
+    toast('Failed to save order: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Place Order';
+  }
+}
+
+/* ═══════════════════════════════════════════════
    MODAL
 ═══════════════════════════════════════════════ */
 function openModal(id) { document.getElementById(id).classList.add('open'); }
@@ -1743,6 +2251,200 @@ function emptyRow(cols, msg) { return `<tr><td colspan="${cols}" style="text-ali
 function esc(str) {
   if(str==null) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function toggleTheme() {
+  const isDark = document.documentElement.classList.toggle('dark-theme');
+  localStorage.setItem('jersify_theme', isDark ? 'dark' : 'light');
+  updateThemeUI(isDark);
+}
+
+function updateThemeUI(isDark) {
+  const icon = document.getElementById('theme-icon');
+  const lbl = document.getElementById('theme-lbl');
+  if (icon && lbl) {
+    if (isDark) {
+      lbl.textContent = 'Light Mode';
+      icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+    } else {
+      lbl.textContent = 'Dark Mode';
+      icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+    }
+  }
+}
+function renderSalesChart(orders) {
+  const svg = document.getElementById('salesSvgChart');
+  if (!svg) return;
+  
+  // Get last 7 days dates (formatted as MMM DD, e.g. "Jun 01")
+  const days = [];
+  const dayKeys = []; // YYYY-MM-DD
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dayKeys.push(d.toISOString().split('T')[0]);
+    days.push(d.toLocaleDateString('en-IN', { month: 'short', day: '2-digit' }));
+  }
+  
+  // Calculate daily revenue
+  const revenue = Array(7).fill(0);
+  orders.forEach(o => {
+    if ((o.status || 'pending') === 'cancelled') return;
+    if (!o.createdAt) return;
+    const oDate = o.createdAt.split('T')[0];
+    const idx = dayKeys.indexOf(oDate);
+    if (idx !== -1) {
+      revenue[idx] += parseFloat(o.total) || 0;
+    }
+  });
+  
+  const maxRevenue = Math.max(...revenue, 1000);
+  
+  // Svg coordinate constants
+  const padLeft = 60;
+  const padRight = 20;
+  const padTop = 20;
+  const padBottom = 30;
+  const width = 600;
+  const height = 150;
+  
+  const plotW = width - padLeft - padRight;
+  const plotH = height - padTop - padBottom;
+  const xStep = plotW / 6;
+  
+  const points = revenue.map((val, i) => {
+    const x = padLeft + i * xStep;
+    const y = (height - padBottom) - (val / maxRevenue) * plotH;
+    return { x, y, val };
+  });
+  
+  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+  const areaD = `${pathD} L ${points[points.length-1].x.toFixed(1)} ${(height - padBottom).toFixed(1)} L ${points[0].x.toFixed(1)} ${(height - padBottom).toFixed(1)} Z`;
+  
+  // Build HTML content for SVG
+  let html = `
+    <defs>
+      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0"/>
+      </linearGradient>
+    </defs>
+    
+    <!-- Grid lines -->
+    <line x1="${padLeft}" y1="${padTop}" x2="${width - padRight}" y2="${padTop}" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4" />
+    <line x1="${padLeft}" y1="${padTop + plotH/2}" x2="${width - padRight}" y2="${padTop + plotH/2}" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4" />
+    <line x1="${padLeft}" y1="${height - padBottom}" x2="${width - padRight}" y2="${height - padBottom}" stroke="var(--border)" stroke-width="1.5" />
+    
+    <!-- Y axis labels -->
+    <text x="${padLeft - 10}" y="${padTop + 4}" fill="var(--muted)" font-size="9" text-anchor="end">₹${maxRevenue >= 1000 ? (maxRevenue/1000).toFixed(1) + 'K' : maxRevenue.toFixed(0)}</text>
+    <text x="${padLeft - 10}" y="${padTop + plotH/2 + 4}" fill="var(--muted)" font-size="9" text-anchor="end">₹${(maxRevenue/2) >= 1000 ? (maxRevenue/2000).toFixed(1) + 'K' : (maxRevenue/2).toFixed(0)}</text>
+    <text x="${padLeft - 10}" y="${height - padBottom + 3}" fill="var(--muted)" font-size="9" text-anchor="end">₹0</text>
+    
+    <!-- Area fill -->
+    <path d="${areaD}" fill="url(#chartGrad)" />
+    
+    <!-- Line path -->
+    <path d="${pathD}" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  `;
+  
+  // Draw dots and X-axis labels
+  points.forEach((p, i) => {
+    html += `
+      <!-- X axis label -->
+      <text x="${p.x.toFixed(1)}" y="${height - 10}" fill="var(--muted)" font-size="10" text-anchor="middle">${days[i]}</text>
+      
+      <!-- Hover circle and tooltip anchor -->
+      <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4.5" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5" />
+      <text x="${p.x.toFixed(1)}" y="${(p.y - 10).toFixed(1)}" fill="var(--text)" font-weight="600" font-size="9" text-anchor="middle" style="visibility: ${p.val > 0 ? 'visible' : 'hidden'}">₹${p.val >= 1000 ? (p.val/1000).toFixed(1)+'K' : p.val.toFixed(0)}</text>
+    `;
+  });
+  
+  svg.innerHTML = html;
+}
+
+function exportCSV(type) {
+  let headers = [];
+  let rows = [];
+  let filename = `${type}_export_${Date.now()}.csv`;
+  
+  if (type === 'products') {
+    headers = ['ID', 'Name', 'Team', 'Type', 'Price', 'Status', 'XS Stock', 'S Stock', 'M Stock', 'L Stock', 'XL Stock'];
+    rows = _allProducts.map(p => {
+      const sz = p.sizes || {};
+      return [
+        p.id,
+        p.name || '',
+        p.team || '',
+        p.type || 'Kit',
+        p.price || 0,
+        p.status || 'active',
+        sz.xs || 0,
+        sz.s || 0,
+        sz.m || 0,
+        sz.l || 0,
+        sz.xl || 0
+      ];
+    });
+  } else if (type === 'orders') {
+    headers = ['Order ID', 'Customer Name', 'Email', 'Phone', 'Items', 'Subtotal', 'Discount', 'Shipping', 'Total Total', 'Payment Method', 'Status', 'Date'];
+    rows = _allOrders.map(o => {
+      const itemsSummary = Array.isArray(o.items) && o.items.length
+        ? o.items.map(i => `${i.name} x${i.qty} (${i.size})`).join('; ')
+        : o.productName || '';
+      return [
+        o.orderId || o.id,
+        o.customerName || o.name || '',
+        o.email || '',
+        o.phone || '',
+        itemsSummary,
+        o.subtotal || 0,
+        o.discount || 0,
+        o.shipping || 0,
+        o.total || 0,
+        o.paymentMethod || 'online',
+        o.status || 'pending',
+        o.createdAt || ''
+      ];
+    });
+  } else if (type === 'users') {
+    headers = ['ID', 'Name', 'Email', 'Phone', 'Joined Date', 'Status'];
+    rows = _allUsers.map(raw => {
+      const u = normalizeUser(raw);
+      const joined = u.createdAt ? new Date(u.createdAt).toISOString() : '';
+      return [
+        u.id,
+        u.name,
+        u.email,
+        u.phone,
+        joined,
+        u.status
+      ];
+    });
+  }
+  
+  if (!rows.length) {
+    toast('No data available to export', 'error');
+    return;
+  }
+  
+  // Build CSV string
+  const csvContent = [
+    headers.map(h => `"${String(h).replace(/"/g, '""')}"`).join(','),
+    ...rows.map(row => row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(','))
+  ].join('\n');
+  
+  // Trigger browser download
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast(`CSV downloaded: ${filename}`, 'success');
+  }
 }
 </script>
 </body>
