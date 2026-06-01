@@ -582,6 +582,52 @@
         gap: 8px;
       }
     }
+
+    /* Floating Auth Toast */
+    .auth-toast {
+      position: fixed;
+      bottom: clamp(90px, 14vw, 110px);
+      left: 50%;
+      transform: translateX(-50%) translateY(40px);
+      background: rgba(17, 17, 17, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-size: clamp(11px, 1.3vw, 13px);
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255,255,255,0.08);
+      white-space: nowrap;
+    }
+    .auth-toast.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .auth-toast-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: clamp(10px, 1.2vw, 12px);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .auth-toast-btn:hover {
+      background: var(--accent2);
+      transform: scale(1.05);
+    }
   </style>
 </head>
 
@@ -1067,13 +1113,37 @@
       }
     }
 
+    /* Floating Auth Toast Close Style */
+    const authCloseStyle = document.createElement("style");
+    authCloseStyle.innerHTML = `
+      .auth-toast-close {
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.6);
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 0 4px;
+        transition: color 0.2s;
+      }
+      .auth-toast-close:hover {
+        color: #fff;
+      }
+    `;
+    document.head.appendChild(authCloseStyle);
+
     /* AUTH */
+    let authToastTimer = null;
     onAuthStateChanged(auth, async user => {
       const profileBtn  = document.getElementById("profileBtn");
       const profileIcon = document.getElementById("profileIcon");
       const cartBadge   = document.getElementById("cartBadge");
       function showBadge(n) { if (n > 0) { cartBadge.textContent = n > 9 ? "9+" : n; cartBadge.classList.add("show"); } }
       if (user) {
+        if (authToastTimer) { clearTimeout(authToastTimer); authToastTimer = null; }
+        const existingToast = document.getElementById("unauthToast");
+        if (existingToast) existingToast.remove();
+
         if (user.photoURL) {
           profileIcon.style.display = "none";
           const img = document.createElement("img"); img.src = user.photoURL; img.alt = user.displayName || "Profile";
@@ -1092,6 +1162,22 @@
         } catch { showBadge(JSON.parse(localStorage.getItem("jersify_cart") || "[]").length); }
       } else {
         showBadge(JSON.parse(localStorage.getItem("jersify_cart") || "[]").length);
+        
+        // Start 60 second timer for unauthenticated users
+        if (!authToastTimer && !sessionStorage.getItem("jersify_unauth_dismissed")) {
+          authToastTimer = setTimeout(() => {
+            const toastDiv = document.createElement("div");
+            toastDiv.id = "unauthToast";
+            toastDiv.className = "auth-toast";
+            toastDiv.innerHTML = `
+              <span>👕 Sign in to track orders & save wishlist!</span>
+              <button class="auth-toast-btn" onclick="location.href='login.html'">Login</button>
+              <button class="auth-toast-close" onclick="this.parentElement.classList.remove('show'); sessionStorage.setItem('jersify_unauth_dismissed', 'true'); setTimeout(() => this.parentElement.remove(), 400);">✕</button>
+            `;
+            document.body.appendChild(toastDiv);
+            setTimeout(() => toastDiv.classList.add("show"), 100);
+          }, 60000);
+        }
       }
     });
 
