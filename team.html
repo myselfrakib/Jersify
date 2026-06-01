@@ -1739,6 +1739,7 @@ function showSyncToast(msg) {
 <script type="module">
   import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   (function () {
     const id  = window._JERSIFY_ID;
@@ -1747,6 +1748,95 @@ function showSyncToast(msg) {
 
     const app  = getApps()[0];
     const rtdb = getDatabase(app);
+    const auth = getAuth(app);
+
+    /* Inject Floating Auth Toast CSS styles */
+    const authStyle = document.createElement("style");
+    authStyle.innerHTML = `
+      .auth-toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(40px);
+        background: rgba(17, 17, 17, 0.94);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s, transform 0.4s;
+        border: 1px solid rgba(255,255,255,0.08);
+        white-space: nowrap;
+      }
+      .auth-toast.show {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(-50%) translateY(0);
+      }
+      .auth-toast-btn {
+        background: #c61f2f;
+        color: #fff;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background 0.2s, transform 0.2s;
+      }
+      .auth-toast-btn:hover {
+        background: #8f0f1d;
+        transform: scale(1.05);
+      }
+      .auth-toast-close {
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.6);
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 0 4px;
+        transition: color 0.2s;
+      }
+      .auth-toast-close:hover {
+        color: #fff;
+      }
+    `;
+    document.head.appendChild(authStyle);
+
+    let authToastTimer = null;
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        if (authToastTimer) { clearTimeout(authToastTimer); authToastTimer = null; }
+        const existingToast = document.getElementById("unauthToast");
+        if (existingToast) existingToast.remove();
+      } else {
+        if (!authToastTimer && !sessionStorage.getItem("jersify_unauth_dismissed")) {
+          authToastTimer = setTimeout(() => {
+            const toastDiv = document.createElement("div");
+            toastDiv.id = "unauthToast";
+            toastDiv.className = "auth-toast";
+            toastDiv.innerHTML = `
+              <span>👕 Sign in to track orders & save wishlist!</span>
+              <button class="auth-toast-btn" onclick="location.href='login.html'">Login</button>
+              <button class="auth-toast-close" onclick="this.parentElement.classList.remove('show'); sessionStorage.setItem('jersify_unauth_dismissed', 'true'); setTimeout(() => this.parentElement.remove(), 400);">✕</button>
+            `;
+            document.body.appendChild(toastDiv);
+            setTimeout(() => toastDiv.classList.add("show"), 100);
+          }, 60000);
+        }
+      }
+    });
+
 
     const NAME_RULES = [
       ["paris saint germain",  "psg"],
