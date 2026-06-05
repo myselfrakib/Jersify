@@ -821,9 +821,9 @@
             </div>
             <div class="form-group">
               <label>Pickup Pincode *</label>
-              <input type="text" id="sr_pickup_pin" placeholder="110020" oninput="srSaveConfig()"/>
+              <input type="text" id="sr_pickup_pin" placeholder="400001" oninput="srSaveConfig()"/>
             </div>
-            <div class="form-group span-2">
+            <div class="form-group">
               <label>Channel ID <span style="font-size:9px;color:var(--muted);text-transform:none">(optional)</span></label>
               <input type="text" id="sr_channel" placeholder="Leave blank for default" oninput="srSaveConfig()"/>
             </div>
@@ -969,47 +969,6 @@
   </div>
 </div>
 
-<!-- ══ SHIPROCKET SHIP MODAL ══ -->
-<div class="modal-overlay" id="srShipModal">
-  <div class="modal" style="width:min(800px,95vw)">
-    <div class="modal-header">
-      <div class="modal-title">Prepare Shipment (Shiprocket)</div>
-      <button class="modal-close" onclick="closeModal('srShipModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="sr_ship_order_id" />
-      <div class="form-grid">
-        <div class="form-group span-2"><label>Customer Name</label><input class="fi" type="text" id="sr_ship_name" /></div>
-        <div class="form-group"><label>Email</label><input class="fi" type="email" id="sr_ship_email" /></div>
-        <div class="form-group"><label>Phone</label><input class="fi" type="text" id="sr_ship_phone" /></div>
-        <div class="form-group span-2"><label>Address</label><input class="fi" type="text" id="sr_ship_address" /></div>
-        <div class="form-group"><label>City</label><input class="fi" type="text" id="sr_ship_city" /></div>
-        <div class="form-group"><label>State</label><input class="fi" type="text" id="sr_ship_state" /></div>
-        <div class="form-group"><label>Pincode</label><input class="fi" type="text" id="sr_ship_pincode" /></div>
-        <div class="form-group"><label>Country</label><input class="fi" type="text" id="sr_ship_country" /></div>
-      </div>
-      <hr style="border:0;border-top:1px solid var(--border);margin:16px 0"/>
-      <div class="form-grid">
-        <div class="form-group"><label>Length (cm)</label><input class="fi" type="number" id="sr_ship_length" value="30"/></div>
-        <div class="form-group"><label>Breadth (cm)</label><input class="fi" type="number" id="sr_ship_breadth" value="25"/></div>
-        <div class="form-group"><label>Height (cm)</label><input class="fi" type="number" id="sr_ship_height" value="5"/></div>
-        <div class="form-group"><label>Weight (kg)</label><input class="fi" type="number" id="sr_ship_weight" value="0.5" step="0.1"/></div>
-      </div>
-      <div style="margin-top:16px;text-align:right;">
-         <button class="btn btn-teal" onclick="srFetchCouriers()">Check Couriers &amp; Prices</button>
-      </div>
-      <div id="srCourierList" style="margin-top:16px;display:none;">
-        <div style="font-weight:700;margin-bottom:8px;color:var(--text)">Available Couriers</div>
-        <div style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;padding:8px;background:var(--surface2)" id="srCourierOptions">
-        </div>
-        <div style="margin-top:16px;text-align:right;">
-           <button class="btn btn-primary" onclick="srCreateAndShip()">Create Order &amp; Assign AWB</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- ══ MANUAL ORDER MODAL ══ -->
 <div class="modal-overlay" id="manualOrderModal">
   <div class="modal" style="width:min(720px,95vw);">
@@ -1129,6 +1088,54 @@
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('confirmModal')">Cancel</button>
       <button class="btn btn-danger" id="confirmOkBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SHIPROCKET SHIP MODAL ══ -->
+<div class="modal-overlay" id="srShipModal">
+  <div class="modal" style="width:min(680px,95vw)">
+    <div class="modal-header">
+      <div class="modal-title">🚚 Ship via Shiprocket</div>
+      <button class="modal-close" onclick="closeModal('srShipModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert-banner info" style="margin-bottom:14px">
+        <span class="alert-icon">💡</span>
+        <div>Review and edit the shipping details below, then fetch available couriers to compare rates and delivery times.</div>
+      </div>
+      <input type="hidden" id="sr_ship_order_id"/>
+      <div style="font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:var(--teal);">📦 Order Items</div>
+      <div id="srShipOrderItems" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:16px;font-size:12px;max-height:120px;overflow-y:auto;"></div>
+      <div style="font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:var(--accent);">📋 Shipping Details</div>
+      <div class="form-grid" style="gap:10px;margin-bottom:14px">
+        <div class="form-group span-2"><label>Customer Name *</label><input type="text" id="sr_ship_name" placeholder="Customer Name"/></div>
+        <div class="form-group"><label>Email</label><input type="email" id="sr_ship_email" placeholder="email@example.com"/></div>
+        <div class="form-group"><label>Phone *</label><input type="text" id="sr_ship_phone" placeholder="9876543210"/></div>
+        <div class="form-group span-2"><label>Address *</label><textarea id="sr_ship_address" placeholder="Flat, Street, Area..." style="min-height:52px"></textarea></div>
+        <div class="form-group"><label>City *</label><input type="text" id="sr_ship_city" placeholder="Mumbai"/></div>
+        <div class="form-group"><label>State *</label><input type="text" id="sr_ship_state" placeholder="Maharashtra"/></div>
+        <div class="form-group"><label>Pincode *</label><input type="text" id="sr_ship_pincode" placeholder="400001"/></div>
+        <div class="form-group"><label>Country</label><input type="text" id="sr_ship_country" value="India"/></div>
+      </div>
+      <div style="font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:var(--blue);">📐 Package Dimensions</div>
+      <div class="form-grid" style="gap:10px;grid-template-columns:1fr 1fr 1fr 1fr;margin-bottom:16px">
+        <div class="form-group"><label>Length (cm)</label><input type="number" id="sr_ship_length" value="30" min="1"/></div>
+        <div class="form-group"><label>Breadth (cm)</label><input type="number" id="sr_ship_breadth" value="25" min="1"/></div>
+        <div class="form-group"><label>Height (cm)</label><input type="number" id="sr_ship_height" value="5" min="1"/></div>
+        <div class="form-group"><label>Weight (kg)</label><input type="number" id="sr_ship_weight" value="0.5" min="0.1" step="0.1"/></div>
+      </div>
+      <div style="margin-bottom:14px">
+        <button class="btn btn-blue" onclick="srFetchCouriers()" id="fetchCouriersBtn">🔍 Fetch Available Couriers</button>
+      </div>
+      <div id="srCourierList" style="display:none">
+        <div style="font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:var(--green);">🚛 Available Couriers — Select One</div>
+        <div id="srCourierOptions" style="border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;max-height:280px;overflow-y:auto;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('srShipModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="srCreateAndShip()" id="srShipNowBtn">🚀 Create Shipment & Ship</button>
     </div>
   </div>
 </div>
@@ -1864,16 +1871,19 @@ function renderOrderSrSection(o) {
         <div class="sr-info-item"><div class="sr-info-label">SR Order ID</div><div class="sr-info-value">${esc(o.srOrderId||'—')}</div></div>
         <div class="sr-info-item"><div class="sr-info-label">Shipment ID</div><div class="sr-info-value">${esc(o.srShipmentId||'—')}</div></div>
         <div class="sr-info-item"><div class="sr-info-label">AWB Number</div><div class="sr-info-value">${o.srAwb?esc(o.srAwb):'<span style="color:var(--muted)">Pending</span>'}</div></div>
-        <div class="sr-info-item"><div class="sr-info-label">Pickup</div><div class="sr-info-value">${o.srPickupScheduled?'✅ Scheduled':'<span style="color:var(--muted)">Not yet</span>'}</div></div>
+        <div class="sr-info-item"><div class="sr-info-label">Courier</div><div class="sr-info-value">${esc(o.srCourier||'Auto-assigned')}</div></div>
+        <div class="sr-info-item"><div class="sr-info-label">Pickup</div><div class="sr-info-value">${o.srPickupScheduled?'✅ '+(o.srPickupDate?esc(o.srPickupDate):'Scheduled'):'<span style="color:var(--muted)">Not yet</span>'}</div></div>
+        ${o.srShippingRate?`<div class="sr-info-item"><div class="sr-info-label">Shipping Rate</div><div class="sr-info-value">₹${esc(String(o.srShippingRate))}</div></div>`:''}
       </div>`;
     actionsDiv.innerHTML = `
-      <button class="btn btn-teal btn-sm" onclick="schedulePickup('${id}')">📦 Schedule Pickup</button>
+      ${!o.srPickupScheduled?`<button class="btn btn-teal btn-sm" onclick="schedulePickup('${id}')">📦 Schedule Pickup</button>`:''}
       <button class="btn btn-blue btn-sm" onclick="downloadLabel('${id}')">🏷 Download Label</button>
       <button class="btn btn-gold btn-sm" onclick="downloadInvoice('${id}')">🧾 Invoice</button>
-      <button class="btn btn-ghost btn-sm" onclick="trackShipment('${id}')">🔍 Track</button>
-      <button class="btn btn-danger btn-sm" onclick="cancelShipment('${id}')">✕ Cancel</button>`;
+      ${o.srAwb?`<button class="btn btn-ghost btn-sm" onclick="trackShipment('${id}')">🔍 Track</button>`:''}
+      <button class="btn btn-danger btn-sm" onclick="cancelShipment('${id}')">✕ Cancel Shipment</button>`;
   } else {
-    infoDiv.innerHTML = `<div style="color:var(--muted);font-size:12px">${o.srCancelled ? 'Previous shipment cancelled.' : 'No shipment created yet.'}</div>`;
+    const cancelMsg = o.srCancelled ? '<div style="color:var(--orange);font-size:12px;font-weight:600;margin-bottom:6px">⚠️ Previous shipment was cancelled. You can re-ship this order below.</div>' : '';
+    infoDiv.innerHTML = `${cancelMsg}<div style="color:var(--muted);font-size:12px">${o.srCancelled ? 'Click Ship Now to create a new shipment.' : 'No shipment created yet.'}</div>`;
     actionsDiv.innerHTML = `<button class="btn btn-teal" onclick="openSrShipModal('${id}')">🚚 Ship Now via Shiprocket</button>`;
   }
 }
@@ -2433,8 +2443,8 @@ async function srTestConnection() {
     srSaveConfig();
     _srToken = null; _srTokenExpiry = 0; // Force fresh login
     await srGetToken();
-    // Verify with a lightweight API call
-    await srProxy('/channel', 'GET');
+    // Verify with a lightweight API call — /countries is always available
+    await srProxy('/countries', 'GET');
     statusEl.className = 'sr-config-status connected';
     statusEl.innerHTML = '<span class="sr-dot"></span> Connected ✓';
     toast('✅ Shiprocket connected!', 'success');
@@ -2489,10 +2499,10 @@ function buildSrPayload(order) {
     order_items:       items,
     payment_method:    order.paymentMethod === 'cod' ? 'COD' : 'Prepaid',
     sub_total:         parseFloat(order.total || 0),
-    length:            30,
-    breadth:           25,
-    height:            5,
-    weight:            0.5
+    length:            cfg_length,
+    breadth:           cfg_breadth,
+    height:            cfg_height,
+    weight:            cfg_weight
   };
 
   if (cfg_channel) payload.channel_id = cfg_channel;
@@ -2524,6 +2534,18 @@ function openSrShipModal(orderId) {
   setV('sr_ship_height', cfg_height);
   setV('sr_ship_weight', cfg_weight);
   
+  // Render order items summary
+  const itemsEl = document.getElementById('srShipOrderItems');
+  if (itemsEl) {
+    const items = Array.isArray(order.items) && order.items.length ? order.items : [{name: order.productName||'Product', qty:1, size: order.selectedSize||'', price: order.total||0}];
+    itemsEl.innerHTML = items.map(i => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)">
+        <span>${esc(i.name||'Item')} ×${i.qty||1} ${i.size?`<span class="badge badge-gray" style="font-size:10px;padding:1px 4px">${esc(i.size)}</span>`:''}</span>
+        <span style="font-weight:600">₹${parseFloat(i.price||0).toFixed(2)}</span>
+      </div>
+    `).join('') + `<div style="display:flex;justify-content:space-between;padding:6px 0;font-weight:700;color:var(--accent)"><span>Total</span><span>₹${parseFloat(order.total||0).toFixed(2)}</span></div>`;
+  }
+  
   document.getElementById('srCourierList').style.display = 'none';
   document.getElementById('srCourierOptions').innerHTML = '';
   
@@ -2532,43 +2554,69 @@ function openSrShipModal(orderId) {
 
 async function srFetchCouriers() {
   const pickupPin = getV('sr_pickup_pin') || localStorage.getItem('sr_pickup_pin');
-  if (!pickupPin) { toast('Please configure Pickup Pincode in Shiprocket settings first', 'error'); return; }
+  if (!pickupPin) { toast('Please configure Pickup Pincode in Shiprocket settings first. Go to Shiprocket tab → enter your pickup pincode.', 'error'); return; }
   
   const deliveryPin = getV('sr_ship_pincode');
   if (!deliveryPin) { toast('Delivery pincode is required', 'error'); return; }
 
-  const weight = getV('sr_ship_weight');
+  const weight = getV('sr_ship_weight') || '0.5';
   const orderId = getV('sr_ship_order_id');
   const order = _allOrders.find(o => o.id === orderId);
+  if (!order) { toast('Order not found', 'error'); return; }
   const cod = order.paymentMethod === 'cod' ? 1 : 0;
+  
+  const fetchBtn = document.getElementById('fetchCouriersBtn');
+  if (fetchBtn) { fetchBtn.disabled = true; fetchBtn.textContent = '⏳ Fetching...'; }
   
   const path = `/courier/serviceability/?pickup_postcode=${pickupPin}&delivery_postcode=${deliveryPin}&weight=${weight}&cod=${cod}`;
   
   try {
-    toast('Fetching couriers...', 'info');
+    toast('Fetching available couriers...', 'info');
     const res = await srProxy(path, 'GET');
     
     if (!res || !res.data || !res.data.available_courier_companies || res.data.available_courier_companies.length === 0) {
-      throw new Error('No couriers available for this route');
+      throw new Error('No couriers available for this route. Check pincodes and try again.');
     }
     
     const couriers = res.data.available_courier_companies;
-    const listHtml = couriers.map((c, i) => `
-      <label style="display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid var(--border);cursor:pointer;background:var(--surface);">
-        <input type="radio" name="sr_selected_courier" value="${c.courier_company_id}" ${i===0?'checked':''} style="accent-color:var(--accent)" />
-        <div style="flex:1;">
-          <div style="font-weight:700;color:var(--text);font-size:13px;">${esc(c.courier_name)}</div>
-          <div style="font-size:11px;color:var(--muted)">Rating: ${c.rating} | ETA: ${c.etd}</div>
-        </div>
-        <div style="font-weight:700;color:var(--green);font-size:14px;">₹${c.rate}</div>
-      </label>
-    `).join('');
+    // Sort by rate (cheapest first)
+    couriers.sort((a, b) => parseFloat(a.rate) - parseFloat(b.rate));
     
-    document.getElementById('srCourierOptions').innerHTML = listHtml;
+    const listHtml = couriers.map((c, i) => {
+      const isCheapest = i === 0;
+      const isRecommended = c.is_recommended || false;
+      return `
+      <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;background:${isCheapest?'var(--green-bg)':'var(--surface)'};transition:background .15s;" onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='${isCheapest?'var(--green-bg)':'var(--surface)'}';">
+        <input type="radio" name="sr_selected_courier" value="${c.courier_company_id}" data-rate="${c.rate}" data-name="${esc(c.courier_name)}" ${i===0?'checked':''} style="accent-color:var(--accent);width:16px;height:16px;" />
+        <div style="flex:1;">
+          <div style="font-weight:700;color:var(--text);font-size:13px;display:flex;align-items:center;gap:6px;">
+            ${esc(c.courier_name)}
+            ${isCheapest?'<span class="badge badge-green" style="font-size:9px;padding:1px 5px">CHEAPEST</span>':''}
+            ${isRecommended?'<span class="badge badge-blue" style="font-size:9px;padding:1px 5px">RECOMMENDED</span>':''}
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">
+            ⭐ ${c.rating || '—'} &nbsp;|&nbsp; 📅 ETA: ${c.etd || '—'} &nbsp;|&nbsp; Min Weight: ${c.min_weight || '—'}kg
+            ${c.is_surface ? ' | 🚛 Surface' : ' | ✈️ Air'}
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-weight:700;color:var(--green);font-size:16px;">₹${parseFloat(c.rate).toFixed(0)}</div>
+          ${c.freight_charge ? `<div style="font-size:10px;color:var(--muted)">Freight: ₹${c.freight_charge}</div>` : ''}
+        </div>
+      </label>
+    `}).join('');
+    
+    document.getElementById('srCourierOptions').innerHTML = `
+      <div style="padding:8px 14px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:11px;color:var(--muted);font-weight:600">
+        ${couriers.length} courier${couriers.length!==1?'s':''} available · Sorted by price (cheapest first)
+      </div>
+      ${listHtml}`;
     document.getElementById('srCourierList').style.display = 'block';
-    toast('Couriers loaded', 'success');
+    toast(`${couriers.length} courier${couriers.length!==1?'s':''} found!`, 'success');
   } catch(e) {
-    toast(e.message, 'error');
+    toast('Courier fetch failed: ' + e.message, 'error');
+  } finally {
+    if (fetchBtn) { fetchBtn.disabled = false; fetchBtn.textContent = '🔍 Fetch Available Couriers'; }
   }
 }
 
@@ -2577,51 +2625,80 @@ async function srCreateAndShip() {
   const order = _allOrders.find(o => o.id === orderId);
   if (!order) return;
   
-  const courierInput = document.querySelector('input[name="sr_selected_courier"]:checked');
-  if (!courierInput) { toast('Select a courier', 'error'); return; }
-  const courierId = courierInput.value;
+  // Validate required fields
+  const shipName = getV('sr_ship_name');
+  const shipPhone = getV('sr_ship_phone');
+  const shipAddress = getV('sr_ship_address');
+  const shipCity = getV('sr_ship_city');
+  const shipState = getV('sr_ship_state');
+  const shipPincode = getV('sr_ship_pincode');
   
-  toast('Creating shipment...', 'info');
+  if (!shipName || !shipPhone || !shipAddress || !shipCity || !shipState || !shipPincode) {
+    toast('Please fill all required shipping fields (Name, Phone, Address, City, State, Pincode)', 'error');
+    return;
+  }
+  
+  const courierInput = document.querySelector('input[name="sr_selected_courier"]:checked');
+  if (!courierInput) { toast('Please fetch couriers and select one before shipping', 'error'); return; }
+  const courierId = courierInput.value;
+  const courierRate = courierInput.dataset.rate || '';
+  const courierName = courierInput.dataset.name || '';
+  
+  const shipBtn = document.getElementById('srShipNowBtn');
+  if (shipBtn) { shipBtn.disabled = true; shipBtn.textContent = '⏳ Creating shipment...'; }
+  
+  toast('Creating Shiprocket order...', 'info');
   
   const payload = buildSrPayload(order);
-  payload.billing_customer_name = getV('sr_ship_name');
+  payload.billing_customer_name = shipName;
   payload.billing_email = getV('sr_ship_email');
-  payload.billing_phone = getV('sr_ship_phone');
-  payload.billing_address = getV('sr_ship_address');
-  payload.billing_city = getV('sr_ship_city');
-  payload.billing_state = getV('sr_ship_state');
-  payload.billing_pincode = getV('sr_ship_pincode');
-  payload.billing_country = getV('sr_ship_country');
-  payload.length = parseFloat(getV('sr_ship_length'));
-  payload.breadth = parseFloat(getV('sr_ship_breadth'));
-  payload.height = parseFloat(getV('sr_ship_height'));
-  payload.weight = parseFloat(getV('sr_ship_weight'));
+  payload.billing_phone = shipPhone;
+  payload.billing_address = shipAddress;
+  payload.billing_city = shipCity;
+  payload.billing_state = shipState;
+  payload.billing_pincode = shipPincode;
+  payload.billing_country = getV('sr_ship_country') || 'India';
+  payload.length = parseFloat(getV('sr_ship_length')) || 30;
+  payload.breadth = parseFloat(getV('sr_ship_breadth')) || 25;
+  payload.height = parseFloat(getV('sr_ship_height')) || 5;
+  payload.weight = parseFloat(getV('sr_ship_weight')) || 0.5;
   
   try {
     const createRes = await srProxy('/orders/create/adhoc', 'POST', payload);
     const srOrderId = createRes.order_id || createRes.payload?.order_id;
     const srShipmentId = createRes.shipment_id || createRes.payload?.shipment_id;
     
-    if (!srShipmentId) throw new Error(createRes.message || 'Failed to create SR order');
+    if (!srShipmentId) throw new Error(createRes.message || createRes.errors?.join(', ') || 'Failed to create SR order — no shipment ID returned');
     
-    toast('Assigning AWB...', 'info');
+    toast('Order created! Assigning courier AWB...', 'info');
     const awbRes = await srProxy('/courier/assign/awb', 'POST', {
-      shipment_id: String(srShipmentId),
-      courier_id: parseInt(courierId, 10)
+      shipment_id: srShipmentId,
+      courier_id: courierId
     });
     
     let srAwb = awbRes.response?.data?.awb_code || awbRes.awb_code || '';
-    let srCourier = awbRes.response?.data?.courier_name || awbRes.courier_name || '';
+    let srCourier = awbRes.response?.data?.courier_name || awbRes.courier_name || courierName || '';
     
+    // Also update the order in Firebase with the edited shipping details
     const { db, dbRef, update } = await waitFb();
     await update(dbRef(db, `orders/${orderId}`), {
       srOrderId: String(srOrderId),
       srShipmentId: String(srShipmentId),
       srAwb: srAwb,
       srCourier: srCourier,
+      srShippingRate: courierRate,
       srCancelled: false,
       srPickupScheduled: false,
       status: 'shipped',
+      // Update order's shipping details with whatever was edited in the modal
+      customerName: shipName,
+      email: getV('sr_ship_email') || order.email || '',
+      phone: shipPhone,
+      address: shipAddress,
+      city: shipCity,
+      state: shipState,
+      pincode: shipPincode,
+      country: getV('sr_ship_country') || 'India',
       updatedAt: new Date().toISOString()
     });
 
@@ -2629,9 +2706,11 @@ async function srCreateAndShip() {
     if(document.getElementById('orderModal').classList.contains('open')) {
       viewOrder(orderId);
     }
-    toast('Shipment created successfully!', 'success');
+    toast(`✅ Shipment created! AWB: ${srAwb || 'pending'} via ${srCourier || 'courier'} — ₹${courierRate || '?'}`, 'success');
   } catch(e) {
-    toast(e.message, 'error');
+    toast('Shipment creation failed: ' + e.message, 'error');
+  } finally {
+    if (shipBtn) { shipBtn.disabled = false; shipBtn.textContent = '🚀 Create Shipment & Ship'; }
   }
 }
 
@@ -2643,19 +2722,22 @@ async function schedulePickup(orderId) {
 
   toast('Scheduling pickup…', 'info');
   try {
+    // Shiprocket expects shipment_id as an array of numbers
+    const shipmentIds = [Number(order.srShipmentId)];
     const result = await srProxy('/courier/generate/pickup', 'POST', {
-      shipment_id: [String(order.srShipmentId)]
+      shipment_id: shipmentIds
     });
 
     const pickupDate = result.pickup_scheduled_date
       || result.response?.pickup_scheduled_date
       || result.data?.pickup_scheduled_date
+      || result.pickup_token_number
       || '';
 
     const { db, dbRef, update } = await waitFb();
     await update(dbRef(db, `orders/${orderId}`), {
       srPickupScheduled: true,
-      srPickupDate: pickupDate,
+      srPickupDate: pickupDate || new Date().toISOString().split('T')[0],
       status: 'shipped',
       updatedAt: new Date().toISOString()
     });
@@ -2673,7 +2755,7 @@ async function downloadLabel(orderId) {
   toast('Generating label…', 'info');
   try {
     const result = await srProxy('/courier/generate/label', 'POST', {
-      shipment_id: [String(order.srShipmentId)]
+      shipment_id: [Number(order.srShipmentId)]
     });
 
     const labelUrl = result.label_url || result.response?.label_url || result.data?.label_url;
@@ -2694,7 +2776,7 @@ async function downloadInvoice(orderId) {
   toast('Generating invoice…', 'info');
   try {
     const result = await srProxy('/orders/print/invoice', 'POST', {
-      ids: [String(order.srOrderId)]
+      ids: [Number(order.srOrderId)]
     });
 
     const invoiceUrl = result.invoice_url || result.data?.invoice_url;
@@ -2725,24 +2807,33 @@ async function trackShipment(orderId) {
 /* ── Cancel Shipment ── */
 async function cancelShipment(orderId) {
   const order = _allOrders.find(o => o.id === orderId);
-  if (!order?.srAwb) { toast('No AWB assigned to cancel', 'error'); return; }
+  if (!order?.srShipmentId) { toast('No shipment to cancel', 'error'); return; }
 
-  confirmAction(`Cancel Shiprocket shipment with AWB ${order.srAwb}?`, async () => {
+  confirmAction(`Cancel Shiprocket shipment${order.srAwb ? ' with AWB '+order.srAwb : ''}? You can re-ship this order afterwards.`, async () => {
     toast('Cancelling shipment…', 'info');
     try {
-      await srProxy('/orders/cancel/awbs', 'POST', {
-        awbs: [String(order.srAwb)]
-      });
+      // Try to cancel AWB if assigned, otherwise cancel the order
+      if (order.srAwb) {
+        await srProxy('/orders/cancel/awbs', 'POST', { awbs: [order.srAwb] });
+      } else if (order.srOrderId) {
+        await srProxy('/orders/cancel', 'POST', { ids: [Number(order.srOrderId)] });
+      }
 
       const { db, dbRef, update } = await waitFb();
+      // Clear SR data so the order can be re-shipped, but keep status as confirmed (not cancelled)
       await update(dbRef(db, `orders/${orderId}`), {
-        status: 'cancelled',
+        status: 'confirmed',
         srCancelled: true,
+        srPickupScheduled: false,
+        srPickupDate: '',
         updatedAt: new Date().toISOString()
       });
 
-      closeModal('orderModal');
-      toast('Shipment cancelled', 'info');
+      // Refresh order view if modal is open
+      if (document.getElementById('orderModal').classList.contains('open')) {
+        viewOrder(orderId);
+      }
+      toast('Shipment cancelled! You can re-ship this order using Ship Now.', 'info');
       manualRefreshOrders();
     } catch(err) { toast('Cancel error: ' + err.message, 'error'); }
   });
