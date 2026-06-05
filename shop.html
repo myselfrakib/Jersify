@@ -246,13 +246,6 @@
     .pp-desc-title { font-size: 13px; font-weight: 800; margin-bottom: 8px; }
     .pp-desc-text { font-size: 12px; color: #444; line-height: 1.7; }
 
-    /* Features / Highlights */
-    .pp-highlights { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
-    .pp-highlight-item { background: #fafafa; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
-    .pp-highlight-icon { font-size: 20px; margin-bottom: 2px; }
-    .pp-highlight-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
-    .pp-highlight-val { font-size: 12px; font-weight: 700; }
-
     /* Divider */
     .pp-divider { height: 1px; background: var(--line); margin: 20px 0; }
 
@@ -431,7 +424,7 @@
 
     <!-- TOPBAR -->
     <header class="topbar">
-      <div class="logo"><img class="logo-img" src="logo.svg" alt="JERSIFY" width="120" height="30" /></div>
+      <div class="logo"><img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="JERSIFY" width="120" height="30" /></div>
       <div class="header-actions">
         <a href="checkout.html" class="icon-btn" aria-label="Cart">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
@@ -559,30 +552,6 @@
       <div class="pp-price-row">
         <div class="pp-price" id="ppPrice">₹0</div>
         <span class="pp-free-ship">✓ Free Shipping</span>
-      </div>
-
-      <!-- Highlights -->
-      <div class="pp-highlights">
-        <div class="pp-highlight-item">
-          <div class="pp-highlight-icon">🚚</div>
-          <div class="pp-highlight-label">Delivery</div>
-          <div class="pp-highlight-val">5–7 Days</div>
-        </div>
-        <div class="pp-highlight-item">
-          <div class="pp-highlight-icon">🔄</div>
-          <div class="pp-highlight-label">Returns</div>
-          <div class="pp-highlight-val">Easy 7-Day</div>
-        </div>
-        <div class="pp-highlight-item">
-          <div class="pp-highlight-icon">🏆</div>
-          <div class="pp-highlight-label">Quality</div>
-          <div class="pp-highlight-val">Premium Grade</div>
-        </div>
-        <div class="pp-highlight-item">
-          <div class="pp-highlight-icon">🔒</div>
-          <div class="pp-highlight-label">Payment</div>
-          <div class="pp-highlight-val">100% Secure</div>
-        </div>
       </div>
 
       <!-- Size selection -->
@@ -1195,7 +1164,6 @@
       countEl.textContent     = '';
 
       try {
-        /* Fetch all reviews from Firebase and filter by productId */
         const res  = await fetch(`${REVIEWS_REST_BASE}.json?orderBy="productId"&equalTo="${productId}"`, { cache: 'no-store' });
         let reviews = [];
 
@@ -1206,8 +1174,6 @@
           }
         }
 
-        /* Fallback: also fetch by orderId structure — reviews keyed by orderId */
-        /* Try fetching the single review for this productId directly */
         if (reviews.length === 0) {
           const res2 = await fetch(`${REVIEWS_REST_BASE}/${productId}.json`, { cache: 'no-store' });
           if (res2.ok) {
@@ -1216,14 +1182,12 @@
           }
         }
 
-        /* Also load via SDK for broader coverage */
         try {
           const snap = await get(ref(rtdb, 'reviews'));
           if (snap.exists()) {
             const sdkReviews = [];
             snap.forEach(child => {
               const r = child.val();
-              /* Include if productId matches or if orderId is not set (product-level review) */
               if (r.productId === productId || child.key === productId) {
                 const exists = reviews.find(x => x._key === child.key);
                 if (!exists) sdkReviews.push({ ...r, _key: child.key });
@@ -1233,14 +1197,10 @@
           }
         } catch(e) {}
 
-        /* Deduplicate */
         const seen = new Set();
         reviews = reviews.filter(r => { if (seen.has(r._key)) return false; seen.add(r._key); return true; });
-
-        /* Sort newest first */
         reviews.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
         allProductReviews = reviews;
-
         renderReviewsUI(reviews);
 
       } catch(e) {
@@ -1274,17 +1234,15 @@
         return;
       }
 
-      /* Build rating summary */
       const total   = reviews.length;
       const avg     = reviews.reduce((s, r) => s + (r.rating || 0), 0) / total;
       const rounded = Math.round(avg * 10) / 10;
-      const dist    = [0,0,0,0,0]; // index 0 = 1 star ... index 4 = 5 stars
+      const dist    = [0,0,0,0,0];
       reviews.forEach(r => { const s = Math.min(5, Math.max(1, Math.round(r.rating || 0))); dist[s-1]++; });
 
       document.getElementById('ppRatingNum').textContent = rounded.toFixed(1);
       document.getElementById('ppRatingTotal').textContent = `${total} review${total !== 1 ? 's' : ''}`;
 
-      /* Star icons in summary */
       const starsEl = document.getElementById('ppRatingStars');
       starsEl.innerHTML = Array.from({length:5}, (_, i) => {
         const filled = i < Math.round(avg);
@@ -1293,7 +1251,6 @@
         </svg>`;
       }).join('');
 
-      /* Distribution bars (5 → 1) */
       const barsEl = document.getElementById('ppRatingBars');
       barsEl.innerHTML = [5,4,3,2,1].map(n => {
         const cnt = dist[n-1];
@@ -1309,10 +1266,8 @@
       }).join('');
       summaryEl.style.display = 'flex';
 
-      /* Review cards */
       const toShow = reviews.slice(0, ppReviewsShown);
       listEl.innerHTML = toShow.map(r => buildReviewCard(r)).join('');
-
       loadmore.style.display = reviews.length > ppReviewsShown ? 'block' : 'none';
     }
 
