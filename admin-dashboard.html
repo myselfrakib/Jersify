@@ -112,10 +112,8 @@
     a { text-decoration: none; color: inherit; }
     button, input, select, textarea { font: inherit; }
 
-    /* ── LAYOUT ── */
     #layout { display: flex; height: 100vh; overflow: hidden; }
 
-    /* ── SIDEBAR ── */
     .sidebar {
       width: var(--nav-w); flex-shrink: 0; background: var(--surface);
       border-right: 1px solid var(--border); display: flex; flex-direction: column;
@@ -146,10 +144,8 @@
     .logout-btn:hover { color: var(--accent); background: var(--accent-bg); }
     .logout-btn svg { width: 15px; height: 15px; }
 
-    /* ── MAIN ── */
     .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
-    /* ── TOPBAR ── */
     .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 60px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; box-shadow: var(--shadow-sm); }
     .burger-btn { display: none; width: 36px; height: 36px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 4px; flex-shrink: 0; }
     .burger-btn span { display: block; width: 18px; height: 2px; background: var(--text); border-radius: 1px; transition: .25s; }
@@ -163,7 +159,6 @@
     .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100% { opacity:1; transform:scale(1) } 50% { opacity:.5; transform:scale(1.3) } }
 
-    /* ── CONTENT ── */
     .content { flex: 1; overflow-y: auto; padding: 24px; }
     .content::-webkit-scrollbar { width: 6px; }
     .content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
@@ -171,7 +166,6 @@
     .tab-pane.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ── BUTTONS ── */
     .btn { display: inline-flex; align-items: center; gap: 6px; border: none; border-radius: var(--radius-sm); padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: .15s; white-space: nowrap; }
     .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
     .btn-primary { background: var(--accent); color: #fff; }
@@ -186,10 +180,11 @@
     .btn-teal:hover { background: #ccfbf1; }
     .btn-blue { background: var(--blue-bg); color: var(--blue); border: 1px solid #bdd3fb; }
     .btn-blue:hover { background: #dbeafe; }
+    .btn-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid #d8b4fe; }
+    .btn-purple:hover { background: #ede9fe; }
     .btn-sm { padding: 5px 11px; font-size: 12px; }
     .btn:disabled { opacity: .5; cursor: not-allowed; pointer-events: none; }
 
-    /* ── CARDS ── */
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
     .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .card-header-left { display: flex; flex-direction: column; gap: 2px; }
@@ -197,7 +192,6 @@
     .card-subtitle { font-size: 11px; color: var(--muted); }
     .card-body { padding: 20px; }
 
-    /* ── STATS ── */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
     .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
     .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
@@ -210,7 +204,6 @@
     .stat-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-top: 4px; }
     .stat-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 28px; opacity: .15; }
 
-    /* ── TABLE ── */
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     th { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding: 10px 16px; text-align: left; border-bottom: 2px solid var(--border); white-space: nowrap; }
@@ -218,7 +211,6 @@
     tr:last-child td { border-bottom: none; }
     tbody tr:hover td { background: var(--surface2); }
 
-    /* ── BADGES ── */
     .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; white-space: nowrap; }
     .badge-red { background: var(--accent-bg); color: var(--accent); }
     .badge-green { background: var(--green-bg); color: var(--green); }
@@ -229,21 +221,19 @@
     .badge-gray { background: var(--surface3); color: var(--text2); }
     .badge-teal { background: var(--teal-bg); color: var(--teal); border: 1px solid #99f6e4; }
 
-    /* ── FORMS ── */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
     .form-group { display: flex; flex-direction: column; gap: 5px; }
     .form-group.span-2 { grid-column: span 2; }
     .form-group.span-3 { grid-column: span 3; }
     label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .6px; }
-    input[type=text], input[type=email], input[type=number], input[type=url], select, textarea {
+    input[type=text], input[type=email], input[type=number], input[type=url], input[type=password], select, textarea {
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
       padding: 9px 12px; font-size: 13px; color: var(--text); outline: none; transition: .15s; width: 100%;
     }
     input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
     textarea { resize: vertical; min-height: 72px; }
 
-    /* ── MODAL ── */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); backdrop-filter: blur(3px); z-index: 500; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .2s; }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
     .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: min(580px, 95vw); max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); transform: translateY(12px) scale(.98); transition: .25s; }
@@ -257,7 +247,6 @@
     .modal-body { padding: 20px 24px 24px; }
     .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
 
-    /* ── SHIPROCKET SECTION ── */
     .sr-section { margin-top: 16px; padding: 14px; background: var(--teal-bg); border: 1px solid #99f6e4; border-radius: var(--radius-sm); }
     .sr-section-title { font-size: 11px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
     .sr-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
@@ -265,9 +254,7 @@
     .sr-info-label { font-size: 9px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
     .sr-info-value { font-size: 12px; font-weight: 600; color: var(--text); margin-top: 2px; font-family: 'DM Mono', monospace; }
     .sr-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-    .sr-status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
 
-    /* ── PRODUCT IMAGE SLOTS ── */
     .product-img-slots { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
     .p-img-slot {
       position: relative; width: 100px; height: 100px;
@@ -294,7 +281,6 @@
     .slot-prog-bar.active { display: block; }
     .slot-prog-fill { height: 100%; background: var(--accent); transition: width .3s; width: 0%; }
 
-    /* ── MEDIA PAGE ── */
     .media-page-section { margin-bottom: 28px; }
     .media-section-title { font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
     .media-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
@@ -331,7 +317,6 @@
     .media-box.gallery-wide { width: 210px; }
     .media-box.gallery-wide ~ .media-link-input { width: 210px; }
 
-    /* ── TOGGLE ── */
     .toggle { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
     .toggle-track { position: absolute; cursor: pointer; inset: 0; background: var(--border2); border-radius: 999px; transition: .25s; }
@@ -339,7 +324,6 @@
     .toggle input:checked + .toggle-track { background: var(--green); }
     .toggle input:checked + .toggle-track::before { transform: translateX(18px); }
 
-    /* ── PAGES GRID ── */
     .pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
     .page-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-sm); transition: .15s; }
     .page-card:hover { border-color: var(--border2); box-shadow: var(--shadow); }
@@ -349,13 +333,10 @@
     .page-file { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .page-status { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
 
-    /* ── COUPON TABLE ── */
     .coupon-code-badge { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 600; background: var(--gold-bg); color: var(--gold); border: 1px solid #fde68a; border-radius: 6px; padding: 2px 8px; letter-spacing: 1px; }
 
-    /* ── USER AVATAR ── */
     .user-avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
 
-    /* ── TOAST ── */
     .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
     .toast { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; min-width: 220px; box-shadow: var(--shadow-lg); animation: toastIn .25s ease; }
     .toast.success { border-color: #b3e6c8; color: var(--green); background: var(--green-bg); }
@@ -364,7 +345,6 @@
     .toast.warning { border-color: #fde68a; color: var(--gold); background: var(--gold-bg); }
     @keyframes toastIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
 
-    /* ── CONFIRM MODAL ── */
     .confirm-modal .modal { width: 360px; }
 
     .sidebar-backdrop {
@@ -376,13 +356,82 @@
 
     .mo-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
 
-    /* ── SHIPROCKET SETTINGS ── */
     .sr-config-card { background: var(--teal-bg); border: 1px solid #99f6e4; border-radius: var(--radius); padding: 16px 20px; margin-bottom: 20px; }
     .sr-config-title { font-size: 13px; font-weight: 700; color: var(--teal); display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
     .sr-config-status { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
     .sr-config-status.connected { background: var(--green-bg); color: var(--green); border: 1px solid #b3e6c8; }
     .sr-config-status.disconnected { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-border); }
     .sr-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    /* ══ CREDENTIALS SECTION STYLES ══ */
+    .cred-notice {
+      background: var(--purple-bg); border: 1px solid #d8b4fe;
+      border-radius: var(--radius-sm); padding: 12px 16px;
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-bottom: 20px; font-size: 12px; color: var(--purple); line-height: 1.5;
+    }
+    .cred-notice-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .cred-notice strong { display: block; font-size: 12px; margin-bottom: 2px; }
+
+    .cred-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+    .cred-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+    }
+    .cred-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--purple), var(--blue));
+    }
+    .cred-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cred-card-title { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; }
+    .cred-card-actions { display: flex; gap: 5px; }
+    .cred-label { font-size: 9px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+    .cred-value-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+    .cred-value {
+      flex: 1; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text);
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .cred-value.masked { letter-spacing: 2px; color: var(--muted); }
+    .cred-copy-btn {
+      width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text2); cursor: pointer;
+      display: grid; place-items: center; font-size: 13px; flex-shrink: 0;
+      transition: .15s;
+    }
+    .cred-copy-btn:hover { background: var(--surface3); color: var(--text); }
+    .cred-tag { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 999px; font-size: 10px; font-weight: 700; background: var(--purple-bg); color: var(--purple); border: 1px solid #d8b4fe; }
+    .cred-meta { font-size: 10px; color: var(--muted); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+
+    .cred-enc-badge {
+      display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+      background: var(--green-bg); color: var(--green); border: 1px solid #b3e6c8;
+      border-radius: 999px; font-size: 10px; font-weight: 700;
+    }
+
+    .master-key-banner {
+      background: linear-gradient(135deg, #2d0a3a 0%, #1a1040 100%);
+      border: 1px solid #6b21a8; border-radius: var(--radius); padding: 20px 24px;
+      margin-bottom: 20px; color: #e9d5ff; position: relative; overflow: hidden;
+    }
+    .dark-theme .master-key-banner { border-color: #9333ea; }
+    .master-key-banner::after {
+      content: '🔐'; position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+      font-size: 48px; opacity: .15;
+    }
+    .master-key-title { font-size: 14px; font-weight: 700; color: #f3e8ff; margin-bottom: 4px; }
+    .master-key-sub { font-size: 12px; color: #c4b5fd; margin-bottom: 14px; line-height: 1.5; }
+    .master-key-input-row { display: flex; gap: 8px; align-items: stretch; max-width: 480px; }
+    .master-key-input {
+      flex: 1; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2);
+      border-radius: var(--radius-sm); padding: 9px 14px; color: #f3e8ff; font-family: 'DM Mono', monospace;
+      font-size: 13px; outline: none; transition: .15s;
+    }
+    .master-key-input::placeholder { color: rgba(255,255,255,.35); }
+    .master-key-input:focus { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,.2); }
+    .master-key-status { margin-top: 10px; font-size: 11px; font-weight: 600; }
+    .master-key-status.unlocked { color: #86efac; }
+    .master-key-status.locked { color: #fca5a5; }
 
     @media(max-width: 768px) {
       .sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); z-index: 100; }
@@ -418,6 +467,8 @@
       .sr-info-grid { grid-template-columns: 1fr; }
       .sr-actions { gap: 4px; }
       .sr-actions .btn { font-size: 11px; padding: 5px 8px; }
+      .cred-grid { grid-template-columns: 1fr; }
+      .master-key-input-row { flex-direction: column; }
     }
   </style>
 </head>
@@ -463,6 +514,10 @@
     </button>
 
     <div class="nav-section-label">Settings</div>
+    <button class="nav-link" onclick="switchTab('credentials',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Credentials
+    </button>
     <button class="nav-link" onclick="switchTab('pages',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
       Page Settings
@@ -647,6 +702,57 @@
         </div>
       </div>
 
+      <!-- ══ CREDENTIALS TAB ══ -->
+      <div class="tab-pane" id="tab-credentials">
+
+        <!-- Master Key Banner -->
+        <div class="master-key-banner">
+          <div class="master-key-title">🔐 Master Encryption Key</div>
+          <div class="master-key-sub">
+            Enter your master key to encrypt/decrypt credentials stored in Firebase.<br>
+            This key never leaves your browser — only AES-256 encrypted ciphertext is stored in Firebase.<br>
+            All admins must use the <strong>same master key</strong> to access shared credentials.
+          </div>
+          <div class="master-key-input-row">
+            <input type="password" class="master-key-input" id="masterKeyInput" placeholder="Enter master key…" autocomplete="off"/>
+            <button class="btn btn-purple" onclick="unlockCredentials()" style="background:#7c3aed;color:#fff;border:none;padding:9px 20px">Unlock</button>
+            <button class="btn btn-ghost" onclick="lockCredentials()" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:#c4b5fd">Lock</button>
+          </div>
+          <div class="master-key-status locked" id="credLockStatus">🔒 Locked — enter master key to view credentials</div>
+        </div>
+
+        <div class="cred-notice">
+          <span class="cred-notice-icon">🛡️</span>
+          <div>
+            <strong>AES-256-GCM Encryption — Zero Knowledge Storage</strong>
+            Your master key is used only in-browser via the Web Crypto API. Firebase stores only encrypted ciphertext — even if someone accesses your Firebase database directly, they cannot read the credentials without your master key. The key is session-only and never persisted.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-title">Saved Credentials</div>
+              <div class="card-subtitle" id="credCountSubtitle">Shared securely across all admin devices</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <span class="cred-enc-badge" id="credEncBadge">🔒 Encrypted at rest</span>
+              <button class="btn btn-purple btn-sm" onclick="openCredModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Credential
+              </button>
+            </div>
+          </div>
+          <div class="card-body" id="credCardsContainer">
+            <div style="text-align:center;padding:40px;color:var(--muted)">
+              <div style="font-size:40px;margin-bottom:10px">🔒</div>
+              <div style="font-weight:600;margin-bottom:4px">Credentials are locked</div>
+              <div style="font-size:12px">Enter your master key above to view credentials</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ══ PAGE SETTINGS TAB ══ -->
       <div class="tab-pane" id="tab-pages">
         <div class="card">
@@ -804,16 +910,11 @@
     </div>
     <div class="modal-body">
       <div id="orderDetailContent" style="margin-bottom:16px"><div style="color:var(--muted)">Loading…</div></div>
-
-      <!-- Shiprocket Section inside order modal -->
       <div class="sr-section" id="orderSrSection">
         <div class="sr-section-title">🚚 Shiprocket Shipment</div>
-        <div id="srOrderInfo">
-          <div style="color:var(--muted);font-size:12px">No shipment created yet for this order.</div>
-        </div>
+        <div id="srOrderInfo"><div style="color:var(--muted);font-size:12px">No shipment created yet for this order.</div></div>
         <div class="sr-actions" id="srOrderActions" style="margin-top:10px"></div>
       </div>
-
       <div class="form-grid" style="margin-top:16px">
         <div class="form-group"><label>Update Status</label><select id="o_status"><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div>
         <div class="form-group"><label>Tracking #</label><input type="text" id="o_tracking" placeholder="Enter tracking number"/></div>
@@ -852,50 +953,25 @@
               <div class="form-group"><label>Country *</label><input type="text" id="mo_country" value="India"/></div>
             </div>
             <div class="form-grid" style="grid-template-columns:1fr 1fr;gap:10px;">
-              <div class="form-group">
-                <label>Payment Method</label>
-                <select id="mo_payment_method"><option value="cod">Cash on Delivery</option><option value="online">Prepaid / Online</option></select>
-              </div>
-              <div class="form-group">
-                <label>Order Status</label>
-                <select id="mo_status"><option value="pending">Pending</option><option value="confirmed" selected>Confirmed</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option></select>
-              </div>
+              <div class="form-group"><label>Payment Method</label><select id="mo_payment_method"><option value="cod">Cash on Delivery</option><option value="online">Prepaid / Online</option></select></div>
+              <div class="form-group"><label>Order Status</label><select id="mo_status"><option value="pending">Pending</option><option value="confirmed" selected>Confirmed</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option></select></div>
             </div>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:14px;border-left:1px solid var(--border);padding-left:20px;">
           <div style="font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);">Select Items</div>
-          <div class="form-group">
-            <label>Product</label>
-            <select id="mo_prod_select" onchange="onManualOrderProductChange()"><option value="">-- Choose Product --</option></select>
-          </div>
+          <div class="form-group"><label>Product</label><select id="mo_prod_select" onchange="onManualOrderProductChange()"><option value="">-- Choose Product --</option></select></div>
           <div class="form-grid" style="grid-template-columns:1fr 1.2fr;gap:10px;align-items:flex-end;">
             <div class="form-group"><label>Size</label><select id="mo_size_select"><option value="">Select Size</option></select></div>
-            <div class="form-group">
-              <label>Qty</label>
-              <div style="display:flex;gap:6px;">
-                <input type="number" id="mo_qty_input" value="1" min="1" style="text-align:center;padding:7px;"/>
-                <button class="btn btn-ghost" onclick="addManualOrderItem()" style="padding:8px 12px;height:38px;">Add</button>
-              </div>
-            </div>
+            <div class="form-group"><label>Qty</label><div style="display:flex;gap:6px;"><input type="number" id="mo_qty_input" value="1" min="1" style="text-align:center;padding:7px;"/><button class="btn btn-ghost" onclick="addManualOrderItem()" style="padding:8px 12px;height:38px;">Add</button></div></div>
           </div>
           <div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-top:10px;color:var(--muted);">Added Items</div>
-          <div id="mo_cart_list" style="max-height:160px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);padding:8px;font-size:12px;">
-            <div style="color:var(--muted);text-align:center;padding:12px;">No items added yet</div>
-          </div>
+          <div id="mo_cart_list" style="max-height:160px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);padding:8px;font-size:12px;"><div style="color:var(--muted);text-align:center;padding:12px;">No items added yet</div></div>
           <div style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px;font-size:13px;">
             <div style="display:flex;justify-content:space-between;"><span>Subtotal:</span><strong id="mo_subtotal_lbl">₹0.00</strong></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span>Discount (₹ or %):</span>
-              <input type="text" id="mo_discount" placeholder="0" style="width:80px;text-align:right;padding:4px 8px;font-size:12px;" oninput="recalcManualOrderTotals()"/>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span>Shipping Fee:</span>
-              <input type="number" id="mo_shipping" value="0" min="0" style="width:80px;text-align:right;padding:4px 8px;font-size:12px;" oninput="recalcManualOrderTotals()"/>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;border-top:2px solid var(--border);padding-top:6px;margin-top:4px;">
-              <span>Total:</span><strong id="mo_total_lbl" style="color:var(--accent)">₹0.00</strong>
-            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span>Discount (₹ or %):</span><input type="text" id="mo_discount" placeholder="0" style="width:80px;text-align:right;padding:4px 8px;font-size:12px;" oninput="recalcManualOrderTotals()"/></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span>Shipping Fee:</span><input type="number" id="mo_shipping" value="0" min="0" style="width:80px;text-align:right;padding:4px 8px;font-size:12px;" oninput="recalcManualOrderTotals()"/></div>
+            <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;border-top:2px solid var(--border);padding-top:6px;margin-top:4px;"><span>Total:</span><strong id="mo_total_lbl" style="color:var(--accent)">₹0.00</strong></div>
           </div>
         </div>
       </div>
@@ -933,6 +1009,61 @@
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('couponModal')">Cancel</button>
       <button class="btn btn-gold" onclick="saveCoupon()">Save Coupon</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CREDENTIAL MODAL ══ -->
+<div class="modal-overlay" id="credModal">
+  <div class="modal" style="width:min(500px,95vw)">
+    <div class="modal-header">
+      <div class="modal-title" id="credModalTitle">Add Credential</div>
+      <button class="modal-close" onclick="closeModal('credModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--purple-bg);border:1px solid #d8b4fe;border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:16px;font-size:11px;color:var(--purple);">
+        🔐 This credential will be encrypted with AES-256-GCM using your master key before saving to Firebase.
+      </div>
+      <div class="form-grid" style="gap:12px;">
+        <div class="form-group span-2">
+          <label>Label / Service Name *</label>
+          <input type="text" id="cred_label" placeholder="e.g. Firebase, Razorpay, Shiprocket…"/>
+        </div>
+        <div class="form-group span-2">
+          <label>Category</label>
+          <select id="cred_category">
+            <option value="Email">📧 Email</option>
+            <option value="API Key">🔑 API Key</option>
+            <option value="Password">🔒 Password</option>
+            <option value="Database">🗄️ Database</option>
+            <option value="Payment">💳 Payment Gateway</option>
+            <option value="Shipping">🚚 Shipping</option>
+            <option value="Social">📱 Social / OAuth</option>
+            <option value="Other">📋 Other</option>
+          </select>
+        </div>
+        <div class="form-group span-2">
+          <label>Username / Email <span style="font-size:9px;color:var(--muted);text-transform:none;font-weight:400">(optional)</span></label>
+          <input type="text" id="cred_username" placeholder="admin@example.com"/>
+        </div>
+        <div class="form-group span-2">
+          <label>Password / Secret *</label>
+          <div style="position:relative;">
+            <input type="password" id="cred_password" placeholder="Enter secret value" style="padding-right:40px"/>
+            <button onclick="toggleCredPwVisibility()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;color:var(--muted);font-size:14px;" id="credPwEyeBtn">👁</button>
+          </div>
+        </div>
+        <div class="form-group span-2">
+          <label>Notes <span style="font-size:9px;color:var(--muted);text-transform:none;font-weight:400">(optional)</span></label>
+          <textarea id="cred_notes" placeholder="e.g. Account URL, dashboard link, expiry date…" style="min-height:56px;"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('credModal')">Cancel</button>
+      <button class="btn btn-purple" id="saveCredBtn" onclick="saveCred()" style="background:#7c3aed;color:#fff;border:none;">
+        🔐 Encrypt &amp; Save
+      </button>
     </div>
   </div>
 </div>
@@ -977,7 +1108,7 @@ function closeSidebar() {
 }
 
 /* ─── TAB SWITCH ─── */
-const TAB_TITLES = { products:'Products / Kits', media:'Index Media', orders:'Orders', users:'Users', coupons:'Coupon Codes', pages:'Page Settings', shiprocket:'Shiprocket Shipping' };
+const TAB_TITLES = { products:'Products / Kits', media:'Index Media', orders:'Orders', users:'Users', coupons:'Coupon Codes', credentials:'Credentials Manager', pages:'Page Settings', shiprocket:'Shiprocket Shipping' };
 function switchTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
@@ -986,6 +1117,7 @@ function switchTab(name, el) {
   if (el) el.classList.add('active');
   closeSidebar();
   if (name === 'shiprocket') { srLoadConfig(); refreshShiprocketOverview(); }
+  if (name === 'credentials') { loadCredentials(); }
 }
 
 /* ─── LOGOUT ─── */
@@ -1485,9 +1617,7 @@ function viewOrder(id) {
       <div style="font-size:13px">${esc([o.address,o.city,o.pincode,o.country].filter(Boolean).join(', ')||'—')}</div>
     </div>`;
 
-  // Render Shiprocket section
   renderOrderSrSection(o);
-
   setV('o_status', o.status||'pending');
   setV('o_tracking', o.trackingNumber||o.srAwb||'');
   setV('o_notes', o.adminNotes||'');
@@ -1498,7 +1628,6 @@ function renderOrderSrSection(o) {
   const infoDiv = document.getElementById('srOrderInfo');
   const actionsDiv = document.getElementById('srOrderActions');
   const id = o.id;
-
   if (o.srShipmentId) {
     infoDiv.innerHTML = `
       <div class="sr-info-grid">
@@ -1730,11 +1859,339 @@ function deleteItem(col, id) {
 }
 
 /* ═══════════════════════════════════════════════
+   ██████╗ ██████╗ ███████╗██████╗ ███████╗
+  ██╔════╝██╔══██╗██╔════╝██╔══██╗██╔════╝
+  ██║     ██████╔╝█████╗  ██║  ██║███████╗
+  ██║     ██╔══██╗██╔══╝  ██║  ██║╚════██║
+  ╚██████╗██║  ██║███████╗██████╔╝███████║
+   ╚═════╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚══════╝
+   AES-256-GCM Encrypted Credential Manager
+   - Master key NEVER stored anywhere
+   - Only encrypted ciphertext in Firebase
+   - Web Crypto API (browser-native, zero deps)
+═══════════════════════════════════════════════ */
+
+/* Session-only master key (CryptoKey object) */
+let _masterCryptoKey = null;
+let _credsList = []; // decrypted cache for current session
+let _editCredId = null;
+
+/* ── Helpers: key derivation & AES-GCM ── */
+async function deriveKey(masterPassword) {
+  const enc = new TextEncoder();
+  // Fixed salt — consistent across devices for same password.
+  // Using app-specific string so brute-force of generic rainbow tables fails.
+  const saltString = 'jersify-admin-v4-salt-2025';
+  const saltBytes = enc.encode(saltString);
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', enc.encode(masterPassword), 'PBKDF2', false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: saltBytes, iterations: 310000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false, // not extractable — key stays in browser memory only
+    ['encrypt', 'decrypt']
+  );
+}
+
+async function encryptText(plaintext, cryptoKey) {
+  const enc = new TextEncoder();
+  const iv = crypto.getRandomValues(new Uint8Array(12)); // 96-bit IV for AES-GCM
+  const cipherBuffer = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    cryptoKey,
+    enc.encode(plaintext)
+  );
+  // Pack iv + ciphertext into base64 for Firebase storage
+  const combined = new Uint8Array(iv.length + cipherBuffer.byteLength);
+  combined.set(iv, 0);
+  combined.set(new Uint8Array(cipherBuffer), iv.length);
+  return btoa(String.fromCharCode(...combined));
+}
+
+async function decryptText(base64Ciphertext, cryptoKey) {
+  const combined = Uint8Array.from(atob(base64Ciphertext), c => c.charCodeAt(0));
+  const iv = combined.slice(0, 12);
+  const cipherBuffer = combined.slice(12);
+  const plainBuffer = await crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv },
+    cryptoKey,
+    cipherBuffer
+  );
+  return new TextDecoder().decode(plainBuffer);
+}
+
+/* ── Unlock / Lock ── */
+async function unlockCredentials() {
+  const masterPw = document.getElementById('masterKeyInput').value;
+  if (!masterPw) { toast('Please enter your master key', 'error'); return; }
+  const statusEl = document.getElementById('credLockStatus');
+  statusEl.textContent = '⏳ Deriving key…';
+  statusEl.className = 'master-key-status';
+  try {
+    _masterCryptoKey = await deriveKey(masterPw);
+    // Test decryption: try decrypting a "test" record if it exists
+    const { db, dbRef, get } = await waitFb();
+    const testSnap = await get(dbRef(db, 'credentials/__keytest__'));
+    if (testSnap.exists()) {
+      try {
+        await decryptText(testSnap.val().ct, _masterCryptoKey);
+      } catch(_) {
+        _masterCryptoKey = null;
+        statusEl.textContent = '❌ Wrong master key — decryption failed';
+        statusEl.className = 'master-key-status locked';
+        toast('Wrong master key!', 'error');
+        return;
+      }
+    } else {
+      // First time: write a canary so future logins can verify the key
+      const canary = await encryptText('jersify-canary-ok', _masterCryptoKey);
+      const { db: db2, dbRef: dbRef2, set } = await waitFb();
+      await set(dbRef2(db2, 'credentials/__keytest__'), { ct: canary, createdAt: Date.now() });
+    }
+    statusEl.textContent = '✅ Unlocked — credentials are visible this session only';
+    statusEl.className = 'master-key-status unlocked';
+    document.getElementById('masterKeyInput').value = '';
+    toast('🔓 Credentials unlocked!', 'success');
+    loadCredentials();
+  } catch(err) {
+    _masterCryptoKey = null;
+    statusEl.textContent = '❌ Error: ' + err.message;
+    statusEl.className = 'master-key-status locked';
+    toast('Unlock failed: ' + err.message, 'error');
+  }
+}
+
+function lockCredentials() {
+  _masterCryptoKey = null;
+  _credsList = [];
+  document.getElementById('credLockStatus').textContent = '🔒 Locked — enter master key to view credentials';
+  document.getElementById('credLockStatus').className = 'master-key-status locked';
+  document.getElementById('masterKeyInput').value = '';
+  renderCredCards([]);
+  toast('🔒 Credentials locked', 'info');
+}
+
+/* ── Load & Decrypt from Firebase ── */
+async function loadCredentials() {
+  const container = document.getElementById('credCardsContainer');
+  if (!_masterCryptoKey) {
+    container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:40px;margin-bottom:10px">🔒</div><div style="font-weight:600;margin-bottom:4px">Credentials are locked</div><div style="font-size:12px">Enter your master key above to view credentials</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted)">⏳ Decrypting credentials…</div>`;
+  try {
+    const { db, dbRef, get } = await waitFb();
+    const snap = await get(dbRef(db, 'credentials'));
+    const decryptedList = [];
+    if (snap.exists()) {
+      const entries = snap.val();
+      for (const [id, entry] of Object.entries(entries)) {
+        if (id === '__keytest__') continue;
+        try {
+          const username = entry.enc_username ? await decryptText(entry.enc_username, _masterCryptoKey) : '';
+          const password = entry.enc_password ? await decryptText(entry.enc_password, _masterCryptoKey) : '';
+          const notes    = entry.enc_notes    ? await decryptText(entry.enc_notes,    _masterCryptoKey) : '';
+          decryptedList.push({ id, label: entry.label||'—', category: entry.category||'Other', username, password, notes, createdAt: entry.createdAt, updatedAt: entry.updatedAt });
+        } catch(_) {
+          decryptedList.push({ id, label: entry.label||'—', category: entry.category||'Other', username: '⚠ Decrypt error', password: '⚠ Decrypt error', notes: '', createdAt: entry.createdAt, updatedAt: entry.updatedAt });
+        }
+      }
+    }
+    _credsList = decryptedList;
+    setEl('credCountSubtitle', `${decryptedList.length} credential${decryptedList.length!==1?'s':''} · Shared securely across all admin devices`);
+    renderCredCards(decryptedList);
+  } catch(err) {
+    container.innerHTML = `<div style="color:var(--accent);padding:20px">Error loading: ${esc(err.message)}</div>`;
+    toast('Error loading credentials: ' + err.message, 'error');
+  }
+}
+
+/* ── Render decrypted credential cards ── */
+const CRED_CATEGORY_ICONS = { 'Email':'📧','API Key':'🔑','Password':'🔒','Database':'🗄️','Payment':'💳','Shipping':'🚚','Social':'📱','Other':'📋' };
+
+function renderCredCards(list) {
+  const container = document.getElementById('credCardsContainer');
+  if (!list.length) {
+    container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:40px;margin-bottom:10px">🗝️</div><div style="font-weight:600;margin-bottom:4px">No credentials saved yet</div><div style="font-size:12px">Click "Add Credential" to store your first encrypted secret.</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="cred-grid">${list.map(c => {
+    const icon = CRED_CATEGORY_ICONS[c.category]||'📋';
+    const saved = c.updatedAt ? new Date(c.updatedAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : (c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—');
+    return `<div class="cred-card">
+      <div class="cred-card-header">
+        <div class="cred-card-title">${esc(icon)} ${esc(c.label)}</div>
+        <div class="cred-card-actions">
+          <span class="cred-tag">${esc(c.category)}</span>
+          <button class="btn btn-ghost btn-sm" onclick="editCred('${c.id}')" title="Edit">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteCredById('${c.id}')" title="Delete">🗑</button>
+        </div>
+      </div>
+      ${c.username ? `
+      <div class="cred-label">Username / Email</div>
+      <div class="cred-value-row">
+        <div class="cred-value" id="cusr_${c.id}">${esc(c.username)}</div>
+        <button class="cred-copy-btn" onclick="copyToClipboard('${c.id}','usr')" title="Copy">📋</button>
+      </div>` : ''}
+      <div class="cred-label">Password / Secret</div>
+      <div class="cred-value-row">
+        <div class="cred-value masked" id="cpw_${c.id}" data-plain="${encodeURIComponent(c.password)}">••••••••••••</div>
+        <button class="cred-copy-btn" onclick="copyToClipboard('${c.id}','pw')" title="Copy">📋</button>
+        <button class="cred-copy-btn" onclick="toggleCredVisibility('${c.id}')" title="Show/Hide" id="cbtn_${c.id}">👁</button>
+      </div>
+      ${c.notes ? `<div class="cred-label" style="margin-top:4px">Notes</div><div class="cred-value" style="font-size:11px;white-space:normal;height:auto;min-height:28px;">${esc(c.notes)}</div>` : ''}
+      <div class="cred-meta">🔐 AES-256-GCM encrypted · Last updated ${esc(saved)}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function toggleCredVisibility(id) {
+  const el = document.getElementById('cpw_'+id);
+  const btn = document.getElementById('cbtn_'+id);
+  if (!el) return;
+  if (el.classList.contains('masked')) {
+    el.textContent = decodeURIComponent(el.dataset.plain);
+    el.classList.remove('masked');
+    if (btn) btn.textContent = '🙈';
+  } else {
+    el.textContent = '••••••••••••';
+    el.classList.add('masked');
+    if (btn) btn.textContent = '👁';
+  }
+}
+
+async function copyToClipboard(id, field) {
+  let text = '';
+  if (field === 'pw') {
+    const el = document.getElementById('cpw_'+id);
+    text = el ? decodeURIComponent(el.dataset.plain||'') : '';
+  } else {
+    const el = document.getElementById('cusr_'+id);
+    text = el ? el.textContent : '';
+  }
+  if (!text) { toast('Nothing to copy', 'warning'); return; }
+  try {
+    await navigator.clipboard.writeText(text);
+    toast('Copied to clipboard!', 'success');
+  } catch(_) {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    toast('Copied!', 'success');
+  }
+}
+
+/* ── Add / Edit credential modal ── */
+function openCredModal(existingId) {
+  if (!_masterCryptoKey) { toast('Please unlock credentials first', 'error'); return; }
+  _editCredId = existingId || null;
+  document.getElementById('credModalTitle').textContent = existingId ? 'Edit Credential' : 'Add Credential';
+  if (existingId) {
+    const c = _credsList.find(x => x.id === existingId);
+    if (!c) return;
+    setV('cred_label', c.label);
+    setV('cred_category', c.category);
+    setV('cred_username', c.username);
+    setV('cred_password', c.password);
+    setV('cred_notes', c.notes);
+  } else {
+    setV('cred_label',''); setV('cred_category','Email'); setV('cred_username',''); setV('cred_password',''); setV('cred_notes','');
+  }
+  // Reset password visibility
+  const pwInput = document.getElementById('cred_password');
+  if (pwInput) pwInput.type = 'password';
+  const eyeBtn = document.getElementById('credPwEyeBtn');
+  if (eyeBtn) eyeBtn.textContent = '👁';
+  openModal('credModal');
+}
+
+function editCred(id) { openCredModal(id); }
+
+function toggleCredPwVisibility() {
+  const pwInput = document.getElementById('cred_password');
+  const btn = document.getElementById('credPwEyeBtn');
+  if (!pwInput) return;
+  if (pwInput.type === 'password') { pwInput.type = 'text'; btn.textContent = '🙈'; }
+  else { pwInput.type = 'password'; btn.textContent = '👁'; }
+}
+
+async function saveCred() {
+  if (!_masterCryptoKey) { toast('Credentials are locked', 'error'); return; }
+  const label    = getV('cred_label');
+  const password = getV('cred_password');
+  if (!label)    { toast('Label / service name is required', 'error'); return; }
+  if (!password) { toast('Password / secret is required', 'error'); return; }
+
+  const btn = document.getElementById('saveCredBtn');
+  btn.disabled = true; btn.textContent = '⏳ Encrypting…';
+
+  try {
+    const username = getV('cred_username');
+    const notes    = getV('cred_notes');
+    const category = getV('cred_category');
+
+    // Encrypt each sensitive field individually
+    const enc_password = await encryptText(password, _masterCryptoKey);
+    const enc_username = username ? await encryptText(username, _masterCryptoKey) : '';
+    const enc_notes    = notes    ? await encryptText(notes,    _masterCryptoKey) : '';
+
+    const { db, dbRef, set, push, update } = await waitFb();
+    const payload = {
+      label,       // label stored in plaintext (non-sensitive label/service name)
+      category,    // category is also non-sensitive
+      enc_username,
+      enc_password,
+      enc_notes,
+      updatedAt: Date.now()
+    };
+
+    if (_editCredId) {
+      await update(dbRef(db, `credentials/${_editCredId}`), payload);
+    } else {
+      payload.createdAt = Date.now();
+      const newRef = push(dbRef(db, 'credentials'));
+      await set(newRef, payload);
+    }
+
+    closeModal('credModal');
+    toast(`🔐 "${label}" saved encrypted!`, 'success');
+    await loadCredentials(); // refresh decrypted view
+    _editCredId = null;
+  } catch(err) {
+    toast('Save failed: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🔐 Encrypt &amp; Save';
+  }
+}
+
+function deleteCredById(id) {
+  const c = _credsList.find(x => x.id === id);
+  const label = c ? c.label : id;
+  confirmAction(`Permanently delete credential "${label}"? This cannot be undone.`, async () => {
+    const { db, dbRef, remove } = await waitFb();
+    await remove(dbRef(db, `credentials/${id}`));
+    toast(`"${label}" deleted`, 'info');
+    await loadCredentials();
+  });
+}
+
+/* ── Enter key on master key input ── */
+document.addEventListener('DOMContentLoaded', () => {
+  const mkInput = document.getElementById('masterKeyInput');
+  if (mkInput) {
+    mkInput.addEventListener('keydown', e => { if (e.key === 'Enter') unlockCredentials(); });
+  }
+});
+
+/* ═══════════════════════════════════════════════
    SHIPROCKET INTEGRATION
 ═══════════════════════════════════════════════ */
 const SR_BASE = 'https://apiv2.shiprocket.in/v1/external';
 
-/* ── Config: load/save from localStorage ── */
 function srLoadConfig() {
   setV('sr_email',    localStorage.getItem('sr_email')||'');
   setV('sr_password', localStorage.getItem('sr_password')||'');
@@ -1829,7 +2286,6 @@ async function srTestConnection() {
   }
 }
 
-/* ── Build order payload from Jersify order ── */
 function buildSrPayload(order) {
   const items = (order.items||[]).map(i=>({
     name:        i.name||'Jersey',
@@ -1868,7 +2324,6 @@ function buildSrPayload(order) {
   };
 }
 
-/* ── Ship Now ── */
 async function shipNow(orderId) {
   const order = _allOrders.find(o=>o.id===orderId);
   if (!order) { toast('Order not found', 'error'); return; }
@@ -1913,7 +2368,6 @@ async function shipNow(orderId) {
   }
 }
 
-/* ── Schedule Pickup ── */
 async function schedulePickup(orderId) {
   const order = _allOrders.find(o=>o.id===orderId);
   if (!order?.srShipmentId) { toast('Ship the order first before scheduling pickup', 'error'); return; }
@@ -1938,7 +2392,6 @@ async function schedulePickup(orderId) {
   } catch(err) { toast('Pickup error: '+err.message, 'error'); }
 }
 
-/* ── Download Shipping Label ── */
 async function downloadLabel(orderId) {
   const order = _allOrders.find(o=>o.id===orderId);
   if (!order?.srShipmentId) { toast('No shipment found. Ship this order first.', 'error'); return; }
@@ -1953,7 +2406,6 @@ async function downloadLabel(orderId) {
   } catch(err) { toast('Label error: '+err.message, 'error'); }
 }
 
-/* ── Download Invoice ── */
 async function downloadInvoice(orderId) {
   const order = _allOrders.find(o=>o.id===orderId);
   if (!order?.srOrderId) { toast('No Shiprocket order found. Ship this order first.', 'error'); return; }
@@ -1968,7 +2420,6 @@ async function downloadInvoice(orderId) {
   } catch(err) { toast('Invoice error: '+err.message, 'error'); }
 }
 
-/* ── Track Shipment ── */
 async function trackShipment(orderId) {
   const order = _allOrders.find(o=>o.id===orderId);
   if (!order?.srAwb) { toast('No AWB number available to track', 'error'); return; }
@@ -1982,7 +2433,6 @@ async function trackShipment(orderId) {
   } catch(err) { toast('Track error: '+err.message, 'error'); }
 }
 
-/* ── Cancel Shipment ── */
 async function cancelShipment(orderId) {
   const order = _allOrders.find(o=>o.id===orderId);
   if (!order?.srOrderId) { toast('No Shiprocket order to cancel', 'error'); return; }
@@ -2006,7 +2456,6 @@ async function cancelShipment(orderId) {
   });
 }
 
-/* ── Shiprocket overview table ── */
 async function refreshShiprocketOverview() {
   const shipped = _allOrders.filter(o=>o.srShipmentId);
   const tbody = document.getElementById('shiprocketTable');
