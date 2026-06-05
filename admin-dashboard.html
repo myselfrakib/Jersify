@@ -1813,7 +1813,7 @@ function renderOrderSrSection(o) {
   const infoDiv = document.getElementById('srOrderInfo');
   const actionsDiv = document.getElementById('srOrderActions');
   const id = o.id;
-  if (o.srShipmentId) {
+  if (o.srShipmentId && !o.srCancelled) {
     infoDiv.innerHTML = `
       <div class="sr-info-grid">
         <div class="sr-info-item"><div class="sr-info-label">SR Order ID</div><div class="sr-info-value">${esc(o.srOrderId||'—')}</div></div>
@@ -1828,8 +1828,8 @@ function renderOrderSrSection(o) {
       <button class="btn btn-ghost btn-sm" onclick="trackShipment('${id}')">🔍 Track</button>
       <button class="btn btn-danger btn-sm" onclick="cancelShipment('${id}')">✕ Cancel</button>`;
   } else {
-    infoDiv.innerHTML = `<div style="color:var(--muted);font-size:12px">No shipment created yet.</div>`;
-    actionsDiv.innerHTML = `<button class="btn btn-teal" onclick="shipNow('${id}')">🚚 Ship Now via Shiprocket</button>`;
+    infoDiv.innerHTML = `<div style="color:var(--muted);font-size:12px">${o.srCancelled ? 'Previous shipment cancelled.' : 'No shipment created yet.'}</div>`;
+    actionsDiv.innerHTML = `<button class="btn btn-teal" onclick="openSrShipModal('${id}')">🚚 Ship Now via Shiprocket</button>`;
   }
 }
 
@@ -2283,6 +2283,7 @@ function srLoadConfig() {
     setV('sr_email',    cfg.email    || localStorage.getItem('sr_email')    || '');
     setV('sr_password', cfg.password || localStorage.getItem('sr_password') || '');
     setV('sr_pickup',   cfg.pickup   || localStorage.getItem('sr_pickup')   || 'Primary');
+    setV('sr_pickup_pin', cfg.pickup_pin || localStorage.getItem('sr_pickup_pin') || '');
     setV('sr_channel',  cfg.channel  || localStorage.getItem('sr_channel')  || '');
     setV('sr_length',   cfg.length   || localStorage.getItem('sr_length')   || '30');
     setV('sr_breadth',  cfg.breadth  || localStorage.getItem('sr_breadth')  || '25');
@@ -2294,7 +2295,7 @@ function srLoadConfig() {
 }
 
 function srSaveConfig() {
-  ['sr_email','sr_password','sr_pickup','sr_channel','sr_length','sr_breadth','sr_height','sr_weight'].forEach(k => {
+  ['sr_email','sr_password','sr_pickup','sr_pickup_pin','sr_channel','sr_length','sr_breadth','sr_height','sr_weight'].forEach(k => {
     localStorage.setItem(k, getV(k));
   });
 }
@@ -2303,7 +2304,7 @@ async function srSaveConfigToFirebase() {
   srSaveConfig();
   const { db, dbRef, update } = await waitFb();
   await update(dbRef(db, 'settings/shiprocket'), {
-    email: getV('sr_email'), password: getV('sr_password'), pickup: getV('sr_pickup'),
+    email: getV('sr_email'), password: getV('sr_password'), pickup: getV('sr_pickup'), pickup_pin: getV('sr_pickup_pin'),
     channel: getV('sr_channel'), length: getV('sr_length'), breadth: getV('sr_breadth'),
     height: getV('sr_height'), weight: getV('sr_weight'), updatedAt: Date.now()
   });
@@ -2388,7 +2389,7 @@ async function srTestConnection() {
     _srToken = null; _srTokenExpiry = 0; // Force fresh login
     await srGetToken();
     // Verify with a lightweight API call
-    await srProxy('/settings/company', 'GET');
+    await srProxy('/countries', 'GET');
     statusEl.className = 'sr-config-status connected';
     statusEl.innerHTML = '<span class="sr-dot"></span> Connected ✓';
     toast('✅ Shiprocket connected!', 'success');
@@ -2416,8 +2417,18 @@ function buildSrPayload(order) {
     selling_price: String(i.price || 0)
   }));
 
+  // Provide a fallback if no items are in the array
+  if (items.length === 0) {
+    items.push({
+      name: order.productName || 'Product',
+      sku: 'SKU001',
+      units: 1,
+      selling_price: String(order.total || 0)
+    });
+  }
+
   const payload = {
-    order_id:          order.orderId || order.id,
+    order_id:          (order.orderId || order.id) + '-' + Date.now().toString().slice(-5),
     order_date:        new Date(order.createdAt || Date.now()).toISOString().replace('T', ' ').split('.')[0],
     pickup_location:   cfg_pickup,
     billing_customer_name: order.customerName || order.name || 'Customer',
@@ -2433,51 +2444,149 @@ function buildSrPayload(order) {
     order_items:       items,
     payment_method:    order.paymentMethod === 'cod' ? 'COD' : 'Prepaid',
     sub_total:         parseFloat(order.total || 0),
-    length:            cfg_length,
-    breadth:           cfg_breadth,
-    height:            cfg_height,
-    weight:            cfg_weight
+    length:            30,
+    breadth:           25,
+    height:            5,
+    weight:            0.5
   };
 
   if (cfg_channel) payload.channel_id = cfg_channel;
   return payload;
 }
 
-/* ── Ship Now ── */
-async function shipNow(orderId) {
+/* ── Shiprocket Flow ── */
+function openSrShipModal(orderId) {
   const order = _allOrders.find(o => o.id === orderId);
-  if (!order) { toast('Order not found', 'error'); return; }
-  if (order.srShipmentId) { toast('Already shipped via Shiprocket', 'warning'); return; }
+  if (!order) return;
+  
+  setV('sr_ship_order_id', orderId);
+  setV('sr_ship_name', order.customerName || order.name || '');
+  setV('sr_ship_email', order.email || '');
+  setV('sr_ship_phone', order.phone || '');
+  setV('sr_ship_address', order.address || '');
+  setV('sr_ship_city', order.city || '');
+  setV('sr_ship_state', order.state || '');
+  setV('sr_ship_pincode', order.pincode || '');
+  setV('sr_ship_country', order.country || 'India');
+  
+  const cfg_length  = localStorage.getItem('sr_length')  || '30';
+  const cfg_breadth = localStorage.getItem('sr_breadth') || '25';
+  const cfg_height  = localStorage.getItem('sr_height')  || '5';
+  const cfg_weight  = localStorage.getItem('sr_weight')  || '0.5';
+  
+  setV('sr_ship_length', cfg_length);
+  setV('sr_ship_breadth', cfg_breadth);
+  setV('sr_ship_height', cfg_height);
+  setV('sr_ship_weight', cfg_weight);
+  
+  document.getElementById('srCourierList').style.display = 'none';
+  document.getElementById('srCourierOptions').innerHTML = '';
+  
+  openModal('srShipModal');
+}
 
-  toast('Creating Shiprocket shipment…', 'info');
+async function srFetchCouriers() {
+  const pickupPin = getV('sr_pickup_pin') || localStorage.getItem('sr_pickup_pin');
+  if (!pickupPin) { toast('Please configure Pickup Pincode in Shiprocket settings first', 'error'); return; }
+  
+  const deliveryPin = getV('sr_ship_pincode');
+  if (!deliveryPin) { toast('Delivery pincode is required', 'error'); return; }
+
+  const weight = getV('sr_ship_weight');
+  const orderId = getV('sr_ship_order_id');
+  const order = _allOrders.find(o => o.id === orderId);
+  const cod = order.paymentMethod === 'cod' ? 1 : 0;
+  
+  const path = `/courier/serviceability/?pickup_postcode=${pickupPin}&delivery_postcode=${deliveryPin}&weight=${weight}&cod=${cod}`;
+  
   try {
-    const result = await srProxy('/orders/create/adhoc', 'POST', buildSrPayload(order));
-
-    // SR returns order_id and shipment_id on success
-    const srOrderId    = result.order_id    || result.payload?.order_id;
-    const srShipmentId = result.shipment_id || result.payload?.shipment_id;
-    const srAwb        = result.awb_code    || result.payload?.awb_code || '';
-
-    if (!srShipmentId) {
-      throw new Error(result.message || result.error || 'No shipment_id in response: ' + JSON.stringify(result).slice(0, 300));
+    toast('Fetching couriers...', 'info');
+    const res = await srProxy(path, 'GET');
+    
+    if (!res || !res.data || !res.data.available_courier_companies || res.data.available_courier_companies.length === 0) {
+      throw new Error('No couriers available for this route');
     }
+    
+    const couriers = res.data.available_courier_companies;
+    const listHtml = couriers.map((c, i) => `
+      <label style="display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid var(--border);cursor:pointer;background:var(--surface);">
+        <input type="radio" name="sr_selected_courier" value="${c.courier_company_id}" ${i===0?'checked':''} style="accent-color:var(--accent)" />
+        <div style="flex:1;">
+          <div style="font-weight:700;color:var(--text);font-size:13px;">${esc(c.courier_name)}</div>
+          <div style="font-size:11px;color:var(--muted)">Rating: ${c.rating} | ETA: ${c.etd}</div>
+        </div>
+        <div style="font-weight:700;color:var(--green);font-size:14px;">₹${c.rate}</div>
+      </label>
+    `).join('');
+    
+    document.getElementById('srCourierOptions').innerHTML = listHtml;
+    document.getElementById('srCourierList').style.display = 'block';
+    toast('Couriers loaded', 'success');
+  } catch(e) {
+    toast(e.message, 'error');
+  }
+}
 
+async function srCreateAndShip() {
+  const orderId = getV('sr_ship_order_id');
+  const order = _allOrders.find(o => o.id === orderId);
+  if (!order) return;
+  
+  const courierInput = document.querySelector('input[name="sr_selected_courier"]:checked');
+  if (!courierInput) { toast('Select a courier', 'error'); return; }
+  const courierId = courierInput.value;
+  
+  toast('Creating shipment...', 'info');
+  
+  const payload = buildSrPayload(order);
+  payload.billing_customer_name = getV('sr_ship_name');
+  payload.billing_email = getV('sr_ship_email');
+  payload.billing_phone = getV('sr_ship_phone');
+  payload.billing_address = getV('sr_ship_address');
+  payload.billing_city = getV('sr_ship_city');
+  payload.billing_state = getV('sr_ship_state');
+  payload.billing_pincode = getV('sr_ship_pincode');
+  payload.billing_country = getV('sr_ship_country');
+  payload.length = parseFloat(getV('sr_ship_length'));
+  payload.breadth = parseFloat(getV('sr_ship_breadth'));
+  payload.height = parseFloat(getV('sr_ship_height'));
+  payload.weight = parseFloat(getV('sr_ship_weight'));
+  
+  try {
+    const createRes = await srProxy('/orders/create/adhoc', 'POST', payload);
+    const srOrderId = createRes.order_id || createRes.payload?.order_id;
+    const srShipmentId = createRes.shipment_id || createRes.payload?.shipment_id;
+    
+    if (!srShipmentId) throw new Error(createRes.message || 'Failed to create SR order');
+    
+    toast('Assigning AWB...', 'info');
+    const awbRes = await srProxy('/courier/assign/awb', 'POST', {
+      shipment_id: srShipmentId,
+      courier_id: courierId
+    });
+    
+    let srAwb = awbRes.response?.data?.awb_code || awbRes.awb_code || '';
+    let srCourier = awbRes.response?.data?.courier_name || awbRes.courier_name || '';
+    
     const { db, dbRef, update } = await waitFb();
     await update(dbRef(db, `orders/${orderId}`), {
-      srOrderId: String(srOrderId || ''),
+      srOrderId: String(srOrderId),
       srShipmentId: String(srShipmentId),
       srAwb: srAwb,
+      srCourier: srCourier,
       srCancelled: false,
-      status: 'confirmed',
+      srPickupScheduled: false,
+      status: 'shipped',
       updatedAt: new Date().toISOString()
     });
 
-    const updatedOrder = { ...order, srOrderId, srShipmentId, srAwb };
-    renderOrderSrSection(updatedOrder);
-    toast(`Shipment created! AWB: ${srAwb || 'will be assigned soon'}`, 'success');
-  } catch(err) {
-    toast('Shiprocket error: ' + err.message, 'error');
-    console.error('shipNow error:', err);
+    closeModal('srShipModal');
+    if(document.getElementById('orderModal').classList.contains('open')) {
+      viewOrder(orderId);
+    }
+    toast('Shipment created successfully!', 'success');
+  } catch(e) {
+    toast(e.message, 'error');
   }
 }
 
@@ -2490,7 +2599,7 @@ async function schedulePickup(orderId) {
   toast('Scheduling pickup…', 'info');
   try {
     const result = await srProxy('/courier/generate/pickup', 'POST', {
-      shipment_id: [Number(order.srShipmentId)]
+      shipment_id: [String(order.srShipmentId)]
     });
 
     const pickupDate = result.pickup_scheduled_date
@@ -2571,13 +2680,13 @@ async function trackShipment(orderId) {
 /* ── Cancel Shipment ── */
 async function cancelShipment(orderId) {
   const order = _allOrders.find(o => o.id === orderId);
-  if (!order?.srOrderId) { toast('No Shiprocket order to cancel', 'error'); return; }
+  if (!order?.srAwb) { toast('No AWB assigned to cancel', 'error'); return; }
 
-  confirmAction(`Cancel Shiprocket shipment for order ${order.orderId || order.id}?`, async () => {
+  confirmAction(`Cancel Shiprocket shipment with AWB ${order.srAwb}?`, async () => {
     toast('Cancelling shipment…', 'info');
     try {
-      await srProxy('/orders/cancel', 'POST', {
-        ids: [Number(order.srOrderId)]
+      await srProxy('/orders/cancel/awbs', 'POST', {
+        awbs: [order.srAwb]
       });
 
       const { db, dbRef, update } = await waitFb();
@@ -2589,6 +2698,7 @@ async function cancelShipment(orderId) {
 
       closeModal('orderModal');
       toast('Shipment cancelled', 'info');
+      manualRefreshOrders();
     } catch(err) { toast('Cancel error: ' + err.message, 'error'); }
   });
 }
