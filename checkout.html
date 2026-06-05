@@ -968,16 +968,8 @@
       document.getElementById('payNowRow').style.display = isPcod ? 'flex' : 'none';
       document.getElementById('payOnDeliveryRow').style.display = isPcod ? 'flex' : 'none';
 
-      // For partial COD, shipping is included in the ₹120 charge — show FREE
-      const shippingValEl = document.getElementById('shippingVal');
-      if (isPcod) {
-        shippingValEl.textContent = 'FREE (incl. in ₹120)';
-        shippingValEl.style.color = 'var(--success)';
-      } else {
-        const fee = getShippingFee(orderPrice);
-        shippingValEl.textContent = fee === 0 ? 'FREE' : `₹${fee}`;
-        shippingValEl.style.color = fee === 0 ? 'var(--success)' : 'var(--text)';
-      }
+      // For partial COD, shipping is included in the ₹120 charge — hide the row entirely
+      document.getElementById('shippingRow').style.display = isPcod ? 'none' : 'flex';
 
       updateTotal();
       if (isPcod) updatePartialCodUI();
