@@ -820,6 +820,10 @@
               <input type="text" id="sr_pickup" placeholder="Primary" oninput="srSaveConfig()"/>
             </div>
             <div class="form-group">
+              <label>Pickup Pincode *</label>
+              <input type="text" id="sr_pickup_pin" placeholder="110020" oninput="srSaveConfig()"/>
+            </div>
+            <div class="form-group span-2">
               <label>Channel ID <span style="font-size:9px;color:var(--muted);text-transform:none">(optional)</span></label>
               <input type="text" id="sr_channel" placeholder="Leave blank for default" oninput="srSaveConfig()"/>
             </div>
@@ -961,6 +965,47 @@
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('orderModal')">Cancel</button>
       <button class="btn btn-primary" onclick="updateOrder()">Update Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SHIPROCKET SHIP MODAL ══ -->
+<div class="modal-overlay" id="srShipModal">
+  <div class="modal" style="width:min(800px,95vw)">
+    <div class="modal-header">
+      <div class="modal-title">Prepare Shipment (Shiprocket)</div>
+      <button class="modal-close" onclick="closeModal('srShipModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="sr_ship_order_id" />
+      <div class="form-grid">
+        <div class="form-group span-2"><label>Customer Name</label><input class="fi" type="text" id="sr_ship_name" /></div>
+        <div class="form-group"><label>Email</label><input class="fi" type="email" id="sr_ship_email" /></div>
+        <div class="form-group"><label>Phone</label><input class="fi" type="text" id="sr_ship_phone" /></div>
+        <div class="form-group span-2"><label>Address</label><input class="fi" type="text" id="sr_ship_address" /></div>
+        <div class="form-group"><label>City</label><input class="fi" type="text" id="sr_ship_city" /></div>
+        <div class="form-group"><label>State</label><input class="fi" type="text" id="sr_ship_state" /></div>
+        <div class="form-group"><label>Pincode</label><input class="fi" type="text" id="sr_ship_pincode" /></div>
+        <div class="form-group"><label>Country</label><input class="fi" type="text" id="sr_ship_country" /></div>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--border);margin:16px 0"/>
+      <div class="form-grid">
+        <div class="form-group"><label>Length (cm)</label><input class="fi" type="number" id="sr_ship_length" value="30"/></div>
+        <div class="form-group"><label>Breadth (cm)</label><input class="fi" type="number" id="sr_ship_breadth" value="25"/></div>
+        <div class="form-group"><label>Height (cm)</label><input class="fi" type="number" id="sr_ship_height" value="5"/></div>
+        <div class="form-group"><label>Weight (kg)</label><input class="fi" type="number" id="sr_ship_weight" value="0.5" step="0.1"/></div>
+      </div>
+      <div style="margin-top:16px;text-align:right;">
+         <button class="btn btn-teal" onclick="srFetchCouriers()">Check Couriers &amp; Prices</button>
+      </div>
+      <div id="srCourierList" style="margin-top:16px;display:none;">
+        <div style="font-weight:700;margin-bottom:8px;color:var(--text)">Available Couriers</div>
+        <div style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;padding:8px;background:var(--surface2)" id="srCourierOptions">
+        </div>
+        <div style="margin-top:16px;text-align:right;">
+           <button class="btn btn-primary" onclick="srCreateAndShip()">Create Order &amp; Assign AWB</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -2389,7 +2434,7 @@ async function srTestConnection() {
     _srToken = null; _srTokenExpiry = 0; // Force fresh login
     await srGetToken();
     // Verify with a lightweight API call
-    await srProxy('/countries', 'GET');
+    await srProxy('/channel', 'GET');
     statusEl.className = 'sr-config-status connected';
     statusEl.innerHTML = '<span class="sr-dot"></span> Connected ✓';
     toast('✅ Shiprocket connected!', 'success');
@@ -2561,8 +2606,8 @@ async function srCreateAndShip() {
     
     toast('Assigning AWB...', 'info');
     const awbRes = await srProxy('/courier/assign/awb', 'POST', {
-      shipment_id: srShipmentId,
-      courier_id: courierId
+      shipment_id: String(srShipmentId),
+      courier_id: parseInt(courierId, 10)
     });
     
     let srAwb = awbRes.response?.data?.awb_code || awbRes.awb_code || '';
@@ -2628,7 +2673,7 @@ async function downloadLabel(orderId) {
   toast('Generating label…', 'info');
   try {
     const result = await srProxy('/courier/generate/label', 'POST', {
-      shipment_id: [Number(order.srShipmentId)]
+      shipment_id: [String(order.srShipmentId)]
     });
 
     const labelUrl = result.label_url || result.response?.label_url || result.data?.label_url;
@@ -2649,7 +2694,7 @@ async function downloadInvoice(orderId) {
   toast('Generating invoice…', 'info');
   try {
     const result = await srProxy('/orders/print/invoice', 'POST', {
-      ids: [Number(order.srOrderId)]
+      ids: [String(order.srOrderId)]
     });
 
     const invoiceUrl = result.invoice_url || result.data?.invoice_url;
@@ -2686,7 +2731,7 @@ async function cancelShipment(orderId) {
     toast('Cancelling shipment…', 'info');
     try {
       await srProxy('/orders/cancel/awbs', 'POST', {
-        awbs: [order.srAwb]
+        awbs: [String(order.srAwb)]
       });
 
       const { db, dbRef, update } = await waitFb();
