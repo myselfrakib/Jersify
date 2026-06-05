@@ -658,6 +658,118 @@
     .nav-item svg { width: 19px; height: 19px; }
     .nav-item.active { color: var(--accent); font-weight: 800; }
 
+    /* ── REVIEW SECTION (inside order detail modal) ── */
+    .review-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+    .review-section-title {
+      font-size: 11px; font-weight: 800; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .5px;
+      margin-bottom: 12px;
+    }
+    .existing-review {
+      background: linear-gradient(135deg, rgba(198,31,47,.04), rgba(143,15,29,.04));
+      border: 1px solid rgba(198,31,47,.12);
+      border-radius: 16px; padding: 14px; margin-bottom: 4px;
+    }
+    .existing-review-stars { display: flex; gap: 3px; margin-bottom: 6px; }
+    .existing-review-stars svg { width: 16px; height: 16px; }
+    .existing-review-text { font-size: 13px; line-height: 1.6; color: #222; margin-bottom: 8px; }
+    .existing-review-media { display: flex; gap: 8px; flex-wrap: wrap; }
+    .existing-review-media img,
+    .existing-review-media video {
+      width: 72px; height: 72px; border-radius: 10px; object-fit: cover;
+      border: 1px solid var(--line);
+    }
+    .review-edit-btn {
+      font-size: 11px; font-weight: 700; color: var(--accent);
+      background: none; border: none; cursor: pointer; padding: 0; margin-top: 10px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .review-edit-btn svg { width: 13px; height: 13px; }
+    .write-review-cta {
+      display: flex; align-items: center; gap: 12px;
+      background: linear-gradient(135deg, #111 0%, #1c1c1c 100%);
+      border-radius: 16px; padding: 14px 16px; cursor: pointer;
+      transition: opacity .2s; border: none; width: 100%; text-align: left;
+    }
+    .write-review-cta:hover { opacity: .88; }
+    .write-review-cta-icon {
+      width: 38px; height: 38px; border-radius: 12px;
+      background: rgba(198,31,47,.3); display: grid; place-items: center; flex-shrink: 0;
+    }
+    .write-review-cta-icon svg { width: 20px; height: 20px; color: #fff; }
+    .write-review-cta-text { flex: 1; }
+    .write-review-cta-label { font-size: 13px; font-weight: 800; color: #fff; }
+    .write-review-cta-sub { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .write-review-cta-arrow svg { width: 16px; height: 16px; color: rgba(255,255,255,.35); }
+
+    /* ── REVIEW MODAL ── */
+    #reviewModal .modal-sheet { padding-bottom: 44px; }
+    .star-picker { display: flex; gap: 8px; justify-content: center; margin: 16px 0 8px; }
+    .star-picker-btn {
+      background: none; border: none; cursor: pointer; padding: 4px;
+      transition: transform .15s;
+    }
+    .star-picker-btn:hover { transform: scale(1.25); }
+    .star-picker-btn svg { width: 36px; height: 36px; display: block; }
+    .star-label {
+      text-align: center; font-size: 13px; font-weight: 700; color: var(--muted);
+      margin-bottom: 16px; min-height: 20px; transition: color .2s;
+    }
+    .review-textarea {
+      width: 100%; border: 1.5px solid rgba(17,17,17,.16);
+      border-radius: 14px; padding: 12px 14px; font-size: 14px;
+      background: #fff; outline: none; resize: none; min-height: 100px;
+      transition: border-color .2s; font-family: inherit; line-height: 1.6;
+    }
+    .review-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(198,31,47,.08); }
+    .media-upload-zone {
+      border: 2px dashed rgba(17,17,17,.14); border-radius: 14px; padding: 18px 16px;
+      text-align: center; cursor: pointer; transition: border-color .2s, background .2s;
+      margin-top: 12px;
+    }
+    .media-upload-zone:hover { border-color: var(--accent); background: rgba(198,31,47,.02); }
+    .media-upload-zone-icon { color: var(--muted); margin-bottom: 6px; }
+    .media-upload-zone-icon svg { width: 26px; height: 26px; }
+    .media-upload-zone-label { font-size: 12px; color: var(--muted); font-weight: 700; }
+    .media-upload-zone-sub { font-size: 10px; color: #bbb; margin-top: 3px; }
+    #reviewMediaInput { display: none; }
+    .media-preview-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .media-preview-item {
+      position: relative; width: 72px; height: 72px; border-radius: 12px;
+      overflow: hidden; border: 1.5px solid var(--line);
+    }
+    .media-preview-item img,
+    .media-preview-item video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .media-preview-remove {
+      position: absolute; top: 3px; right: 3px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(0,0,0,.65); border: none; cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .media-preview-remove svg { width: 10px; height: 10px; color: #fff; }
+    .review-char-count { font-size: 10px; color: var(--muted); text-align: right; margin-top: 4px; }
+    .submit-review-btn {
+      width: 100%; padding: 14px; border: none; border-radius: 14px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      color: #fff; font-size: 14px; font-weight: 800;
+      cursor: pointer; box-shadow: 0 8px 18px rgba(198,31,47,.25);
+      margin-top: 16px; display: flex; align-items: center;
+      justify-content: center; gap: 8px; transition: opacity .2s;
+    }
+    .submit-review-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .review-upload-progress {
+      width: 100%; height: 4px; background: #f0f0f0; border-radius: 999px;
+      overflow: hidden; margin-top: 8px; display: none;
+    }
+    .review-upload-progress-bar {
+      height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 999px; width: 0%; transition: width .3s;
+    }
+
     .hidden { display: none !important; }
   </style>
 </head>
@@ -778,7 +890,7 @@
         <div class="info-card">
           <div class="info-row">
             <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-            <div class="info-body"><div class="info-label">Email Notifications</div><div class="info-val">Order updates & offers</div></div>
+            <div class="info-body"><div class="info-label">Email Notifications</div><div class="info-val">Order updates &amp; offers</div></div>
             <button class="info-toggle on" id="toggleEmail" onclick="toggleSwitch(this, 'emailNotif')"></button>
           </div>
           <div class="info-row">
@@ -788,7 +900,7 @@
           </div>
           <div class="info-row">
             <div class="info-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
-            <div class="info-body"><div class="info-label">Push Notifications</div><div class="info-val">New drops & flash sales</div></div>
+            <div class="info-body"><div class="info-label">Push Notifications</div><div class="info-val">New drops &amp; flash sales</div></div>
             <button class="info-toggle on" id="togglePush" onclick="toggleSwitch(this, 'pushNotif')"></button>
           </div>
         </div>
@@ -935,6 +1047,74 @@
     </div>
   </div>
 
+  <!-- REVIEW MODAL -->
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="modal-title" style="margin-bottom:0;">Rate Your Order</div>
+        <button onclick="closeModal('reviewModal')" style="width:32px;height:32px;border-radius:50%;border:none;background:#f5f5f5;display:grid;place-items:center;cursor:pointer;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:4px;" id="reviewProductLabel">How was your experience?</p>
+
+      <!-- Star picker -->
+      <div class="star-picker" id="starPicker">
+        <button class="star-picker-btn" data-star="1" onclick="setReviewStar(1)" aria-label="1 star">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#e0e0e0" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </button>
+        <button class="star-picker-btn" data-star="2" onclick="setReviewStar(2)" aria-label="2 stars">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#e0e0e0" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </button>
+        <button class="star-picker-btn" data-star="3" onclick="setReviewStar(3)" aria-label="3 stars">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#e0e0e0" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </button>
+        <button class="star-picker-btn" data-star="4" onclick="setReviewStar(4)" aria-label="4 stars">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#e0e0e0" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </button>
+        <button class="star-picker-btn" data-star="5" onclick="setReviewStar(5)" aria-label="5 stars">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#e0e0e0" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </button>
+      </div>
+      <div class="star-label" id="starLabel">Tap to rate</div>
+
+      <!-- Review text -->
+      <div class="form-field">
+        <label class="form-label">Your Review</label>
+        <textarea class="review-textarea" id="reviewText" placeholder="Tell others about the quality, fit, and your overall experience&#8230;" maxlength="500" oninput="updateReviewCharCount()"></textarea>
+        <div class="review-char-count"><span id="reviewCharCount">0</span>/500</div>
+      </div>
+
+      <!-- Media upload -->
+      <div class="media-upload-zone" onclick="document.getElementById('reviewMediaInput').click()">
+        <div class="media-upload-zone-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+        <div class="media-upload-zone-label">Add Photos or Videos</div>
+        <div class="media-upload-zone-sub">Up to 5 files &middot; JPG, PNG, MP4 &middot; Max 20MB each</div>
+      </div>
+      <input type="file" id="reviewMediaInput" accept="image/*,video/*" multiple />
+      <div class="media-preview-grid" id="reviewMediaPreview"></div>
+
+      <div class="review-upload-progress" id="reviewUploadProgress">
+        <div class="review-upload-progress-bar" id="reviewUploadProgressBar"></div>
+      </div>
+
+      <button class="submit-review-btn" id="submitReviewBtn" onclick="submitReview()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        Submit Review
+      </button>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
@@ -976,19 +1156,19 @@
     const openModal  = id => document.getElementById(id).classList.add("open");
     window.closeModal = id => document.getElementById(id).classList.remove("open");
 
-    ["editModal","authModal","addressModal","orderDetailModal"].forEach(id =>
+    ["editModal","authModal","addressModal","orderDetailModal","reviewModal"].forEach(id =>
       document.getElementById(id).addEventListener("click", e => {
         if (e.target === document.getElementById(id)) window.closeModal(id);
       })
     );
 
-    /* ── NOTIFICATION TOGGLES – persist to DB ── */
+    /* ── NOTIFICATION TOGGLES ── */
     window.toggleSwitch = async (btn, key) => {
       btn.classList.toggle("on");
       if (currentUser && key) {
         try {
           await update(dbRef(rtdb, `users/${currentUser.uid}/notifications`), { [key]: btn.classList.contains("on") });
-        } catch(e) { /* non-critical, ignore */ }
+        } catch(e) {}
       }
     };
 
@@ -1009,7 +1189,6 @@
         document.getElementById("profileContent").classList.remove("hidden");
         await loadUserProfile(user);
       } else {
-        // Redirect unauthenticated users to the unified login page
         window.location.href = 'login.html?redirect=profile.html';
         return;
       }
@@ -1128,7 +1307,7 @@
               }
             });
           }
-        } catch(e) { /* index may not exist */ }
+        } catch(e) {}
 
         orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
@@ -1136,28 +1315,18 @@
         document.getElementById("statOrders").textContent   = orders.length;
         document.getElementById("loyaltyBadge").textContent = `${orders.length} Order${orders.length !== 1 ? "s" : ""}`;
 
-        /* ── Auto-open latest order if redirected from checkout ── */
         const urlParams = new URLSearchParams(window.location.search);
         const newOrderId = urlParams.get("newOrder");
         if (newOrderId && orders.length > 0) {
-          // Clean the URL without reloading
           window.history.replaceState({}, "", window.location.pathname);
-
-          // Show a success toast
           setTimeout(() => showToast("🎉 Order placed successfully!"), 400);
-
-          // Scroll to orders section
           setTimeout(() => {
             const ordersSection = document.querySelector("#ordersContainer")?.closest(".section");
             if (ordersSection) ordersSection.scrollIntoView({ behavior: "smooth", block: "start" });
           }, 600);
-
-          // Find the matching order index and auto-open it
           const matchIdx = orders.findIndex(o => (o.orderId || o._id) === newOrderId);
-          const targetIdx = matchIdx >= 0 ? matchIdx : 0; // fallback to latest
-          setTimeout(() => {
-            if (window.openOrderDetail) window.openOrderDetail(targetIdx);
-          }, 1200);
+          const targetIdx = matchIdx >= 0 ? matchIdx : 0;
+          setTimeout(() => { if (window.openOrderDetail) window.openOrderDetail(targetIdx); }, 1200);
         }
 
       } catch(e) {
@@ -1176,8 +1345,6 @@
       }
 
       const labels = { delivered:"Delivered", processing:"Processing", shipped:"Shipped", cancelled:"Cancelled", pending:"Processing", confirmed:"Confirmed" };
-
-      // Store orders globally so openOrderDetail can access them
       window._jersifyOrders = orders;
 
       container.innerHTML = orders.slice(0, 5).map((o, idx) => {
@@ -1192,13 +1359,26 @@
         const displayId = (o.orderId || o._id || "JRF000").replace("JRS-","").slice(-6).toUpperCase();
         const extraCount = itemsArr.length > 1 ? `+${itemsArr.length - 1} more` : "";
 
+        // Show review badge for delivered orders that have been reviewed
+        const reviewBadge = sk === "delivered" && o.reviewSubmitted
+          ? `<span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:999px;background:rgba(245,158,11,.1);color:#d97706;border:1px solid rgba(245,158,11,.2);display:inline-flex;align-items:center;gap:3px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="#d97706" stroke="#d97706" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              Reviewed
+            </span>`
+          : sk === "delivered"
+            ? `<span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:999px;background:rgba(198,31,47,.08);color:var(--accent);border:1px solid rgba(198,31,47,.15);">Rate it</span>`
+            : "";
+
         return `<div class="order-card" onclick="openOrderDetail(${idx})">
           <div class="order-header">
             <div>
               <div class="order-id">#${displayId}</div>
               <div class="order-date">${date}</div>
             </div>
-            <div class="order-status ${sk}">${labels[sk] || sk}</div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              <div class="order-status ${sk}">${labels[sk] || sk}</div>
+              ${reviewBadge}
+            </div>
           </div>
           <div class="order-body">
             <div class="order-thumb">
@@ -1223,7 +1403,7 @@
     }
 
     /* ── OPEN ORDER DETAIL ── */
-    window.openOrderDetail = (idx) => {
+    window.openOrderDetail = async (idx) => {
       const o = window._jersifyOrders?.[idx];
       if (!o) return;
 
@@ -1238,7 +1418,6 @@
       const itemsArr = Array.isArray(o.items) ? o.items : (o.items ? Object.values(o.items) : []);
       const displayId = (o.orderId || o._id || "JRF000");
 
-      // Status icon SVG paths
       const statusIcons = {
         delivered: `<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`,
         processing: `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
@@ -1256,7 +1435,6 @@
         cancelled:  "This order was cancelled",
       };
 
-      // Items HTML
       const itemsHtml = itemsArr.map(item => {
         const imgSrc = item.imgUrl || item.imageUrl || "";
         return `<div class="od-item">
@@ -1274,23 +1452,19 @@
         </div>`;
       }).join("");
 
-      // Payment method label
       const pmLabels = { cod: "Cash on Delivery", online: "Online Payment", razorpay: "Razorpay" };
       const pmLabel  = pmLabels[(o.paymentMethod || "").toLowerCase()] || (o.paymentMethod || "–");
 
-      // Price breakdown
       const subtotal  = o.subtotal || 0;
       const tax       = o.tax      || 0;
       const discount  = o.discount || 0;
       const total     = o.total    || 0;
 
-      let priceRowsHtml = `
-        <div class="od-price-row"><span class="key">Subtotal</span><span>₹${subtotal}</span></div>`;
+      let priceRowsHtml = `<div class="od-price-row"><span class="key">Subtotal</span><span>₹${subtotal}</span></div>`;
       if (tax > 0)      priceRowsHtml += `<div class="od-price-row"><span class="key">Tax</span><span>₹${tax.toFixed ? tax.toFixed(2) : tax}</span></div>`;
       if (discount > 0) priceRowsHtml += `<div class="od-price-row"><span class="key">Discount</span><span style="color:#15803d;">−₹${discount}</span></div>`;
       priceRowsHtml += `<div class="od-price-row total-row"><span class="key">Total</span><span class="val">₹${total}</span></div>`;
 
-      // Tracking number
       const trackingHtml = o.trackingNumber
         ? `<div class="od-section-title">Tracking</div>
            <div class="od-tracking-pill">
@@ -1304,7 +1478,6 @@
       document.getElementById("odTitle").textContent = `#${displayId.replace("JRS-","").slice(-6).toUpperCase()}`;
 
       document.getElementById("orderDetailContent").innerHTML = `
-        <!-- Status Banner -->
         <div class="od-status-banner ${sk}">
           <div class="od-status-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${statusIcons[sk] || statusIcons.processing}</svg>
@@ -1315,11 +1488,9 @@
           </div>
         </div>
 
-        <!-- Items -->
         <div class="od-section-title">Items Ordered</div>
         <div class="od-items">${itemsHtml}</div>
 
-        <!-- Order Info -->
         <div class="od-section-title">Order Info</div>
         <div class="od-info-rows">
           <div class="od-info-row">
@@ -1345,38 +1516,31 @@
           </div>` : ""}
         </div>
 
-        <!-- Delivery Address -->
         <div class="od-section-title">Delivery Address</div>
         <div class="od-info-rows">
-          ${o.customerName ? `<div class="od-info-row">
-            <span class="od-info-key">Name</span>
-            <span class="od-info-val">${o.customerName}</span>
-          </div>` : ""}
-          ${o.phone ? `<div class="od-info-row">
-            <span class="od-info-key">Phone</span>
-            <span class="od-info-val">${o.phone}</span>
-          </div>` : ""}
-          ${o.address ? `<div class="od-info-row">
-            <span class="od-info-key">Address</span>
-            <span class="od-info-val">${o.address}${o.country ? ", " + o.country : ""}</span>
-          </div>` : ""}
+          ${o.customerName ? `<div class="od-info-row"><span class="od-info-key">Name</span><span class="od-info-val">${o.customerName}</span></div>` : ""}
+          ${o.phone ? `<div class="od-info-row"><span class="od-info-key">Phone</span><span class="od-info-val">${o.phone}</span></div>` : ""}
+          ${o.address ? `<div class="od-info-row"><span class="od-info-key">Address</span><span class="od-info-val">${o.address}${o.country ? ", " + o.country : ""}</span></div>` : ""}
         </div>
 
-        <!-- Tracking -->
         ${trackingHtml}
 
-        <!-- Price Breakdown -->
         <div class="od-section-title">Price Breakdown</div>
         <div class="od-price-rows">${priceRowsHtml}</div>
 
         ${o.adminNotes ? `
         <div class="od-section-title">Note from Jersify</div>
-        <div style="background:#fafafa;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13px;color:#333;line-height:1.6;">
-          ${o.adminNotes}
-        </div>` : ""}
+        <div style="background:#fafafa;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13px;color:#333;line-height:1.6;">${o.adminNotes}</div>` : ""}
       `;
 
       openModal("orderDetailModal");
+
+      /* ── Append review section for delivered orders ── */
+      if (sk === "delivered") {
+        const orderId = o.orderId || o._id;
+        if (!o._review) await loadOrderReview(orderId, idx);
+        renderReviewSection(idx);
+      }
     };
 
     /* ── ADDRESSES ── */
@@ -1532,8 +1696,6 @@
       } catch(e) { showToast("Could not save address"); }
     });
 
-    /* ── AUTH MODAL (removed — auth is handled by login.html) ── */
-
     /* ── LOGOUT ── */
     document.getElementById("logoutBtn").addEventListener("click", async () => {
       try { await signOut(auth); showToast("Signed out"); } catch(e) {}
@@ -1549,6 +1711,237 @@
         showToast("Account deleted");
       } catch(e) { showToast("Please sign out and sign back in before deleting"); }
     });
+
+    /* ═══════════════════════════════════════════════════
+       REVIEW SYSTEM
+    ════════════════════════════════════════════════════ */
+    let _reviewOrderId    = null;
+    let _reviewOrderIdx   = null;
+    let _reviewStarVal    = 0;
+    let _reviewMediaFiles = [];
+
+    const STAR_LABELS = ["", "Terrible 😞", "Not Great 😐", "It's OK 🙂", "Really Good 😊", "Excellent! 🌟"];
+
+    window.setReviewStar = (n) => {
+      _reviewStarVal = n;
+      document.querySelectorAll(".star-picker-btn").forEach((btn, i) => {
+        const path = btn.querySelector("svg path");
+        if (i < n) { path.setAttribute("fill","#f59e0b"); path.setAttribute("stroke","#f59e0b"); }
+        else        { path.setAttribute("fill","none");    path.setAttribute("stroke","#e0e0e0"); }
+      });
+      const label = document.getElementById("starLabel");
+      label.textContent = STAR_LABELS[n] || "";
+      label.style.color = n >= 4 ? "#15803d" : n >= 3 ? "#a16207" : n > 0 ? "#b91c1c" : "var(--muted)";
+    };
+
+    window.updateReviewCharCount = () => {
+      document.getElementById("reviewCharCount").textContent =
+        document.getElementById("reviewText").value.length;
+    };
+
+    window.openReviewModal = (orderIdx, editMode = false) => {
+      const o = window._jersifyOrders?.[orderIdx];
+      if (!o) return;
+      _reviewOrderId  = o.orderId || o._id;
+      _reviewOrderIdx = orderIdx;
+      _reviewMediaFiles = [];
+
+      setReviewStar(0);
+      document.getElementById("reviewText").value = "";
+      updateReviewCharCount();
+      document.getElementById("reviewMediaPreview").innerHTML = "";
+      document.getElementById("reviewMediaInput").value = "";
+      document.getElementById("reviewUploadProgress").style.display = "none";
+
+      const itemsArr = Array.isArray(o.items) ? o.items : (o.items ? Object.values(o.items) : []);
+      const firstName = (itemsArr[0]?.name || "this order").split(" ").slice(0,3).join(" ");
+      document.getElementById("reviewProductLabel").textContent = `How was your ${firstName}?`;
+
+      if (editMode && o._review) {
+        setReviewStar(o._review.rating || 0);
+        document.getElementById("reviewText").value = o._review.text || "";
+        updateReviewCharCount();
+      }
+
+      closeModal("orderDetailModal");
+      setTimeout(() => openModal("reviewModal"), 200);
+    };
+
+    /* Media picker */
+    document.getElementById("reviewMediaInput").addEventListener("change", e => {
+      const files = Array.from(e.target.files || []);
+      if (_reviewMediaFiles.length + files.length > 5) {
+        showToast("Max 5 media files allowed"); return;
+      }
+      files.forEach(file => {
+        if (file.size > 20 * 1024 * 1024) { showToast(file.name + " exceeds 20MB"); return; }
+        const reader = new FileReader();
+        reader.onload = ev => {
+          _reviewMediaFiles.push({
+            file,
+            dataURL: ev.target.result,
+            type: file.type.startsWith("video") ? "video" : "image"
+          });
+          renderMediaPreview();
+        };
+        reader.readAsDataURL(file);
+      });
+      e.target.value = "";
+    });
+
+    function renderMediaPreview() {
+      document.getElementById("reviewMediaPreview").innerHTML =
+        _reviewMediaFiles.map((m, i) => `
+          <div class="media-preview-item">
+            ${m.type === "video"
+              ? `<video src="${m.dataURL}" muted></video>`
+              : `<img src="${m.dataURL}" alt="preview" />`}
+            <button class="media-preview-remove" onclick="removeReviewMedia(${i})">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>`).join("");
+    }
+
+    window.removeReviewMedia = (idx) => {
+      _reviewMediaFiles.splice(idx, 1);
+      renderMediaPreview();
+    };
+
+    /* Submit review */
+    window.submitReview = async () => {
+      if (!currentUser || !_reviewOrderId) return;
+      if (_reviewStarVal === 0) { showToast("Please select a star rating ⭐"); return; }
+
+      const btn  = document.getElementById("submitReviewBtn");
+      const prog = document.getElementById("reviewUploadProgress");
+      const bar  = document.getElementById("reviewUploadProgressBar");
+      btn.disabled = true;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" opacity=".25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg> Uploading…`;
+
+      try {
+        let mediaUrls = [];
+
+        if (_reviewMediaFiles.length > 0) {
+          prog.style.display = "block";
+          for (let i = 0; i < _reviewMediaFiles.length; i++) {
+            const { file } = _reviewMediaFiles[i];
+            const ext  = file.name.split(".").pop() || "jpg";
+            const sRef = stRef(storage, `reviews/${_reviewOrderId}/${Date.now()}_${i}.${ext}`);
+            const task = uploadBytesResumable(sRef, file);
+            await new Promise((res, rej) => {
+              task.on("state_changed", snap => {
+                const pct = ((i + snap.bytesTransferred / snap.totalBytes) / _reviewMediaFiles.length) * 100;
+                bar.style.width = pct + "%";
+              }, rej, res);
+            });
+            const url = await getDownloadURL(task.snapshot.ref);
+            mediaUrls.push({ url, type: _reviewMediaFiles[i].type });
+          }
+          bar.style.width = "100%";
+        }
+
+        const reviewData = {
+          rating:    _reviewStarVal,
+          text:      document.getElementById("reviewText").value.trim(),
+          media:     mediaUrls,
+          userId:    currentUser.uid,
+          userName:  currentUser.displayName || userData.displayName || "Customer",
+          createdAt: Date.now(),
+          orderId:   _reviewOrderId,
+        };
+
+        await set(dbRef(rtdb, `reviews/${_reviewOrderId}`), reviewData);
+        await update(dbRef(rtdb, `orders/${_reviewOrderId}`), { reviewSubmitted: true, reviewRating: _reviewStarVal });
+
+        if (window._jersifyOrders?.[_reviewOrderIdx]) {
+          window._jersifyOrders[_reviewOrderIdx]._review         = reviewData;
+          window._jersifyOrders[_reviewOrderIdx].reviewSubmitted = true;
+        }
+
+        closeModal("reviewModal");
+        showToast("Review submitted — thank you! 🌟");
+        // Re-render order cards to update review badge
+        renderOrders(window._jersifyOrders);
+        setTimeout(() => openOrderDetail(_reviewOrderIdx), 400);
+
+      } catch(err) {
+        console.error(err);
+        showToast("Could not submit: " + (err.message || "please try again"));
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Submit Review`;
+        prog.style.display = "none";
+        bar.style.width = "0%";
+      }
+    };
+
+    /* Load review from Firebase */
+    async function loadOrderReview(orderId, orderIdx) {
+      try {
+        const snap = await get(dbRef(rtdb, `reviews/${orderId}`));
+        if (snap.exists() && window._jersifyOrders?.[orderIdx]) {
+          window._jersifyOrders[orderIdx]._review        = snap.val();
+          window._jersifyOrders[orderIdx].reviewSubmitted = true;
+        }
+      } catch(e) {}
+    }
+
+    /* Render review section inside order detail modal */
+    function renderReviewSection(idx) {
+      const o = window._jersifyOrders?.[idx];
+      if (!o) return;
+      const r = o._review;
+
+      let html = `<div class="review-section"><div class="review-section-title">Your Review</div>`;
+
+      if (r) {
+        /* Existing review */
+        const starsHtml = Array.from({length:5}, (_,i) =>
+          `<svg viewBox="0 0 24 24" fill="${i < r.rating ? '#f59e0b' : 'none'}" stroke="${i < r.rating ? '#f59e0b' : '#ddd'}" stroke-width="1.5">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>`
+        ).join("");
+
+        const mediaHtml = (r.media || []).map(m =>
+          m.type === "video"
+            ? `<video src="${m.url}" controls style="width:72px;height:72px;border-radius:10px;object-fit:cover;border:1px solid var(--line);"></video>`
+            : `<img src="${m.url}" alt="review" />`
+        ).join("");
+
+        html += `<div class="existing-review">
+          <div class="existing-review-stars">${starsHtml}</div>
+          ${r.text ? `<div class="existing-review-text">${r.text}</div>` : ""}
+          ${mediaHtml ? `<div class="existing-review-media">${mediaHtml}</div>` : ""}
+          <button class="review-edit-btn" onclick="openReviewModal(${idx}, true)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            Edit Review
+          </button>
+        </div>`;
+      } else {
+        /* CTA to write review */
+        html += `<button class="write-review-cta" onclick="openReviewModal(${idx})">
+          <div class="write-review-cta-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <div class="write-review-cta-text">
+            <div class="write-review-cta-label">Write a Review</div>
+            <div class="write-review-cta-sub">Share your experience with this order</div>
+          </div>
+          <div class="write-review-cta-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+        </button>`;
+      }
+
+      html += `</div>`;
+      const el = document.getElementById("orderDetailContent");
+      if (el) el.insertAdjacentHTML("beforeend", html);
+    }
+
   </script>
 </body>
 </html>
