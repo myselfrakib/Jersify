@@ -4,27 +4,20 @@
 <link rel="icon" type="image/png" sizes="32x32" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260510-WA0000%20(1).jpg?alt=media&token=f4429d90-710f-4ef2-8587-ef383e89e622">
 <link rel="apple-touch-icon" sizes="180x180" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260510-WA0000%20(1).jpg?alt=media&token=f4429d90-710f-4ef2-8587-ef383e89e622">
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="google-site-verification" content="8TaGmt2OS6-Lb4gLydrMTcPm1Jt3gXv7eh11GQEYJFk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google-site-verification" content="8TaGmt2OS6-Lb4gLydrMTcPm1Jt3gXv7eh11GQEYJFk" />
   <title>JERSIFY — Shop</title>
   <meta name="description" content="Browse all premium football jerseys. Filter by team, size, and price. Free shipping across India." />
-
-  <!-- Preconnect for faster loads -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
   <link rel="dns-prefetch" href="https://jersify-f9b5e-default-rtdb.firebaseio.com" />
-
-  <!-- Prefetch key pages -->
   <link rel="prefetch" href="index.html" as="document" />
   <link rel="prefetch" href="checkout.html" as="document" />
   <link rel="prefetch" href="profile.html" as="document" />
-
-  <!-- Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600;700;800;900&display=swap" />
-
   <style>
-
     :root {
       --bg: #ffffff;
       --text: #111111;
@@ -36,17 +29,9 @@
       --shadow-soft: 0 8px 18px rgba(0,0,0,.06);
       --maxw: 100%;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0 }
     html, body { height: 100% }
-
-    body {
-      font-family: 'Poppins', Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
+    body { font-family: 'Poppins', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
     a { text-decoration: none; color: inherit }
     button, input, select { font: inherit }
 
@@ -106,32 +91,13 @@
     .skeleton-price { height: 18px; width: 35%; }
     .skeleton-btn { height: 34px; width: 60px; border-radius: 999px; }
 
-    /* ── IMAGE SKELETON & FADE-IN ── */
     @keyframes imgShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     .product .img { position: relative; }
-    .product .img .img-skeleton {
-      position: absolute; inset: 0; z-index: 2;
-      background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%, #f0f0f0 100%);
-      background-size: 400% 100%;
-      animation: imgShimmer 1.8s ease infinite;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .product .img .img-skeleton { position: absolute; inset: 0; z-index: 2; background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%, #f0f0f0 100%); background-size: 400% 100%; animation: imgShimmer 1.8s ease infinite; display: flex; align-items: center; justify-content: center; }
     .product .img .img-skeleton .skel-icon { width: 36px; height: 36px; opacity: .15; }
     .product .img img { opacity: 0; transition: opacity .4s ease; }
     .product .img img.loaded { opacity: 1; }
     .product .img .img-skeleton.hidden { opacity: 0; transition: opacity .3s ease; pointer-events: none; }
-
-    /* Browse card image skeleton */
-    .browse-card-img { position: relative; }
-    .browse-card-img .img-skeleton {
-      position: absolute; inset: 0; z-index: 2;
-      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
-      background-size: 400% 100%;
-      animation: imgShimmer 1.8s ease infinite;
-    }
-    .browse-card-img img { opacity: 0; transition: opacity .35s ease; }
-    .browse-card-img img.loaded { opacity: 1; }
-    .browse-card-img .img-skeleton.hidden { opacity: 0; transition: opacity .3s ease; pointer-events: none; }
 
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -144,140 +110,262 @@
 
     .product { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); cursor: pointer; transition: transform .22s ease, box-shadow .22s ease; animation: fadeInUp .4s ease both; }
     .product:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,.13); }
-
     .product .img { height: 180px; background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .product .img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
     .product:hover .img img { transform: scale(1.05); }
-
     .jersey-card { width: 120px; height: 150px; border-radius: 24px; position: relative; z-index: 1; box-shadow: 0 16px 30px rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.18); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 14px; text-align: center; background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)), linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%); }
     .jersey-card strong { font-size: 28px; line-height: 1; display: block; color: #fff; }
     .jersey-card small { font-size: 9px; font-weight: 700; letter-spacing: 1px; opacity: .9; color: #fff; }
-
     .badge { position: absolute; top: 10px; left: 10px; background: var(--accent); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: .5px; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; z-index: 2; }
-
     .product-info { padding: 12px 12px 10px; }
     .title { font-size: 13px; font-weight: 800; margin-bottom: 3px; line-height: 1.3; }
     .desc { color: var(--muted); font-size: 11px; line-height: 1.4; margin-bottom: 10px; min-height: 30px; }
     .bottom { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
     .price { font-size: 15px; font-weight: 900; color: var(--text); }
     .action-btns { display: flex; align-items: center; gap: 6px; }
-
     .cart-btn { width: 32px; height: 32px; border: 1.5px solid var(--accent); border-radius: 50%; background: transparent; color: var(--accent); display: grid; place-items: center; cursor: pointer; transition: all .2s ease; flex-shrink: 0; }
     .cart-btn svg { width: 14px; height: 14px; }
     .cart-btn:hover { background: var(--accent); color: #fff; transform: scale(1.1); }
     .cart-btn.added { background: var(--accent); color: #fff; }
-
     .buy-btn { border: none; background: linear-gradient(180deg, var(--accent), var(--accent2)); color: #fff; border-radius: 999px; padding: 8px 12px; font-size: 11px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 16px rgba(198,31,47,.25); transition: transform .2s ease, box-shadow .2s ease; white-space: nowrap; }
     .buy-btn:hover { transform: scale(1.04); box-shadow: 0 8px 20px rgba(198,31,47,.35); }
-
     .loading-state, .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 20px; gap: 14px; grid-column: 1 / -1; text-align: center; }
     .empty-state svg { width: 48px; height: 48px; opacity: .25; }
     .loading-state p, .empty-state p { font-size: 13px; color: var(--muted); font-weight: 600; line-height: 1.5; }
-
     .viewall-wrap { display: flex; justify-content: center; margin-top: 14px; }
     .viewall { padding: 9px 22px; border: 1.5px solid #222; border-radius: 4px; background: #fff; font-weight: 700; font-size: 13px; cursor: pointer; }
 
-    /* ── DRAWER ── */
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 100; opacity: 0; pointer-events: none; transition: opacity .3s ease; backdrop-filter: blur(3px); }
-    .overlay.open { opacity: 1; pointer-events: all; }
+    /* ══════════════════════════════════════════
+       FULL-PAGE PRODUCT VIEW
+    ══════════════════════════════════════════ */
+    .product-page {
+      position: fixed; inset: 0; z-index: 200;
+      background: #fff;
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform .38s cubic-bezier(0.32, 0.72, 0, 1);
+      padding-bottom: 100px;
+    }
+    .product-page.open { transform: translateX(0); }
 
-    .drawer { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%); width: min(100%, var(--maxw)); max-height: 92vh; background: #fff; border-radius: 28px 28px 0 0; z-index: 101; transition: transform .35s cubic-bezier(0.32, 0.72, 0, 1); overflow: hidden; display: flex; flex-direction: column; }
-    .drawer.open { transform: translateX(-50%) translateY(0); }
-    .drawer-handle { width: 40px; height: 4px; background: #ddd; border-radius: 99px; margin: 12px auto 0; flex-shrink: 0; }
-    .drawer-scroll { overflow-y: auto; flex: 1; }
+    /* Product page topbar */
+    .pp-topbar {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px 12px;
+      background: rgba(255,255,255,.97);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(0,0,0,.05);
+    }
+    .pp-back {
+      width: 38px; height: 38px; border: none; border-radius: 50%;
+      background: #111; color: #fff; display: grid; place-items: center;
+      cursor: pointer; flex-shrink: 0; transition: transform .2s;
+    }
+    .pp-back:hover { transform: scale(1.08); }
+    .pp-back svg { width: 18px; height: 18px; }
+    .pp-topbar-title { font-size: 14px; font-weight: 800; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pp-topbar-actions { display: flex; align-items: center; gap: 8px; }
 
-    /* ── DRAWER IMAGE GALLERY ── */
-    .drawer-img-gallery {
-      position: relative; width: 100%;
-      padding-top: 133.33%;
+    /* Gallery */
+    .pp-gallery {
+      position: relative;
+      width: 100%;
+      padding-top: 110%;
       background: linear-gradient(180deg, #131313 0%, #262626 100%);
       overflow: hidden;
     }
-    .drawer-slides { position: absolute; inset: 0; display: flex; transition: transform .35s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
-    .drawer-slide { flex: 0 0 100%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; cursor: zoom-in; }
-    .drawer-slide img { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; }
-    .drawer-slide-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-    .drawer-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; width: 34px; height: 34px; border: none; border-radius: 50%; background: rgba(0,0,0,.45); color: #fff; display: grid; place-items: center; cursor: pointer; backdrop-filter: blur(6px); transition: background .2s; flex-shrink: 0; }
-    .drawer-arrow:hover { background: rgba(0,0,0,.75); }
-    .drawer-arrow svg { width: 16px; height: 16px; }
-    .drawer-arrow.prev { left: 10px; }
-    .drawer-arrow.next { right: 10px; }
-    .drawer-arrow:disabled { opacity: 0; pointer-events: none; }
-    .drawer-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10; }
-    .drawer-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.45); cursor: pointer; transition: background .2s, transform .2s; border: none; padding: 0; }
-    .drawer-dot.active { background: #fff; transform: scale(1.35); }
-    .drawer-img-counter { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,.55); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; z-index: 10; backdrop-filter: blur(4px); letter-spacing: .3px; }
-    .drawer-close { position: absolute; top: 12px; left: 12px; width: 36px; height: 36px; border: none; background: rgba(0,0,0,.4); color: #fff; border-radius: 50%; display: grid; place-items: center; cursor: pointer; backdrop-filter: blur(4px); z-index: 10; }
-    .drawer-close svg { width: 18px; height: 18px; }
-
-    /* ── SHARE ICON beside name ── */
-    .drawer-name-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
-    .drawer-name-row .drawer-name { margin-bottom: 0; flex: 1; }
-    .share-icon-btn {
-      flex-shrink: 0; width: 34px; height: 34px; border: 1.5px solid var(--line);
-      border-radius: 50%; background: #fff; color: var(--muted);
-      display: grid; place-items: center; cursor: pointer;
-      transition: border-color .2s ease, color .2s ease, background .2s ease, transform .2s ease;
-      margin-top: 2px;
+    .pp-slides {
+      position: absolute; inset: 0;
+      display: flex;
+      transition: transform .35s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
     }
-    .share-icon-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(198,31,47,.05); transform: scale(1.08); }
-    .share-icon-btn.copied { border-color: #2e7d32; color: #2e7d32; background: #e8f5e9; }
-    .share-icon-btn svg { width: 15px; height: 15px; }
+    .pp-slide {
+      flex: 0 0 100%; width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; cursor: zoom-in;
+    }
+    .pp-slide img { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; }
+    .pp-slide-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .pp-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; width: 36px; height: 36px; border: none; border-radius: 50%; background: rgba(0,0,0,.45); color: #fff; display: grid; place-items: center; cursor: pointer; backdrop-filter: blur(6px); transition: background .2s; }
+    .pp-arrow:hover { background: rgba(0,0,0,.75); }
+    .pp-arrow svg { width: 16px; height: 16px; }
+    .pp-arrow.prev { left: 12px; }
+    .pp-arrow.next { right: 12px; }
+    .pp-arrow:disabled { opacity: 0; pointer-events: none; }
+    .pp-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10; }
+    .pp-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.45); cursor: pointer; transition: background .2s, transform .2s; border: none; padding: 0; }
+    .pp-dot.active { background: #fff; transform: scale(1.35); }
+    .pp-img-counter { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,.55); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; z-index: 10; backdrop-filter: blur(4px); }
+    .pp-badge-overlay { position: absolute; top: 12px; left: 12px; background: var(--accent); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: .5px; padding: 3px 9px; border-radius: 99px; text-transform: uppercase; z-index: 10; }
 
-    .swipe-hint { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); font-size: 10px; color: rgba(255,255,255,.6); font-weight: 600; letter-spacing: .5px; z-index: 10; pointer-events: none; white-space: nowrap; }
+    /* Product page body */
+    .pp-body { padding: 20px 16px 0; }
+    .pp-badge-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .pp-d-badge { font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 99px; background: rgba(198,31,47,.1); color: var(--accent); text-transform: uppercase; letter-spacing: .5px; }
+    .pp-name-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+    .pp-name { font-size: 24px; font-weight: 900; line-height: 1.2; flex: 1; }
+    .pp-share-btn { flex-shrink: 0; width: 36px; height: 36px; border: 1.5px solid var(--line); border-radius: 50%; background: #fff; color: var(--muted); display: grid; place-items: center; cursor: pointer; transition: all .2s; margin-top: 4px; }
+    .pp-share-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .pp-share-btn.copied { border-color: #2e7d32; color: #2e7d32; background: #e8f5e9; }
+    .pp-share-btn svg { width: 16px; height: 16px; }
+    .pp-team { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    .pp-price-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .pp-price { font-size: 32px; font-weight: 900; color: var(--accent); font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
+    .pp-free-ship { font-size: 10px; font-weight: 700; background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 99px; letter-spacing: .4px; }
 
-    .drawer-body { padding: 20px 20px 0; }
-    .drawer-badge-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .d-badge { font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 99px; background: rgba(198,31,47,.1); color: var(--accent); text-transform: uppercase; letter-spacing: .5px; }
-    .drawer-name { font-size: 22px; font-weight: 900; margin-bottom: 4px; line-height: 1.2; }
-    .drawer-team { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
-    .drawer-price-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-    .drawer-price { font-size: 28px; font-weight: 900; color: var(--accent); font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
-    .drawer-free-ship { font-size: 10px; font-weight: 700; background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 99px; letter-spacing: .4px; }
-    .drawer-section-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; }
-    .size-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-    .size-pill { width: 46px; height: 40px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; font-size: 13px; font-weight: 700; cursor: pointer; display: grid; place-items: center; transition: all .2s ease; color: var(--text); }
-    .size-pill:hover { border-color: var(--accent); color: var(--accent); }
-    .size-pill.selected { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(198,31,47,.3); }
-    .size-pill.oos { opacity: .35; cursor: not-allowed; text-decoration: line-through; }
+    /* Size section */
+    .pp-section-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; }
+    .pp-size-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+    .pp-size-pill { width: 52px; height: 44px; border: 1.5px solid var(--line); border-radius: 12px; background: #fff; font-size: 13px; font-weight: 700; cursor: pointer; display: grid; place-items: center; transition: all .2s ease; color: var(--text); }
+    .pp-size-pill:hover { border-color: var(--accent); color: var(--accent); }
+    .pp-size-pill.selected { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(198,31,47,.3); }
+    .pp-size-pill.oos { opacity: .35; cursor: not-allowed; text-decoration: line-through; }
 
-    .drawer-actions { display: flex; gap: 10px; padding: 16px 20px 20px; background: #fff; flex-shrink: 0; }
-    .d-cart-btn { flex: 1; border: 2px solid var(--accent); border-radius: 14px; background: transparent; color: var(--accent); font-size: 13px; font-weight: 800; padding: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all .2s ease; }
-    .d-cart-btn:hover { background: rgba(198,31,47,.06); }
-    .d-cart-btn svg { width: 16px; height: 16px; }
-    .d-buy-btn { flex: 2; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-size: 14px; font-weight: 800; padding: 14px; cursor: pointer; box-shadow: 0 8px 24px rgba(198,31,47,.28); transition: transform .2s ease, box-shadow .2s ease; letter-spacing: .3px; }
-    .d-buy-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(198,31,47,.38); }
+    /* Sticky action bar at bottom of product page */
+    .pp-actions {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(255,255,255,.97);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0,0,0,.06);
+      padding: 12px 16px 24px;
+      display: flex; gap: 10px;
+      z-index: 20;
+      display: none;
+    }
+    .pp-actions.visible { display: flex; }
+    .pp-cart-btn { flex: 1; border: 2px solid var(--accent); border-radius: 14px; background: transparent; color: var(--accent); font-size: 13px; font-weight: 800; padding: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all .2s ease; }
+    .pp-cart-btn:hover { background: rgba(198,31,47,.06); }
+    .pp-cart-btn svg { width: 16px; height: 16px; }
+    .pp-buy-btn { flex: 2; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-size: 14px; font-weight: 800; padding: 14px; cursor: pointer; box-shadow: 0 8px 24px rgba(198,31,47,.28); transition: transform .2s ease, box-shadow .2s ease; }
+    .pp-buy-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(198,31,47,.38); }
 
-    /* ── BROWSE MORE ── */
-    .browse-section { padding: 0 20px 32px; background: #fff; }
-    .browse-divider { height: 1px; background: var(--line); margin-bottom: 20px; }
-    .browse-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .browse-header-left { display: flex; align-items: center; gap: 8px; }
-    .browse-title { font-size: 14px; font-weight: 900; letter-spacing: .2px; color: var(--text); }
-    .browse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
-    .browse-count { font-size: 10px; color: var(--muted); font-weight: 600; }
-    .browse-track { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 4px; }
-    .browse-track::-webkit-scrollbar { display: none; }
+    /* Description section */
+    .pp-desc-section { background: #fafafa; border-radius: 18px; padding: 16px; margin-bottom: 20px; }
+    .pp-desc-title { font-size: 13px; font-weight: 800; margin-bottom: 8px; }
+    .pp-desc-text { font-size: 12px; color: #444; line-height: 1.7; }
 
-    @keyframes browseCardIn { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
-    .browse-card { flex: 0 0 130px; scroll-snap-align: start; background: #fafafa; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; animation: browseCardIn .35s ease both; }
-    .browse-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,.10); border-color: rgba(198,31,47,.25); }
-    .browse-card-img { height: 110px; background: linear-gradient(180deg, #151515 0%, #252525 100%); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
-    .browse-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
-    .browse-card:hover .browse-card-img img { transform: scale(1.06); }
-    .browse-mini-jersey { width: 72px; height: 88px; border-radius: 14px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; text-align: center; background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0)), linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 8px 20px rgba(0,0,0,.3); }
-    .browse-mini-jersey strong { font-size: 18px; line-height: 1; display: block; color: #fff; }
-    .browse-mini-jersey small { font-size: 7px; font-weight: 700; letter-spacing: .8px; opacity: .85; color: #fff; }
-    .browse-card-active-dot { position: absolute; top: 8px; right: 8px; width: 7px; height: 7px; border-radius: 50%; background: #4caf50; border: 1.5px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
-    .browse-card-info { padding: 9px 10px 10px; }
-    .browse-card-name { font-size: 11px; font-weight: 800; margin-bottom: 2px; line-height: 1.3; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .browse-card-team { font-size: 10px; color: var(--muted); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .browse-card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
-    .browse-card-price { font-size: 12px; font-weight: 900; color: var(--accent); }
-    .browse-card-add { width: 22px; height: 22px; border: 1.5px solid var(--accent); border-radius: 50%; background: transparent; color: var(--accent); display: grid; place-items: center; cursor: pointer; transition: all .18s ease; flex-shrink: 0; }
-    .browse-card-add svg { width: 10px; height: 10px; }
-    .browse-card-add:hover { background: var(--accent); color: #fff; }
-    .browse-empty { text-align: center; padding: 20px 0; font-size: 12px; color: var(--muted); font-weight: 600; }
+    /* Features / Highlights */
+    .pp-highlights { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+    .pp-highlight-item { background: #fafafa; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+    .pp-highlight-icon { font-size: 20px; margin-bottom: 2px; }
+    .pp-highlight-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+    .pp-highlight-val { font-size: 12px; font-weight: 700; }
+
+    /* Divider */
+    .pp-divider { height: 1px; background: var(--line); margin: 20px 0; }
+
+    /* Browse more horizontal scroll */
+    .pp-browse-section { padding: 0 16px 28px; }
+    .pp-browse-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .pp-browse-header-left { display: flex; align-items: center; gap: 8px; }
+    .pp-browse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+    .pp-browse-title { font-size: 14px; font-weight: 900; }
+    .pp-browse-count { font-size: 10px; color: var(--muted); font-weight: 600; }
+    .pp-browse-track { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 4px; }
+    .pp-browse-track::-webkit-scrollbar { display: none; }
+    .pp-browse-card { flex: 0 0 130px; scroll-snap-align: start; background: #fafafa; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform .22s ease, box-shadow .22s ease; }
+    .pp-browse-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,.10); }
+    .pp-browse-card-img { height: 110px; background: linear-gradient(180deg, #151515 0%, #252525 100%); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+    .pp-browse-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; opacity: 0; }
+    .pp-browse-card-img img.loaded { opacity: 1; }
+    .pp-browse-card:hover .pp-browse-card-img img { transform: scale(1.06); }
+    .pp-browse-mini-jersey { width: 72px; height: 88px; border-radius: 14px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; text-align: center; background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0)), linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%); border: 1px solid rgba(255,255,255,.14); }
+    .pp-browse-mini-jersey strong { font-size: 18px; line-height: 1; display: block; color: #fff; }
+    .pp-browse-mini-jersey small { font-size: 7px; font-weight: 700; letter-spacing: .8px; opacity: .85; color: #fff; }
+    .pp-browse-card-info { padding: 9px 10px 10px; }
+    .pp-browse-card-name { font-size: 11px; font-weight: 800; margin-bottom: 2px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pp-browse-card-team { font-size: 10px; color: var(--muted); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pp-browse-card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+    .pp-browse-card-price { font-size: 12px; font-weight: 900; color: var(--accent); }
+    .pp-browse-card-add { width: 22px; height: 22px; border: 1.5px solid var(--accent); border-radius: 50%; background: transparent; color: var(--accent); display: grid; place-items: center; cursor: pointer; transition: all .18s ease; flex-shrink: 0; }
+    .pp-browse-card-add svg { width: 10px; height: 10px; }
+    .pp-browse-card-add:hover { background: var(--accent); color: #fff; }
+    .pp-browse-img-skeleton { position: absolute; inset: 0; background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%); background-size: 400% 100%; animation: imgShimmer 1.8s ease infinite; }
+    .pp-browse-img-skeleton.hidden { opacity: 0; transition: opacity .3s; pointer-events: none; }
+
+    /* ══════════════════════════════════════════
+       REVIEWS SECTION
+    ══════════════════════════════════════════ */
+    .pp-reviews-section { padding: 0 16px 28px; }
+    .pp-reviews-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .pp-reviews-header-left { display: flex; align-items: center; gap: 8px; }
+    .pp-reviews-dot { width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; }
+    .pp-reviews-title { font-size: 14px; font-weight: 900; }
+    .pp-reviews-count { font-size: 10px; color: var(--muted); font-weight: 600; }
+
+    /* Overall rating summary */
+    .pp-rating-summary {
+      background: linear-gradient(135deg, rgba(198,31,47,.04), rgba(143,15,29,.04));
+      border: 1px solid rgba(198,31,47,.1);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 18px;
+    }
+    .pp-rating-big { text-align: center; flex-shrink: 0; }
+    .pp-rating-num { font-size: 44px; font-weight: 900; font-family: 'Bebas Neue', sans-serif; color: var(--accent); line-height: 1; }
+    .pp-rating-stars-row { display: flex; gap: 2px; justify-content: center; margin: 4px 0 2px; }
+    .pp-rating-stars-row svg { width: 13px; height: 13px; }
+    .pp-rating-total { font-size: 10px; color: var(--muted); font-weight: 600; }
+    .pp-rating-bars { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+    .pp-rating-bar-row { display: flex; align-items: center; gap: 6px; }
+    .pp-rating-bar-label { font-size: 10px; font-weight: 700; width: 8px; text-align: right; flex-shrink: 0; color: var(--muted); }
+    .pp-rating-bar-track { flex: 1; height: 5px; background: #ececec; border-radius: 99px; overflow: hidden; }
+    .pp-rating-bar-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #f97316); border-radius: 99px; transition: width .6s ease; }
+    .pp-rating-bar-count { font-size: 9px; color: var(--muted); font-weight: 600; width: 16px; flex-shrink: 0; }
+
+    /* Individual review card */
+    .pp-review-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.04);
+    }
+    .pp-review-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+    .pp-review-user { display: flex; align-items: center; gap: 10px; }
+    .pp-review-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #f4d8de, #f7f7f7); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; color: var(--accent); flex-shrink: 0; overflow: hidden; }
+    .pp-review-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .pp-review-name { font-size: 12px; font-weight: 800; }
+    .pp-review-date { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .pp-review-stars { display: flex; gap: 2px; }
+    .pp-review-stars svg { width: 12px; height: 12px; }
+    .pp-review-text { font-size: 12px; line-height: 1.65; color: #333; margin-bottom: 10px; }
+    .pp-review-media { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pp-review-media-item { width: 68px; height: 68px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); cursor: zoom-in; }
+    .pp-review-media-item img, .pp-review-media-item video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pp-review-verified { display: inline-flex; align-items: center; gap: 4px; font-size: 9px; font-weight: 800; color: #15803d; background: rgba(34,197,94,.1); padding: 2px 7px; border-radius: 99px; margin-top: 8px; }
+    .pp-review-verified svg { width: 10px; height: 10px; }
+
+    /* No reviews empty state */
+    .pp-reviews-empty { text-align: center; padding: 32px 20px; }
+    .pp-reviews-empty-icon { width: 56px; height: 56px; border-radius: 50%; background: rgba(245,158,11,.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+    .pp-reviews-empty-icon svg { width: 26px; height: 26px; color: #f59e0b; }
+    .pp-reviews-empty h4 { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+    .pp-reviews-empty p { font-size: 12px; color: var(--muted); }
+
+    /* Review skeleton */
+    .pp-review-skel { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 14px; margin-bottom: 12px; }
+    .pp-review-skel-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .pp-review-skel-avatar { width: 36px; height: 36px; border-radius: 50%; }
+    .pp-review-skel-name { height: 11px; width: 100px; border-radius: 6px; margin-bottom: 5px; }
+    .pp-review-skel-stars { height: 10px; width: 70px; border-radius: 6px; }
+    .pp-review-skel-text1 { height: 10px; width: 100%; border-radius: 6px; margin-bottom: 6px; }
+    .pp-review-skel-text2 { height: 10px; width: 75%; border-radius: 6px; }
+
+    /* Show more reviews */
+    .pp-reviews-loadmore {
+      width: 100%; padding: 11px; border: 1.5px solid #222;
+      border-radius: 12px; background: #fff; font-size: 12px;
+      font-weight: 800; cursor: pointer; margin-top: 4px;
+      transition: background .2s;
+    }
+    .pp-reviews-loadmore:hover { background: #f5f5f5; }
 
     /* ── LIGHTBOX ── */
     .lightbox-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.95); z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
@@ -306,8 +394,13 @@
     .lightbox-thumb img { width: 100%; height: 100%; object-fit: cover; }
 
     /* ── TOAST ── */
-    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 10px 20px; border-radius: 99px; font-size: 12px; font-weight: 700; opacity: 0; pointer-events: none; transition: all .3s ease; white-space: nowrap; z-index: 200; }
+    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 10px 20px; border-radius: 99px; font-size: 12px; font-weight: 700; opacity: 0; pointer-events: none; transition: all .3s ease; white-space: nowrap; z-index: 400; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── RETRY BANNER ── */
+    .retry-banner { background: #fff3cd; color: #856404; padding: 10px 16px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .retry-banner button { background: #856404; color: #fff; border: none; border-radius: 99px; padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .retry-banner.hidden { display: none; }
 
     /* ── FOOTER ── */
     .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0; }
@@ -324,15 +417,15 @@
     .nav-item.active { color: var(--accent); font-weight: 800; }
     .nav-item:hover:not(.active) { color: #111; }
 
-    /* ── RETRY BANNER ── */
-    .retry-banner { background: #fff3cd; color: #856404; padding: 10px 16px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .retry-banner button { background: #856404; color: #fff; border: none; border-radius: 99px; padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
-    .retry-banner.hidden { display: none; }
+    /* Auth toast */
+    .auth-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(40px); background: rgba(17,17,17,.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: #fff; padding: 12px 20px; border-radius: 999px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,.25); display: flex; align-items: center; gap: 12px; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.4s, transform 0.4s; border: 1px solid rgba(255,255,255,.08); white-space: nowrap; }
+    .auth-toast.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+    .auth-toast-btn { background: #c61f2f; color: #fff; border: none; padding: 6px 14px; border-radius: 999px; font-weight: 800; cursor: pointer; font-size: 12px; }
+    .auth-toast-close { background: none; border: none; color: rgba(255,255,255,.6); cursor: pointer; font-size: 16px; font-weight: bold; padding: 0 4px; }
 
     @media (max-width: 380px) { .logo { font-size: 40px } }
   </style>
 </head>
-
 <body>
   <div class="page">
 
@@ -341,22 +434,15 @@
       <div class="logo"><img class="logo-img" src="logo.svg" alt="JERSIFY" width="120" height="30" /></div>
       <div class="header-actions">
         <a href="checkout.html" class="icon-btn" aria-label="Cart">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle>
-            <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
           <span class="cart-count" id="cartCountBadge">0</span>
         </a>
         <a href="profile.html" class="icon-btn profile-btn" aria-label="Profile">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="8" r="4"></circle>
-            <path d="M4 21a8 8 0 0 1 16 0"></path>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
         </a>
       </div>
     </header>
 
-    <!-- RETRY BANNER (hidden by default) -->
     <div class="retry-banner hidden" id="retryBanner">
       ⚠️ Could not reach database. <button onclick="retryFetch()">Retry</button>
     </div>
@@ -366,31 +452,16 @@
       <div class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
         <input type="text" id="searchInput" placeholder="Search jerseys, clubs, countries…" />
-        <svg class="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 1a3 3 0 0 0-3 3v7a3 3 0 1 0 6 0V4a3 3 0 0 0-3-3z"></path>
-          <path d="M5 11a7 7 0 0 0 14 0"></path>
-          <path d="M12 18v4"></path><path d="M8 22h8"></path>
-        </svg>
+        <svg class="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v7a3 3 0 1 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M5 11a7 7 0 0 0 14 0"></path><path d="M12 18v4"></path><path d="M8 22h8"></path></svg>
       </div>
     </div>
 
     <!-- FILTERS -->
     <section class="filters">
-      <select id="filterTeam">
-        <option value="">All Teams & Clubs</option>
-      </select>
-      <select id="filterSize">
-        <option value="">All Sizes</option><option value="xs">XS</option><option value="s">S</option>
-        <option value="m">M</option><option value="l">L</option><option value="xl">XL</option>
-      </select>
-      <select id="filterPrice">
-        <option value="">Any Price</option><option value="under1000">Under ₹1000</option>
-        <option value="1000to1500">₹1000 – ₹1500</option><option value="above1500">Above ₹1500</option>
-      </select>
-      <select id="filterSort">
-        <option value="">Sort: Default</option><option value="price_asc">Price: Low to High</option>
-        <option value="price_desc">Price: High to Low</option><option value="newest">Newest First</option>
-      </select>
+      <select id="filterTeam"><option value="">All Teams & Clubs</option></select>
+      <select id="filterSize"><option value="">All Sizes</option><option value="xs">XS</option><option value="s">S</option><option value="m">M</option><option value="l">L</option><option value="xl">XL</option></select>
+      <select id="filterPrice"><option value="">Any Price</option><option value="under1000">Under ₹1000</option><option value="1000to1500">₹1000 – ₹1500</option><option value="above1500">Above ₹1500</option></select>
+      <select id="filterSort"><option value="">Sort: Default</option><option value="price_asc">Price: Low to High</option><option value="price_desc">Price: High to Low</option><option value="newest">Newest First</option></select>
     </section>
 
     <!-- PRODUCTS -->
@@ -400,7 +471,6 @@
         <span id="productCount"></span>
       </div>
       <div class="product-row" id="productTrack">
-        <!-- Skeletons -->
         <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
         <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
         <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
@@ -443,87 +513,147 @@
     </a>
   </nav>
 
-  <!-- PRODUCT DETAIL DRAWER -->
-  <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
-  <div class="drawer" id="drawer">
-    <div class="drawer-handle"></div>
-    <div class="drawer-scroll" id="drawerScroll">
+  <!-- ════════════════════════════════════════
+       FULL-PAGE PRODUCT VIEW
+  ════════════════════════════════════════ -->
+  <div class="product-page" id="productPage">
 
-      <!-- IMAGE GALLERY -->
-      <div class="drawer-img-gallery" id="drawerImgGallery">
-        <button class="drawer-close" onclick="closeDrawer()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-        <div class="drawer-img-counter" id="drawerImgCounter" style="display:none">1 / 1</div>
-        <div class="drawer-slides" id="drawerSlides"></div>
-        <button class="drawer-arrow prev" id="drawerPrev" onclick="slideDrawer(-1)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button class="drawer-arrow next" id="drawerNext" onclick="slideDrawer(1)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-        <div class="drawer-dots" id="drawerDots"></div>
-        <div class="swipe-hint" id="swipeHint" style="display:none"></div>
-      </div>
-
-      <!-- BODY -->
-      <div class="drawer-body">
-        <div class="drawer-badge-row"><span class="d-badge" id="drawerBadge">Home Kit</span></div>
-        <div class="drawer-name-row">
-          <div class="drawer-name" id="drawerName">Jersey Name</div>
-          <button class="share-icon-btn" id="sharePillBtn" onclick="shareProduct()" title="Share this product">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-            </svg>
-          </button>
-        </div>
-        <div class="drawer-team" id="drawerTeam">Team Name</div>
-        <div class="drawer-price-row">
-          <div class="drawer-price" id="drawerPrice">₹0</div>
-          <span class="drawer-free-ship">Free Shipping</span>
-        </div>
-
-        <div class="drawer-section-label">Select Size</div>
-        <div class="size-grid" id="drawerSizeGrid"></div>
-      </div>
-
-      <div class="drawer-actions" id="drawerActionsInner">
-        <button class="d-cart-btn" id="drawerCartBtn" onclick="addToCartFromDrawer()">
+    <!-- Product page topbar -->
+    <div class="pp-topbar">
+      <button class="pp-back" onclick="closeProductPage()" aria-label="Go back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="pp-topbar-title" id="ppTopbarTitle">Product</div>
+      <div class="pp-topbar-actions">
+        <a href="checkout.html" class="icon-btn" style="width:34px;height:34px;" aria-label="Cart">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
-          Add to Cart
-        </button>
-        <button class="d-buy-btn" id="drawerBuyBtn">Buy Now →</button>
-      </div>
-
-      <!-- BROWSE MORE -->
-      <div class="browse-section" id="browseSection">
-        <div class="browse-divider"></div>
-        <div class="browse-header">
-          <div class="browse-header-left">
-            <span class="browse-dot"></span>
-            <span class="browse-title">Browse More</span>
-          </div>
-          <span class="browse-count" id="browseCount"></span>
-        </div>
-        <div class="browse-track" id="browseTrack"></div>
+          <span class="cart-count" id="ppCartBadge" style="display:none;">0</span>
+        </a>
       </div>
     </div>
+
+    <!-- Gallery -->
+    <div class="pp-gallery" id="ppGallery">
+      <div class="pp-slides" id="ppSlides"></div>
+      <button class="pp-arrow prev" id="ppPrev" onclick="ppSlide(-1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="pp-arrow next" id="ppNext" onclick="ppSlide(1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div class="pp-dots" id="ppDots"></div>
+      <div class="pp-img-counter" id="ppImgCounter" style="display:none;"></div>
+      <div class="pp-badge-overlay" id="ppBadgeOverlay" style="display:none;"></div>
+    </div>
+
+    <!-- Body -->
+    <div class="pp-body">
+      <div class="pp-badge-row"><span class="pp-d-badge" id="ppBadge">Kit</span></div>
+      <div class="pp-name-row">
+        <div class="pp-name" id="ppName">Jersey Name</div>
+        <button class="pp-share-btn" id="ppShareBtn" onclick="ppShare()" title="Share this product">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </button>
+      </div>
+      <div class="pp-team" id="ppTeam">Team</div>
+      <div class="pp-price-row">
+        <div class="pp-price" id="ppPrice">₹0</div>
+        <span class="pp-free-ship">✓ Free Shipping</span>
+      </div>
+
+      <!-- Highlights -->
+      <div class="pp-highlights">
+        <div class="pp-highlight-item">
+          <div class="pp-highlight-icon">🚚</div>
+          <div class="pp-highlight-label">Delivery</div>
+          <div class="pp-highlight-val">5–7 Days</div>
+        </div>
+        <div class="pp-highlight-item">
+          <div class="pp-highlight-icon">🔄</div>
+          <div class="pp-highlight-label">Returns</div>
+          <div class="pp-highlight-val">Easy 7-Day</div>
+        </div>
+        <div class="pp-highlight-item">
+          <div class="pp-highlight-icon">🏆</div>
+          <div class="pp-highlight-label">Quality</div>
+          <div class="pp-highlight-val">Premium Grade</div>
+        </div>
+        <div class="pp-highlight-item">
+          <div class="pp-highlight-icon">🔒</div>
+          <div class="pp-highlight-label">Payment</div>
+          <div class="pp-highlight-val">100% Secure</div>
+        </div>
+      </div>
+
+      <!-- Size selection -->
+      <div class="pp-section-label">Select Size</div>
+      <div class="pp-size-grid" id="ppSizeGrid"></div>
+
+      <!-- Description -->
+      <div class="pp-desc-section" id="ppDescSection" style="display:none;">
+        <div class="pp-desc-title">About this Kit</div>
+        <div class="pp-desc-text" id="ppDescText"></div>
+      </div>
+
+      <div class="pp-divider"></div>
+    </div>
+
+    <!-- Browse More -->
+    <div class="pp-browse-section">
+      <div class="pp-browse-header">
+        <div class="pp-browse-header-left">
+          <span class="pp-browse-dot"></span>
+          <span class="pp-browse-title">Browse More</span>
+        </div>
+        <span class="pp-browse-count" id="ppBrowseCount"></span>
+      </div>
+      <div class="pp-browse-track" id="ppBrowseTrack"></div>
+    </div>
+
+    <!-- ───── REVIEWS SECTION ───── -->
+    <div class="pp-reviews-section" id="ppReviewsSection">
+      <div class="pp-divider" style="margin-top:0;"></div>
+      <div class="pp-reviews-header">
+        <div class="pp-reviews-header-left">
+          <span class="pp-reviews-dot"></span>
+          <span class="pp-reviews-title">Customer Reviews</span>
+        </div>
+        <span class="pp-reviews-count" id="ppReviewsCount"></span>
+      </div>
+
+      <!-- Rating summary -->
+      <div class="pp-rating-summary" id="ppRatingSummary" style="display:none;">
+        <div class="pp-rating-big">
+          <div class="pp-rating-num" id="ppRatingNum">0</div>
+          <div class="pp-rating-stars-row" id="ppRatingStars"></div>
+          <div class="pp-rating-total" id="ppRatingTotal">0 reviews</div>
+        </div>
+        <div class="pp-rating-bars" id="ppRatingBars"></div>
+      </div>
+
+      <!-- Reviews list -->
+      <div id="ppReviewsList"></div>
+      <button class="pp-reviews-loadmore" id="ppReviewsLoadMore" style="display:none;" onclick="ppLoadMoreReviews()">Load More Reviews</button>
+    </div>
+
+  </div>
+
+  <!-- Sticky buy/cart bar (inside product-page but fixed) -->
+  <div class="pp-actions" id="ppActions">
+    <button class="pp-cart-btn" onclick="ppAddToCart()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
+      Add to Cart
+    </button>
+    <button class="pp-buy-btn" id="ppBuyBtn">Buy Now →</button>
   </div>
 
   <!-- LIGHTBOX -->
   <div class="lightbox-overlay" id="lightboxOverlay">
-    <button class="lightbox-close" onclick="closeLightbox()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
+    <button class="lightbox-close" onclick="closeLightbox()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     <div class="lightbox-counter" id="lightboxCounter"></div>
     <div class="lightbox-slides" id="lightboxSlides">
-      <button class="lightbox-arrow prev" id="lightboxPrev" onclick="slideLightbox(-1)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-      <button class="lightbox-arrow next" id="lightboxNext" onclick="slideLightbox(1)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-      </button>
+      <button class="lightbox-arrow prev" id="lightboxPrev" onclick="slideLightbox(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="lightbox-arrow next" id="lightboxNext" onclick="slideLightbox(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg></button>
       <div class="lightbox-track" id="lightboxTrack"></div>
     </div>
     <div class="lightbox-dots" id="lightboxDots"></div>
@@ -535,77 +665,9 @@
 
   <!-- FIREBASE + SHOP LOGIC -->
   <script type="module">
-    /* ════════════════════════════════════════════════
-       FIREBASE CONFIG
-    ════════════════════════════════════════════════ */
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, get }
-                             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { initializeApp }      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    /* Inject Floating Auth Toast CSS styles */
-    const authStyle = document.createElement("style");
-    authStyle.innerHTML = `
-      .auth-toast {
-        position: fixed;
-        bottom: 24px;
-        left: 50%;
-        transform: translateX(-50%) translateY(40px);
-        background: rgba(17, 17, 17, 0.94);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        color: #fff;
-        padding: 12px 20px;
-        border-radius: 999px;
-        font-size: 13px;
-        font-weight: 600;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        z-index: 9999;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.4s, transform 0.4s;
-        border: 1px solid rgba(255,255,255,0.08);
-        white-space: nowrap;
-      }
-      .auth-toast.show {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateX(-50%) translateY(0);
-      }
-      .auth-toast-btn {
-        background: #c61f2f;
-        color: #fff;
-        border: none;
-        padding: 6px 14px;
-        border-radius: 999px;
-        font-weight: 800;
-        cursor: pointer;
-        font-size: 12px;
-        transition: background 0.2s, transform 0.2s;
-      }
-      .auth-toast-btn:hover {
-        background: #8f0f1d;
-        transform: scale(1.05);
-      }
-      .auth-toast-close {
-        background: none;
-        border: none;
-        color: rgba(255,255,255,0.6);
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-        padding: 0 4px;
-        transition: color 0.2s;
-      }
-      .auth-toast-close:hover {
-        color: #fff;
-      }
-    `;
-    document.head.appendChild(authStyle);
-
 
     const FIREBASE_CONFIG = {
       apiKey:            "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
@@ -616,55 +678,56 @@
       messagingSenderId: "461181023878",
       appId:             "1:461181023878:web:6ebfbae603baf4a873c307"
     };
-
     const RTDB_REST = "https://jersify-f9b5e-default-rtdb.firebaseio.com/products.json";
+    const REVIEWS_REST_BASE = "https://jersify-f9b5e-default-rtdb.firebaseio.com/reviews";
 
     const app  = initializeApp(FIREBASE_CONFIG);
     const rtdb = getDatabase(app);
     const auth = getAuth(app);
 
     /* ══ STATE ══ */
-    let allProducts  = [];
-    let showAll      = false;
+    let allProducts = [];
+    let showAll     = false;
     let bgRefreshTimer = null;
-    const PAGE_SIZE  = 200;
+    const PAGE_SIZE = 200;
 
+    /* ── Auth toast ── */
     let authToastTimer = null;
     onAuthStateChanged(auth, user => {
       if (user) {
-        if (authToastTimer) { clearTimeout(authToastTimer); authToastTimer = null; }
-        const existingToast = document.getElementById("unauthToast");
-        if (existingToast) existingToast.remove();
+        clearTimeout(authToastTimer);
+        const t = document.getElementById("unauthToast");
+        if (t) t.remove();
       } else {
         if (!authToastTimer && !sessionStorage.getItem("jersify_unauth_dismissed")) {
           authToastTimer = setTimeout(() => {
-            const toastDiv = document.createElement("div");
-            toastDiv.id = "unauthToast";
-            toastDiv.className = "auth-toast";
-            toastDiv.innerHTML = `
-              <span>👕 Sign in to track orders & save wishlist!</span>
+            const d = document.createElement("div");
+            d.id = "unauthToast"; d.className = "auth-toast";
+            d.innerHTML = `<span>👕 Sign in to track orders & save wishlist!</span>
               <button class="auth-toast-btn" onclick="location.href='login.html'">Login</button>
-              <button class="auth-toast-close" onclick="this.parentElement.classList.remove('show'); sessionStorage.setItem('jersify_unauth_dismissed', 'true'); setTimeout(() => this.parentElement.remove(), 400);">✕</button>
-            `;
-            document.body.appendChild(toastDiv);
-            setTimeout(() => toastDiv.classList.add("show"), 100);
+              <button class="auth-toast-close" onclick="this.parentElement.classList.remove('show');sessionStorage.setItem('jersify_unauth_dismissed','true');setTimeout(()=>this.parentElement.remove(),400);">✕</button>`;
+            document.body.appendChild(d);
+            setTimeout(() => d.classList.add("show"), 100);
           }, 60000);
         }
       }
     });
 
-
     /* ══════════════════════════════════════════
        CART
     ══════════════════════════════════════════ */
     function getCart()      { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } }
-    function saveCart(cart) { localStorage.setItem('jersify_cart', JSON.stringify(cart)); updateCartBadge(); }
+    function saveCart(c)    { localStorage.setItem('jersify_cart', JSON.stringify(c)); updateCartBadges(); }
 
-    function updateCartBadge() {
+    function updateCartBadges() {
       const total = getCart().reduce((s, i) => s + (i.qty || 1), 0);
-      const badge = document.getElementById('cartCountBadge');
-      badge.textContent = total;
-      badge.classList.toggle('show', total > 0);
+      ['cartCountBadge', 'ppCartBadge'].forEach(id => {
+        const b = document.getElementById(id);
+        if (!b) return;
+        b.textContent = total;
+        b.style.display = total > 0 ? 'flex' : 'none';
+        b.classList.toggle('show', total > 0);
+      });
     }
 
     window.addToCart = function(id, name, price, imgUrl, team, size) {
@@ -678,8 +741,7 @@
 
     window.showToast = function(msg) {
       const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
+      t.textContent = msg; t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), 2200);
     };
 
@@ -691,59 +753,8 @@
       if (p.imgUrl) return [p.imgUrl];
       return [];
     }
-
     function teamLabel(p) {
       return Array.isArray(p.team) ? p.team.join(', ') : (p.team || 'Premium Kit');
-    }
-
-    /* ══════════════════════════════════════════
-       SHARE PRODUCT
-       Updates URL to ?product=ID so the link
-       opens the drawer when someone visits it.
-    ══════════════════════════════════════════ */
-    window.shareProduct = async function() {
-      if (!drawerProduct) return;
-      const url = buildProductURL(drawerProduct.id);
-
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: drawerProduct.data.name || 'Jersify Kit',
-            text: `Check out this kit on Jersify: ${drawerProduct.data.name || ''}`,
-            url
-          });
-          return;
-        } catch (e) {
-          if (e.name === 'AbortError') return;
-        }
-      }
-
-      // Clipboard fallback
-      const btn = document.getElementById('sharePillBtn');
-      try {
-        await navigator.clipboard.writeText(url);
-      } catch {
-        const inp = document.createElement('input');
-        inp.value = url;
-        document.body.appendChild(inp);
-        inp.select();
-        document.execCommand('copy');
-        document.body.removeChild(inp);
-      }
-      btn.classList.add('copied');
-      showToast('🔗 Link copied to clipboard');
-      setTimeout(() => btn.classList.remove('copied'), 2500);
-    };
-
-    function buildProductURL(id) {
-      const base = window.location.origin + window.location.pathname;
-      return `${base}?product=${encodeURIComponent(id)}`;
-    }
-
-    /* Update URL bar when drawer opens/closes (no page reload) */
-    function pushProductURL(id) {
-      const url = id ? buildProductURL(id) : (window.location.origin + window.location.pathname);
-      window.history.replaceState({ productId: id || null }, '', url);
     }
 
     /* ══════════════════════════════════════════
@@ -756,7 +767,6 @@
       if (!data || typeof data !== 'object') return [];
       return Object.entries(data).map(([id, val]) => ({ id, data: val }));
     }
-
     async function fetchViaSDK() {
       const snap = await get(ref(rtdb, 'products'));
       if (!snap.exists()) return [];
@@ -770,41 +780,26 @@
       allProducts = fresh;
       buildTeamFilter();
       renderProducts();
-      if (drawerProduct) renderBrowse(drawerProduct.id);
+      if (currentProductId) renderBrowse(currentProductId);
       document.getElementById('retryBanner').classList.add('hidden');
     }
 
     async function loadProducts(isBackground = false) {
       if (!isBackground) showSkeletons();
-
       let fetched = null;
-
-      try { fetched = await fetchViaREST(); }
-      catch (e) { console.warn('[Jersify] REST fetch failed:', e.message); }
-
+      try { fetched = await fetchViaREST(); } catch(e) { console.warn('[Jersify] REST fail:', e.message); }
       if (fetched === null) {
-        try { fetched = await fetchViaSDK(); }
-        catch (e) { console.warn('[Jersify] SDK get() failed:', e.message); }
+        try { fetched = await fetchViaSDK(); } catch(e) { console.warn('[Jersify] SDK fail:', e.message); }
       }
-
       if (fetched === null) {
-        if (!isBackground) {
-          showError();
-          document.getElementById('retryBanner').classList.remove('hidden');
-        }
+        if (!isBackground) { showError(); document.getElementById('retryBanner').classList.remove('hidden'); }
         return;
       }
-
       applyProducts(fetched);
-
-      // After first load, check if URL has ?product= and auto-open drawer
       if (!isBackground) {
         const params = new URLSearchParams(window.location.search);
         const pid    = params.get('product');
-        if (pid) {
-          const found = allProducts.find(p => p.id === pid);
-          if (found) openDrawer(pid);
-        }
+        if (pid) { const found = allProducts.find(p => p.id === pid); if (found) openProductPage(pid); }
       }
     }
 
@@ -825,7 +820,6 @@
         <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>
         <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-sub"></div><div class="skeleton-bottom"><div class="skeleton skeleton-price"></div><div class="skeleton skeleton-btn"></div></div></div></div>`;
     }
-
     function showError() {
       document.getElementById('productTrack').innerHTML = `
         <div class="empty-state">
@@ -835,7 +829,7 @@
     }
 
     /* ══════════════════════════════════════════
-       DYNAMIC TEAM FILTER
+       TEAM FILTER
     ══════════════════════════════════════════ */
     function buildTeamFilter() {
       const sel = document.getElementById('filterTeam');
@@ -847,18 +841,13 @@
       });
       sel.innerHTML = '<option value="">All Teams & Clubs</option>' +
         [...teams].sort().map(t => `<option value="${t.toLowerCase()}">${t}</option>`).join('');
-      if (current) {
-        const opt = [...sel.options].find(o => o.value === current);
-        if (opt) sel.value = current;
-      }
+      if (current) { const opt = [...sel.options].find(o => o.value === current); if (opt) sel.value = current; }
     }
 
     /* ══════════════════════════════════════════
-       FILTERS & SORTING
+       FILTERS & SORT
     ══════════════════════════════════════════ */
-    function isActive(p) {
-      return !p.status || p.status === 'active';
-    }
+    function isActive(p) { return !p.status || p.status === 'active'; }
 
     function applyFiltersAndSort() {
       const teamFilter  = document.getElementById('filterTeam').value.toLowerCase();
@@ -874,10 +863,7 @@
           if (!pt.includes(teamFilter)) return false;
         }
         if (sizeFilter) {
-          if (p.sizes) {
-            const qty = Number(p.sizes[sizeFilter] ?? 0);
-            if (qty <= 0) return false;
-          }
+          if (p.sizes) { const qty = Number(p.sizes[sizeFilter] ?? 0); if (qty <= 0) return false; }
         }
         const price = parseFloat(p.price || 0);
         if (priceFilter === 'under1000'  && price >= 1000) return false;
@@ -890,21 +876,14 @@
         return true;
       });
 
-      if (sortVal === 'price_asc')  filtered.sort((a, b) => parseFloat(a.data.price || 0) - parseFloat(b.data.price || 0));
-      if (sortVal === 'price_desc') filtered.sort((a, b) => parseFloat(b.data.price || 0) - parseFloat(a.data.price || 0));
-      if (sortVal === 'newest') {
-        filtered.sort((a, b) => {
-          const ta = a.data.createdAt || a.data.updatedAt || 0;
-          const tb = b.data.createdAt || b.data.updatedAt || 0;
-          return tb - ta;
-        });
-      }
-
+      if (sortVal === 'price_asc')  filtered.sort((a, b) => parseFloat(a.data.price||0) - parseFloat(b.data.price||0));
+      if (sortVal === 'price_desc') filtered.sort((a, b) => parseFloat(b.data.price||0) - parseFloat(a.data.price||0));
+      if (sortVal === 'newest')     filtered.sort((a, b) => (b.data.createdAt||0) - (a.data.createdAt||0));
       return filtered;
     }
 
     /* ══════════════════════════════════════════
-       RENDER PRODUCTS
+       RENDER PRODUCTS (shop grid)
     ══════════════════════════════════════════ */
     function renderProducts() {
       const container   = document.getElementById('productTrack');
@@ -921,8 +900,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
             <p>No jerseys found.<br>Try adjusting your filters.</p>
           </div>`;
-        viewAllWrap.style.display = 'none';
-        return;
+        viewAllWrap.style.display = 'none'; return;
       }
 
       const toShow = showAll ? filtered : filtered.slice(0, PAGE_SIZE);
@@ -936,7 +914,7 @@
         const badgeText = p.badge || (isNew ? 'New' : '');
 
         return `
-          <article class="product" style="animation-delay:${i * 0.07}s" onclick="openDrawer('${id}')">
+          <article class="product" style="animation-delay:${i * 0.07}s" onclick="openProductPage('${id}')">
             <div class="img">
               ${badgeText ? `<span class="badge">${badgeText}</span>` : ''}
               ${imgCount > 1 ? `<span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;z-index:2;backdrop-filter:blur(4px)">📷 ${imgCount}</span>` : ''}
@@ -969,203 +947,210 @@
     }
 
     window.quickAddToCart = function(id) {
-      openDrawer(id);
+      openProductPage(id);
       showToast('Pick a size to add to cart');
     };
 
     /* ══════════════════════════════════════════
-       DRAWER GALLERY
+       PRODUCT PAGE — GALLERY
     ══════════════════════════════════════════ */
-    let drawerProduct      = null;
-    let drawerCurrentSlide = 0;
-    let drawerImages       = [];
+    let currentProductId   = null;
+    let ppImages           = [];
+    let ppCurrentSlide     = 0;
+    let allProductReviews  = [];
+    let ppReviewsShown     = 5;
 
-    function buildDrawerGallery(images) {
-      drawerImages       = images;
-      drawerCurrentSlide = 0;
-
-      const slidesEl  = document.getElementById('drawerSlides');
-      const dotsEl    = document.getElementById('drawerDots');
-      const counter   = document.getElementById('drawerImgCounter');
-      const prevBtn   = document.getElementById('drawerPrev');
-      const nextBtn   = document.getElementById('drawerNext');
-      const swipeHint = document.getElementById('swipeHint');
+    function buildPPGallery(images) {
+      ppImages = images; ppCurrentSlide = 0;
+      const slidesEl = document.getElementById('ppSlides');
+      const dotsEl   = document.getElementById('ppDots');
+      const counter  = document.getElementById('ppImgCounter');
+      const prev     = document.getElementById('ppPrev');
+      const next     = document.getElementById('ppNext');
 
       if (images.length === 0) {
-        slidesEl.innerHTML = `
-          <div class="drawer-slide">
-            <div class="drawer-slide-placeholder">
-              <div class="jersey-card">
-                <div><strong id="drawerNum">10</strong><small id="drawerType">KIT</small></div>
-              </div>
-            </div>
-          </div>`;
-        dotsEl.innerHTML         = '';
-        counter.style.display    = 'none';
-        prevBtn.style.display    = 'none';
-        nextBtn.style.display    = 'none';
-        swipeHint.style.display  = 'none';
+        slidesEl.innerHTML = `<div class="pp-slide"><div class="pp-slide-placeholder"><div class="jersey-card"><div><strong id="ppNum">10</strong><small id="ppType">KIT</small></div></div></div></div>`;
+        dotsEl.innerHTML = ''; counter.style.display = 'none'; prev.style.display = 'none'; next.style.display = 'none';
       } else {
         slidesEl.innerHTML = images.map((url, i) => `
-          <div class="drawer-slide" onclick="openLightbox(${i})" title="Click to view fullscreen">
-            <img src="${url}" alt="Product image ${i+1}" loading="${i === 0 ? 'eager' : 'lazy'}" draggable="false"/>
+          <div class="pp-slide" onclick="openLightbox(${i})" title="Tap to view fullscreen">
+            <img src="${url}" alt="Product image ${i+1}" loading="${i===0?'eager':'lazy'}" draggable="false"/>
           </div>`).join('');
-
         const multi = images.length > 1;
-        dotsEl.innerHTML = multi
-          ? images.map((_, i) => `<button class="drawer-dot${i===0?' active':''}" onclick="goToDrawerSlide(${i})"></button>`).join('')
-          : '';
-
-        counter.style.display   = multi ? 'block' : 'none';
-        prevBtn.style.display   = multi ? 'grid'  : 'none';
-        nextBtn.style.display   = multi ? 'grid'  : 'none';
-        swipeHint.style.display = multi ? 'block' : 'none';
-
-        updateDrawerSlideUI();
+        dotsEl.innerHTML = multi ? images.map((_, i) => `<button class="pp-dot${i===0?' active':''}" onclick="ppGoTo(${i})"></button>`).join('') : '';
+        counter.style.display = multi ? 'block' : 'none';
+        prev.style.display = multi ? 'grid' : 'none';
+        next.style.display = multi ? 'grid' : 'none';
+        updatePPSlideUI();
       }
-
-      slidesEl.style.transform = 'translateX(0%)';
     }
 
-    function updateDrawerSlideUI() {
-      const slidesEl = document.getElementById('drawerSlides');
-      slidesEl.style.transform = `translateX(-${drawerCurrentSlide * 100}%)`;
-
-      const counter = document.getElementById('drawerImgCounter');
-      if (drawerImages.length > 1) counter.textContent = `${drawerCurrentSlide + 1} / ${drawerImages.length}`;
-
-      document.querySelectorAll('#drawerDots .drawer-dot').forEach((d, i) => d.classList.toggle('active', i === drawerCurrentSlide));
-
-      const prev = document.getElementById('drawerPrev');
-      const next = document.getElementById('drawerNext');
-      if (prev) prev.disabled = drawerCurrentSlide === 0;
-      if (next) next.disabled = drawerCurrentSlide === drawerImages.length - 1;
+    function updatePPSlideUI() {
+      document.getElementById('ppSlides').style.transform = `translateX(-${ppCurrentSlide * 100}%)`;
+      if (ppImages.length > 1) document.getElementById('ppImgCounter').textContent = `${ppCurrentSlide + 1} / ${ppImages.length}`;
+      document.querySelectorAll('#ppDots .pp-dot').forEach((d, i) => d.classList.toggle('active', i === ppCurrentSlide));
+      const prev = document.getElementById('ppPrev'); const next = document.getElementById('ppNext');
+      if (prev) prev.disabled = ppCurrentSlide === 0;
+      if (next) next.disabled = ppCurrentSlide === ppImages.length - 1;
     }
 
-    window.slideDrawer = function(dir) {
-      drawerCurrentSlide = Math.max(0, Math.min(drawerImages.length - 1, drawerCurrentSlide + dir));
-      updateDrawerSlideUI();
-    };
-    window.goToDrawerSlide = function(idx) { drawerCurrentSlide = idx; updateDrawerSlideUI(); };
+    window.ppSlide  = dir => { ppCurrentSlide = Math.max(0, Math.min(ppImages.length - 1, ppCurrentSlide + dir)); updatePPSlideUI(); };
+    window.ppGoTo   = idx => { ppCurrentSlide = idx; updatePPSlideUI(); };
 
-    // Touch swipe on drawer gallery
-    let touchStartX = 0, touchStartY = 0;
-    document.getElementById('drawerImgGallery').addEventListener('touchstart', e => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-    document.getElementById('drawerImgGallery').addEventListener('touchend', e => {
-      if (!drawerImages.length) return;
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      const dy = e.changedTouches[0].clientY - touchStartY;
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) slideDrawer(dx < 0 ? 1 : -1);
+    /* Swipe on gallery */
+    let ppTouchStartX = 0, ppTouchStartY = 0;
+    document.getElementById('ppGallery').addEventListener('touchstart', e => { ppTouchStartX = e.touches[0].clientX; ppTouchStartY = e.touches[0].clientY; }, { passive: true });
+    document.getElementById('ppGallery').addEventListener('touchend', e => {
+      if (!ppImages.length) return;
+      const dx = e.changedTouches[0].clientX - ppTouchStartX;
+      const dy = e.changedTouches[0].clientY - ppTouchStartY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) ppSlide(dx < 0 ? 1 : -1);
     }, { passive: true });
 
     /* ══════════════════════════════════════════
-       LIGHTBOX
+       PRODUCT PAGE — OPEN / CLOSE
     ══════════════════════════════════════════ */
-    let lightboxImages       = [];
-    let lightboxCurrentSlide = 0;
-
-    window.openLightbox = function(startIndex) {
-      if (!drawerImages.length) return;
-      lightboxImages       = [...drawerImages];
-      lightboxCurrentSlide = startIndex || 0;
-
-      document.getElementById('lightboxTrack').innerHTML = lightboxImages.map(url => `
-        <div class="lightbox-slide"><img src="${url}" alt="" draggable="false"/></div>`).join('');
-
-      document.getElementById('lightboxDots').innerHTML = lightboxImages.length > 1
-        ? lightboxImages.map((_, i) => `<button class="lightbox-dot" onclick="slideLightbox(0, ${i})"></button>`).join('') : '';
-
-      document.getElementById('lightboxThumbs').innerHTML = lightboxImages.length > 1
-        ? lightboxImages.map((url, i) => `
-            <div class="lightbox-thumb" onclick="slideLightbox(0, ${i})">
-              <img src="${url}" alt="" loading="lazy"/>
-            </div>`).join('') : '';
-
-      document.getElementById('lightboxOverlay').classList.add('open');
+    window.openProductPage = function(id) {
+      const found = allProducts.find(p => p.id === id);
+      if (!found) return;
+      populateProductPage(found);
+      document.getElementById('productPage').classList.add('open');
+      document.getElementById('ppActions').classList.add('visible');
+      document.getElementById('productPage').scrollTop = 0;
       document.body.style.overflow = 'hidden';
-      updateLightboxUI();
+      pushProductURL(id);
     };
 
-    window.closeLightbox = function() {
-      document.getElementById('lightboxOverlay').classList.remove('open');
+    window.closeProductPage = function() {
+      document.getElementById('productPage').classList.remove('open');
+      document.getElementById('ppActions').classList.remove('visible');
       document.body.style.overflow = '';
+      currentProductId = null;
+      pushProductURL(null);
     };
 
-    window.slideLightbox = function(dir, targetIdx) {
-      lightboxCurrentSlide = targetIdx !== undefined
-        ? targetIdx
-        : Math.max(0, Math.min(lightboxImages.length - 1, lightboxCurrentSlide + dir));
-      updateLightboxUI();
-    };
+    function populateProductPage(found) {
+      currentProductId = found.id;
+      ppReviewsShown   = 5;
+      const { id, data: p } = found;
+      const tl = teamLabel(p);
 
-    function updateLightboxUI() {
-      document.getElementById('lightboxTrack').style.transform = `translateX(-${lightboxCurrentSlide * 100}%)`;
-      document.getElementById('lightboxCounter').textContent = lightboxImages.length > 1
-        ? `${lightboxCurrentSlide + 1} / ${lightboxImages.length}` : '';
-      document.querySelectorAll('#lightboxDots .lightbox-dot').forEach((d, i) => d.classList.toggle('active', i === lightboxCurrentSlide));
-      document.querySelectorAll('.lightbox-thumb').forEach((t, i) => t.classList.toggle('active', i === lightboxCurrentSlide));
-      const prev = document.getElementById('lightboxPrev');
-      const next = document.getElementById('lightboxNext');
-      if (prev) prev.disabled = lightboxCurrentSlide === 0;
-      if (next) next.disabled = lightboxCurrentSlide === lightboxImages.length - 1;
-      const thumb = document.querySelectorAll('.lightbox-thumb')[lightboxCurrentSlide];
-      if (thumb) thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      document.getElementById('ppTopbarTitle').textContent = p.name || 'Jersey';
+      document.getElementById('ppName').textContent  = p.name || 'Jersify Kit';
+      document.getElementById('ppTeam').textContent  = tl;
+      document.getElementById('ppPrice').textContent = '₹' + Number(p.price || 1499).toLocaleString('en-IN');
+      document.getElementById('ppBadge').textContent = p.badge || p.type || 'Kit';
+
+      const badgeOverlay = document.getElementById('ppBadgeOverlay');
+      if (p.badge || p.type) { badgeOverlay.textContent = p.badge || p.type; badgeOverlay.style.display = 'block'; }
+      else { badgeOverlay.style.display = 'none'; }
+
+      document.getElementById('ppShareBtn').classList.remove('copied');
+
+      /* Description */
+      const descSection = document.getElementById('ppDescSection');
+      const descText    = document.getElementById('ppDescText');
+      if (p.description || p.desc) {
+        descText.textContent = p.description || p.desc;
+        descSection.style.display = 'block';
+      } else { descSection.style.display = 'none'; }
+
+      buildPPGallery(getProductImages(p));
+
+      /* Sizes */
+      document.getElementById('ppSizeGrid').innerHTML = ['xs','s','m','l','xl'].map(sz => {
+        const avail = !p.sizes || Number(p.sizes[sz] || 0) > 0;
+        return `<button class="pp-size-pill${avail ? '' : ' oos'}" data-size="${sz}" onclick="ppSelectSize('${sz}', ${avail})">${sz.toUpperCase()}</button>`;
+      }).join('');
+
+      /* Buy now */
+      document.getElementById('ppBuyBtn').onclick = () => {
+        const sel = document.querySelector('.pp-size-pill.selected');
+        if (!sel) { showToast('Please select a size'); return; }
+        window.location.href = `checkout.html?id=${id}&size=${sel.dataset.size}`;
+      };
+
+      renderBrowse(id);
+      loadAndRenderReviews(id);
     }
 
-    let lbTouchX = 0;
-    document.getElementById('lightboxOverlay').addEventListener('touchstart', e => { lbTouchX = e.touches[0].clientX; }, { passive: true });
-    document.getElementById('lightboxOverlay').addEventListener('touchend', e => {
-      const dx = e.changedTouches[0].clientX - lbTouchX;
-      if (Math.abs(dx) > 40) slideLightbox(dx < 0 ? 1 : -1);
-    }, { passive: true });
-    document.getElementById('lightboxOverlay').addEventListener('click', e => {
-      if (e.target === document.getElementById('lightboxOverlay')) closeLightbox();
-    });
-    document.addEventListener('keydown', e => {
-      if (document.getElementById('lightboxOverlay').classList.contains('open')) {
-        if (e.key === 'ArrowLeft')  slideLightbox(-1);
-        if (e.key === 'ArrowRight') slideLightbox(1);
-        if (e.key === 'Escape')     closeLightbox();
+    window.ppSelectSize = function(sz, avail) {
+      if (!avail) return;
+      document.querySelectorAll('.pp-size-pill').forEach(p => p.classList.remove('selected'));
+      document.querySelector(`.pp-size-pill[data-size="${sz}"]`).classList.add('selected');
+    };
+
+    window.ppAddToCart = function() {
+      const found = allProducts.find(p => p.id === currentProductId);
+      if (!found) return;
+      const sel = document.querySelector('.pp-size-pill.selected');
+      if (!sel) { showToast('Please select a size first'); return; }
+      const { id, data: p } = found;
+      const imgs = getProductImages(p);
+      addToCart(id, p.name || 'Jersify Kit', p.price || 1499, imgs[0] || '', teamLabel(p), sel.dataset.size);
+    };
+
+    /* Share */
+    window.ppShare = async function() {
+      const found = allProducts.find(p => p.id === currentProductId);
+      if (!found) return;
+      const url = buildProductURL(currentProductId);
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: found.data.name || 'Jersify Kit', text: `Check out this kit: ${found.data.name || ''}`, url });
+          return;
+        } catch(e) { if (e.name === 'AbortError') return; }
       }
-    });
+      const btn = document.getElementById('ppShareBtn');
+      try { await navigator.clipboard.writeText(url); }
+      catch {
+        const inp = document.createElement('input'); inp.value = url;
+        document.body.appendChild(inp); inp.select(); document.execCommand('copy'); document.body.removeChild(inp);
+      }
+      btn.classList.add('copied');
+      showToast('🔗 Link copied to clipboard');
+      setTimeout(() => btn.classList.remove('copied'), 2500);
+    };
+
+    function buildProductURL(id) {
+      const base = window.location.origin + window.location.pathname;
+      return id ? `${base}?product=${encodeURIComponent(id)}` : base;
+    }
+    function pushProductURL(id) {
+      window.history.replaceState({ productId: id || null }, '', buildProductURL(id));
+    }
 
     /* ══════════════════════════════════════════
-       BROWSE MORE SECTION
+       BROWSE MORE
     ══════════════════════════════════════════ */
     function renderBrowse(currentId) {
       const others  = allProducts.filter(p => p.id !== currentId && isActive(p.data));
-      const track   = document.getElementById('browseTrack');
-      const countEl = document.getElementById('browseCount');
+      const track   = document.getElementById('ppBrowseTrack');
+      const countEl = document.getElementById('ppBrowseCount');
 
       if (others.length === 0) {
-        track.innerHTML = `<div class="browse-empty">No other kits available right now.</div>`;
-        countEl.textContent = '';
-        return;
+        track.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:12px 0;">No other kits right now.</div>`;
+        countEl.textContent = ''; return;
       }
-
-      countEl.textContent = `${others.length} more kit${others.length !== 1 ? 's' : ''}`;
+      countEl.textContent = `${others.length} more`;
       track.innerHTML = others.map(({ id, data: p }, i) => {
-        const tl    = teamLabel(p);
-        const short = s => s.length > 14 ? s.slice(0,13) + '…' : s;
-        const imgs  = getProductImages(p);
-        const thumb = imgs[0] || '';
+        const tl   = teamLabel(p);
+        const sh   = s => s.length > 14 ? s.slice(0,13)+'…' : s;
+        const imgs = getProductImages(p);
+        const th   = imgs[0] || '';
         return `
-          <div class="browse-card" style="animation-delay:${i * 0.06}s" onclick="switchDrawer('${id}')">
-            <div class="browse-card-img">
-              <div class="browse-card-active-dot"></div>
-              ${thumb
-                ? `<div class="img-skeleton"></div><img src="${thumb}" alt="${p.name || 'Jersey'}" loading="lazy" decoding="async" onload="this.classList.add('loaded');this.previousElementSibling.classList.add('hidden')"/>`
-                : `<div class="browse-mini-jersey"><div><strong>${p.number || '10'}</strong><small>${(p.type || 'KIT').toUpperCase()}</small></div></div>`}
+          <div class="pp-browse-card" style="animation-delay:${i*.05}s" onclick="switchProductPage('${id}')">
+            <div class="pp-browse-card-img">
+              ${th
+                ? `<div class="pp-browse-img-skeleton"></div><img src="${th}" alt="${p.name||'Jersey'}" loading="lazy" decoding="async" onload="this.classList.add('loaded');this.previousElementSibling.classList.add('hidden')"/>`
+                : `<div class="pp-browse-mini-jersey"><div><strong>${p.number||'10'}</strong><small>${(p.type||'KIT').toUpperCase()}</small></div></div>`}
             </div>
-            <div class="browse-card-info">
-              <div class="browse-card-name">${short(p.name || 'Jersify Kit')}</div>
-              <div class="browse-card-team">${short(tl)}</div>
-              <div class="browse-card-bottom">
-                <div class="browse-card-price">₹${Number(p.price || 1499).toLocaleString('en-IN')}</div>
-                <button class="browse-card-add" title="Quick add" onclick="event.stopPropagation(); quickAddToCart('${id}')">
+            <div class="pp-browse-card-info">
+              <div class="pp-browse-card-name">${sh(p.name||'Jersify Kit')}</div>
+              <div class="pp-browse-card-team">${sh(tl)}</div>
+              <div class="pp-browse-card-bottom">
+                <div class="pp-browse-card-price">₹${Number(p.price||1499).toLocaleString('en-IN')}</div>
+                <button class="pp-browse-card-add" title="Quick add" onclick="event.stopPropagation();quickAddToCart('${id}')">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
                 </button>
               </div>
@@ -1174,119 +1159,298 @@
       }).join('');
     }
 
+    window.switchProductPage = function(id) {
+      const found = allProducts.find(p => p.id === id);
+      if (!found) return;
+      document.getElementById('productPage').scrollTop = 0;
+      populateProductPage(found);
+      pushProductURL(id);
+    };
+
     /* ══════════════════════════════════════════
-       DRAWER  OPEN / CLOSE / POPULATE
+       REVIEWS — LOAD & RENDER
     ══════════════════════════════════════════ */
-    function populateDrawer(found) {
-      drawerProduct      = found;
-      drawerCurrentSlide = 0;
-      const { id, data: p } = found;
-      const tl = teamLabel(p);
+    async function loadAndRenderReviews(productId) {
+      allProductReviews = [];
+      const listEl    = document.getElementById('ppReviewsList');
+      const summaryEl = document.getElementById('ppRatingSummary');
+      const countEl   = document.getElementById('ppReviewsCount');
+      const loadmore  = document.getElementById('ppReviewsLoadMore');
 
-      document.getElementById('drawerName').textContent  = p.name || 'Jersify Kit';
-      document.getElementById('drawerTeam').textContent  = tl;
-      document.getElementById('drawerPrice').textContent = '₹' + Number(p.price || 1499).toLocaleString('en-IN');
-      document.getElementById('drawerBadge').textContent = p.badge || p.type || 'Kit';
+      /* Show skeletons */
+      listEl.innerHTML = [1,2].map(() => `
+        <div class="pp-review-skel">
+          <div class="pp-review-skel-top">
+            <div class="skeleton pp-review-skel-avatar"></div>
+            <div style="flex:1;">
+              <div class="skeleton pp-review-skel-name"></div>
+              <div class="skeleton pp-review-skel-stars"></div>
+            </div>
+          </div>
+          <div class="skeleton pp-review-skel-text1"></div>
+          <div class="skeleton pp-review-skel-text2"></div>
+        </div>`).join('');
+      summaryEl.style.display = 'none';
+      loadmore.style.display  = 'none';
+      countEl.textContent     = '';
 
-      // Reset share button
-      const btn = document.getElementById('sharePillBtn');
-      btn.classList.remove('copied');
+      try {
+        /* Fetch all reviews from Firebase and filter by productId */
+        const res  = await fetch(`${REVIEWS_REST_BASE}.json?orderBy="productId"&equalTo="${productId}"`, { cache: 'no-store' });
+        let reviews = [];
 
-      const numEl  = document.getElementById('drawerNum');
-      const typeEl = document.getElementById('drawerType');
-      if (numEl)  numEl.textContent  = p.number || '10';
-      if (typeEl) typeEl.textContent = (p.type || 'KIT').toUpperCase();
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data === 'object') {
+            reviews = Object.entries(data).map(([key, val]) => ({ ...val, _key: key }));
+          }
+        }
 
-      buildDrawerGallery(getProductImages(p));
+        /* Fallback: also fetch by orderId structure — reviews keyed by orderId */
+        /* Try fetching the single review for this productId directly */
+        if (reviews.length === 0) {
+          const res2 = await fetch(`${REVIEWS_REST_BASE}/${productId}.json`, { cache: 'no-store' });
+          if (res2.ok) {
+            const single = await res2.json();
+            if (single && single.rating) reviews = [{ ...single, _key: productId }];
+          }
+        }
 
-      const sizeGrid = document.getElementById('drawerSizeGrid');
-      sizeGrid.innerHTML = ['xs','s','m','l','xl'].map(sz => {
-        const avail = !p.sizes || Number(p.sizes[sz] || 0) > 0;
-        return `<button class="size-pill${avail ? '' : ' oos'}" data-size="${sz}" onclick="selectSize('${sz}', ${avail})">${sz.toUpperCase()}</button>`;
-      }).join('');
+        /* Also load via SDK for broader coverage */
+        try {
+          const snap = await get(ref(rtdb, 'reviews'));
+          if (snap.exists()) {
+            const sdkReviews = [];
+            snap.forEach(child => {
+              const r = child.val();
+              /* Include if productId matches or if orderId is not set (product-level review) */
+              if (r.productId === productId || child.key === productId) {
+                const exists = reviews.find(x => x._key === child.key);
+                if (!exists) sdkReviews.push({ ...r, _key: child.key });
+              }
+            });
+            reviews = [...reviews, ...sdkReviews];
+          }
+        } catch(e) {}
 
-      document.getElementById('drawerBuyBtn').onclick = () => {
-        const sel = document.querySelector('.size-pill.selected');
-        if (!sel) { showToast('Please select a size'); return; }
-        window.location.href = `checkout.html?id=${id}&size=${sel.dataset.size}`;
-      };
+        /* Deduplicate */
+        const seen = new Set();
+        reviews = reviews.filter(r => { if (seen.has(r._key)) return false; seen.add(r._key); return true; });
 
-      renderBrowse(id);
+        /* Sort newest first */
+        reviews.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        allProductReviews = reviews;
+
+        renderReviewsUI(reviews);
+
+      } catch(e) {
+        console.warn('Reviews load error:', e);
+        listEl.innerHTML = '';
+        countEl.textContent = '';
+      }
     }
 
-    window.switchDrawer = function(id) {
-      const found = allProducts.find(p => p.id === id);
-      if (!found) return;
-      document.getElementById('drawerScroll').scrollTo({ top: 0, behavior: 'smooth' });
-      populateDrawer(found);
-      pushProductURL(id); // update URL when switching products inside drawer
+    function renderReviewsUI(reviews) {
+      const listEl    = document.getElementById('ppReviewsList');
+      const summaryEl = document.getElementById('ppRatingSummary');
+      const countEl   = document.getElementById('ppReviewsCount');
+      const loadmore  = document.getElementById('ppReviewsLoadMore');
+
+      countEl.textContent = reviews.length ? `${reviews.length} review${reviews.length !== 1 ? 's' : ''}` : '';
+
+      if (reviews.length === 0) {
+        listEl.innerHTML = `
+          <div class="pp-reviews-empty">
+            <div class="pp-reviews-empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+            <h4>No reviews yet</h4>
+            <p>Be the first to share your experience with this kit!</p>
+          </div>`;
+        summaryEl.style.display = 'none';
+        loadmore.style.display  = 'none';
+        return;
+      }
+
+      /* Build rating summary */
+      const total   = reviews.length;
+      const avg     = reviews.reduce((s, r) => s + (r.rating || 0), 0) / total;
+      const rounded = Math.round(avg * 10) / 10;
+      const dist    = [0,0,0,0,0]; // index 0 = 1 star ... index 4 = 5 stars
+      reviews.forEach(r => { const s = Math.min(5, Math.max(1, Math.round(r.rating || 0))); dist[s-1]++; });
+
+      document.getElementById('ppRatingNum').textContent = rounded.toFixed(1);
+      document.getElementById('ppRatingTotal').textContent = `${total} review${total !== 1 ? 's' : ''}`;
+
+      /* Star icons in summary */
+      const starsEl = document.getElementById('ppRatingStars');
+      starsEl.innerHTML = Array.from({length:5}, (_, i) => {
+        const filled = i < Math.round(avg);
+        return `<svg viewBox="0 0 24 24" fill="${filled ? '#f59e0b' : 'none'}" stroke="${filled ? '#f59e0b' : '#ddd'}" stroke-width="1.5">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>`;
+      }).join('');
+
+      /* Distribution bars (5 → 1) */
+      const barsEl = document.getElementById('ppRatingBars');
+      barsEl.innerHTML = [5,4,3,2,1].map(n => {
+        const cnt = dist[n-1];
+        const pct = total > 0 ? (cnt / total * 100) : 0;
+        return `
+          <div class="pp-rating-bar-row">
+            <div class="pp-rating-bar-label">${n}</div>
+            <div class="pp-rating-bar-track">
+              <div class="pp-rating-bar-fill" style="width:${pct}%"></div>
+            </div>
+            <div class="pp-rating-bar-count">${cnt}</div>
+          </div>`;
+      }).join('');
+      summaryEl.style.display = 'flex';
+
+      /* Review cards */
+      const toShow = reviews.slice(0, ppReviewsShown);
+      listEl.innerHTML = toShow.map(r => buildReviewCard(r)).join('');
+
+      loadmore.style.display = reviews.length > ppReviewsShown ? 'block' : 'none';
+    }
+
+    function buildReviewCard(r) {
+      const name     = r.userName || r.displayName || 'Customer';
+      const initials = name.split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0,2) || '??';
+      const date     = r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '';
+      const rating   = Math.min(5, Math.max(0, Math.round(r.rating || 0)));
+
+      const starsHtml = Array.from({length:5}, (_, i) => {
+        const filled = i < rating;
+        return `<svg viewBox="0 0 24 24" fill="${filled ? '#f59e0b' : 'none'}" stroke="${filled ? '#f59e0b' : '#ddd'}" stroke-width="1.5">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>`;
+      }).join('');
+
+      const mediaHtml = (r.media || []).filter(m => m && m.url).map(m =>
+        m.type === 'video'
+          ? `<div class="pp-review-media-item"><video src="${m.url}" muted playsinline style="pointer-events:none;"></video></div>`
+          : `<div class="pp-review-media-item" onclick="openSingleLightbox('${m.url}')"><img src="${m.url}" alt="review photo" loading="lazy"/></div>`
+      ).join('');
+
+      const avatarContent = r.userPhotoURL
+        ? `<img src="${r.userPhotoURL}" alt="${name}" loading="lazy"/>`
+        : initials;
+
+      return `
+        <div class="pp-review-card">
+          <div class="pp-review-top">
+            <div class="pp-review-user">
+              <div class="pp-review-avatar">${avatarContent}</div>
+              <div>
+                <div class="pp-review-name">${name}</div>
+                <div class="pp-review-date">${date}</div>
+              </div>
+            </div>
+            <div class="pp-review-stars">${starsHtml}</div>
+          </div>
+          ${r.text ? `<div class="pp-review-text">${r.text}</div>` : ''}
+          ${mediaHtml ? `<div class="pp-review-media">${mediaHtml}</div>` : ''}
+          ${r.userId ? `<div class="pp-review-verified">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Verified Purchase
+          </div>` : ''}
+        </div>`;
+    }
+
+    window.ppLoadMoreReviews = function() {
+      ppReviewsShown += 5;
+      renderReviewsUI(allProductReviews);
     };
 
-    window.openDrawer = function(id) {
-      const found = allProducts.find(p => p.id === id);
-      if (!found) return;
-      populateDrawer(found);
-      document.getElementById('drawerScroll').scrollTop = 0;
-      document.getElementById('overlay').classList.add('open');
-      document.getElementById('drawer').classList.add('open');
-      document.body.style.overflow = 'hidden';
-      pushProductURL(id); // update URL → makes this link shareable
-    };
-
-    window.closeDrawer = function() {
-      document.getElementById('overlay').classList.remove('open');
-      document.getElementById('drawer').classList.remove('open');
-      document.body.style.overflow = '';
-      pushProductURL(null); // remove ?product= from URL when closed
-    };
-
-    window.selectSize = function(sz, avail) {
-      if (!avail) return;
-      document.querySelectorAll('.size-pill').forEach(p => p.classList.remove('selected'));
-      document.querySelector(`.size-pill[data-size="${sz}"]`).classList.add('selected');
-    };
-
-    window.addToCartFromDrawer = function() {
-      if (!drawerProduct) return;
-      const sel = document.querySelector('.size-pill.selected');
-      if (!sel) { showToast('Please select a size first'); return; }
-      const { id, data: p } = drawerProduct;
-      const imgs = getProductImages(p);
-      addToCart(id, p.name || 'Jersify Kit', p.price || 1499, imgs[0] || '', teamLabel(p), sel.dataset.size);
+    window.openSingleLightbox = function(url) {
+      openLightbox(0);
+      lightboxImages = [url];
+      document.getElementById('lightboxTrack').innerHTML = `<div class="lightbox-slide"><img src="${url}" alt=""/></div>`;
+      document.getElementById('lightboxDots').innerHTML = '';
+      document.getElementById('lightboxThumbs').innerHTML = '';
+      document.getElementById('lightboxCounter').textContent = '';
+      document.getElementById('lightboxPrev').disabled = true;
+      document.getElementById('lightboxNext').disabled = true;
     };
 
     /* ══════════════════════════════════════════
-       EVENT LISTENERS & BOOT
+       LIGHTBOX
+    ══════════════════════════════════════════ */
+    let lightboxImages = [], lightboxCurrentSlide = 0;
+
+    window.openLightbox = function(startIndex) {
+      if (!ppImages.length) return;
+      lightboxImages = [...ppImages]; lightboxCurrentSlide = startIndex || 0;
+      document.getElementById('lightboxTrack').innerHTML = lightboxImages.map(url => `<div class="lightbox-slide"><img src="${url}" alt="" draggable="false"/></div>`).join('');
+      document.getElementById('lightboxDots').innerHTML = lightboxImages.length > 1
+        ? lightboxImages.map((_, i) => `<button class="lightbox-dot" onclick="slideLightbox(0,${i})"></button>`).join('') : '';
+      document.getElementById('lightboxThumbs').innerHTML = lightboxImages.length > 1
+        ? lightboxImages.map((url, i) => `<div class="lightbox-thumb" onclick="slideLightbox(0,${i})"><img src="${url}" alt="" loading="lazy"/></div>`).join('') : '';
+      document.getElementById('lightboxOverlay').classList.add('open');
+      updateLightboxUI();
+    };
+    window.closeLightbox = function() { document.getElementById('lightboxOverlay').classList.remove('open'); };
+    window.slideLightbox = function(dir, targetIdx) {
+      lightboxCurrentSlide = targetIdx !== undefined ? targetIdx : Math.max(0, Math.min(lightboxImages.length - 1, lightboxCurrentSlide + dir));
+      updateLightboxUI();
+    };
+    function updateLightboxUI() {
+      document.getElementById('lightboxTrack').style.transform = `translateX(-${lightboxCurrentSlide * 100}%)`;
+      document.getElementById('lightboxCounter').textContent = lightboxImages.length > 1 ? `${lightboxCurrentSlide + 1} / ${lightboxImages.length}` : '';
+      document.querySelectorAll('#lightboxDots .lightbox-dot').forEach((d, i) => d.classList.toggle('active', i === lightboxCurrentSlide));
+      document.querySelectorAll('.lightbox-thumb').forEach((t, i) => t.classList.toggle('active', i === lightboxCurrentSlide));
+      const prev = document.getElementById('lightboxPrev'); const next = document.getElementById('lightboxNext');
+      if (prev) prev.disabled = lightboxCurrentSlide === 0;
+      if (next) next.disabled = lightboxCurrentSlide === lightboxImages.length - 1;
+      const thumb = document.querySelectorAll('.lightbox-thumb')[lightboxCurrentSlide];
+      if (thumb) thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    let lbTouchX = 0;
+    document.getElementById('lightboxOverlay').addEventListener('touchstart', e => { lbTouchX = e.touches[0].clientX; }, { passive: true });
+    document.getElementById('lightboxOverlay').addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - lbTouchX; if (Math.abs(dx) > 40) slideLightbox(dx < 0 ? 1 : -1); }, { passive: true });
+    document.getElementById('lightboxOverlay').addEventListener('click', e => { if (e.target === document.getElementById('lightboxOverlay')) closeLightbox(); });
+    document.addEventListener('keydown', e => {
+      if (document.getElementById('lightboxOverlay').classList.contains('open')) {
+        if (e.key === 'ArrowLeft')  slideLightbox(-1);
+        if (e.key === 'ArrowRight') slideLightbox(1);
+        if (e.key === 'Escape')     closeLightbox();
+      }
+      if (e.key === 'Escape' && document.getElementById('productPage').classList.contains('open')) closeProductPage();
+    });
+
+    /* ══════════════════════════════════════════
+       BOOT
     ══════════════════════════════════════════ */
     window.addEventListener('DOMContentLoaded', async () => {
-      updateCartBadge();
+      updateCartBadges();
       await loadProducts(false);
       startBackgroundRefresh();
 
       ['filterTeam','filterSize','filterPrice','filterSort'].forEach(fid => {
         document.getElementById(fid).addEventListener('change', () => { showAll = false; renderProducts(); });
       });
-
       let timer;
       document.getElementById('searchInput').addEventListener('input', () => {
         clearTimeout(timer);
         timer = setTimeout(() => { showAll = false; renderProducts(); }, 280);
       });
-
       document.getElementById('viewAllBtn').addEventListener('click', () => { showAll = true; renderProducts(); });
 
-      // Handle browser back/forward — close drawer if URL no longer has ?product
-      window.addEventListener('popstate', (e) => {
+      window.addEventListener('popstate', e => {
         if (!e.state || !e.state.productId) {
-          document.getElementById('overlay').classList.remove('open');
-          document.getElementById('drawer').classList.remove('open');
+          document.getElementById('productPage').classList.remove('open');
+          document.getElementById('ppActions').classList.remove('visible');
           document.body.style.overflow = '';
+          currentProductId = null;
         } else {
-          openDrawer(e.state.productId);
+          openProductPage(e.state.productId);
         }
       });
     });
   </script>
-
 </body>
 </html>
