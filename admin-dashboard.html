@@ -1115,8 +1115,10 @@
         <div class="form-group span-2"><label>Address *</label><textarea id="sr_ship_address" placeholder="Flat, Street, Area..." style="min-height:52px"></textarea></div>
         <div class="form-group"><label>City *</label><input type="text" id="sr_ship_city" placeholder="Mumbai"/></div>
         <div class="form-group"><label>State *</label><input type="text" id="sr_ship_state" placeholder="Maharashtra"/></div>
-        <div class="form-group"><label>Pincode *</label><input type="text" id="sr_ship_pincode" placeholder="400001"/></div>
+        <div class="form-group"><label>Delivery Pincode *</label><input type="text" id="sr_ship_pincode" placeholder="400001"/></div>
         <div class="form-group"><label>Country</label><input type="text" id="sr_ship_country" value="India"/></div>
+        <div class="form-group"><label>Pickup Location</label><select id="sr_ship_pickup_loc" onchange="updatePickupPincode(this)"><option value="">Loading...</option></select></div>
+        <div class="form-group"><label>Pickup Pincode *</label><input type="text" id="sr_ship_pickup_pin" placeholder="Pickup Pincode"/></div>
       </div>
       <div style="font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:var(--blue);">📐 Package Dimensions</div>
       <div class="form-grid" style="gap:10px;grid-template-columns:1fr 1fr 1fr 1fr;margin-bottom:16px">
@@ -2571,6 +2573,10 @@ function openSrShipModal(orderId) {
   setV('sr_ship_state', order.state || '');
   setV('sr_ship_pincode', order.pincode || '');
   setV('sr_ship_country', order.country || 'India');
+  setV('sr_ship_country', order.country || 'India');
+  // Initialize pincode directly in case fetch fails
+  setV('sr_ship_pickup_pin', localStorage.getItem('sr_pickup_pin') || '');
+  fetchAndPopulatePickups();
   
   const cfg_length  = localStorage.getItem('sr_length')  || '30';
   const cfg_breadth = localStorage.getItem('sr_breadth') || '25';
@@ -2600,9 +2606,40 @@ function openSrShipModal(orderId) {
   openModal('srShipModal');
 }
 
+async function fetchAndPopulatePickups() {
+  const sel = document.getElementById('sr_ship_pickup_loc');
+  const pinInput = document.getElementById('sr_ship_pickup_pin');
+  sel.innerHTML = '<option value="">Loading...</option>';
+  try {
+    const res = await srProxy('/settings/company/pickup', 'GET');
+    const locations = res.data?.shipping_address || [];
+    if (locations.length > 0) {
+      sel.innerHTML = locations.map(loc => `<option value="${esc(loc.pickup_location)}" data-pin="${esc(loc.pin_code)}">${esc(loc.pickup_location)} (${esc(loc.pin_code)})</option>`).join('');
+      // Set to saved default or first
+      const savedLoc = localStorage.getItem('sr_pickup') || 'Primary';
+      let match = locations.find(l => l.pickup_location === savedLoc) || locations[0];
+      sel.value = match.pickup_location;
+      pinInput.value = match.pin_code;
+    } else {
+      sel.innerHTML = '<option value="">No locations found</option>';
+    }
+  } catch(e) {
+    const fallbackLoc = localStorage.getItem('sr_pickup') || 'Primary';
+    sel.innerHTML = `<option value="${esc(fallbackLoc)}">${esc(fallbackLoc)} (Fallback)</option>`;
+    toast('Could not fetch pickup locations: ' + e.message, 'warning');
+  }
+}
+
+function updatePickupPincode(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  if (opt && opt.dataset.pin) {
+    document.getElementById('sr_ship_pickup_pin').value = opt.dataset.pin;
+  }
+}
+
 async function srFetchCouriers() {
-  const pickupPin = getV('sr_pickup_pin') || localStorage.getItem('sr_pickup_pin');
-  if (!pickupPin) { toast('Please configure Pickup Pincode in Shiprocket settings first. Go to Shiprocket tab → enter your pickup pincode.', 'error'); return; }
+  const pickupPin = getV('sr_ship_pickup_pin') || getV('sr_pickup_pin') || localStorage.getItem('sr_pickup_pin');
+  if (!pickupPin) { toast('Please enter a Pickup Pincode.', 'error'); return; }
   
   const deliveryPin = getV('sr_ship_pincode');
   if (!deliveryPin) { toast('Delivery pincode is required', 'error'); return; }
@@ -2699,6 +2736,7 @@ async function srCreateAndShip() {
   
   const payload = buildSrPayload(order);
   payload.billing_customer_name = shipName;
+  payload.pickup_location = getV('sr_ship_pickup_loc') || localStorage.getItem('sr_pickup') || 'Primary';
   payload.billing_email = getV('sr_ship_email');
   payload.billing_phone = shipPhone;
   payload.billing_address = shipAddress;
