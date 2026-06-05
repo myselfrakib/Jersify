@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-<link rel="icon" type="image/png" sizes="32x32" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260510-WA0000%20(1).jpg?alt=media&token=f4429d90-710f-4ef2-8587-ef383e89e622">
-<link rel="apple-touch-icon" sizes="180x180" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260510-WA0000%20(1).jpg?alt=media&token=f4429d90-710f-4ef2-8587-ef383e89e622">
+<link rel="icon" type="image/webp" sizes="32x32" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3">
+<link rel="apple-touch-icon" sizes="180x180" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JERSIFY — Checkout</title>
@@ -545,7 +545,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </button>
         <a href="index.html">
-          <img src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="Jersify" class="logo-img"/>
+          <img src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="Jersify" class="logo-img" width="120" height="42" loading="eager"/>
         </a>
       </div>
       <div class="user-badge" id="userBadge">
@@ -681,7 +681,7 @@
             <input type="radio" name="paymethod" id="pay_pcod" value="partial_cod">
             <div class="pay-opt-content">
               <div class="pay-opt-text">Partial COD</div>
-              <div class="pay-opt-sub">Pay 50% + ₹120 now · Rest on delivery</div>
+              <div class="pay-opt-sub">Pay 50% + ₹120 now (incl. shipping) · Rest on delivery</div>
             </div>
             <div class="pay-opt-icon">🚚</div>
           </label>
@@ -712,7 +712,7 @@
               <span class="pcod-row-label" style="font-weight:800;color:var(--text);">Pay on Delivery</span>
               <span class="pcod-row-val success" id="pcodPayOnDelivery">₹0</span>
             </div>
-            <div class="pcod-note">⚠️ The ₹120 handling charge is non-refundable. The remaining 50% is collected by our delivery partner at the time of delivery. Total order cost remains the same.</div>
+            <div class="pcod-note">⚠️ The ₹120 charge includes shipping & handling and is non-refundable. The remaining 50% is collected by our delivery partner at the time of delivery. No separate shipping fee applies.</div>
           </div>
         </div>
 
@@ -967,6 +967,17 @@
       document.getElementById('pcodChargeRow').style.display = isPcod ? 'flex' : 'none';
       document.getElementById('payNowRow').style.display = isPcod ? 'flex' : 'none';
       document.getElementById('payOnDeliveryRow').style.display = isPcod ? 'flex' : 'none';
+
+      // For partial COD, shipping is included in the ₹120 charge — show FREE
+      const shippingValEl = document.getElementById('shippingVal');
+      if (isPcod) {
+        shippingValEl.textContent = 'FREE (incl. in ₹120)';
+        shippingValEl.style.color = 'var(--success)';
+      } else {
+        const fee = getShippingFee(orderPrice);
+        shippingValEl.textContent = fee === 0 ? 'FREE' : `₹${fee}`;
+        shippingValEl.style.color = fee === 0 ? 'var(--success)' : 'var(--text)';
+      }
 
       updateTotal();
       if (isPcod) updatePartialCodUI();
@@ -1257,7 +1268,7 @@
     };
 
     function updateTotal() {
-      const shipping = getShippingFee(orderPrice);
+      const shipping = selectedPayMethod === 'partial_cod' ? 0 : getShippingFee(orderPrice);
       const pcodExtra = selectedPayMethod === 'partial_cod' ? PARTIAL_COD_CHARGE : 0;
       const total = orderPrice - discountAmount + shipping + pcodExtra;
       document.getElementById('finalTotal').textContent = `₹${total.toLocaleString('en-IN')}`;
@@ -1340,7 +1351,7 @@
       const addr = collectAddress();
       if (!addr) return;
       const { name, phone, email, address, city, state, pincode, country } = addr;
-      const shipping = getShippingFee(orderPrice);
+      const shipping = selectedPayMethod === 'partial_cod' ? 0 : getShippingFee(orderPrice);
       const selectedSize = isCartMode ? 'Mixed' : (document.querySelector('.size-btn.active')?.textContent || 'M');
       const orderId = `JRS-${Date.now()}`;
 
