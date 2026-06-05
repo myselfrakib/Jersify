@@ -1120,6 +1120,19 @@
         <div class="form-group"><label>Pickup Location</label><select id="sr_ship_pickup_loc" onchange="updatePickupPincode(this)"><option value="">Loading...</option></select></div>
         <div class="form-group"><label>Pickup Pincode *</label><input type="text" id="sr_ship_pickup_pin" placeholder="Pickup Pincode"/></div>
       </div>
+      <div style="font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:var(--orange);">💳 Payment Details</div>
+      <div class="form-grid" style="gap:10px;grid-template-columns:1fr 1fr;margin-bottom:16px">
+        <div class="form-group"><label>Payment Method</label>
+          <select id="sr_ship_payment_method" onchange="toggleCodAmount()">
+            <option value="Prepaid">Prepaid</option>
+            <option value="COD">COD</option>
+          </select>
+        </div>
+        <div class="form-group" id="sr_ship_cod_group" style="display:none;">
+          <label>COD Amount to Collect (₹)</label>
+          <input type="number" id="sr_ship_cod_amount" placeholder="Amount to collect" />
+        </div>
+      </div>
       <div style="font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:var(--blue);">📐 Package Dimensions</div>
       <div class="form-grid" style="gap:10px;grid-template-columns:1fr 1fr 1fr 1fr;margin-bottom:16px">
         <div class="form-group"><label>Length (cm)</label><input type="number" id="sr_ship_length" value="30" min="1"/></div>
@@ -2573,7 +2586,9 @@ function openSrShipModal(orderId) {
   setV('sr_ship_state', order.state || '');
   setV('sr_ship_pincode', order.pincode || '');
   setV('sr_ship_country', order.country || 'India');
-  setV('sr_ship_country', order.country || 'India');
+  setV('sr_ship_payment_method', order.paymentMethod === 'cod' ? 'COD' : 'Prepaid');
+  setV('sr_ship_cod_amount', order.total || 0);
+  toggleCodAmount();
   // Initialize pincode directly in case fetch fails
   setV('sr_ship_pickup_pin', localStorage.getItem('sr_pickup_pin') || '');
   fetchAndPopulatePickups();
@@ -2637,6 +2652,12 @@ function updatePickupPincode(sel) {
   }
 }
 
+function toggleCodAmount() {
+  const method = getV('sr_ship_payment_method');
+  const group = document.getElementById('sr_ship_cod_group');
+  if(group) group.style.display = method === 'COD' ? 'block' : 'none';
+}
+
 async function srFetchCouriers() {
   const pickupPin = getV('sr_ship_pickup_pin') || getV('sr_pickup_pin') || localStorage.getItem('sr_pickup_pin');
   if (!pickupPin) { toast('Please enter a Pickup Pincode.', 'error'); return; }
@@ -2648,7 +2669,8 @@ async function srFetchCouriers() {
   const orderId = getV('sr_ship_order_id');
   const order = _allOrders.find(o => o.id === orderId);
   if (!order) { toast('Order not found', 'error'); return; }
-  const cod = order.paymentMethod === 'cod' ? 1 : 0;
+  const isCod = getV('sr_ship_payment_method') === 'COD';
+  const cod = isCod ? 1 : 0;
   
   const fetchBtn = document.getElementById('fetchCouriersBtn');
   if (fetchBtn) { fetchBtn.disabled = true; fetchBtn.textContent = '⏳ Fetching...'; }
@@ -2737,6 +2759,8 @@ async function srCreateAndShip() {
   const payload = buildSrPayload(order);
   payload.billing_customer_name = shipName;
   payload.pickup_location = getV('sr_ship_pickup_loc') || localStorage.getItem('sr_pickup') || 'Primary';
+  payload.payment_method = getV('sr_ship_payment_method') || (order.paymentMethod === 'cod' ? 'COD' : 'Prepaid');
+  payload.sub_total = payload.payment_method === 'COD' ? (parseFloat(getV('sr_ship_cod_amount')) || 0) : parseFloat(order.total || 0);
   payload.billing_email = getV('sr_ship_email');
   payload.billing_phone = shipPhone;
   payload.billing_address = shipAddress;
