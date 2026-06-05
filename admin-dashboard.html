@@ -84,7 +84,6 @@
       --radius: 12px;
       --radius-sm: 8px;
       --nav-w: 240px;
-      --sr-fn: https://us-central1-jersify-f9b5e.cloudfunctions.net/shiprocket;
     }
 
     .dark-theme {
@@ -206,16 +205,11 @@
     .stat-card.teal::after { background: var(--teal); }
     .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 38px; line-height: 1; color: var(--text); }
     .stat-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-top: 4px; }
-    .stat-change { font-size: 10px; font-weight: 600; margin-top: 4px; }
-    .stat-change.up { color: var(--green); }
-    .stat-change.down { color: var(--accent); }
     .stat-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 28px; opacity: .15; }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     th { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding: 10px 16px; text-align: left; border-bottom: 2px solid var(--border); white-space: nowrap; }
-    th.sortable { cursor: pointer; user-select: none; }
-    th.sortable:hover { color: var(--text); }
     td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
     tr:last-child td { border-bottom: none; }
     tbody tr:hover td { background: var(--surface2); }
@@ -799,9 +793,9 @@
         <div class="sr-fn-notice">
           <span style="font-size:16px;flex-shrink:0">☁️</span>
           <div>
-            <strong>Cloud Function Mode</strong> — All Shiprocket API calls now route through your Firebase Cloud Function
-            (<code style="font-family:'DM Mono',monospace;font-size:10px">https://us-central1-jersify-f9b5e.cloudfunctions.net/shiprocket</code>),
-            eliminating CORS errors. Credentials are stored in Firebase — no localStorage needed.
+            <strong>Proxy Mode</strong> — All Shiprocket API calls route through your Firebase Cloud Function
+            (<code style="font-family:'DM Mono',monospace;font-size:10px">https://us-central1-jersify-f9b5e.cloudfunctions.net/shiprocket</code>)
+            using <code style="font-family:'DM Mono',monospace;font-size:10px">?path=</code> routing with a bearer token header.
           </div>
         </div>
 
@@ -1101,6 +1095,11 @@
    GLOBALS & CONSTANTS
 ═══════════════════════════════════════════════ */
 const SR_CF = 'https://us-central1-jersify-f9b5e.cloudfunctions.net/shiprocket';
+const SR_BASE = 'https://apiv2.shiprocket.in/v1/external';
+
+// Cached Shiprocket bearer token + expiry
+let _srToken = null;
+let _srTokenExpiry = 0;
 
 let _editId = null;
 let _stockEditId = null;
@@ -2260,9 +2259,15 @@ function deleteCredById(id) {
 }
 
 /* ═══════════════════════════════════════════════
-   SHIPROCKET — VIA CLOUD FUNCTION (no CORS issues)
-   All calls proxy through:
-   https://us-central1-jersify-f9b5e.cloudfunctions.net/shiprocket
+   SHIPROCKET — FIXED TO MATCH CLOUD FUNCTION
+
+   Your CF is a transparent proxy:
+     POST https://.../shiprocket?path=/auth/login
+     with body forwarded as-is and x-sr-token header.
+
+   Flow:
+   1. srGetToken()  → POST ?path=/auth/login  → cache token
+   2. srProxy()     → POST ?path=<endpoint>   → with x-sr-token header
 ═══════════════════════════════════════════════ */
 
 async function srGetConfig() {
@@ -2305,173 +2310,302 @@ async function srSaveConfigToFirebase() {
   toast('Shiprocket config saved to Firebase!', 'success');
 }
 
-/* Core proxy call — all Shiprocket API calls go through the Cloud Function */
-async function srCall(action, body = {}) {
+/* ── Token management ── */
+async function srGetToken() {
+  // Return cached token if still valid (tokens last ~24h, we refresh after 23h)
+  if (_srToken && Date.now() < _srTokenExpiry) return _srToken;
+
   const cfg = await srGetConfig();
   const email    = cfg.email    || localStorage.getItem('sr_email')    || getV('sr_email');
   const password = cfg.password || localStorage.getItem('sr_password') || getV('sr_password');
-  if (!email || !password) throw new Error('Shiprocket email/password not configured. Please set them in the Shiprocket tab.');
 
-  const res = await fetch(SR_CF, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action, email, password, ...body })
-  });
-
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Cloud Function error (${res.status}): ${errText}`);
+  if (!email || !password) {
+    throw new Error('Shiprocket email/password not configured. Please fill them in the Shiprocket tab and click Save.');
   }
 
-  const data = await res.json();
-  if (data.error) throw new Error(data.error);
+  // POST to CF proxy: ?path=/auth/login  (CF forwards body + method to SR)
+  const res = await fetch(`${SR_CF}?path=/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+
+  const text = await res.text();
+  let data;
+  try { data = JSON.parse(text); } catch(_) {
+    throw new Error(`Login response not JSON (HTTP ${res.status}): ${text.slice(0, 200)}`);
+  }
+
+  if (!res.ok || !data.token) {
+    throw new Error(data.message || data.error || `Login failed (HTTP ${res.status})`);
+  }
+
+  _srToken = data.token;
+  _srTokenExpiry = Date.now() + 23 * 60 * 60 * 1000; // 23 hours
+  return _srToken;
+}
+
+/* ── Core proxy call — matches your CF's ?path= + x-sr-token pattern ── */
+async function srProxy(path, method = 'GET', body = null) {
+  const token = await srGetToken();
+
+  const opts = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-sr-token': token          // CF reads this and sets Authorization: Bearer <token>
+    }
+  };
+  if (body && method !== 'GET') opts.body = JSON.stringify(body);
+
+  const res = await fetch(`${SR_CF}?path=${encodeURIComponent(path)}`, opts);
+  const text = await res.text();
+
+  let data;
+  try { data = JSON.parse(text); } catch(_) {
+    throw new Error(`Response not JSON (HTTP ${res.status}): ${text.slice(0, 200)}`);
+  }
+
+  // Token expired mid-session — clear cache and retry once
+  if (res.status === 401) {
+    _srToken = null; _srTokenExpiry = 0;
+    return srProxy(path, method, body);
+  }
+
+  if (!res.ok) {
+    throw new Error(data.message || data.error || `Shiprocket error (HTTP ${res.status})`);
+  }
+
   return data;
 }
 
+/* ── Test connection ── */
 async function srTestConnection() {
   toast('Testing Shiprocket connection…', 'info');
   const statusEl = document.getElementById('srConnectionStatus');
   try {
     srSaveConfig();
-    await srCall('test');
+    _srToken = null; _srTokenExpiry = 0; // Force fresh login
+    await srGetToken();
+    // Verify with a lightweight API call
+    await srProxy('/settings/company', 'GET');
     statusEl.className = 'sr-config-status connected';
     statusEl.innerHTML = '<span class="sr-dot"></span> Connected ✓';
-    toast('✅ Shiprocket connected via Cloud Function!', 'success');
+    toast('✅ Shiprocket connected!', 'success');
   } catch(err) {
+    _srToken = null; _srTokenExpiry = 0;
     statusEl.className = 'sr-config-status disconnected';
     statusEl.innerHTML = '<span class="sr-dot"></span> Failed';
-    toast('Connection failed: '+err.message, 'error');
+    toast('Connection failed: ' + err.message, 'error');
   }
 }
 
+/* ── Build SR order payload ── */
 function buildSrPayload(order) {
-  const items = (order.items||[]).map(i=>({ name: i.name||'Jersey', sku: i.id||'SKU001', units: i.qty||1, selling_price: i.price||0 }));
-  return {
-    orderId:    order.orderId||order.id,
-    orderDate:  new Date(order.createdAt||Date.now()).toISOString().split('T')[0],
-    pickup:     localStorage.getItem('sr_pickup') || 'Primary',
-    channel:    localStorage.getItem('sr_channel') || '',
-    name:       order.customerName||order.name||'Customer',
-    address:    order.address||'',
-    city:       order.city||'',
-    pincode:    String(order.pincode||''),
-    state:      order.state||'',
-    country:    order.country||'India',
-    email:      order.email||'',
-    phone:      String(order.phone||''),
-    items,
-    paymentMethod: order.paymentMethod==='cod'?'COD':'Prepaid',
-    total:      parseFloat(order.total||0),
-    length:     parseFloat(localStorage.getItem('sr_length')||'30'),
-    breadth:    parseFloat(localStorage.getItem('sr_breadth')||'25'),
-    height:     parseFloat(localStorage.getItem('sr_height')||'5'),
-    weight:     parseFloat(localStorage.getItem('sr_weight')||'0.5'),
-    adminNotes: order.adminNotes||''
+  const cfg_pickup  = localStorage.getItem('sr_pickup')  || 'Primary';
+  const cfg_channel = localStorage.getItem('sr_channel') || '';
+  const cfg_length  = parseFloat(localStorage.getItem('sr_length')  || '30');
+  const cfg_breadth = parseFloat(localStorage.getItem('sr_breadth') || '25');
+  const cfg_height  = parseFloat(localStorage.getItem('sr_height')  || '5');
+  const cfg_weight  = parseFloat(localStorage.getItem('sr_weight')  || '0.5');
+
+  const items = (order.items || []).map(i => ({
+    name: i.name || 'Jersey',
+    sku: i.id || 'SKU001',
+    units: i.qty || 1,
+    selling_price: String(i.price || 0)
+  }));
+
+  const payload = {
+    order_id:          order.orderId || order.id,
+    order_date:        new Date(order.createdAt || Date.now()).toISOString().replace('T', ' ').split('.')[0],
+    pickup_location:   cfg_pickup,
+    billing_customer_name: order.customerName || order.name || 'Customer',
+    billing_last_name: '',
+    billing_address:   order.address || '',
+    billing_city:      order.city || '',
+    billing_pincode:   String(order.pincode || ''),
+    billing_state:     order.state || '',
+    billing_country:   order.country || 'India',
+    billing_email:     order.email || '',
+    billing_phone:     String(order.phone || ''),
+    shipping_is_billing: 1,
+    order_items:       items,
+    payment_method:    order.paymentMethod === 'cod' ? 'COD' : 'Prepaid',
+    sub_total:         parseFloat(order.total || 0),
+    length:            cfg_length,
+    breadth:           cfg_breadth,
+    height:            cfg_height,
+    weight:            cfg_weight
   };
+
+  if (cfg_channel) payload.channel_id = cfg_channel;
+  return payload;
 }
 
+/* ── Ship Now ── */
 async function shipNow(orderId) {
-  const order = _allOrders.find(o=>o.id===orderId);
+  const order = _allOrders.find(o => o.id === orderId);
   if (!order) { toast('Order not found', 'error'); return; }
   if (order.srShipmentId) { toast('Already shipped via Shiprocket', 'warning'); return; }
-  toast('Creating Shiprocket order via Cloud Function…', 'info');
+
+  toast('Creating Shiprocket shipment…', 'info');
   try {
-    const result = await srCall('createOrder', { order: buildSrPayload(order) });
-    const { srOrderId, srShipmentId, srAwb } = result;
-    if (!srShipmentId) throw new Error(result.message || JSON.stringify(result));
+    const result = await srProxy('/orders/create/adhoc', 'POST', buildSrPayload(order));
+
+    // SR returns order_id and shipment_id on success
+    const srOrderId    = result.order_id    || result.payload?.order_id;
+    const srShipmentId = result.shipment_id || result.payload?.shipment_id;
+    const srAwb        = result.awb_code    || result.payload?.awb_code || '';
+
+    if (!srShipmentId) {
+      throw new Error(result.message || result.error || 'No shipment_id in response: ' + JSON.stringify(result).slice(0, 300));
+    }
+
     const { db, dbRef, update } = await waitFb();
     await update(dbRef(db, `orders/${orderId}`), {
-      srOrderId, srShipmentId, srAwb: srAwb||'', srCancelled: false,
-      status: 'confirmed', updatedAt: new Date().toISOString()
+      srOrderId: String(srOrderId || ''),
+      srShipmentId: String(srShipmentId),
+      srAwb: srAwb,
+      srCancelled: false,
+      status: 'confirmed',
+      updatedAt: new Date().toISOString()
     });
-    const updatedOrder = { ...order, srOrderId, srShipmentId, srAwb: srAwb||'' };
+
+    const updatedOrder = { ...order, srOrderId, srShipmentId, srAwb };
     renderOrderSrSection(updatedOrder);
-    toast(`Shipment created! AWB: ${srAwb||'pending'}`, 'success');
-  } catch(err) { toast('Shiprocket error: '+err.message, 'error'); }
+    toast(`Shipment created! AWB: ${srAwb || 'will be assigned soon'}`, 'success');
+  } catch(err) {
+    toast('Shiprocket error: ' + err.message, 'error');
+    console.error('shipNow error:', err);
+  }
 }
 
+/* ── Schedule Pickup ── */
 async function schedulePickup(orderId) {
-  const order = _allOrders.find(o=>o.id===orderId);
+  const order = _allOrders.find(o => o.id === orderId);
   if (!order?.srShipmentId) { toast('Ship the order first', 'error'); return; }
   if (order.srPickupScheduled) { toast('Pickup already scheduled', 'warning'); return; }
-  toast('Scheduling pickup via Cloud Function…', 'info');
+
+  toast('Scheduling pickup…', 'info');
   try {
-    const result = await srCall('schedulePickup', { shipmentId: order.srShipmentId });
-    const pickupDate = result.pickupDate || '';
+    const result = await srProxy('/courier/generate/pickup', 'POST', {
+      shipment_id: [Number(order.srShipmentId)]
+    });
+
+    const pickupDate = result.pickup_scheduled_date
+      || result.response?.pickup_scheduled_date
+      || result.data?.pickup_scheduled_date
+      || '';
+
     const { db, dbRef, update } = await waitFb();
     await update(dbRef(db, `orders/${orderId}`), {
-      srPickupScheduled: true, srPickupDate: pickupDate, status: 'shipped', updatedAt: new Date().toISOString()
+      srPickupScheduled: true,
+      srPickupDate: pickupDate,
+      status: 'shipped',
+      updatedAt: new Date().toISOString()
     });
+
     renderOrderSrSection({ ...order, srPickupScheduled: true, srPickupDate: pickupDate });
-    toast('Pickup scheduled'+(pickupDate?' for '+pickupDate:'')+'! 📦', 'success');
-  } catch(err) { toast('Pickup error: '+err.message, 'error'); }
+    toast('Pickup scheduled' + (pickupDate ? ' for ' + pickupDate : '') + '! 📦', 'success');
+  } catch(err) { toast('Pickup error: ' + err.message, 'error'); }
 }
 
+/* ── Download Label ── */
 async function downloadLabel(orderId) {
-  const order = _allOrders.find(o=>o.id===orderId);
+  const order = _allOrders.find(o => o.id === orderId);
   if (!order?.srShipmentId) { toast('No shipment found. Ship this order first.', 'error'); return; }
-  toast('Generating label PDF…', 'info');
+
+  toast('Generating label…', 'info');
   try {
-    const result = await srCall('getLabel', { shipmentId: order.srShipmentId });
-    const labelUrl = result.labelUrl;
-    if (labelUrl) { window.open(labelUrl, '_blank'); toast('Label opened! 🏷', 'success'); }
-    else throw new Error(result.message || 'No label URL returned. Label may not be ready yet.');
-  } catch(err) { toast('Label error: '+err.message, 'error'); }
+    const result = await srProxy('/courier/generate/label', 'POST', {
+      shipment_id: [Number(order.srShipmentId)]
+    });
+
+    const labelUrl = result.label_url || result.response?.label_url || result.data?.label_url;
+    if (labelUrl) {
+      window.open(labelUrl, '_blank');
+      toast('Label opened! 🏷', 'success');
+    } else {
+      throw new Error(result.message || 'Label not ready yet. Try again in a moment.');
+    }
+  } catch(err) { toast('Label error: ' + err.message, 'error'); }
 }
 
+/* ── Download Invoice ── */
 async function downloadInvoice(orderId) {
-  const order = _allOrders.find(o=>o.id===orderId);
+  const order = _allOrders.find(o => o.id === orderId);
   if (!order?.srOrderId) { toast('No Shiprocket order found.', 'error'); return; }
+
   toast('Generating invoice…', 'info');
   try {
-    const result = await srCall('getInvoice', { srOrderId: order.srOrderId });
-    const invoiceUrl = result.invoiceUrl;
-    if (invoiceUrl) { window.open(invoiceUrl, '_blank'); toast('Invoice opened! 🧾', 'success'); }
-    else throw new Error(result.message || 'No invoice URL returned.');
-  } catch(err) { toast('Invoice error: '+err.message, 'error'); }
+    const result = await srProxy('/orders/print/invoice', 'POST', {
+      ids: [Number(order.srOrderId)]
+    });
+
+    const invoiceUrl = result.invoice_url || result.data?.invoice_url;
+    if (invoiceUrl) {
+      window.open(invoiceUrl, '_blank');
+      toast('Invoice opened! 🧾', 'success');
+    } else {
+      throw new Error(result.message || 'Invoice not ready yet.');
+    }
+  } catch(err) { toast('Invoice error: ' + err.message, 'error'); }
 }
 
+/* ── Track Shipment ── */
 async function trackShipment(orderId) {
-  const order = _allOrders.find(o=>o.id===orderId);
-  if (!order?.srAwb) { toast('No AWB number available', 'error'); return; }
+  const order = _allOrders.find(o => o.id === orderId);
+  if (!order?.srAwb) { toast('No AWB number available yet', 'error'); return; }
+
   toast('Fetching tracking info…', 'info');
   try {
-    const result = await srCall('track', { awb: order.srAwb });
-    const shipStatus = result.status || 'Unknown';
-    const location   = result.location || '';
-    toast(`Status: ${shipStatus}${location?' — '+location:''}`, 'info');
-  } catch(err) { toast('Track error: '+err.message, 'error'); }
+    const result = await srProxy(`/courier/track/awb/${order.srAwb}`, 'GET');
+    const td = result.tracking_data;
+    const shipStatus = td?.shipment_status || td?.current_status || result.status || 'Unknown';
+    const location   = td?.current_location || td?.location || '';
+    toast(`Status: ${shipStatus}${location ? ' — ' + location : ''}`, 'info');
+  } catch(err) { toast('Track error: ' + err.message, 'error'); }
 }
 
+/* ── Cancel Shipment ── */
 async function cancelShipment(orderId) {
-  const order = _allOrders.find(o=>o.id===orderId);
+  const order = _allOrders.find(o => o.id === orderId);
   if (!order?.srOrderId) { toast('No Shiprocket order to cancel', 'error'); return; }
-  confirmAction(`Cancel Shiprocket shipment for order ${order.orderId||order.id}?`, async () => {
+
+  confirmAction(`Cancel Shiprocket shipment for order ${order.orderId || order.id}?`, async () => {
     toast('Cancelling shipment…', 'info');
     try {
-      await srCall('cancelOrder', { srOrderId: order.srOrderId });
+      await srProxy('/orders/cancel', 'POST', {
+        ids: [Number(order.srOrderId)]
+      });
+
       const { db, dbRef, update } = await waitFb();
       await update(dbRef(db, `orders/${orderId}`), {
-        status: 'cancelled', srCancelled: true, updatedAt: new Date().toISOString()
+        status: 'cancelled',
+        srCancelled: true,
+        updatedAt: new Date().toISOString()
       });
+
       closeModal('orderModal');
       toast('Shipment cancelled', 'info');
-    } catch(err) { toast('Cancel error: '+err.message, 'error'); }
+    } catch(err) { toast('Cancel error: ' + err.message, 'error'); }
   });
 }
 
+/* ── Shiprocket overview table ── */
 async function refreshShiprocketOverview() {
-  const shipped = _allOrders.filter(o=>o.srShipmentId);
+  const shipped = _allOrders.filter(o => o.srShipmentId);
   const tbody = document.getElementById('shiprocketTable');
   if (!tbody) return;
   if (!shipped.length) { tbody.innerHTML = emptyRow(7, 'No Shiprocket shipments yet.'); return; }
   tbody.innerHTML = shipped.map(o => {
-    const st = o.status||'confirmed';
+    const st = o.status || 'confirmed';
     const badge = {pending:'badge-orange',confirmed:'badge-blue',shipped:'badge-purple',delivered:'badge-green',cancelled:'badge-red'}[st]||'badge-gray';
     return `<tr>
       <td data-label="Order ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(o.orderId||o.id)}</span></td>
       <td data-label="Customer"><strong>${esc(o.customerName||o.name||'—')}</strong></td>
-      <td data-label="AWB">${o.srAwb?`<span class="coupon-code-badge" style="font-size:11px">${esc(o.srAwb)}</span>`:'<span style="color:var(--muted)">—</span>'}</td>
+      <td data-label="AWB">${o.srAwb?`<span class="coupon-code-badge" style="font-size:11px">${esc(o.srAwb)}</span>`:'<span style="color:var(--muted)">Pending</span>'}</td>
       <td data-label="Courier"><span style="font-size:12px;color:var(--text2)">${esc(o.srCourier||'Auto-assigned')}</span></td>
       <td data-label="Pickup Date" style="font-size:12px;color:var(--muted)">${esc(o.srPickupDate||'—')}</td>
       <td data-label="Status"><span class="badge ${badge}">${st}</span></td>
