@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Standard favicon -->
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <!-- Apple devices -->
+  <link rel="apple-touch-icon" href="favicon.png">
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>JERSIFY — Admin Panel v5</title>
@@ -642,6 +647,25 @@
               <div class="media-section-title">🎬 Reels <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(vertical video thumbnails)</span></div>
               <div class="media-boxes-row" id="reelsBoxesRow"></div>
             </div>
+
+            <!-- WOW PICKS -->
+            <div class="media-page-section">
+              <div class="media-section-title">✦ WOW Picks <span style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(curate up to 8 products shown in homepage carousel)</span></div>
+              <div id="wowPicksSection">
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;" id="wowPicksGrid">
+                  <!-- Populated by JS -->
+                  <div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;grid-column:1/-1;">Loading products…</div>
+                </div>
+                <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                  <button class="btn btn-primary" onclick="saveWowPicks()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Save WOW Picks
+                  </button>
+                  <button class="btn btn-ghost" onclick="clearWowPicks()">Clear All</button>
+                  <span style="font-size:11px;color:var(--muted);" id="wowPicksStatus"></span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1212,7 +1236,9 @@ function switchTab(name, el) {
   closeSidebar();
   if (name === 'shiprocket') { srLoadConfig(); refreshShiprocketOverview(); }
   if (name === 'credentials') { loadCredentials(); }
+  if (name === 'media') { buildWowPicksUI(); }
 }
+
 
 /* ─── LOGOUT ─── */
 async function doLogout() {
@@ -1652,6 +1678,108 @@ async function deleteMediaSlot(key) {
     toast(`${slot.label} removed`, 'info');
   });
 }
+
+/* ═══════════════════════════════════════════════
+   WOW PICKS ADMIN
+═══════════════════════════════════════════════ */
+let _wowPicksProducts = [];
+let _wowPicksCurrent = Array(8).fill('');
+let _wowPicksBuilt = false;
+
+async function buildWowPicksUI() {
+  if (_wowPicksBuilt) return;
+  _wowPicksBuilt = true;
+  const grid = document.getElementById('wowPicksGrid');
+  const status = document.getElementById('wowPicksStatus');
+  if (!grid) return;
+  try {
+    const { db, dbRef, get } = await waitFb();
+    // Load all products
+    const snap = await get(dbRef(db, 'products'));
+    _wowPicksProducts = [];
+    if (snap.exists()) {
+      snap.forEach(d => { const p=d.val(); p._id=d.key; if (!p.status||p.status==='active') _wowPicksProducts.push(p); });
+    }
+    // Load saved picks
+    const picksSnap = await get(dbRef(db, 'wowPicks'));
+    if (picksSnap.exists()) {
+      const data = picksSnap.val();
+      for (let i=0;i<8;i++) { _wowPicksCurrent[i] = data[`slot_${i+1}`] || ''; }
+    }
+    // Build dropdowns
+    grid.innerHTML = '';
+    for (let i=0;i<8;i++) {
+      const card = document.createElement('div');
+      card.style.cssText='background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;flex-direction:column;gap:8px;';
+      const lbl = document.createElement('div');
+      lbl.style.cssText='font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;';
+      lbl.textContent = `Slot ${i+1}`;
+      const previewRow = document.createElement('div');
+      previewRow.style.cssText='display:flex;align-items:center;gap:10px;';
+      const thumb = document.createElement('img');
+      thumb.id=`wow_thumb_${i}`;
+      thumb.style.cssText='width:48px;height:48px;border-radius:8px;object-fit:cover;border:1px solid var(--border);display:none;flex-shrink:0;';
+      const sel = document.createElement('select');
+      sel.id=`wow_sel_${i}`;
+      sel.style.cssText='flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--text);outline:none;';
+      // Populate options
+      const defOpt = document.createElement('option'); defOpt.value=''; defOpt.textContent='— None (auto-fill) —'; sel.appendChild(defOpt);
+      _wowPicksProducts.forEach(p => {
+        const opt = document.createElement('option'); opt.value=p._id;
+        opt.textContent = (p.name||'Unnamed') + (p.team ? ` (${Array.isArray(p.team)?p.team.join(', '):p.team})` : '');
+        sel.appendChild(opt);
+      });
+      sel.value = _wowPicksCurrent[i] || '';
+      // Update thumb preview
+      const updateThumb = () => {
+        const prod = _wowPicksProducts.find(p=>p._id===sel.value);
+        if (prod && prod.imgUrl) { thumb.src=prod.imgUrl; thumb.style.display=''; }
+        else { thumb.style.display='none'; }
+      };
+      updateThumb();
+      sel.addEventListener('change', updateThumb);
+      previewRow.appendChild(thumb); previewRow.appendChild(sel);
+      card.appendChild(lbl); card.appendChild(previewRow);
+      grid.appendChild(card);
+    }
+    if (status) status.textContent = `${_wowPicksProducts.length} products loaded`;
+  } catch(e) {
+    grid.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:13px;grid-column:1/-1;">Failed to load products: ${e.message}</div>`;
+  }
+}
+
+async function saveWowPicks() {
+  const status = document.getElementById('wowPicksStatus');
+  if (status) status.textContent = 'Saving…';
+  try {
+    const { db, dbRef, set } = await waitFb();
+    const picks = {};
+    for (let i=0;i<8;i++) {
+      const sel = document.getElementById(`wow_sel_${i}`);
+      picks[`slot_${i+1}`] = sel ? sel.value : '';
+    }
+    await set(dbRef(db, 'wowPicks'), picks);
+    if (status) status.textContent = 'Saved!';
+    toast('WOW Picks saved!', 'success');
+    setTimeout(()=>{ if(status) status.textContent=''; }, 3000);
+  } catch(e) { toast('Save failed: '+e.message, 'error'); if(status) status.textContent=''; }
+}
+
+async function clearWowPicks() {
+  confirmAction('Clear all WOW Picks? The homepage will auto-fill from latest products.', async () => {
+    const { db, dbRef, remove } = await waitFb();
+    await remove(dbRef(db, 'wowPicks'));
+    for (let i=0;i<8;i++) {
+      const sel = document.getElementById(`wow_sel_${i}`);
+      const thumb = document.getElementById(`wow_thumb_${i}`);
+      if (sel) sel.value='';
+      if (thumb) thumb.style.display='none';
+    }
+    toast('WOW Picks cleared', 'info');
+  });
+}
+
+
 
 /* ═══════════════════════════════════════════════
    PRODUCTS
