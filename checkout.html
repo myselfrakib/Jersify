@@ -1149,7 +1149,12 @@
     }
 
     const getCart = () => { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } };
-    const saveCart = c => localStorage.setItem('jersify_cart', JSON.stringify(c));
+    const saveCart = c => {
+      localStorage.setItem('jersify_cart', JSON.stringify(c));
+      if (currentUser) {
+        set(ref(db, `users/${currentUser.uid}/cart`), c).catch(e => console.warn('[Cart] DB write failed:', e.message));
+      }
+    };
     const getSavedAddresses = () => { try { return JSON.parse(localStorage.getItem('jersify_addresses') || '[]'); } catch { return []; } };
     const saveAddressLocal = a => { const addrs = getSavedAddresses(); addrs.unshift({ ...a, id: Date.now(), tag: 'Home' }); localStorage.setItem('jersify_addresses', JSON.stringify(addrs.slice(0, 5))); };
 
@@ -1426,6 +1431,7 @@
         });
         try { if (uid && uid !== 'anonymous') await update(ref(db, `users/${uid}/orders`), { [orderId]: true }); } catch (e) {}
         localStorage.removeItem('jersify_cart');
+        if (uid && uid !== 'anonymous') set(ref(db, `users/${uid}/cart`), []).catch(e => console.warn(e));
         document.getElementById('loading').style.display = 'none';
         const payMethod = pm === 'partial_cod' ? `Partial COD (₹${payload.pcodPayNow} paid · ₹${payload.pcodPayOnDelivery} on delivery)` : 'Online Payment';
         showSuccessScreen(orderId, name, fullTotal, selectedSize, payMethod, pm === 'partial_cod', payload.pcodPayOnDelivery || 0);
