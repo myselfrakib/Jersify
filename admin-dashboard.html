@@ -1161,6 +1161,62 @@
   </div>
 </div>
 
+<!-- ══ MANUAL REVIEW MODAL ══ -->
+<div class="modal-overlay" id="manualReviewModal">
+  <div class="modal" style="width:min(500px,95vw)">
+    <div class="modal-header">
+      <div class="modal-title">Add Manual Review</div>
+      <button class="modal-close" onclick="closeModal('manualReviewModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" style="gap:12px;">
+        <div class="form-group span-2">
+          <label>Select Order *</label>
+          <select id="rev_order_select" onchange="onReviewOrderChange()">
+            <option value="">-- Choose Order --</option>
+            <option value="custom">-- Custom / Other Order ID --</option>
+          </select>
+        </div>
+        <div class="form-group span-2" id="rev_custom_order_group" style="display:none;">
+          <label>Custom Order ID *</label>
+          <input type="text" id="rev_order_id" placeholder="e.g. JRS-1780650884801"/>
+        </div>
+        <div class="form-group span-2">
+          <label>Customer Name *</label>
+          <input type="text" id="rev_user_name" placeholder="rakib sk"/>
+        </div>
+        <div class="form-group">
+          <label>Rating *</label>
+          <select id="rev_rating">
+            <option value="5">5 ★★★★★</option>
+            <option value="4">4 ★★★★☆</option>
+            <option value="3">3 ★★★☆☆</option>
+            <option value="2">2 ★★☆☆☆</option>
+            <option value="1">1 ★☆☆☆☆</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>User ID <span style="font-size:9px;color:var(--muted);text-transform:none;font-weight:400">(optional)</span></label>
+          <input type="text" id="rev_user_id" placeholder="e.g. mMb09zeT91cOLnfa..."/>
+        </div>
+        <div class="form-group span-2">
+          <label>Review Text *</label>
+          <textarea id="rev_text" placeholder="very good" style="min-height:80px;"></textarea>
+        </div>
+        <div class="form-group span-2">
+          <label>Review Image / Media <span style="font-size:9px;color:var(--muted);text-transform:none;font-weight:400">(optional)</span></label>
+          <input type="file" id="rev_media_file" accept="image/*,video/*"/>
+          <input type="text" id="rev_media_url" placeholder="Or paste media URL direct..." style="margin-top:6px;"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('manualReviewModal')">Cancel</button>
+      <button class="btn btn-primary" id="saveReviewBtn" onclick="saveManualReview()">Save Review</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ CONFIRM MODAL ══ -->
 <div class="modal-overlay confirm-modal" id="confirmModal">
   <div class="modal">
@@ -3537,6 +3593,170 @@ async function deleteReviewById(id) {
       toast('Delete failed: ' + err.message, 'error');
     }
   });
+}
+
+/* ═══════════════════════════════════════════════
+   MANUAL REVIEWS
+   ═══════════════════════════════════════════════ */
+function openManualReviewModal() {
+  setV('rev_order_id', '');
+  setV('rev_user_name', '');
+  setV('rev_user_id', '');
+  setV('rev_text', '');
+  setV('rev_media_url', '');
+  const mediaFile = document.getElementById('rev_media_file');
+  if (mediaFile) mediaFile.value = '';
+  setV('rev_rating', '5');
+
+  const orderSel = document.getElementById('rev_order_select');
+  if (orderSel) {
+    orderSel.innerHTML = `
+      <option value="">-- Choose Order --</option>
+      <option value="custom">-- Custom / Other Order ID --</option>
+    `;
+    const sortedOrders = [..._allOrders].sort((a,b) => {
+      const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return tB - tA;
+    });
+
+    sortedOrders.forEach(o => {
+      const id = o.orderId || o.id;
+      const name = o.customerName || o.name || 'Unknown';
+      const opt = document.createElement('option');
+      opt.value = o.id;
+      opt.textContent = `${id} - ${name}`;
+      orderSel.appendChild(opt);
+    });
+  }
+
+  const customGroup = document.getElementById('rev_custom_order_group');
+  if (customGroup) customGroup.style.display = 'none';
+
+  openModal('manualReviewModal');
+}
+
+function onReviewOrderChange() {
+  const select = document.getElementById('rev_order_select');
+  const customGroup = document.getElementById('rev_custom_order_group');
+  const userNameInput = document.getElementById('rev_user_name');
+  const userIdInput = document.getElementById('rev_user_id');
+
+  if (!select) return;
+
+  if (select.value === 'custom') {
+    if (customGroup) customGroup.style.display = 'block';
+    if (userNameInput) userNameInput.value = '';
+    if (userIdInput) userIdInput.value = '';
+  } else if (select.value) {
+    if (customGroup) customGroup.style.display = 'none';
+    const order = _allOrders.find(o => o.id === select.value);
+    if (order) {
+      if (userNameInput) userNameInput.value = order.customerName || order.name || '';
+      if (userIdInput) userIdInput.value = order.userId || '';
+    }
+  } else {
+    if (customGroup) customGroup.style.display = 'none';
+    if (userNameInput) userNameInput.value = '';
+    if (userIdInput) userIdInput.value = '';
+  }
+}
+
+async function saveManualReview() {
+  const select = document.getElementById('rev_order_select').value;
+  let orderId = '';
+  let dbKey = '';
+  let orderObj = null;
+
+  if (select === 'custom') {
+    orderId = getV('rev_order_id');
+    dbKey = orderId;
+  } else if (select) {
+    orderObj = _allOrders.find(o => o.id === select);
+    if (orderObj) {
+      orderId = orderObj.orderId || orderObj.id;
+      dbKey = orderObj.id;
+    }
+  }
+
+  if (!orderId) {
+    toast('Order ID is required', 'error');
+    return;
+  }
+
+  const userName = getV('rev_user_name');
+  if (!userName) {
+    toast('Customer name is required', 'error');
+    return;
+  }
+
+  const text = getV('rev_text');
+  if (!text) {
+    toast('Review text is required', 'error');
+    return;
+  }
+
+  const rating = parseInt(getV('rev_rating')) || 5;
+  const userId = getV('rev_user_id') || orderObj?.userId || 'admin_manual';
+  
+  const btn = document.getElementById('saveReviewBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+  }
+
+  try {
+    let mediaUrl = getV('rev_media_url');
+    const mediaFile = document.getElementById('rev_media_file')?.files[0];
+
+    if (mediaFile) {
+      toast('Uploading review media…', 'info');
+      const { storage, sRef, uploadBytesResumable, getDownloadURL } = await waitFb();
+      const safeName = mediaFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const fileRef = sRef(storage, `reviews/${Date.now()}_${safeName}`);
+      const task = await uploadBytesResumable(fileRef, mediaFile, { contentType: mediaFile.type });
+      mediaUrl = await getDownloadURL(task.ref);
+    }
+
+    const reviewData = {
+      orderId: orderId,
+      userName: userName,
+      userId: userId,
+      rating: rating,
+      text: text,
+      createdAt: Date.now()
+    };
+
+    if (mediaUrl) {
+      const isVideo = mediaFile ? mediaFile.type.startsWith('video/') : isVideoUrl(mediaUrl);
+      reviewData.media = [{
+        url: mediaUrl,
+        type: isVideo ? 'video' : 'image'
+      }];
+    }
+
+    const { db, dbRef, set, update } = await waitFb();
+    
+    await set(dbRef(db, `reviews/${dbKey}`), reviewData);
+    
+    if (dbKey && select !== 'custom') {
+      try {
+        await update(dbRef(db, `orders/${dbKey}`), { reviewSubmitted: true });
+      } catch (e) {
+        console.warn('Failed to update order reviewSubmitted status:', e);
+      }
+    }
+
+    closeModal('manualReviewModal');
+    toast('Manual review added! 💬', 'success');
+  } catch (err) {
+    toast('Failed to save review: ' + err.message, 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Save Review';
+    }
+  }
 }
 </script>
 </body>
