@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <!-- Standard favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260510-WA0000%20(1).jpg?alt=media&token=f4429d90-710f-4ef2-8587-ef383e89e622">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.png" type="image/png">
   <!-- Apple devices -->
-  <link rel="apple-touch-icon" sizes="180x180" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260510-WA0000%20(1).jpg?alt=media&token=f4429d90-710f-4ef2-8587-ef383e89e622">
+  <link rel="apple-touch-icon" href="favicon.png">
   <!-- Preload splash + header logo — fetches before anything else so it renders instantly -->
   <link rel="preload" as="image" fetchpriority="high" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3">
 <meta charset="UTF-8" />
@@ -249,26 +250,6 @@
     .promo-card .promo-label { position: absolute; bottom: clamp(6px, 1vw, 10px); left: clamp(8px, 1.5vw, 12px); right: clamp(8px, 1.5vw, 12px); color: #fff; font-size: clamp(9px, 1.3vw, 12px); font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .promo-card-blank { flex: 0 0 var(--promo-w); height: var(--promo-h); border-radius: clamp(12px, 2vw, 18px); overflow: hidden; position: relative; background: #f2f2f2; border: 1.5px dashed rgba(17,17,17,.10); box-shadow: var(--shadow-soft); scroll-snap-align: start; display: none; }
 
-    /* ── REELS ── */
-    .reels { padding: 0 clamp(14px, 3vw, 40px) var(--space-lg); }
-    .reels-row { display: flex; gap: clamp(10px, 2vw, 18px); overflow-x: auto; scrollbar-width: none; padding-bottom: 6px; scroll-snap-type: x mandatory; }
-    .reels-row::-webkit-scrollbar { display: none }
-    .reel-card { flex: 0 0 var(--reel-w); height: var(--reel-h); border-radius: clamp(18px, 2.5vw, 26px); overflow: hidden; background: #111; box-shadow: var(--shadow-card); position: relative; border: 1px solid rgba(0,0,0,.05); scroll-snap-align: center; cursor: pointer; transition: box-shadow .2s, transform .2s; }
-    .reel-card:hover { box-shadow: 0 18px 42px rgba(0,0,0,.22); transform: translateY(-3px); }
-    .reel-card video.reel-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-    .reel-card .thumb { position: absolute; inset: 0; background: center/cover; filter: saturate(1.15); }
-    .reel-card::before { content: ""; position: absolute; inset: 0; z-index: 1; background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.15), transparent 20%), linear-gradient(180deg, rgba(198,31,47,.15), rgba(0,0,0,.3)); }
-    .reel-play { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; pointer-events: none; }
-    .reel-play svg { width: clamp(30px, 5vw, 42px); height: clamp(30px, 5vw, 42px); opacity: .82; filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); }
-
-    /* ── REEL MODAL ── */
-    #reelModal { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.94); align-items: center; justify-content: center; }
-    #reelModal.open { display: flex; }
-    #reelModal .reel-modal-inner { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-    #reelModal video { max-width: 100vw; max-height: 100vh; width: 100%; height: 100%; object-fit: contain; display: block; }
-    #reelModal .reel-close { position: absolute; top: clamp(14px, 2.5vw, 24px); right: clamp(14px, 2.5vw, 24px); z-index: 10; width: clamp(38px, 5vw, 48px); height: clamp(38px, 5vw, 48px); border-radius: 50%; background: rgba(255,255,255,.14); backdrop-filter: blur(8px); border: 1.5px solid rgba(255,255,255,.28); color: #fff; font-size: clamp(15px, 2vw, 20px); font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s; line-height: 1; }
-    #reelModal .reel-close:hover { background: rgba(255,255,255,.26); }
-    #reelModal .reel-shop-cta { position: absolute; bottom: clamp(32px, 6vw, 56px); left: 50%; transform: translateX(-50%); background: linear-gradient(180deg, var(--accent), var(--accent2)); color: #fff; border: none; border-radius: 999px; padding: clamp(10px, 1.8vw, 15px) clamp(24px, 4vw, 36px); font-size: clamp(12px, 1.8vw, 16px); font-weight: 800; box-shadow: 0 10px 28px rgba(198,31,47,.4); cursor: pointer; letter-spacing: .3px; white-space: nowrap; }
 
     /* ── GALLERY ── */
     .gallery { padding: 0 clamp(14px, 3vw, 40px) var(--space-lg); }
@@ -491,33 +472,7 @@
       display: block;
     }
 
-    /* Reel card skeleton */
-    .reel-img-wrap {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-    }
-    .reel-img-wrap::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      background: linear-gradient(90deg, #151515 25%, #252525 50%, #151515 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      transition: opacity .35s ease;
-      pointer-events: none;
-    }
-    .reel-img-wrap.loaded::before { opacity: 0; }
-    .reel-img-wrap img,
-    .reel-img-wrap video {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+
 
     /* Gallery item skeleton */
     .gallery-img-wrap {
@@ -788,11 +743,7 @@
       <div class="chip-row" id="clubRow"></div>
     </section>
 
-    <!-- REELS -->
-    <section class="reels" id="reelsSection" style="display:none;">
-      <h3 style="font-size:var(--fs-h3);font-weight:900;margin-bottom:var(--space-sm);">Reels</h3>
-      <div class="reels-row" id="reelsRow"></div>
-    </section>
+
 
     <!-- GALLERY -->
     <section class="gallery" id="gallerySection" style="display:none;">
@@ -828,14 +779,7 @@
     </footer>
   </div>
 
-  <!-- REEL MODAL -->
-  <div id="reelModal" role="dialog" aria-modal="true" aria-label="Reel player">
-    <div class="reel-modal-inner">
-      <video id="reelModalVideo" playsinline loop></video>
-      <button class="reel-close" id="reelClose" aria-label="Close reel">✕</button>
-      <button class="reel-shop-cta" id="reelShopBtn">Shop Now</button>
-    </div>
-  </div>
+
 
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
@@ -963,25 +907,7 @@
       vp.addEventListener("click", e => { if (totalDrag > DRAG_THRESHOLD) { e.stopPropagation(); e.preventDefault(); } totalDrag = 0; }, true);
     })();
 
-    /* REEL MODAL */
-    const reelModal    = document.getElementById("reelModal");
-    const reelModalVid = document.getElementById("reelModalVideo");
-    const reelClose    = document.getElementById("reelClose");
-    const reelShopBtn  = document.getElementById("reelShopBtn");
-    let _reelShopLink  = "shop.html";
 
-    function openReel(src, link) {
-      _reelShopLink = (link && link.trim()) ? link.trim() : "shop.html";
-      reelModalVid.src = src; reelModalVid.muted = false;
-      reelModal.classList.add("open"); document.body.style.overflow = "hidden";
-      reelModalVid.play().catch(() => { reelModalVid.muted = true; reelModalVid.play(); });
-    }
-    function closeReel() { reelModalVid.pause(); reelModalVid.src = ""; reelModal.classList.remove("open"); document.body.style.overflow = ""; }
-
-    reelShopBtn.addEventListener("click", () => { window.location.href = _reelShopLink; });
-    reelClose.addEventListener("click", closeReel);
-    reelModal.addEventListener("click", e => { if (e.target === reelModal) closeReel(); });
-    document.addEventListener("keydown", e => { if (e.key === "Escape") closeReel(); });
 
     /* SEARCH */
     const searchInput = document.getElementById("searchInput");
@@ -1385,58 +1311,7 @@
           document.getElementById("promoBlank2").style.display = "flex";
         }
 
-        /* ── REELS ── */
-        const reelsRow     = document.getElementById("reelsRow");
-        const reelsSection = document.getElementById("reelsSection");
-        if (reels.length > 0) {
-          reelsRow.innerHTML = reels.map(m => {
-            const url = getUrl(m), link = (m.link && m.link.trim()) ? m.link.trim() : "shop.html", vid = isVideo(m);
-            const mediaInner = vid
-              ? `<div class="reel-img-wrap"><video class="reel-vid" src="${url}" muted loop playsinline preload="metadata"></video></div>`
-              : `<div class="reel-img-wrap"><div class="thumb" style="background-image:url('${url}')"></div></div>`;
-            return `<div class="reel-card" data-src="${url}" data-link="${link}"
-              onmouseenter="this.querySelector('video')?.play()"
-              onmouseleave="const v=this.querySelector('video');if(v){v.pause();v.currentTime=0}">
-              ${mediaInner}
-              <div class="reel-play"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
-            </div>`;
-          }).join("");
-          reelsSection.style.display = "block";
 
-          reelsRow.querySelectorAll(".reel-img-wrap").forEach(wrap => {
-            const vid = wrap.querySelector("video");
-            const thumb = wrap.querySelector(".thumb");
-            if (vid) {
-              if (vid.readyState >= 1) { wrap.classList.add("loaded"); }
-              else {
-                vid.addEventListener("loadedmetadata", () => wrap.classList.add("loaded"), { once: true });
-                vid.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
-              }
-            } else if (thumb) {
-              const bgUrl = (thumb.style.backgroundImage || "").replace(/^url\(['"]?/, "").replace(/['"]?\)$/, "");
-              if (bgUrl) {
-                const probe = new Image();
-                probe.onload  = () => wrap.classList.add("loaded");
-                probe.onerror = () => wrap.classList.add("loaded");
-                probe.src = bgUrl;
-              } else {
-                wrap.classList.add("loaded");
-              }
-            }
-          });
-
-          reelsRow.querySelectorAll(".reel-card").forEach(card => {
-            card.addEventListener("click", () => openReel(card.dataset.src, card.dataset.link));
-          });
-          const obs = new IntersectionObserver(entries => {
-            entries.forEach(e => {
-              const v = e.target.querySelector("video");
-              if (!v) return;
-              e.isIntersecting ? v.play().catch(()=>{}) : (v.pause(), v.currentTime=0);
-            });
-          }, { threshold: 0.6 });
-          reelsRow.querySelectorAll(".reel-card").forEach(c => obs.observe(c));
-        }
 
         /* ── GALLERY ── */
         const galleryGrid    = document.getElementById("galleryGrid");
