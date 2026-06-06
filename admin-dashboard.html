@@ -2701,7 +2701,7 @@ async function srFetchCouriers() {
       const isRecommended = c.is_recommended || false;
       const isSelected = i === 0;
       return `
-      <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;background:${isSelected?'var(--green-bg)':'var(--surface)'};transition:background .15s;" onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='${isSelected?'var(--green-bg)':'var(--surface)'}';">
+      <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;${isRecommended ? 'border: 2px solid #ffb3b3; border-radius: 6px; margin-bottom: 4px;' : 'border-bottom:1px solid var(--border);'}cursor:pointer;background:${isSelected?'var(--green-bg)':'var(--surface)'};transition:background .15s;" onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='${isSelected?'var(--green-bg)':'var(--surface)'}';">
         <input type="radio" name="sr_selected_courier" value="${c.courier_company_id}" data-rate="${c.rate}" data-name="${esc(c.courier_name)}" ${isSelected?'checked':''} style="accent-color:var(--accent);width:16px;height:16px;" />
         <div style="flex:1;">
           <div style="font-weight:700;color:var(--text);font-size:13px;display:flex;align-items:center;gap:6px;">
