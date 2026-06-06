@@ -195,27 +195,6 @@
       letter-spacing: 0.5px;
     }
     .hero-stat-pill strong { color: var(--pill-accent, #ffaaaa); }
-    .hero-captain-float {
-      position: absolute;
-      right: 16px;
-      bottom: 0;
-      width: 155px;
-      height: 195px;
-      z-index: 6;
-      animation: float-hero 3s ease-in-out infinite;
-      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5));
-      transition: opacity 0.4s ease;
-    }
-    .hero-captain-float img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      object-position: bottom center;
-    }
-    @keyframes float-hero {
-      0%,100% { transform: translateY(0) rotate(-5deg); }
-      50% { transform: translateY(-10px) rotate(-5deg); }
-    }
     @keyframes slide-up {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -326,94 +305,6 @@
       font-weight: 700;
       color: var(--pill-accent, #ffaaaa);
       font-family: 'Barlow Condensed', sans-serif;
-    }
-
-    /* ========== FEATURED PLAYER ========== */
-    .featured-player {
-      margin: 20px 20px 0;
-      border-radius: 22px;
-      overflow: hidden;
-      background: linear-gradient(135deg, var(--dark) 0%, var(--dark2,#3a0000) 100%);
-      box-shadow: 0 12px 36px rgba(var(--sky-rgb),0.3);
-      position: relative;
-    }
-    .fp-stripes {
-      position: absolute; inset: 0;
-      background: repeating-linear-gradient(90deg,
-        rgba(var(--sky-rgb),0.07) 0px, rgba(var(--sky-rgb),0.07) 20px,
-        transparent 20px, transparent 40px);
-    }
-    .fp-content {
-      position: relative; z-index: 2;
-      padding: 20px;
-      display: flex; gap: 16px;
-      align-items: flex-start;
-    }
-    .fp-left { flex: 1; }
-    .fp-kicker {
-      font-size: 10px; font-weight: 700;
-      letter-spacing: 2px; text-transform: uppercase;
-      color: var(--pill-accent, #ffaaaa);
-      margin-bottom: 6px;
-      font-family: 'Barlow Condensed', sans-serif;
-    }
-    .fp-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 38px; line-height: 0.9;
-      color: #fff; letter-spacing: 1px;
-      margin-bottom: 12px;
-    }
-    .fp-role {
-      font-size: 11px; font-weight: 600;
-      color: var(--pill-accent, rgba(255,150,150,0.9));
-      letter-spacing: 1px; text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-    .fp-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-    .fp-stat {
-      background: rgba(255,255,255,0.07);
-      border-radius: 12px; padding: 8px 10px;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .fp-stat-val {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 22px; font-weight: 800;
-      color: var(--pill-accent, #ffaaaa);
-      line-height: 1;
-    }
-    .fp-stat-key {
-      font-size: 9px; font-weight: 600;
-      color: rgba(255,255,255,0.5);
-      text-transform: uppercase; letter-spacing: 0.5px;
-      margin-top: 2px;
-    }
-    .fp-right {
-      width: 120px; flex-shrink: 0;
-      display: flex; flex-direction: column;
-      align-items: center; gap: 10px;
-    }
-    .fp-jersey {
-      width: 110px; height: 130px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.3s ease;
-    }
-    .fp-jersey img {
-      width: 110px; height: 130px;
-      object-fit: contain;
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
-    }
-    .fp-number-overlay {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 13px; letter-spacing: 1px;
-      color: rgba(255,255,255,0.8);
-      text-align: center;
     }
 
     /* ========== PRODUCTS ========== */
@@ -877,12 +768,6 @@ const PAGE_DATA = {
     bannerTitle:"The Invincibles",
     bannerDesc:"2003/04 — The only side in Premier League history to go an entire season unbeaten. 49 games, 0 defeats.",
     bannerYears:["1998 Double","2002 Double","2004 Invincible"],
-    captainKicker:"⭐ Captain · Midfielder",
-    captainName:"MARTIN<br>ØDEGAARD",
-    captainRole:"No. 8 · Arsenal FC",
-    captainStats:[{v:"58",k:"Goals"},{v:"72",k:"Assists"},{v:"180",k:"Apps"},{v:"🔴",k:"The Captain"}],
-    captainOverlay:"★ THE CAPTAIN ★",
-    captainSvgFill:"#EF0107", captainSvgNum:"8", captainSvgLabel:"AFC",
     shopTitle:"Shop Arsenal",
     timeline:[
       {dot:"🏆",year:"LONDON · 2003/04",event:"The Invincibles",detail:"Arsène Wenger's masterpiece — 38 games, 26 wins, 12 draws. The only side to win a Premier League title unbeaten."},
@@ -909,12 +794,6 @@ const PAGE_DATA = {
     bannerTitle:"Més Que Un Club",
     bannerDesc:"Five-time Champions League winners with the greatest academy in football.",
     bannerYears:["1992","2006","2009","2011","2015"],
-    captainKicker:"⭐ Prodigy · Forward",
-    captainName:"LAMINE<br>YAMAL",
-    captainRole:"No. 19 · FC Barcelona",
-    captainStats:[{v:"23",k:"Goals"},{v:"21",k:"Assists"},{v:"114",k:"Apps"},{v:"1×",k:"Euro Winner"}],
-    captainOverlay:"★ LA JOYA ★",
-    captainSvgFill:"#A50044",captainSvgNum:"19",captainSvgLabel:"FCB",
     shopTitle:"Shop Barcelona",
     timeline:[
       {dot:"🏆",year:"EUROPE · 2015",event:"Treble Winners",detail:"Messi, Neymar, Suárez — the MSN trinity conquers all. UCL, La Liga and Copa del Rey in one season."},
@@ -941,12 +820,6 @@ const PAGE_DATA = {
     bannerTitle:"Pride of London",
     bannerDesc:"Two-time UCL champions — the Blues have conquered Europe and England.",
     bannerYears:["2012","2021"],
-    captainKicker:"⭐ Star · Midfielder",
-    captainName:"COLE<br>PALMER",
-    captainRole:"No. 20 · Chelsea FC",
-    captainStats:[{v:"33",k:"Goals"},{v:"18",k:"Assists"},{v:"54",k:"Apps"},{v:"1×",k:"PL YPOTY"}],
-    captainOverlay:"★ COLD PALMER ★",
-    captainSvgFill:"#034694",captainSvgNum:"20",captainSvgLabel:"CFC",
     shopTitle:"Shop Chelsea",
     timeline:[
       {dot:"🏆",year:"PORTO · 2021",event:"Champions League Winners",detail:"Thomas Tuchel's Chelsea defeat Man City 1-0. Havertz coolly slots home for a famous triumph."},
@@ -972,12 +845,6 @@ const PAGE_DATA = {
     bannerTitle:"You'll Never Walk Alone",
     bannerDesc:"Six-time European champions — the most successful English club on the continent.",
     bannerYears:["1977","1978","1981","1984","2005","2019"],
-    captainKicker:"⭐ Captain · Forward",
-    captainName:"MOHAMED<br>SALAH",
-    captainRole:"No. 11 · Liverpool FC",
-    captainStats:[{v:"228",k:"Goals"},{v:"93",k:"Assists"},{v:"366",k:"Apps"},{v:"3×",k:"PL Top Scorer"}],
-    captainOverlay:"★ THE EGYPTIAN KING ★",
-    captainSvgFill:"#C8102E",captainSvgNum:"11",captainSvgLabel:"LFC",
     shopTitle:"Shop Liverpool",
     timeline:[
       {dot:"🏆",year:"MADRID · 2019",event:"Champions League Winners",detail:"Defeating Tottenham 2–0 in the final. Salah and Origi seal a sixth European crown."},
@@ -1004,12 +871,6 @@ const PAGE_DATA = {
     bannerTitle:"The Centurions",
     bannerDesc:"Treble winners in 2023 — Guardiola's City are a modern football dynasty.",
     bannerYears:["2023 Treble"],
-    captainKicker:"⭐ Star · Striker",
-    captainName:"ERLING<br>HAALAND",
-    captainRole:"No. 9 · Manchester City",
-    captainStats:[{v:"105",k:"Goals"},{v:"14",k:"Assists"},{v:"126",k:"Apps"},{v:"2×",k:"PL Golden Boot"}],
-    captainOverlay:"★ THE VIKING ★",
-    captainSvgFill:"#6CABDD",captainSvgNum:"9",captainSvgLabel:"MCFC",
     shopTitle:"Shop Man City",
     timeline:[
       {dot:"🏆",year:"ISTANBUL · 2023",event:"Treble Winners",detail:"Guardiola's greatest achievement. UCL, PL and FA Cup — the first English men's club treble since 1999."},
@@ -1036,12 +897,6 @@ const PAGE_DATA = {
     bannerTitle:"Theatre of Dreams",
     bannerDesc:"Three-time UCL winners — England's most decorated and storied club.",
     bannerYears:["1968","1999","2008"],
-    captainKicker:"⭐ Captain · Midfielder",
-    captainName:"BRUNO<br>FERNANDES",
-    captainRole:"No. 8 · Manchester United",
-    captainStats:[{v:"79",k:"Goals"},{v:"66",k:"Assists"},{v:"242",k:"Apps"},{v:"3×",k:"POTY"}],
-    captainOverlay:"★ MAGNIFICO ★",
-    captainSvgFill:"#DA291C",captainSvgNum:"8",captainSvgLabel:"MUFC",
     shopTitle:"Shop Man United",
     timeline:[
       {dot:"🏆",year:"MOSCOW · 2008",event:"Champions League Winners",detail:"Ronaldo's header and Tevez's contribution. Penalties decided it over Chelsea — a pulsating night."},
@@ -1068,12 +923,6 @@ const PAGE_DATA = {
     bannerTitle:"Hala Madrid",
     bannerDesc:"15-time Champions League winners — the most successful club in European history.",
     bannerYears:["2022","2024"],
-    captainKicker:"⭐ Superstar · Forward",
-    captainName:"VINÍCIUS<br>JÚNIOR",
-    captainRole:"No. 7 · Real Madrid CF",
-    captainStats:[{v:"93",k:"Goals"},{v:"71",k:"Assists"},{v:"268",k:"Apps"},{v:"2×",k:"UCL Winner"}],
-    captainOverlay:"★ MAGIC ★",
-    captainSvgFill:"#f0f0f0",captainSvgNum:"7",captainSvgLabel:"RMCF",
     shopTitle:"Shop Real Madrid",
     timeline:[
       {dot:"🏆",year:"LONDON · 2024",event:"15th Champions League",detail:"Bellingham and Vinicius fire Real to yet another European crown — defying all expectations."},
@@ -1100,12 +949,6 @@ const PAGE_DATA = {
     bannerTitle:"Ici C'est Paris",
     bannerDesc:"France's most dominant club with 12 Ligue 1 titles in the modern era.",
     bannerYears:["2020 UCL Final","2024 UCL SF"],
-    captainKicker:"⭐ Star · Forward",
-    captainName:"OUSMANE<br>DEMBÉLÉ",
-    captainRole:"No. 10 · Paris Saint-Germain",
-    captainStats:[{v:"26",k:"Goals"},{v:"25",k:"Assists"},{v:"78",k:"Apps"},{v:"1×",k:"World Cup"}],
-    captainOverlay:"★ LE MAGICIEN ★",
-    captainSvgFill:"#004170",captainSvgNum:"10",captainSvgLabel:"PSG",
     shopTitle:"Shop PSG",
     timeline:[
       {dot:"🏆",year:"PARIS · 2024",event:"UCL Semi-Finals",detail:"PSG reach the last four of the Champions League in the post-Mbappé era. A new chapter begins."},
@@ -1132,12 +975,6 @@ const PAGE_DATA = {
     bannerTitle:"World Cup Champions",
     bannerDesc:"Three-time champions — the greatest football nation in the modern era.",
     bannerYears:["1978","1986","2022"],
-    captainKicker:"⭐ Captain · Forward",
-    captainName:"LIONEL<br>MESSI",
-    captainRole:"No. 10 · Inter Miami CF",
-    captainStats:[{v:"108",k:"Goals"},{v:"56",k:"Assists"},{v:"180",k:"Caps"},{v:"8×",k:"Ballon d'Or"}],
-    captainOverlay:"★ GOAT ★",
-    captainSvgFill:"#74ACDF",captainSvgNum:"10",captainSvgLabel:"AFA",
     shopTitle:"Shop Argentina",
     timeline:[
       {dot:"🏆",year:"QATAR · 2022",event:"World Cup Champions",detail:"Messi's greatest moment — a masterclass final vs France, decided on penalties. The GOAT crowns his career."},
@@ -1164,12 +1001,6 @@ const PAGE_DATA = {
     bannerTitle:"World Cup Legends",
     bannerDesc:"Five-time World Cup champions — the most decorated nation in football history.",
     bannerYears:["1958","1962","1970","1994","2002"],
-    captainKicker:"⭐ Legend · Forward",
-    captainName:"NEYMAR<br>JR",
-    captainRole:"No. 10 · Al-Hilal SFC",
-    captainStats:[{v:"79",k:"Goals"},{v:"54",k:"Assists"},{v:"128",k:"Caps"},{v:"1×",k:"Ballon Nom."}],
-    captainOverlay:"★ O REI ★",
-    captainSvgFill:"#FFDF00",captainSvgNum:"10",captainSvgLabel:"CBF",
     shopTitle:"Shop Brazil",
     timeline:[
       {dot:"🏆",year:"JAPAN/S.KOREA · 2002",event:"5th World Cup Title",detail:"Ronaldo, Ronaldinho and Rivaldo — Brazil's Seleção at its irresistible best. The last great triumph."},
@@ -1196,12 +1027,6 @@ const PAGE_DATA = {
     bannerTitle:"Les Bleus Dynasty",
     bannerDesc:"Two-time World Cup champions with a golden generation of talent.",
     bannerYears:["1998","2018"],
-    captainKicker:"⭐ Captain · Forward",
-    captainName:"KYLIAN<br>MBAPPÉ",
-    captainRole:"No. 7 · Real Madrid CF",
-    captainStats:[{v:"47",k:"Goals"},{v:"36",k:"Assists"},{v:"82",k:"Caps"},{v:"1×",k:"Golden Boot"}],
-    captainOverlay:"★ LE PHÉNOMÈNE ★",
-    captainSvgFill:"#002654",captainSvgNum:"7",captainSvgLabel:"FFF",
     shopTitle:"Shop France",
     timeline:[
       {dot:"🏆",year:"RUSSIA · 2018",event:"World Cup Champions",detail:"Mbappé becomes only second teenager to score in a World Cup final. France dominate 4-2 vs Croatia."},
@@ -1228,12 +1053,6 @@ const PAGE_DATA = {
     bannerTitle:"Die Mannschaft Legacy",
     bannerDesc:"Four-time World Cup champions — relentless precision and engineering excellence.",
     bannerYears:["1954","1974","1990","2014"],
-    captainKicker:"⭐ Legend · Midfielder",
-    captainName:"TONI<br>KROOS",
-    captainRole:"No. 8 · Retired Legend",
-    captainStats:[{v:"17",k:"Goals"},{v:"19",k:"Assists"},{v:"114",k:"Caps"},{v:"6×",k:"UCL Winner"}],
-    captainOverlay:"★ MAESTRO ★",
-    captainSvgFill:"#ffffff",captainSvgNum:"8",captainSvgLabel:"DFB",
     shopTitle:"Shop Germany",
     timeline:[
       {dot:"🏆",year:"BRAZIL · 2014",event:"4th World Cup Title",detail:"Götze's extra-time winner against Argentina. Kroos, Müller and a nation in ecstasy."},
@@ -1260,12 +1079,6 @@ const PAGE_DATA = {
     bannerTitle:"Portuguese Glory",
     bannerDesc:"Euro 2016 champions — a nation of passionate football and elite talent.",
     bannerYears:["2016 Euro"],
-    captainKicker:"⭐ Legend · Forward",
-    captainName:"CRISTIANO<br>RONALDO",
-    captainRole:"No. 7 · Al-Nassr FC",
-    captainStats:[{v:"134",k:"Goals"},{v:"45",k:"Assists"},{v:"215",k:"Caps"},{v:"5×",k:"Ballon d'Or"}],
-    captainOverlay:"★ CR7 ★",
-    captainSvgFill:"#FE0000",captainSvgNum:"7",captainSvgLabel:"FPF",
     shopTitle:"Shop Portugal",
     timeline:[
       {dot:"🏆",year:"FRANCE · 2016",event:"Euro 2016 Champions",detail:"Eder's extra-time strike vs France in Paris. Portugal win their first major title without Ronaldo on the pitch."},
@@ -1292,12 +1105,6 @@ const PAGE_DATA = {
     bannerTitle:"Tiki-Taka Legends",
     bannerDesc:"World Cup and four-time Euro champions — masters of possession football.",
     bannerYears:["2010 WC","2024 Euro"],
-    captainKicker:"⭐ Prodigy · Midfielder",
-    captainName:"LAMINE<br>YAMAL",
-    captainRole:"No. 19 · FC Barcelona",
-    captainStats:[{v:"4",k:"Goals"},{v:"9",k:"Assists"},{v:"24",k:"Caps"},{v:"1×",k:"Euro Winner"}],
-    captainOverlay:"★ LA JOYA ★",
-    captainSvgFill:"#C60B1E",captainSvgNum:"19",captainSvgLabel:"RFEF",
     shopTitle:"Shop Spain",
     timeline:[
       {dot:"🏆",year:"GERMANY · 2024",event:"Euro 2024 Champions",detail:"Yamal's stunning strike and Oyarzabal's winner. Spain become Europe's most successful national side."},
@@ -1311,19 +1118,6 @@ const PAGE_DATA = {
 /* ================================================================
    HELPERS
 ================================================================ */
-function buildJerseySVG(fill, num, label, darkShade) {
-  return `<svg viewBox="0 0 110 130" xmlns="http://www.w3.org/2000/svg" width="110" height="130">
-    <path d="M28 30 L15 46 L28 52 L28 118 L82 118 L82 52 L95 46 L82 30 C78 28 70 26 66 22 C63 20 62 18 55 18 C48 18 47 20 44 22 C40 26 32 28 28 30Z" fill="${fill}"/>
-    <path d="M46 18 L46 118 L64 118 L64 18 C62 17.5 57 17 55 17 C53 17 48 17.5 46 18Z" fill="rgba(255,255,255,0.18)"/>
-    <path d="M28 30 L15 46 L28 52Z" fill="${darkShade || fill}"/>
-    <path d="M82 30 L95 46 L82 52Z" fill="${darkShade || fill}"/>
-    <path d="M46 18 C48 14 52 12 55 12 C58 12 62 14 64 18" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round"/>
-    <text x="55" y="88" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="36" fill="rgba(255,255,255,0.92)">${num}</text>
-    <rect x="32" y="36" width="18" height="18" rx="3" fill="rgba(0,0,0,0.3)"/>
-    <text x="41" y="49" text-anchor="middle" font-family="Arial" font-size="8" fill="rgba(255,255,255,0.9)" font-weight="bold">${label}</text>
-  </svg>`;
-}
-
 function buildHeroBg(cfg) {
   if (cfg.heroBg) {
     return `<div class="hero-bg-stripes" id="heroBgEl"></div>
@@ -1363,24 +1157,6 @@ function buildPageHTML(id, cfg, data) {
     `<div class="hl-year-badge">${y}</div>`
   ).join('');
 
-  const captainSvg = buildJerseySVG(
-    data.captainSvgFill, data.captainSvgNum, data.captainSvgLabel, cfg.vars['sky-dark']
-  );
-  const fpJerseyInner = cfg.captainImg
-    ? `<img src="${cfg.captainImg}" alt="${data.captainName.replace(/<br>/g,' ')}" />`
-    : captainSvg;
-
-  const captainStats = data.captainStats.map(s =>
-    `<div class="fp-stat">
-      <div class="fp-stat-val">${s.v}</div>
-      <div class="fp-stat-key">${s.k}</div>
-    </div>`
-  ).join('');
-
-  const heroFloatInner = cfg.captainImg
-    ? `<img src="${cfg.captainImg}" alt="${cfg.name} Captain" />`
-    : '';
-
   const timelineHTML = data.timeline.map(t =>
     `<div class="timeline-item">
       <div class="timeline-dot">${t.dot}</div>
@@ -1416,7 +1192,6 @@ function buildPageHTML(id, cfg, data) {
         <div class="hero-title">${data.titleA}<span>${data.titleB}</span></div>
         <div class="hero-meta">${pills}</div>
       </div>
-      <div class="hero-captain-float" id="heroCaptFloat" style="${heroFloatInner ? '' : 'display:none;'}">${heroFloatInner}</div>
     </section>
 
     <section class="section" style="margin-top:20px;">
@@ -1430,26 +1205,6 @@ function buildPageHTML(id, cfg, data) {
         <h3>${data.bannerTitle}</h3>
         <p>${data.bannerDesc}</p>
         <div class="hl-years">${bannerYears}</div>
-      </div>
-    </div>
-
-    <section class="section" style="margin-top:20px;">
-      <div class="section-title">Icon Player</div>
-    </section>
-
-    <div class="featured-player">
-      <div class="fp-stripes"></div>
-      <div class="fp-content">
-        <div class="fp-left">
-          <div class="fp-kicker">${data.captainKicker}</div>
-          <div class="fp-name">${data.captainName}</div>
-          <div class="fp-role">${data.captainRole}</div>
-          <div class="fp-stats-grid">${captainStats}</div>
-        </div>
-        <div class="fp-right">
-          <div class="fp-jersey" id="fpJerseyEl">${fpJerseyInner}</div>
-          <div class="fp-number-overlay">${data.captainOverlay}</div>
-        </div>
       </div>
     </div>
 
@@ -1577,7 +1332,7 @@ function shareProduct(productKey, productName, event) {
   /* Scroll-in animations */
   requestAnimationFrame(() => {
     const cards = document.querySelectorAll(
-      '.achievement-card, .product-card, .timeline-item, .featured-player'
+      '.achievement-card, .product-card, .timeline-item'
     );
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => {
@@ -1674,24 +1429,6 @@ function showSyncToast(msg) {
       }
     }
 
-    function applyCaptain(url) {
-      if (!url) return;
-      const floatEl = document.getElementById('heroCaptFloat');
-      if (floatEl) {
-        floatEl.style.display = '';
-        floatEl.innerHTML =
-          `<img src="${url}" alt="${cfg.name} Captain"
-                style="width:100%;height:100%;object-fit:contain;object-position:bottom center;" />`;
-      }
-      const jerseyEl = document.getElementById('fpJerseyEl');
-      if (jerseyEl) {
-        jerseyEl.innerHTML =
-          `<img src="${url}" alt="Captain"
-                style="width:110px;height:130px;object-fit:contain;
-                       filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));" />`;
-      }
-    }
-
     function applyLogo(url) {
       if (!url) return;
       const el = document.getElementById('flagCircleEl');
@@ -1725,7 +1462,6 @@ function showSyncToast(msg) {
       if (!snap.exists()) return;
       const imgs = snap.val();
       if (imgs.hero)    applyHero(imgs.hero);
-      if (imgs.captain) applyCaptain(imgs.captain);
       if (imgs.logo)    applyLogo(imgs.logo);
       if (!firstLoad) showSyncToast('Images synced from database');
       firstLoad = false;
