@@ -1171,15 +1171,10 @@
     <div class="modal-body">
       <div class="form-grid" style="gap:12px;">
         <div class="form-group span-2">
-          <label>Select Order *</label>
-          <select id="rev_order_select" onchange="onReviewOrderChange()">
-            <option value="">-- Choose Order --</option>
-            <option value="custom">-- Custom / Other Order ID --</option>
+          <label>Select Product *</label>
+          <select id="rev_product_select">
+            <option value="">-- Choose Product --</option>
           </select>
-        </div>
-        <div class="form-group span-2" id="rev_custom_order_group" style="display:none;">
-          <label>Custom Order ID *</label>
-          <input type="text" id="rev_order_id" placeholder="e.g. JRS-1780650884801"/>
         </div>
         <div class="form-group span-2">
           <label>Customer Name *</label>
@@ -3504,6 +3499,11 @@ function filterReviews() {
         } else if (order.productName) {
           matchProduct = order.productName.toLowerCase().includes(q);
         }
+      } else if (r.productId && typeof _allProducts !== 'undefined') {
+        const p = _allProducts.find(prod => prod.id === r.productId);
+        if (p) {
+          matchProduct = (p.name || '').toLowerCase().includes(q);
+        }
       }
       return matchText || matchUser || matchOrderId || matchProduct;
     }
@@ -3542,6 +3542,15 @@ function filterReviews() {
           primaryImg = `<img src="${esc(img)}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;border:1px solid var(--border);flex-shrink:0;">`;
         }
       }
+    } else if (r.productId && typeof _allProducts !== 'undefined') {
+      const p = _allProducts.find(prod => prod.id === r.productId);
+      if (p) {
+        productHtml = `<strong>${esc(p.name || 'Product')}</strong>`;
+        const img = (p.images && p.images[0]) || p.imgUrl;
+        if (img) {
+          primaryImg = `<img src="${esc(img)}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;border:1px solid var(--border);flex-shrink:0;">`;
+        }
+      }
     }
 
     if (!primaryImg) {
@@ -3576,7 +3585,7 @@ function filterReviews() {
       <td data-label="Media"><div style="display:flex;gap:4px;flex-wrap:wrap">${mediaHtml || '<span style="color:var(--muted)">None</span>'}</div></td>
       <td data-label="Date" style="font-size:12px;color:var(--muted)">${dateStr}</td>
       <td data-label="Action">
-        <button class="btn btn-danger btn-sm" onclick="deleteReviewById('${esc(r.orderId || r.id)}')">Delete</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteReviewById('${esc(r.id)}')">Delete</button>
       </td>
     </tr>`;
   }).join('');
@@ -3586,8 +3595,14 @@ async function deleteReviewById(id) {
   confirmAction(`Permanently delete this customer review? This will not affect the customer's order.`, async () => {
     try {
       const { db, dbRef, remove, update } = await waitFb();
+      const review = _allReviews.find(x => x.id === id);
+      const orderId = review?.orderId || id;
       await remove(dbRef(db, `reviews/${id}`));
-      await update(dbRef(db, `orders/${id}`), { reviewSubmitted: false });
+      if (orderId) {
+        try {
+          await update(dbRef(db, `orders/${orderId}`), { reviewSubmitted: false });
+        } catch (_) {}
+      }
       toast('Review deleted successfully', 'success');
     } catch (err) {
       toast('Delete failed: ' + err.message, 'error');
@@ -3599,7 +3614,6 @@ async function deleteReviewById(id) {
    MANUAL REVIEWS
    ═══════════════════════════════════════════════ */
 function openManualReviewModal() {
-  setV('rev_order_id', '');
   setV('rev_user_name', '');
   setV('rev_user_id', '');
   setV('rev_text', '');
@@ -3608,79 +3622,26 @@ function openManualReviewModal() {
   if (mediaFile) mediaFile.value = '';
   setV('rev_rating', '5');
 
-  const orderSel = document.getElementById('rev_order_select');
-  if (orderSel) {
-    orderSel.innerHTML = `
-      <option value="">-- Choose Order --</option>
-      <option value="custom">-- Custom / Other Order ID --</option>
-    `;
-    const sortedOrders = [..._allOrders].sort((a,b) => {
-      const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return tB - tA;
-    });
+  const prodSel = document.getElementById('rev_product_select');
+  if (prodSel) {
+    prodSel.innerHTML = '<option value="">-- Choose Product --</option>';
+    const sortedProducts = [..._allProducts].sort((a,b) => (a.name || '').localeCompare(b.name || ''));
 
-    sortedOrders.forEach(o => {
-      const id = o.orderId || o.id;
-      const name = o.customerName || o.name || 'Unknown';
+    sortedProducts.forEach(p => {
       const opt = document.createElement('option');
-      opt.value = o.id;
-      opt.textContent = `${id} - ${name}`;
-      orderSel.appendChild(opt);
+      opt.value = p.id;
+      opt.textContent = `${p.name || 'Unnamed'} (${p.team || 'No Team'}) - ₹${p.price || 0}`;
+      prodSel.appendChild(opt);
     });
   }
-
-  const customGroup = document.getElementById('rev_custom_order_group');
-  if (customGroup) customGroup.style.display = 'none';
 
   openModal('manualReviewModal');
 }
 
-function onReviewOrderChange() {
-  const select = document.getElementById('rev_order_select');
-  const customGroup = document.getElementById('rev_custom_order_group');
-  const userNameInput = document.getElementById('rev_user_name');
-  const userIdInput = document.getElementById('rev_user_id');
-
-  if (!select) return;
-
-  if (select.value === 'custom') {
-    if (customGroup) customGroup.style.display = 'block';
-    if (userNameInput) userNameInput.value = '';
-    if (userIdInput) userIdInput.value = '';
-  } else if (select.value) {
-    if (customGroup) customGroup.style.display = 'none';
-    const order = _allOrders.find(o => o.id === select.value);
-    if (order) {
-      if (userNameInput) userNameInput.value = order.customerName || order.name || '';
-      if (userIdInput) userIdInput.value = order.userId || '';
-    }
-  } else {
-    if (customGroup) customGroup.style.display = 'none';
-    if (userNameInput) userNameInput.value = '';
-    if (userIdInput) userIdInput.value = '';
-  }
-}
-
 async function saveManualReview() {
-  const select = document.getElementById('rev_order_select').value;
-  let orderId = '';
-  let dbKey = '';
-  let orderObj = null;
-
-  if (select === 'custom') {
-    orderId = getV('rev_order_id');
-    dbKey = orderId;
-  } else if (select) {
-    orderObj = _allOrders.find(o => o.id === select);
-    if (orderObj) {
-      orderId = orderObj.orderId || orderObj.id;
-      dbKey = orderObj.id;
-    }
-  }
-
-  if (!orderId) {
-    toast('Order ID is required', 'error');
+  const productId = document.getElementById('rev_product_select').value;
+  if (!productId) {
+    toast('Product is required', 'error');
     return;
   }
 
@@ -3697,7 +3658,7 @@ async function saveManualReview() {
   }
 
   const rating = parseInt(getV('rev_rating')) || 5;
-  const userId = getV('rev_user_id') || orderObj?.userId || 'admin_manual';
+  const userId = getV('rev_user_id') || 'admin_manual';
   
   const btn = document.getElementById('saveReviewBtn');
   if (btn) {
@@ -3718,8 +3679,11 @@ async function saveManualReview() {
       mediaUrl = await getDownloadURL(task.ref);
     }
 
+    const manualOrderId = `JRS-M-${productId.slice(-5).toUpperCase()}-${Date.now().toString().slice(-4)}`;
+
     const reviewData = {
-      orderId: orderId,
+      orderId: manualOrderId,
+      productId: productId,
       userName: userName,
       userId: userId,
       rating: rating,
@@ -3735,17 +3699,10 @@ async function saveManualReview() {
       }];
     }
 
-    const { db, dbRef, set, update } = await waitFb();
+    const { db, dbRef, set } = await waitFb();
     
+    const dbKey = `REV-${Date.now()}`;
     await set(dbRef(db, `reviews/${dbKey}`), reviewData);
-    
-    if (dbKey && select !== 'custom') {
-      try {
-        await update(dbRef(db, `orders/${dbKey}`), { reviewSubmitted: true });
-      } catch (e) {
-        console.warn('Failed to update order reviewSubmitted status:', e);
-      }
-    }
 
     closeModal('manualReviewModal');
     toast('Manual review added! 💬', 'success');
