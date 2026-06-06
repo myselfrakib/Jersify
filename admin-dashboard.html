@@ -512,6 +512,11 @@
       Coupons
       <span class="nav-badge" id="couponBadgeNav">0</span>
     </button>
+    <button class="nav-link" onclick="switchTab('reviews',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Reviews
+      <span class="nav-badge" id="reviewBadgeNav">0</span>
+    </button>
 
     <div class="nav-section-label">Settings</div>
     <button class="nav-link" onclick="switchTab('credentials',this)">
@@ -748,6 +753,53 @@
             <table>
               <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Description</th><th>Active</th><th>Actions</th></tr></thead>
               <tbody id="couponsTable"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ REVIEWS TAB ══ -->
+      <div class="tab-pane" id="tab-reviews">
+        <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+          <div class="stat-card red"><div class="stat-val" id="statTotalReviews">—</div><div class="stat-label">Total Reviews</div><div class="stat-icon">💬</div></div>
+          <div class="stat-card gold"><div class="stat-val" id="statAvgRating">—</div><div class="stat-label">Avg Rating</div><div class="stat-icon">⭐</div></div>
+          <div class="stat-card green"><div class="stat-val" id="statFiveStars">—</div><div class="stat-label">5-Star Reviews</div><div class="stat-icon">🌟</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-title">Customer Reviews</div>
+              <div class="card-subtitle" id="reviewsSubtitle">All product reviews from customers</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <select id="reviewStarFilter" onchange="filterReviews()" style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none">
+                <option value="">All Ratings</option>
+                <option value="5">5 ★ Only</option>
+                <option value="4">4 ★ Only</option>
+                <option value="3">3 ★ Only</option>
+                <option value="2">2 ★ Only</option>
+                <option value="1">1 ★ Only</option>
+              </select>
+              <button class="btn btn-ghost btn-sm" onclick="exportCSV('reviews')">📥 CSV</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Order ID</th>
+                  <th>Product</th>
+                  <th>Rating</th>
+                  <th>Review Text</th>
+                  <th>Media</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="reviewsTable">
+                <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -1226,7 +1278,7 @@ function closeSidebar() {
 }
 
 /* ─── TAB SWITCH ─── */
-const TAB_TITLES = { products:'Products / Kits', media:'Index Media', orders:'Orders', users:'Users', coupons:'Coupon Codes', credentials:'Credentials Manager', pages:'Page Settings', shiprocket:'Shiprocket Shipping' };
+const TAB_TITLES = { products:'Products / Kits', media:'Index Media', orders:'Orders', users:'Users', coupons:'Coupon Codes', reviews:'Customer Reviews', credentials:'Credentials Manager', pages:'Page Settings', shiprocket:'Shiprocket Shipping' };
 function switchTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
@@ -1259,6 +1311,7 @@ async function initApp() {
   listenCol('users', renderUsers);
   listenCol('indexMedia', renderIndexMediaData);
   listenCoupons();
+  listenCol('reviews', renderReviews);
   initPageSettings();
   if (typeof updateThemeUI === 'function') updateThemeUI(document.documentElement.classList.contains('dark-theme'));
 }
@@ -1291,6 +1344,7 @@ async function listenOrders() {
     setEl('orderBadgeNav', data.length);
     renderOrders(data);
     document.getElementById('ordersSubtitle').textContent = `${data.length} order${data.length!==1?'s':''} — live from database`;
+    if (typeof filterReviews === 'function') filterReviews();
   }, err => {
     document.getElementById('ordersTable').innerHTML = emptyRow(10, '⚠ Could not load orders. Check Firebase rules.');
   });
@@ -1323,6 +1377,15 @@ function updateStats(col, data) {
     renderDonutChart(data);
   }
   if (col === 'users') { setEl('statUsers', data.length); setEl('userBadgeNav', data.length); }
+  if (col === 'reviews') {
+    setEl('statTotalReviews', data.length);
+    setEl('reviewBadgeNav', data.length);
+    const totalRating = data.reduce((s, r) => s + (parseFloat(r.rating) || 0), 0);
+    const avg = data.length ? (totalRating / data.length).toFixed(1) : '0.0';
+    setEl('statAvgRating', avg + ' ★');
+    const fiveStars = data.filter(r => (parseInt(r.rating) || 0) === 5).length;
+    setEl('statFiveStars', fiveStars);
+  }
 }
 
 function checkLowStock(products) {
@@ -3303,6 +3366,13 @@ function exportCSV(type) {
   } else if (type==='users') {
     headers=['ID','Name','Email','Phone','Joined','Status'];
     rows=_allUsers.map(raw=>{ const u=normalizeUser(raw); return [u.id,u.name,u.email,u.phone,u.createdAt?new Date(u.createdAt).toISOString():'',u.status]; });
+  } else if (type==='reviews') {
+    headers=['Review ID / Order ID','Customer Name','Customer UID','Rating','Review Text','Media URLs','Created At'];
+    rows=_allReviews.map(r=>{
+      const mediaUrls=(r.media||[]).map(m=>m.url).join('; ');
+      const dateStr=r.createdAt?new Date(r.createdAt).toISOString():'';
+      return [r.id,r.userName||'',r.userId||'',r.rating||0,r.text||'',mediaUrls,dateStr];
+    });
   }
   if (!rows.length) { toast('No data to export', 'error'); return; }
   const csv=[headers.map(h=>`"${String(h).replace(/"/g,'""')}"`).join(','),...rows.map(row=>row.map(val=>`"${String(val).replace(/"/g,'""')}"`).join(','))].join('\n');
@@ -3342,6 +3412,127 @@ function updateThemeUI(isDark) {
       icon.innerHTML='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
     }
   }
+}
+
+/* ═══════════════════════════════════════════════
+   REVIEWS
+═══════════════════════════════════════════════ */
+let _allReviews = [];
+
+function renderReviews(data) {
+  _allReviews = data;
+  filterReviews();
+}
+
+function filterReviews() {
+  const tbody = document.getElementById('reviewsTable');
+  if (!tbody) return;
+  const ratingFilter = document.getElementById('reviewStarFilter').value;
+  const q = document.getElementById('globalSearch').value.toLowerCase();
+
+  const filtered = _allReviews.filter(r => {
+    if (ratingFilter && String(r.rating) !== ratingFilter) return false;
+    if (q) {
+      const matchText = (r.text || '').toLowerCase().includes(q);
+      const matchUser = (r.userName || '').toLowerCase().includes(q);
+      const matchOrderId = (r.orderId || r.id || '').toLowerCase().includes(q);
+      const order = _allOrders.find(o => o.id === r.orderId || o.orderId === r.orderId);
+      let matchProduct = false;
+      if (order) {
+        if (Array.isArray(order.items) && order.items.length) {
+          matchProduct = order.items.some(i => (i.name || '').toLowerCase().includes(q));
+        } else if (order.productName) {
+          matchProduct = order.productName.toLowerCase().includes(q);
+        }
+      }
+      return matchText || matchUser || matchOrderId || matchProduct;
+    }
+    return true;
+  });
+
+  document.getElementById('reviewsSubtitle').textContent = `${filtered.length} review${filtered.length !== 1 ? 's' : ''} shown`;
+
+  if (!filtered.length) {
+    tbody.innerHTML = emptyRow(8, 'No reviews found');
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(r => {
+    const stars = Array.from({ length: 5 }, (_, i) => i < r.rating ? '★' : '☆').join('');
+    const dateStr = r.createdAt ? new Date(r.createdAt).toLocaleString('en-IN') : '—';
+    
+    const order = _allOrders.find(o => o.id === r.orderId || o.orderId === r.orderId);
+    let productHtml = `<span style="color:var(--muted)">Unknown Product</span>`;
+    let primaryImg = '';
+
+    if (order) {
+      let items = Array.isArray(order.items) && order.items.length ? order.items : [];
+      if (items.length === 0 && order.productName) {
+        items = [{ name: order.productName, imgUrl: order.imgUrl || order.image }];
+      }
+
+      if (items.length > 0) {
+        productHtml = items.map(i => `<strong>${esc(i.name || 'Product')}</strong>`).join('<br>');
+        let img = items[0].imgUrl || items[0].image;
+        if (!img && typeof _allProducts !== 'undefined') {
+          const p = _allProducts.find(prod => prod.name === items[0].name || prod.id === items[0].id);
+          if (p) img = (p.images && p.images[0]) || p.imgUrl;
+        }
+        if (img) {
+          primaryImg = `<img src="${esc(img)}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;border:1px solid var(--border);flex-shrink:0;">`;
+        }
+      }
+    }
+
+    if (!primaryImg) {
+      primaryImg = `<div style="width:36px;height:36px;background:var(--surface3);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">👕</div>`;
+    }
+
+    const mediaHtml = (r.media || []).map(m => {
+      if (m.type === 'video') {
+        return `<video src="${esc(m.url)}" muted style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--border);cursor:pointer;" onclick="window.open('${esc(m.url)}','_blank')"></video>`;
+      }
+      return `<img src="${esc(m.url)}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--border);cursor:pointer;" onclick="window.open('${esc(m.url)}','_blank')">`;
+    }).join(' ');
+
+    return `<tr>
+      <td data-label="Customer">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="user-avatar" style="background:#555;width:28px;height:28px;font-size:11px;">
+            ${esc(r.userName ? r.userName.slice(0, 2).toUpperCase() : 'CU')}
+          </div>
+          <strong>${esc(r.userName || 'Customer')}</strong>
+        </div>
+      </td>
+      <td data-label="Order ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(r.orderId || r.id)}</span></td>
+      <td data-label="Product">
+        <div style="display:flex;align-items:center;gap:8px">
+          ${primaryImg}
+          <div style="font-size:12px;line-height:1.4">${productHtml}</div>
+        </div>
+      </td>
+      <td data-label="Rating"><span style="color:var(--gold);font-weight:700;letter-spacing:1px">${stars}</span></td>
+      <td data-label="Review Text" style="font-size:12px;max-width:240px;white-space:normal;line-height:1.5">${esc(r.text || '—')}</td>
+      <td data-label="Media"><div style="display:flex;gap:4px;flex-wrap:wrap">${mediaHtml || '<span style="color:var(--muted)">None</span>'}</div></td>
+      <td data-label="Date" style="font-size:12px;color:var(--muted)">${dateStr}</td>
+      <td data-label="Action">
+        <button class="btn btn-danger btn-sm" onclick="deleteReviewById('${esc(r.orderId || r.id)}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function deleteReviewById(id) {
+  confirmAction(`Permanently delete this customer review? This will not affect the customer's order.`, async () => {
+    try {
+      const { db, dbRef, remove, update } = await waitFb();
+      await remove(dbRef(db, `reviews/${id}`));
+      await update(dbRef(db, `orders/${id}`), { reviewSubmitted: false });
+      toast('Review deleted successfully', 'success');
+    } catch (err) {
+      toast('Delete failed: ' + err.message, 'error');
+    }
+  });
 }
 </script>
 </body>
