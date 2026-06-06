@@ -144,7 +144,7 @@
       overflow-y: auto;
       transform: translateX(100%);
       transition: transform .38s cubic-bezier(0.32, 0.72, 0, 1);
-      padding-bottom: 100px;
+      padding-bottom: 130px; /* enough room for sticky action bar */
     }
     .product-page.open { transform: translateX(0); }
 
@@ -223,23 +223,130 @@
     .pp-size-pill.selected { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(198,31,47,.3); }
     .pp-size-pill.oos { opacity: .35; cursor: not-allowed; text-decoration: line-through; }
 
-    /* Sticky action bar at bottom of product page */
+    /* ══════════════════════════════════════════
+       STICKY ACTION BAR — FIXED AT BOTTOM OF PRODUCT PAGE
+       z-index must beat bottom-nav (50) so use 210
+    ══════════════════════════════════════════ */
     .pp-actions {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: rgba(255,255,255,.97);
-      backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(0,0,0,.06);
-      padding: 12px 16px 24px;
-      display: flex; gap: 10px;
-      z-index: 20;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(255,255,255,.98);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(0,0,0,.08);
+      padding: 12px 16px env(safe-area-inset-bottom, 16px);
       display: none;
+      gap: 10px;
+      z-index: 210; /* above product-page (200) and bottom-nav (50) */
+      box-shadow: 0 -8px 24px rgba(0,0,0,.08);
     }
     .pp-actions.visible { display: flex; }
-    .pp-cart-btn { flex: 1; border: 2px solid var(--accent); border-radius: 14px; background: transparent; color: var(--accent); font-size: 13px; font-weight: 800; padding: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all .2s ease; }
+
+    .pp-cart-btn {
+      flex: 1;
+      border: 2px solid var(--accent);
+      border-radius: 14px;
+      background: transparent;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 14px 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all .2s ease;
+      white-space: nowrap;
+    }
     .pp-cart-btn:hover { background: rgba(198,31,47,.06); }
-    .pp-cart-btn svg { width: 16px; height: 16px; }
-    .pp-buy-btn { flex: 2; border: none; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-size: 14px; font-weight: 800; padding: 14px; cursor: pointer; box-shadow: 0 8px 24px rgba(198,31,47,.28); transition: transform .2s ease, box-shadow .2s ease; }
+    .pp-cart-btn:active { transform: scale(0.97); }
+    .pp-cart-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .pp-buy-btn {
+      flex: 2;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      padding: 14px 10px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(198,31,47,.28);
+      transition: transform .2s ease, box-shadow .2s ease;
+      white-space: nowrap;
+    }
     .pp-buy-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(198,31,47,.38); }
+    .pp-buy-btn:active { transform: scale(0.97); }
+
+    /* Size hint inside action bar when no size selected */
+    .pp-size-hint {
+      position: absolute;
+      top: -36px; left: 50%;
+      transform: translateX(-50%);
+      background: #111;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 99px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease, transform .25s ease;
+      transform: translateX(-50%) translateY(6px);
+    }
+    .pp-size-hint.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Inline action buttons (below size grid) */
+    .pp-inline-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .pp-inline-cart-btn {
+      flex: 1;
+      border: 2px solid var(--accent);
+      border-radius: 14px;
+      background: transparent;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 13px 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: all .2s ease;
+    }
+    .pp-inline-cart-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .pp-inline-cart-btn:hover { background: rgba(198,31,47,.06); }
+    .pp-inline-cart-btn:active { transform: scale(0.97); }
+    .pp-inline-buy-btn {
+      flex: 1;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 13px 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      box-shadow: 0 6px 20px rgba(198,31,47,.28);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .pp-inline-buy-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .pp-inline-buy-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(198,31,47,.38); }
+    .pp-inline-buy-btn:active { transform: scale(0.97); }
 
     /* Description section */
     .pp-desc-section { background: #fafafa; border-radius: 18px; padding: 16px; margin-bottom: 20px; }
@@ -387,7 +494,7 @@
     .lightbox-thumb img { width: 100%; height: 100%; object-fit: cover; }
 
     /* ── TOAST ── */
-    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 10px 20px; border-radius: 99px; font-size: 12px; font-weight: 700; opacity: 0; pointer-events: none; transition: all .3s ease; white-space: nowrap; z-index: 400; }
+    .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 10px 20px; border-radius: 99px; font-size: 12px; font-weight: 700; opacity: 0; pointer-events: none; transition: all .3s ease; white-space: nowrap; z-index: 400; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* ── RETRY BANNER ── */
@@ -404,7 +511,9 @@
     .copy { font-size: 11px; color: rgba(255,255,255,.55); border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; }
 
     /* ── BOTTOM NAV ── */
-    .bottom-nav { position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px; width: min(100%, calc(var(--maxw) - 16px)); background: rgba(255,255,255,.96); backdrop-filter: blur(10px); border: 1px solid rgba(0,0,0,.06); border-radius: 22px; box-shadow: var(--shadow); display: flex; justify-content: space-around; padding: 10px 8px; z-index: 50; }
+    .bottom-nav { position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px; width: min(100%, calc(var(--maxw) - 16px)); background: rgba(255,255,255,.96); backdrop-filter: blur(10px); border: 1px solid rgba(0,0,0,.06); border-radius: 22px; box-shadow: var(--shadow); display: flex; justify-content: space-around; padding: 10px 8px; z-index: 50; transition: transform .35s cubic-bezier(0.32, 0.72, 0, 1), opacity .3s ease; }
+    /* Hide bottom nav when product page is open */
+    .bottom-nav.hidden { transform: translateX(-50%) translateY(120%); opacity: 0; pointer-events: none; }
     .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: #555; min-width: 56px; cursor: pointer; text-decoration: none; transition: color .2s ease; }
     .nav-item svg { width: 19px; height: 19px }
     .nav-item.active { color: var(--accent); font-weight: 800; }
@@ -487,7 +596,7 @@
   </div>
 
   <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
+  <nav class="bottom-nav" id="bottomNav">
     <a href="index.html" class="nav-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"></path><path d="M5 10v10h14V10"></path></svg>
       <div>Home</div>
@@ -558,6 +667,18 @@
       <div class="pp-section-label">Select Size</div>
       <div class="pp-size-grid" id="ppSizeGrid"></div>
 
+      <!-- Inline action buttons -->
+      <div class="pp-inline-actions">
+        <button class="pp-inline-cart-btn" onclick="ppAddToCart()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
+          Add to Cart
+        </button>
+        <button class="pp-inline-buy-btn" id="ppInlineBuyBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Buy Now
+        </button>
+      </div>
+
       <!-- Description -->
       <div class="pp-desc-section" id="ppDescSection" style="display:none;">
         <div class="pp-desc-title">About this Kit</div>
@@ -607,8 +728,13 @@
 
   </div>
 
-  <!-- Sticky buy/cart bar (inside product-page but fixed) -->
-  <div class="pp-actions" id="ppActions">
+  <!-- ════════════════════════════════════════
+       STICKY BUY BAR — lives OUTSIDE product-page div
+       so it overlays everything when visible
+  ════════════════════════════════════════ -->
+  <div class="pp-actions" id="ppActions" style="position:relative;">
+    <!-- Size hint tooltip -->
+    <div class="pp-size-hint" id="ppSizeHint">👆 Please select a size first</div>
     <button class="pp-cart-btn" onclick="ppAddToCart()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
       Add to Cart
@@ -987,6 +1113,8 @@
       document.getElementById('ppActions').classList.add('visible');
       document.getElementById('productPage').scrollTop = 0;
       document.body.style.overflow = 'hidden';
+      // Hide bottom nav when product page opens
+      document.getElementById('bottomNav').classList.add('hidden');
       pushProductURL(id);
     };
 
@@ -995,6 +1123,8 @@
       document.getElementById('ppActions').classList.remove('visible');
       document.body.style.overflow = '';
       currentProductId = null;
+      // Restore bottom nav
+      document.getElementById('bottomNav').classList.remove('hidden');
       pushProductURL(null);
     };
 
@@ -1032,28 +1162,54 @@
         return `<button class="pp-size-pill${avail ? '' : ' oos'}" data-size="${sz}" onclick="ppSelectSize('${sz}', ${avail})">${sz.toUpperCase()}</button>`;
       }).join('');
 
-      /* Buy now */
-      document.getElementById('ppBuyBtn').onclick = () => {
+      /* Buy now — both sticky bar and inline */
+      const buyHandler = () => {
         const sel = document.querySelector('.pp-size-pill.selected');
-        if (!sel) { showToast('Please select a size'); return; }
+        if (!sel) {
+          flashSizeHint();
+          document.getElementById('ppSizeGrid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
         window.location.href = `checkout.html?id=${id}&size=${sel.dataset.size}`;
       };
+      document.getElementById('ppBuyBtn').onclick       = buyHandler;
+      document.getElementById('ppInlineBuyBtn').onclick = buyHandler;
 
       renderBrowse(id);
       loadAndRenderReviews(id);
+    }
+
+    /* Show size hint tooltip */
+    function flashSizeHint() {
+      const hint = document.getElementById('ppSizeHint');
+      hint.classList.add('show');
+      // Pulse the size grid to draw attention
+      const grid = document.getElementById('ppSizeGrid');
+      grid.style.transition = 'all .2s';
+      grid.style.filter = 'drop-shadow(0 0 6px rgba(198,31,47,.6))';
+      setTimeout(() => {
+        grid.style.filter = '';
+        hint.classList.remove('show');
+      }, 1800);
     }
 
     window.ppSelectSize = function(sz, avail) {
       if (!avail) return;
       document.querySelectorAll('.pp-size-pill').forEach(p => p.classList.remove('selected'));
       document.querySelector(`.pp-size-pill[data-size="${sz}"]`).classList.add('selected');
+      // Hide size hint if it was showing
+      document.getElementById('ppSizeHint').classList.remove('show');
     };
 
     window.ppAddToCart = function() {
       const found = allProducts.find(p => p.id === currentProductId);
       if (!found) return;
       const sel = document.querySelector('.pp-size-pill.selected');
-      if (!sel) { showToast('Please select a size first'); return; }
+      if (!sel) {
+        flashSizeHint();
+        document.getElementById('ppSizeGrid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
       const { id, data: p } = found;
       const imgs = getProductImages(p);
       addToCart(id, p.name || 'Jersify Kit', p.price || 1499, imgs[0] || '', teamLabel(p), sel.dataset.size);
@@ -1401,6 +1557,7 @@
           document.getElementById('ppActions').classList.remove('visible');
           document.body.style.overflow = '';
           currentProductId = null;
+          document.getElementById('bottomNav').classList.remove('hidden');
         } else {
           openProductPage(e.state.productId);
         }
