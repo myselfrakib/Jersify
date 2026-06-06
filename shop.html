@@ -761,7 +761,7 @@
   <!-- FIREBASE + SHOP LOGIC -->
   <script type="module">
     import { initializeApp }      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const FIREBASE_CONFIG = {
@@ -786,14 +786,117 @@
     let bgRefreshTimer = null;
     const PAGE_SIZE = 200;
 
-    /* ── Auth toast ── */
+    /* ══════════════════════════════════════════
+       CART — localStorage + Firebase RTDB sync
+       Path: users/{uid}/cart  (array of items)
+       Guest items live in localStorage only.
+       On login  → fetch DB cart, merge with guest
+                   cart, push merged back to DB.
+       On logout → clear localStorage cart.
+       Every addToCart while logged in → also
+                   writes the full cart to DB.
+    ══════════════════════════════════════════ */
+    let _currentUser = null; // tracked so cart fns can check auth state synchronously
+
+    function getCart() {
+      try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; }
+    }
+
+    function saveCart(items) {
+      localStorage.setItem('jersify_cart', JSON.stringify(items));
+      updateCartBadges();
+      // Push to DB if logged in — fire-and-forget, don't block UI
+      if (_currentUser) {
+        set(ref(rtdb, `users/${_currentUser.uid}/cart`), items).catch(e => {
+          console.warn('[Cart] DB write failed:', e.message);
+        });
+      }
+    }
+
+    function updateCartBadges() {
+      const total = getCart().reduce((s, i) => s + (i.qty || 1), 0);
+      ['cartCountBadge', 'ppCartBadge'].forEach(id => {
+        const b = document.getElementById(id);
+        if (!b) return;
+        b.textContent = total;
+        b.style.display = total > 0 ? 'flex' : 'none';
+        b.classList.toggle('show', total > 0);
+      });
+    }
+
+    // Merge two cart arrays — sums qty for matching keys, appends new items
+    function mergeCarts(base, incoming) {
+      const merged = [...base];
+      for (const item of incoming) {
+        const existing = merged.find(i => i.key === item.key);
+        if (existing) {
+          existing.qty = (existing.qty || 1) + (item.qty || 1);
+        } else {
+          merged.push({ ...item });
+        }
+      }
+      return merged;
+    }
+
+    async function onUserLogin(user) {
+      _currentUser = user;
+      const guestCart = getCart(); // whatever was in localStorage before login
+      try {
+        const snap = await get(ref(rtdb, `users/${user.uid}/cart`));
+        const dbCart = snap.exists() ? (snap.val() || []) : [];
+        // Merge: DB cart is "base", guest additions on top
+        const merged = mergeCarts(dbCart, guestCart);
+        // Save merged back everywhere
+        localStorage.setItem('jersify_cart', JSON.stringify(merged));
+        await set(ref(rtdb, `users/${user.uid}/cart`), merged);
+        updateCartBadges();
+        if (guestCart.length > 0 && merged.length > dbCart.length) {
+          showToast(`✓ Cart synced (${merged.length} item${merged.length !== 1 ? 's' : ''})`);
+        }
+      } catch(e) {
+        console.warn('[Cart] Login sync failed:', e.message);
+        // Gracefully fall back — localStorage cart still works
+      }
+    }
+
+    function onUserLogout() {
+      _currentUser = null;
+      // Clear local cart on logout so next user starts fresh
+      localStorage.removeItem('jersify_cart');
+      updateCartBadges();
+    }
+
+    window.addToCart = function(id, name, price, imgUrl, team, size) {
+      const cart = getCart();
+      const key  = `${id}_${size}`;
+      const hit  = cart.find(i => i.key === key);
+      if (hit) { hit.qty += 1; } else { cart.push({ key, id, name, price, imgUrl, team, size, qty: 1, emoji: '👕' }); }
+      saveCart(cart); // saveCart handles DB write when logged in
+      showToast('✓ Added to cart');
+    };
+
+    /* ── Auth state → drives cart sync + login toast ── */
     let authToastTimer = null;
-    onAuthStateChanged(auth, user => {
+    let _prevUid = null; // detect actual login/logout transitions
+
+    onAuthStateChanged(auth, async user => {
       if (user) {
         clearTimeout(authToastTimer);
         const t = document.getElementById("unauthToast");
         if (t) t.remove();
+        // Only run merge once per login event, not on every page re-render
+        if (user.uid !== _prevUid) {
+          _prevUid = user.uid;
+          await onUserLogin(user);
+        } else {
+          _currentUser = user; // already merged, just keep reference fresh
+        }
       } else {
+        if (_prevUid !== null) {
+          // Was logged in, now logged out
+          _prevUid = null;
+          onUserLogout();
+        }
         if (!authToastTimer && !sessionStorage.getItem("jersify_unauth_dismissed")) {
           authToastTimer = setTimeout(() => {
             const d = document.createElement("div");
@@ -807,32 +910,6 @@
         }
       }
     });
-
-    /* ══════════════════════════════════════════
-       CART
-    ══════════════════════════════════════════ */
-    function getCart()      { try { return JSON.parse(localStorage.getItem('jersify_cart') || '[]'); } catch { return []; } }
-    function saveCart(c)    { localStorage.setItem('jersify_cart', JSON.stringify(c)); updateCartBadges(); }
-
-    function updateCartBadges() {
-      const total = getCart().reduce((s, i) => s + (i.qty || 1), 0);
-      ['cartCountBadge', 'ppCartBadge'].forEach(id => {
-        const b = document.getElementById(id);
-        if (!b) return;
-        b.textContent = total;
-        b.style.display = total > 0 ? 'flex' : 'none';
-        b.classList.toggle('show', total > 0);
-      });
-    }
-
-    window.addToCart = function(id, name, price, imgUrl, team, size) {
-      const cart = getCart();
-      const key  = `${id}_${size}`;
-      const hit  = cart.find(i => i.key === key);
-      if (hit) { hit.qty += 1; } else { cart.push({ key, id, name, price, imgUrl, team, size, qty: 1, emoji: '👕' }); }
-      saveCart(cart);
-      showToast('✓ Added to cart');
-    };
 
     window.showToast = function(msg) {
       const t = document.getElementById('toast');
