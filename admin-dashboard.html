@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>JERSIFY — Admin Panel v5</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
   <script>
     (function() {
@@ -2396,10 +2397,24 @@ async function srGetConfig() {
   } catch(_) { return {}; }
 }
 
+const SR_SECRET = 'jersify_sr_secure_2026';
+function encryptSR(val) {
+  if (!val) return val;
+  try { return CryptoJS.AES.encrypt(val, SR_SECRET).toString(); } catch(e) { return val; }
+}
+function decryptSR(val) {
+  if (!val) return val;
+  try {
+    const bytes = CryptoJS.AES.decrypt(val, SR_SECRET);
+    const dec = bytes.toString(CryptoJS.enc.Utf8);
+    return dec || val;
+  } catch (e) { return val; }
+}
+
 function srLoadConfig() {
   srGetConfig().then(cfg => {
-    setV('sr_email',    cfg.email    || localStorage.getItem('sr_email')    || '');
-    setV('sr_password', cfg.password || localStorage.getItem('sr_password') || '');
+    setV('sr_email',    decryptSR(cfg.email    || localStorage.getItem('sr_email'))    || '');
+    setV('sr_password', decryptSR(cfg.password || localStorage.getItem('sr_password')) || '');
     setV('sr_pickup',   cfg.pickup   || localStorage.getItem('sr_pickup')   || 'Primary');
     setV('sr_pickup_pin', cfg.pickup_pin || localStorage.getItem('sr_pickup_pin') || '');
     setV('sr_channel',  cfg.channel  || localStorage.getItem('sr_channel')  || '');
@@ -2413,16 +2428,18 @@ function srLoadConfig() {
 }
 
 function srSaveConfig() {
-  ['sr_email','sr_password','sr_pickup','sr_pickup_pin','sr_channel','sr_length','sr_breadth','sr_height','sr_weight'].forEach(k => {
+  ['sr_pickup','sr_pickup_pin','sr_channel','sr_length','sr_breadth','sr_height','sr_weight'].forEach(k => {
     localStorage.setItem(k, getV(k));
   });
+  localStorage.setItem('sr_email', encryptSR(getV('sr_email')));
+  localStorage.setItem('sr_password', encryptSR(getV('sr_password')));
 }
 
 async function srSaveConfigToFirebase() {
   srSaveConfig();
   const { db, dbRef, update } = await waitFb();
   await update(dbRef(db, 'settings/shiprocket'), {
-    email: getV('sr_email'), password: getV('sr_password'), pickup: getV('sr_pickup'), pickup_pin: getV('sr_pickup_pin'),
+    email: encryptSR(getV('sr_email')), password: encryptSR(getV('sr_password')), pickup: getV('sr_pickup'), pickup_pin: getV('sr_pickup_pin'),
     channel: getV('sr_channel'), length: getV('sr_length'), breadth: getV('sr_breadth'),
     height: getV('sr_height'), weight: getV('sr_weight'), updatedAt: Date.now()
   });
@@ -2435,8 +2452,8 @@ async function srGetToken() {
   if (_srToken && Date.now() < _srTokenExpiry) return _srToken;
 
   const cfg = await srGetConfig();
-  const email    = cfg.email    || localStorage.getItem('sr_email')    || getV('sr_email');
-  const password = cfg.password || localStorage.getItem('sr_password') || getV('sr_password');
+  const email    = decryptSR(cfg.email)    || decryptSR(localStorage.getItem('sr_email'))    || getV('sr_email');
+  const password = decryptSR(cfg.password) || decryptSR(localStorage.getItem('sr_password')) || getV('sr_password');
 
   if (!email || !password) {
     throw new Error('Shiprocket email/password not configured. Please fill them in the Shiprocket tab and click Save.');
