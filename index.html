@@ -1149,14 +1149,35 @@
       const countLabel      = document.getElementById("productCountLabel");
       const colors = ["red","white","blue","dark","gold"];
       try {
-        const snap = await get(ref(rtdb, "products"));
-        if (!snap.exists()) {
+        const [prodSnap, wowSnap] = await Promise.all([
+          get(ref(rtdb, "products")),
+          get(ref(rtdb, "wowPicks"))
+        ]);
+        if (!prodSnap.exists()) {
           loopTrack.innerHTML = allProductsGrid.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">No products yet.</div>';
           countLabel.textContent = "Coming soon"; return;
         }
         let products = [];
-        snap.forEach(d => { const p = d.val(); p._id = d.key; if (!p.status || p.status === "active") products.push(p); });
+        prodSnap.forEach(d => { const p = d.val(); p._id = d.key; if (!p.status || p.status === "active") products.push(p); });
         countLabel.innerHTML = `<span style="color:var(--accent);font-weight:800;">${products.length}+</span> jerseys available`;
+
+        // Resolve WOW Picks — curated order from admin, falls back to auto
+        let wowProducts = [];
+        if (wowSnap.exists()) {
+          const picks = wowSnap.val();
+          const productMap = {};
+          products.forEach(p => productMap[p._id] = p);
+          for (let i = 1; i <= 8; i++) {
+            const pid = picks[`slot_${i}`];
+            if (pid && productMap[pid]) wowProducts.push(productMap[pid]);
+          }
+        }
+        // Fill remaining slots from products not already in wowProducts
+        if (wowProducts.length < 8) {
+          const wowIds = new Set(wowProducts.map(p => p._id));
+          const remaining = products.filter(p => !wowIds.has(p._id));
+          wowProducts = [...wowProducts, ...remaining].slice(0, 8);
+        }
 
         function loopCard(p, i) {
           const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
@@ -1196,7 +1217,7 @@
           </article>`;
         }
 
-        loopTrack.innerHTML       = products.slice(0,8).map((p,i)  => loopCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
+        loopTrack.innerHTML       = wowProducts.map((p,i) => loopCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
         allProductsGrid.innerHTML = products.slice(0,10).map((p,i) => gridCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">No products available.</div>';
 
         [loopTrack, allProductsGrid].forEach(container => {
