@@ -1309,7 +1309,11 @@
           }
         } catch(e) {}
 
-        orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        orders.sort((a, b) => {
+          const tA = a.createdAt ? (typeof a.createdAt === 'number' ? a.createdAt : Date.parse(a.createdAt)) : 0;
+          const tB = b.createdAt ? (typeof b.createdAt === 'number' ? b.createdAt : Date.parse(b.createdAt)) : 0;
+          return (tB || 0) - (tA || 0);
+        });
 
         renderOrders(orders);
         document.getElementById("statOrders").textContent   = orders.length;
