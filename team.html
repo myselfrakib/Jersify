@@ -746,6 +746,24 @@ const TEAM_CONFIGS = {
       "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
     },
     heroBg: "", captainImg: ""
+  },
+  "italy": {
+    id: "italy", name: "Italy",
+    vars: {
+      "sky": "#004F9F", "sky-dark": "#002F5F", "sky-light": "#3b7ec4", "sky-rgb": "0,79,159",
+      "dark": "#111111", "dark2": "#222222", "text": "#111111", "muted": "#6a6a7a",
+      "pill-accent": "#aaccff", "page-bg": "#f5f9ff"
+    },
+    heroBg: "", captainImg: ""
+  },
+  "england": {
+    id: "england", name: "England",
+    vars: {
+      "sky": "#CF0820", "sky-dark": "#90000d", "sky-light": "#ef5a60", "sky-rgb": "207,8,32",
+      "dark": "#0A192F", "dark2": "#132b50", "text": "#0A192F", "muted": "#5a6a7a",
+      "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
+    },
+    heroBg: "", captainImg: ""
   }
 };
 
@@ -1111,6 +1129,58 @@ const PAGE_DATA = {
       {dot:"🏅",year:"SOUTH AFRICA · 2010",event:"World Cup Champions",detail:"Iniesta's goal in extra time vs Netherlands — the only World Cup title in Spanish history."},
       {dot:"🏆",year:"AUSTRIA/SWISS · 2008",event:"Euro 2008 Champions",detail:"Fernando Torres' iconic solo goal vs Germany. The tiki-taka revolution begins."},
       {dot:"⚽",year:"SPAIN · 1964",event:"European Champions",detail:"Hosted and won the 1964 European Championship. Spain's first major international triumph."}
+    ]
+  },
+  "italy": {
+    flagHTML: `<img src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/e59d686481b1707367309644c190304b.jpg?alt=media&token=fb3abf9f-0122-4045-b809-9027038f4ab0" style="width:100%;height:100%;object-fit:cover;" alt="Italy" />`,
+    flagImgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/e59d686481b1707367309644c190304b.jpg?alt=media&token=fb3abf9f-0122-4045-b809-9027038f4ab0",
+    label: "National Team · FIGC",
+    titleA: "ITA", titleB: "LY",
+    pills: ["FIFA #<strong>7</strong>", "<strong>4×</strong> World Champs", "<strong>2×</strong> Euro"],
+    honours: [
+      {icon:"🏆",num:"4",label:"World Cup<br>Titles"},
+      {icon:"🏅",num:"2",label:"European<br>Champs"},
+      {icon:"⚽",num:"7#",label:"FIFA<br>Ranking"},
+      {icon:"🎯",num:"128",label:"World Cup<br>Goals"},
+      {icon:"🥇",num:"1",label:"Olympic<br>Gold"},
+      {icon:"📅",num:"1898",label:"Year<br>Founded"}
+    ],
+    bannerEmoji:"🏆",bannerTrophy:"🏆",
+    bannerTitle:"Gli Azzurri Legacy",
+    bannerDesc:"Four-time World Cup champions — defensive mastery, tactical brilliance, and passionate football.",
+    bannerYears:["1934","1938","1982","2006"],
+    shopTitle:"Shop Italy",
+    timeline:[
+      {dot:"🏆",year:"EUROPE · 2020",event:"Euro 2020 Champions",detail:"Mancini's Azzurri defeat England on penalties at Wembley. Donnarumma's heroics seal a historic win."},
+      {dot:"🏅",year:"GERMANY · 2006",event:"4th World Cup Title",detail:"Grosso's penalty and Cannavaro's defensive wall in Berlin. A tournament defined by unity and grit."},
+      {dot:"🏆",year:"SPAIN · 1982",event:"3rd World Cup Title",detail:"Paolo Rossi's legendary goalscoring run. Dino Zoff lifts the trophy at 40 years old."},
+      {dot:"⚽",year:"ITALY · 1938",event:"Back-to-Back World Champions",detail:"Vittorio Pozzo guides Italy to a second consecutive World Cup victory, establishing early dominance."}
+    ]
+  },
+  "england": {
+    flagHTML: `<img src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/188de6869f16638434a37e535504c181.jpg?alt=media&token=95867157-eaa4-49d5-b9b6-27719718656f" style="width:100%;height:100%;object-fit:cover;" alt="England" />`,
+    flagImgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/188de6869f16638434a37e535504c181.jpg?alt=media&token=95867157-eaa4-49d5-b9b6-27719718656f",
+    label: "National Team · The FA",
+    titleA: "ENG", titleB: "LAND",
+    pills: ["FIFA #<strong>4</strong>", "<strong>1×</strong> World Champ", "<strong>2×</strong> Euro Runners-up"],
+    honours: [
+      {icon:"🏆",num:"1",label:"World Cup<br>Title"},
+      {icon:"🥈",num:"2",label:"Euro<br>Runners-up"},
+      {icon:"⚽",num:"4#",label:"FIFA<br>Ranking"},
+      {icon:"🎯",num:"93",label:"World Cup<br>Goals"},
+      {icon:"🥇",num:"3",label:"Olympic<br>Gold (Am.)"},
+      {icon:"📅",num:"1863",label:"Year<br>Founded"}
+    ],
+    bannerEmoji:"🦁",bannerTrophy:"🏆",
+    bannerTitle:"Three Lions Pride",
+    bannerDesc:"1966 World Cup champions — the home of football with a rich and storied history.",
+    bannerYears:["1966 WC"],
+    shopTitle:"Shop England",
+    timeline:[
+      {dot:"🥈",year:"GERMANY · 2024",event:"Euro 2024 Finalists",detail:"Back-to-back European Championship finals. Southgate's men fight bravely but fall short to Spain."},
+      {dot:"🥈",year:"LONDON · 2020",event:"Euro 2020 Finalists",detail:"First European Championship final in history. A heartbreaking shootout loss to Italy at Wembley."},
+      {dot:"🏆",year:"LONDON · 1966",event:"World Cup Champions",detail:"Bobby Moore lifts the trophy at Wembley. Geoff Hurst scores a historic hat-trick in a 4-2 win over West Germany."},
+      {dot:"⚽",year:"LONDON · 1872",event:"First International Match",detail:"England play Scotland in the first official international football match in history, drawing 0-0."}
     ]
   }
 };
