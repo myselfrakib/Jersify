@@ -697,8 +697,9 @@
               </select>
               <select id="orderPaymentFilter" onchange="filterOrders()" style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none">
                 <option value="">All Payments</option>
+                <option value="prepaid">Prepaid</option>
+                <option value="partial_cod">Partial COD</option>
                 <option value="cod">COD</option>
-                <option value="online">Online/Prepaid</option>
               </select>
               <button class="btn btn-ghost btn-sm" onclick="manualRefreshOrders()">↻ Refresh</button>
               <button class="btn btn-ghost btn-sm" onclick="exportCSV('orders')">📥 CSV</button>
@@ -2016,7 +2017,11 @@ function filterOrders() {
   const pf = document.getElementById('orderPaymentFilter').value;
   const q = (document.getElementById('orderSearch')?.value||'').toLowerCase();
   let data = f ? _allOrders.filter(o=>(o.status||'pending')===f) : _allOrders;
-  if (pf) data = data.filter(o=>(o.paymentMethod||'online')===pf);
+  if (pf) data = data.filter(o=>{
+    let pm = (o.paymentMethod || 'prepaid').toLowerCase();
+    if (pm === 'razorpay' || pm === 'online') pm = 'prepaid';
+    return pm === pf;
+  });
   if (q) data = data.filter(o=>{
     const id = (o.orderId||o.id||'').toLowerCase();
     const name = (o.customerName||o.name||'').toLowerCase();
@@ -2033,6 +2038,13 @@ function filterOrders() {
   tbody.innerHTML = sorted.map(o => {
     const st=o.status||'pending';
     const badge={pending:'badge-orange',confirmed:'badge-blue',shipped:'badge-purple',delivered:'badge-green',cancelled:'badge-red'}[st]||'badge-gray';
+    let pm = (o.paymentMethod || 'prepaid').toLowerCase();
+    let pmDisplay = 'PREPAID';
+    let pmBadge = 'badge-blue';
+    if (pm === 'cod') { pmDisplay = 'COD'; pmBadge = 'badge-orange'; }
+    else if (pm === 'partial_cod') { pmDisplay = 'PARTIAL COD'; pmBadge = 'badge-gold'; }
+    else if (pm === 'razorpay' || pm === 'online' || pm === 'prepaid') { pmDisplay = 'PREPAID'; pmBadge = 'badge-blue'; }
+    else { pmDisplay = pm.toUpperCase().replace('_', ' '); pmBadge = 'badge-blue'; }
     const displayId=o.orderId||o.id||'—';
     const itemsSummary=Array.isArray(o.items)&&o.items.length?o.items.map(i=>`${i.name||'Item'} ×${i.qty||1}${i.size?' ('+i.size+')':''}`).join(', '):(o.productName||'—');
     const date=o.createdAt?new Date(o.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
@@ -2044,11 +2056,11 @@ function filterOrders() {
       <td data-label="Customer"><strong>${esc(o.customerName||o.name||'—')}</strong><br><span style="font-size:11px;color:var(--muted)">${esc(o.phone||o.email||'')}</span></td>
       <td data-label="Items" style="max-width:180px;font-size:12px;white-space:normal">${esc(itemsSummary)}</td>
       <td data-label="Total"><strong>₹${parseFloat(o.total||0).toFixed(2)}</strong></td>
-      <td data-label="Payment"><span class="badge ${o.paymentMethod==='cod'?'badge-orange':'badge-blue'}">${(o.paymentMethod||'online').toUpperCase()}</span></td>
+      <td data-label="Payment"><span class="badge ${pmBadge}">${pmDisplay}</span></td>
       <td data-label="Status"><span class="badge ${badge}">${st}</span></td>
       <td data-label="Shipment">${shipBadge}</td>
       <td data-label="Date" style="font-size:12px;color:var(--muted)">${date}</td>
-      <td data-label="Action"><button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">View</button></td>
+      <td data-label="Action"><div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">View</button><button class="btn btn-danger btn-sm" onclick="deleteItem('orders','${o.id}')">Delete</button></div></td>
     </tr>`;
   }).join('');
 }
@@ -2109,12 +2121,20 @@ function viewOrder(id) {
     ? o.items.map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)"><span>${esc(i.name||'Item')} ×${i.qty||1} ${i.size?`<span class="badge badge-gray">${i.size}</span>`:''}</span><span>₹${parseFloat(i.price||0).toFixed(2)}</span></div>`).join('')
     : `<div>${esc(o.productName||'—')}</div>`;
 
+  let pm = (o.paymentMethod || 'prepaid').toLowerCase();
+  let pmDisplay = 'PREPAID';
+  if (pm === 'cod') { pmDisplay = 'COD'; }
+  else if (pm === 'partial_cod') { pmDisplay = 'PARTIAL COD'; }
+  else if (pm === 'razorpay' || pm === 'online' || pm === 'prepaid') { pmDisplay = 'PREPAID'; }
+  else { pmDisplay = pm.toUpperCase().replace('_', ' '); }
+
   document.getElementById('orderDetailContent').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
       <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Order ID</div><div style="font-family:'DM Mono',monospace;color:var(--blue);font-size:12px">${esc(displayId)}</div></div>
       <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Date</div><div>${o.createdAt?new Date(o.createdAt).toLocaleString('en-IN'):'—'}</div></div>
       <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Customer</div><div style="font-weight:600">${esc(o.customerName||o.name||'—')}</div></div>
       <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Contact</div><div>${esc(o.email||'—')} ${o.phone?'· '+esc(o.phone):''}</div></div>
+      <div style="grid-column: span 2;"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Payment Status</div><div style="font-weight:700;color:var(--accent)">${pmDisplay}${o.paymentId?' (Paid - '+esc(o.paymentId)+')':''}</div></div>
     </div>
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px">
       ${itemsHtml}
