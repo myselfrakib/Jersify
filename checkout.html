@@ -1447,7 +1447,14 @@
     window.addEventListener('DOMContentLoaded', async () => {
       const params = new URLSearchParams(window.location.search);
       const paymentId = params.get('paymentId');
-      if (paymentId) { handleOnlinePaymentCallback(params); return; }
+      if (paymentId) {
+        // Wait for Firebase Auth to initialize to ensure database writes are authenticated
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+          unsubscribe();
+          await handleOnlinePaymentCallback(params);
+        });
+        return;
+      }
       loadCoupons();
       renderSavedAddresses();
       const pid = params.get('id');
