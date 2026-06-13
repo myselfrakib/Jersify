@@ -926,18 +926,21 @@
       const countries = [
         { name: "Argentina", sub: "National team", id: "argentina", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>` },
         { name: "Brazil",    sub: "National team", id: "brazil",    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cb"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cb)"><rect width="120" height="120" fill="#1f8f3a"/><polygon points="60,18 98,60 60,102 22,60" fill="#f6d44a"/><circle cx="60" cy="60" r="18" fill="#2a4c9b"/></g></svg>` },
+        { name: "England",   sub: "National team", id: "england",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/188de6869f16638434a37e535504c181.jpg?alt=media&token=95867157-eaa4-49d5-b9b6-27719718656f" },
         { name: "France",    sub: "National team", id: "france",    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cc"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cc)"><rect width="40" height="120" x="0" fill="#244aa5"/><rect width="40" height="120" x="40" fill="#fff"/><rect width="40" height="120" x="80" fill="#d81e2e"/></g></svg>` },
         { name: "Germany",   sub: "National team", id: "germany",   svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cd"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cd)"><rect width="120" height="40" y="0" fill="#111"/><rect width="120" height="40" y="40" fill="#d81e2e"/><rect width="120" height="40" y="80" fill="#f3c400"/></g></svg>` },
+        { name: "Italy",     sub: "National team", id: "italy",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/e59d686481b1707367309644c190304b.jpg?alt=media&token=fb3abf9f-0122-4045-b809-9027038f4ab0" },
         { name: "Spain",     sub: "National team", id: "spain",     svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>` },
         { name: "Portugal",  sub: "National team", id: "portugal",  svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>` }
       ];
-      document.getElementById("countryRow").innerHTML = countries.map(c =>
-        `<div class="card-chip" onclick="goToTeam('${c.id}')">
-          <div class="chip-img"><img src="data:image/svg+xml;charset=UTF-8,${encodeURIComponent(c.svg)}" alt="${c.name}"></div>
+      document.getElementById("countryRow").innerHTML = countries.map(c => {
+        const imgSrc = c.svg ? `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(c.svg)}` : c.img;
+        return `<div class="card-chip" onclick="goToTeam('${c.id}')">
+          <div class="chip-img"><img src="${imgSrc}" alt="${c.name}"></div>
           <div class="chip-name">${c.name}</div>
           <div class="chip-sub">${c.sub}</div>
-        </div>`
-      ).join("");
+        </div>`;
+      }).join("");
     })();
 
     /* CLUB CHIPS */
