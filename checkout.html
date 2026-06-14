@@ -1463,6 +1463,8 @@
         items: orderItems, address, city, state, pincode, country,
         subtotal: orderPrice, discount: discountAmount, shipping,
         paymentMethod: selectedPayMethod,
+        uid: currentUser.uid, userEmail: currentUser.email || '',
+        name, phone, email, selectedSize,
         ...(selectedPayMethod === 'partial_cod' && {
           pcodCharge: PARTIAL_COD_CHARGE,
           pcodPayNow,
@@ -1474,6 +1476,24 @@
 
       // For partial COD the booking page should only charge pcodPayNow
       const chargeAmount = selectedPayMethod === 'partial_cod' ? pcodPayNow : finalPrice;
+
+      // Pre-save the order as pending so it's visible in profile even if callback fails or opens in another app
+      try {
+        const orderRef = ref(db, `orders/${orderId}`);
+        await set(orderRef, {
+          orderId, userId: currentUser.uid, userEmail: currentUser.email || '', customerName: name, phone, email,
+          address, city, state, pincode, country,
+          items: orderItems, subtotal: orderPrice, discount: discountAmount,
+          shipping, total: finalPrice, amountPaid: 0,
+          selectedSize, paymentMethod: selectedPayMethod,
+          status: 'pending',
+          source: 'checkout_redirect',
+          createdAt: new Date().toISOString()
+        });
+        await update(ref(db, `users/${currentUser.uid}/orders`), { [orderId]: true });
+      } catch (e) {
+        console.warn('Failed to pre-save pending order', e);
+      }
 
       setConfirmBtn(true, 'Redirecting to payment…');
       const bookingUrl = `${bookingBase}?oid=${encodeURIComponent(orderId)}`
@@ -1498,12 +1518,15 @@
       if (!orderId || !dataB64) { alert('Invalid callback data.'); window.location.href = 'index.html'; return; }
       try {
         const payload = JSON.parse(decodeURIComponent(escape(atob(dataB64))));
-        const name = params.get('n') || 'Customer';
-        const selectedSize = params.get('sz') || 'M';
-        const uid = params.get('uid') || 'anonymous';
-        const ue = params.get('ue') || '';
-        const email = params.get('e') || '';
-        const phone = params.get('ph') || '';
+        const name = payload.name || params.get('n') || 'Customer';
+        const selectedSize = payload.selectedSize || params.get('sz') || 'M';
+        let uid = payload.uid || params.get('uid');
+        if (!uid) {
+           uid = (typeof auth !== 'undefined' && auth.currentUser) ? auth.currentUser.uid : 'anonymous';
+        }
+        const ue = payload.userEmail || params.get('ue') || '';
+        const email = payload.email || params.get('e') || '';
+        const phone = payload.phone || params.get('ph') || '';
         const fullTotal = parseInt(params.get('amt') || '0');
         const pm = params.get('pm') || 'online';
         const orderRef = ref(db, `orders/${orderId}`);
