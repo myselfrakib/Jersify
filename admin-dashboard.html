@@ -975,8 +975,11 @@
         <div class="form-group">
           <label>Kit Type</label>
           <select id="p_type"><option>Home Kit</option><option>Away Kit</option><option>Third Kit</option><option>Special Edition</option><option>Fan Kit</option></select>
-          <label class="toggle" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin-top:8px;">
-            <input type="checkbox" id="p_player_version" />
+          <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;margin-top:8px;">
+            <span class="toggle">
+              <input type="checkbox" id="p_player_version" />
+              <span class="toggle-track"></span>
+            </span>
             <span style="font-size:11px;font-weight:600;color:var(--text);">Player Version</span>
           </label>
         </div>
