@@ -1809,7 +1809,7 @@ async function deleteMediaSlot(key) {
    WOW PICKS ADMIN
 ═══════════════════════════════════════════════ */
 let _wowPicksProducts = [];
-let _wowPicksCurrent = Array(8).fill('');
+let _wowPicksCurrent = Array(13).fill('');
 let _wowPicksBuilt = false;
 
 async function buildWowPicksUI() {
@@ -1830,11 +1830,11 @@ async function buildWowPicksUI() {
     const picksSnap = await get(dbRef(db, 'wowPicks'));
     if (picksSnap.exists()) {
       const data = picksSnap.val();
-      for (let i=0;i<8;i++) { _wowPicksCurrent[i] = data[`slot_${i+1}`] || ''; }
+      for (let i=0;i<13;i++) { _wowPicksCurrent[i] = data[`slot_${i+1}`] || ''; }
     }
     // Build dropdowns
     grid.innerHTML = '';
-    for (let i=0;i<8;i++) {
+    for (let i=0;i<13;i++) {
       const card = document.createElement('div');
       card.style.cssText='background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;flex-direction:column;gap:8px;';
       const lbl = document.createElement('div');
@@ -1880,7 +1880,7 @@ async function saveWowPicks() {
   try {
     const { db, dbRef, set } = await waitFb();
     const picks = {};
-    for (let i=0;i<8;i++) {
+    for (let i=0;i<13;i++) {
       const sel = document.getElementById(`wow_sel_${i}`);
       picks[`slot_${i+1}`] = sel ? sel.value : '';
     }
@@ -1895,7 +1895,7 @@ async function clearWowPicks() {
   confirmAction('Clear all WOW Picks? The homepage will auto-fill from latest products.', async () => {
     const { db, dbRef, remove } = await waitFb();
     await remove(dbRef(db, 'wowPicks'));
-    for (let i=0;i<8;i++) {
+    for (let i=0;i<13;i++) {
       const sel = document.getElementById(`wow_sel_${i}`);
       const thumb = document.getElementById(`wow_thumb_${i}`);
       if (sel) sel.value='';
