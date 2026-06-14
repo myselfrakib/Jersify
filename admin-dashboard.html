@@ -975,6 +975,10 @@
         <div class="form-group">
           <label>Kit Type</label>
           <select id="p_type"><option>Home Kit</option><option>Away Kit</option><option>Third Kit</option><option>Special Edition</option><option>Fan Kit</option></select>
+          <label class="toggle" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin-top:8px;">
+            <input type="checkbox" id="p_player_version" />
+            <span style="font-size:11px;font-weight:600;color:var(--text);">Player Version</span>
+          </label>
         </div>
         <div class="form-group"><label>Price (₹) *</label><input type="text" id="p_price" placeholder="1499"/></div>
         <div class="form-group"><label>Badge Label</label><input type="text" id="p_badge" placeholder="NEW 2025"/></div>
@@ -1046,6 +1050,7 @@
       </div>
     </div>
     <div class="modal-footer">
+      <button class="btn btn-danger" onclick="deleteItem('orders', _editId); closeModal('orderModal')" style="margin-right:auto">Delete Order</button>
       <button class="btn btn-ghost" onclick="closeModal('orderModal')">Cancel</button>
       <button class="btn btn-primary" onclick="updateOrder()">Update Order</button>
     </div>
@@ -1946,6 +1951,7 @@ function openProductModal(data) {
   _editId = data?data.id:null;
   document.getElementById('productModalTitle').textContent = data?'Edit Product':'Add Product';
   setV('p_name', data?.name||''); setV('p_team', data?.team||'Argentina'); setV('p_type', data?.type||'Home Kit');
+  document.getElementById('p_player_version').checked = !!data?.playerVersion;
   setV('p_price', data?.price||''); setV('p_badge', data?.badge||''); setV('p_status', data?.status||'active');
   const sz=data?.sizes||{};
   setV('p_xs',sz.xs||0); setV('p_s',sz.s||0); setV('p_m',sz.m||0); setV('p_l',sz.l||0); setV('p_xl',sz.xl||0);
@@ -1969,6 +1975,7 @@ async function saveProduct() {
     }
     const data = {
       name, team:getV('p_team'), type:getV('p_type'), price:getV('p_price'), badge:getV('p_badge'), status:getV('p_status'),
+      playerVersion: document.getElementById('p_player_version').checked,
       imgUrl: imageUrls[0]||'', images: imageUrls,
       sizes: { xs:parseInt(getV('p_xs'))||0, s:parseInt(getV('p_s'))||0, m:parseInt(getV('p_m'))||0, l:parseInt(getV('p_l'))||0, xl:parseInt(getV('p_xl'))||0 },
       updatedAt: Date.now()
