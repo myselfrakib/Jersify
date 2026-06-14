@@ -1240,7 +1240,7 @@
       buildPPGallery(getProductImages(p));
 
       /* Sizes */
-      document.getElementById('ppSizeGrid').innerHTML = ['xs','s','m','l','xl'].map(sz => {
+      document.getElementById('ppSizeGrid').innerHTML = ['xs','s','m','l','xl','xxl'].map(sz => {
         const avail = !p.sizes || Number(p.sizes[sz] || 0) > 0;
         return `<button class="pp-size-pill${avail ? '' : ' oos'}" data-size="${sz}" onclick="ppSelectSize('${sz}', ${avail})">${sz.toUpperCase()}</button>`;
       }).join('');
