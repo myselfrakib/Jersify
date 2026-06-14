@@ -3218,21 +3218,16 @@
 
       try {
         const productListStr = _botProducts.map(p =>
-          `ID: ${p.id} | Name: ${p.name} | Team: ${p.team || ''} | Price: ₹${p.price}`
-        ).join("\\n");
+          "ID: " + p.id + " | Name: " + p.name + " | Team: " + (p.team || '') + " | Price: Rs." + p.price
+        ).join("\n");
 
-        const prompt = `You are J, the helpful AI assistant for Jersify, an online football jersey store.
-        The user asks: "${text}"
-        
-        Here is the catalog of available products:
-        ${productListStr}
-        
-        Respond with valid JSON only, using this exact format:
-        {
-          "response_text": "Your friendly text response here",
-          "product_ids": ["ID_1", "ID_2"]
-        }
-        Do not include markdown blocks like \`\`\`json, just the raw JSON object. If you don't recommend any products, leave product_ids empty.`;
+        const prompt = "You are J, the helpful AI assistant for Jersify, an online football jersey store.\n" +
+          "The user asks: \"" + text + "\"\n" +
+          "Here is the catalog of available products:\n" +
+          productListStr + "\n" +
+          "Respond with valid JSON only, using this exact format:\n" +
+          "{\n  \"response_text\": \"Your friendly text response here\",\n  \"product_ids\": [\"ID_1\", \"ID_2\"]\n}\n" +
+          "Do not include markdown blocks like ```json, just the raw JSON object. If you don't recommend any products, leave product_ids empty.";
 
         // Call the secure local backend instead of Gemini directly
         const res = await fetch(BACKEND_URL, {
@@ -3250,7 +3245,7 @@
         document.getElementById(typingId).remove();
 
         let botHtml = `<div class="chat-msg bot"><div class="msg-bubble">${parsed.response_text}</div>`;
-
+        
         if (parsed.product_ids && parsed.product_ids.length > 0) {
           parsed.product_ids.forEach(id => {
             const p = _botProducts.find(x => x.id === id);
@@ -3269,7 +3264,7 @@
             }
           });
         }
-
+        
         botHtml += `</div>`;
         historyEl.insertAdjacentHTML("beforeend", botHtml);
         historyEl.scrollTop = historyEl.scrollHeight;
@@ -3277,11 +3272,11 @@
       } catch (err) {
         console.error(err);
         document.getElementById(typingId)?.remove();
-        historyEl.insertAdjacentHTML("beforeend", \`}
-          <divclass="chat-msg bot">
+        historyEl.insertAdjacentHTML("beforeend", `
+          <div class="chat-msg bot">
             <div class="msg-bubble">Oops, I'm having trouble connecting to my brain right now. Try again!</div>
           </div>
-        \`);
+        `);
         historyEl.scrollTop = historyEl.scrollHeight;
       }
     };
