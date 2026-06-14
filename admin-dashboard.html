@@ -3314,7 +3314,7 @@ async function cancelShipment(orderId) {
     try {
       // Try to cancel AWB if assigned, otherwise cancel the order
       if (order.srAwb) {
-        await srProxy('/orders/cancel/awbs', 'POST', { awbs: [order.srAwb] });
+        await srProxy('/orders/cancel/awb', 'POST', { awbs: [order.srAwb] });
       } else if (order.srOrderId) {
         await srProxy('/orders/cancel', 'POST', { ids: [Number(order.srOrderId)] });
       }
