@@ -487,7 +487,7 @@
     </div>
 
     <div class="nav-section-label">Content</div>
-    <button class="nav-link active" onclick="switchTab('products',this)">
+    <button class="nav-link" onclick="switchTab('products',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       Products
     </button>
@@ -497,7 +497,7 @@
     </button>
 
     <div class="nav-section-label">Management</div>
-    <button class="nav-link" onclick="switchTab('orders',this)">
+    <button class="nav-link active" onclick="switchTab('orders',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><path d="M12 4v16"/></svg>
       Orders
       <span class="nav-badge" id="orderBadgeNav">0</span>
@@ -549,7 +549,7 @@
       <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()">
         <span></span><span></span><span></span>
       </button>
-      <div class="page-title" id="pageTitle">Products</div>
+      <div class="page-title" id="pageTitle">Orders</div>
       <div class="topbar-right">
         <div class="search-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -576,7 +576,7 @@
     <div class="content" id="mainContent">
 
       <!-- ══ PRODUCTS TAB ══ -->
-      <div class="tab-pane active" id="tab-products">
+      <div class="tab-pane" id="tab-products">
         <div class="stats-grid">
           <div class="stat-card red"><div class="stat-val" id="statProducts">—</div><div class="stat-label">Products</div><div class="stat-icon">👕</div></div>
           <div class="stat-card green"><div class="stat-val" id="statOrders">—</div><div class="stat-label">Total Orders</div><div class="stat-icon">📦</div></div>
@@ -676,7 +676,7 @@
       </div>
 
       <!-- ══ ORDERS TAB ══ -->
-      <div class="tab-pane" id="tab-orders">
+      <div class="tab-pane active" id="tab-orders">
         <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
           <div class="stat-card orange"><div class="stat-val" id="stPending">—</div><div class="stat-label">Pending</div></div>
           <div class="stat-card blue"><div class="stat-val" id="stConfirmed">—</div><div class="stat-label">Confirmed</div></div>
