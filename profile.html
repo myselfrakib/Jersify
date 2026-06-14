@@ -3250,7 +3250,7 @@
         document.getElementById(typingId).remove();
 
         let botHtml = `<div class="chat-msg bot"><div class="msg-bubble">${parsed.response_text}</div>`;
-        
+
         if (parsed.product_ids && parsed.product_ids.length > 0) {
           parsed.product_ids.forEach(id => {
             const p = _botProducts.find(x => x.id === id);
@@ -3269,7 +3269,7 @@
             }
           });
         }
-        
+
         botHtml += `</div>`;
         historyEl.insertAdjacentHTML("beforeend", botHtml);
         historyEl.scrollTop = historyEl.scrollHeight;
@@ -3277,8 +3277,8 @@
       } catch (err) {
         console.error(err);
         document.getElementById(typingId)?.remove();
-        historyEl.insertAdjacentHTML("beforeend", \`
-          <div class="chat-msg bot">
+        historyEl.insertAdjacentHTML("beforeend", \`}
+          <divclass="chat-msg bot">
             <div class="msg-bubble">Oops, I'm having trouble connecting to my brain right now. Try again!</div>
           </div>
         \`);
