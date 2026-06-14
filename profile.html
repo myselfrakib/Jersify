@@ -3249,28 +3249,28 @@
 
         document.getElementById(typingId).remove();
 
-        let botHtml = \`<div class="chat-msg bot"><div class="msg-bubble">\${parsed.response_text}</div>\`;
+        let botHtml = `<div class="chat-msg bot"><div class="msg-bubble">${parsed.response_text}</div>`;
         
         if (parsed.product_ids && parsed.product_ids.length > 0) {
           parsed.product_ids.forEach(id => {
             const p = _botProducts.find(x => x.id === id);
             if (p) {
               const imgUrl = (p.media && p.media.length > 0) ? p.media[0] : (p.imageUrl || 'https://via.placeholder.com/50');
-              botHtml += \`
+              botHtml += `
                 <div class="bot-product-card">
-                  <img src="\${imgUrl}" class="bot-product-img" />
+                  <img src="${imgUrl}" class="bot-product-img" />
                   <div class="bot-product-info">
-                    <div class="bot-product-name">\${p.name}</div>
-                    <div class="bot-product-price">₹\${p.price}</div>
+                    <div class="bot-product-name">${p.name}</div>
+                    <div class="bot-product-price">₹${p.price}</div>
                   </div>
-                  <button class="bot-product-buy" onclick="window.location.href='checkout.html?product_id=\${p.id}'">Buy Now</button>
+                  <button class="bot-product-buy" onclick="window.location.href='checkout.html?product_id=${p.id}'">Buy Now</button>
                 </div>
-              \`;
+              `;
             }
           });
         }
         
-        botHtml += \`</div>\`;
+        botHtml += `</div>`;
         historyEl.insertAdjacentHTML("beforeend", botHtml);
         historyEl.scrollTop = historyEl.scrollHeight;
 
