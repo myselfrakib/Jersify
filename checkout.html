@@ -1593,7 +1593,8 @@
 
             orderBody.innerHTML = `
             <div class="product-row">
-              <div class="product-img">
+              <div class="product-img" style="position:relative;">
+                ${p.playerVersion ? `<span style="position:absolute;top:4px;left:4px;background:var(--accent);color:#fff;font-size:7px;font-weight:800;padding:2px 4px;border-radius:3px;z-index:2;letter-spacing:0.5px;text-transform:uppercase;box-shadow:0 1px 3px rgba(0,0,0,0.2);">Player</span>` : ''}
                 ${p.imgUrl ? `<img src="${p.imgUrl}" alt="${name}">` : '<span style="font-family:Bebas Neue,sans-serif;font-size:28px;color:rgba(255,255,255,.55)">10</span>'}
               </div>
               <div class="product-info">
@@ -1629,7 +1630,8 @@
           const safeKey = item.key.replace(/[^a-zA-Z0-9]/g, '_');
           return `
           <div class="cart-item" id="cartItem_${safeKey}">
-            <div class="ci-img">
+            <div class="ci-img" style="position:relative;">
+              ${item.playerVersion ? `<span style="position:absolute;top:4px;left:4px;background:var(--accent);color:#fff;font-size:7px;font-weight:800;padding:2px 4px;border-radius:3px;z-index:2;letter-spacing:0.5px;text-transform:uppercase;box-shadow:0 1px 3px rgba(0,0,0,0.2);">Player</span>` : ''}
               ${item.imageUrl || item.imgUrl ? `<img src="${item.imageUrl || item.imgUrl}" alt="${item.name}">` : '<span style="font-size:24px">👕</span>'}
             </div>
             <div class="ci-info">
