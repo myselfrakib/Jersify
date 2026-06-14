@@ -1170,16 +1170,16 @@
           const picks = wowSnap.val();
           const productMap = {};
           products.forEach(p => productMap[p._id] = p);
-          for (let i = 1; i <= 8; i++) {
+          for (let i = 1; i <= 13; i++) {
             const pid = picks[`slot_${i}`];
             if (pid && productMap[pid]) wowProducts.push(productMap[pid]);
           }
         }
         // Fill remaining slots from products not already in wowProducts
-        if (wowProducts.length < 8) {
+        if (wowProducts.length < 13) {
           const wowIds = new Set(wowProducts.map(p => p._id));
           const remaining = products.filter(p => !wowIds.has(p._id));
-          wowProducts = [...wowProducts, ...remaining].slice(0, 8);
+          wowProducts = [...wowProducts, ...remaining].slice(0, 13);
         }
 
         function loopCard(p, i) {
