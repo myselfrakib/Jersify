@@ -645,6 +645,7 @@
       </button>
       <div class="pp-dots" id="ppDots"></div>
       <div class="pp-img-counter" id="ppImgCounter" style="display:none;"></div>
+      <div class="pp-player-overlay" id="ppPlayerOverlay" style="display:none;position:absolute;top:12px;left:12px;background:var(--accent);color:#fff;font-size:10px;font-weight:800;letter-spacing:.5px;padding:4px 8px;border-radius:4px;text-transform:uppercase;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,0.2);">Player</div>
       <div class="pp-badge-overlay" id="ppBadgeOverlay" style="display:none;"></div>
     </div>
 
@@ -866,11 +867,11 @@
       updateCartBadges();
     }
 
-    window.addToCart = function(id, name, price, imgUrl, team, size) {
+    window.addToCart = function(id, name, price, imgUrl, team, size, playerVersion = false) {
       const cart = getCart();
       const key  = `${id}_${size}`;
       const hit  = cart.find(i => i.key === key);
-      if (hit) { hit.qty += 1; } else { cart.push({ key, id, name, price, imgUrl, team, size, qty: 1, emoji: '👕' }); }
+      if (hit) { hit.qty += 1; } else { cart.push({ key, id, name, price, imgUrl, team, size, qty: 1, emoji: '👕', playerVersion }); }
       saveCart(cart); // saveCart handles DB write when logged in
       showToast('✓ Added to cart');
     };
@@ -1088,6 +1089,7 @@
         return `
           <article class="product" style="animation-delay:${i * 0.07}s" onclick="openProductPage('${id}')">
             <div class="img">
+              ${p.playerVersion ? `<span style="position:absolute;top:6px;left:6px;background:var(--accent);color:#fff;font-size:8px;font-weight:800;padding:2px 5px;border-radius:3px;z-index:2;letter-spacing:0.5px;text-transform:uppercase;box-shadow:0 2px 4px rgba(0,0,0,0.2);">Player</span>` : ''}
               ${badgeText ? `<span class="badge">${badgeText}</span>` : ''}
               ${imgCount > 1 ? `<span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;z-index:2;backdrop-filter:blur(4px)">📷 ${imgCount}</span>` : ''}
               ${primary
@@ -1220,6 +1222,10 @@
       const badgeOverlay = document.getElementById('ppBadgeOverlay');
       if (p.badge || p.type) { badgeOverlay.textContent = p.badge || p.type; badgeOverlay.style.display = 'block'; }
       else { badgeOverlay.style.display = 'none'; }
+      
+      const playerOverlay = document.getElementById('ppPlayerOverlay');
+      if (p.playerVersion) { playerOverlay.style.display = 'block'; badgeOverlay.style.top = '36px'; }
+      else { playerOverlay.style.display = 'none'; badgeOverlay.style.top = '12px'; }
 
       document.getElementById('ppShareBtn').classList.remove('copied');
 
@@ -1289,7 +1295,7 @@
       }
       const { id, data: p } = found;
       const imgs = getProductImages(p);
-      addToCart(id, p.name || 'Jersify Kit', p.price || 1499, imgs[0] || '', teamLabel(p), sel.dataset.size);
+      addToCart(id, p.name || 'Jersify Kit', p.price || 1499, imgs[0] || '', teamLabel(p), sel.dataset.size, p.playerVersion);
     };
 
     /* Share */
@@ -1343,6 +1349,7 @@
         return `
           <div class="pp-browse-card" style="animation-delay:${i*.05}s" onclick="switchProductPage('${id}')">
             <div class="pp-browse-card-img">
+              ${p.playerVersion ? `<span style="position:absolute;top:4px;left:4px;background:var(--accent);color:#fff;font-size:7px;font-weight:800;padding:2px 4px;border-radius:3px;z-index:2;letter-spacing:0.5px;text-transform:uppercase;box-shadow:0 1px 3px rgba(0,0,0,0.2);">Player</span>` : ''}
               ${th
                 ? `<div class="pp-browse-img-skeleton"></div><img src="${th}" alt="${p.name||'Jersey'}" loading="lazy" decoding="async" onload="this.classList.add('loaded');this.previousElementSibling.classList.add('hidden')"/>`
                 : `<div class="pp-browse-mini-jersey"><div><strong>${p.number||'10'}</strong><small>${(p.type||'KIT').toUpperCase()}</small></div></div>`}
