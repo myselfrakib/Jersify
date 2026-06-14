@@ -1064,6 +1064,12 @@
         <div>
           <div style="font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;color:var(--accent);">Customer Details</div>
           <div class="form-grid" style="grid-template-columns:1fr;gap:10px;">
+            <div class="form-group">
+              <label>Select Registered User <span style="font-size:9px;color:var(--muted);text-transform:none;font-weight:400">(optional)</span></label>
+              <select id="mo_user_select" onchange="onManualOrderUserSelect()">
+                <option value="">-- Guest / Manual Entry --</option>
+              </select>
+            </div>
             <div class="form-group"><label>Customer Name *</label><input type="text" id="mo_name" placeholder="John Doe"/></div>
             <div class="form-group"><label>Email Address</label><input type="email" id="mo_email" placeholder="john@example.com"/></div>
             <div class="form-group"><label>Phone Number *</label><input type="text" id="mo_phone" placeholder="9876543210"/></div>
@@ -3279,12 +3285,40 @@ function openManualOrderModal() {
   setV('mo_country','India'); setV('mo_discount','0'); setV('mo_shipping','0');
   setV('mo_payment_method','cod'); setV('mo_status','confirmed');
   _moCart=[];
+  const us=document.getElementById('mo_user_select');
+  if (us) {
+    us.innerHTML='<option value="">-- Guest / Manual Entry --</option>'+
+      _allUsers.map(raw => {
+        const u = normalizeUser(raw);
+        return `<option value="${u.id}">${esc(u.name)} (${esc(u.email||u.phone||'No contact')})</option>`;
+      }).join('');
+  }
   const ps=document.getElementById('mo_prod_select');
   ps.innerHTML='<option value="">-- Choose Product --</option>'+
     _allProducts.filter(p=>p.status!=='inactive').map(p=>`<option value="${p.id}">${esc(p.name)} - ₹${p.price}</option>`).join('');
   onManualOrderProductChange();
   renderManualOrderCart();
   openModal('manualOrderModal');
+}
+
+function onManualOrderUserSelect() {
+  const uid = document.getElementById('mo_user_select').value;
+  if (!uid) return;
+  const raw = _allUsers.find(u => u.id === uid);
+  if (!raw) return;
+  const u = normalizeUser(raw);
+  setV('mo_name', u.name);
+  if (u.email) setV('mo_email', u.email);
+  if (u.phone) setV('mo_phone', u.phone);
+  
+  const profile = raw.profile || {};
+  if (profile.addresses && profile.addresses.length > 0) {
+    const addr = profile.addresses[0];
+    setV('mo_address', addr.address || '');
+    setV('mo_city', addr.city || '');
+    setV('mo_state', addr.state || '');
+    setV('mo_pincode', addr.pincode || '');
+  }
 }
 
 function onManualOrderProductChange() {
@@ -3375,8 +3409,9 @@ async function saveManualOrder() {
       const stock=parseInt((snap.val())[item.size.toLowerCase()])||0;
       await update(dbRef(db,`products/${item.id}/sizes`), { [item.size.toLowerCase()]:stock-item.qty });
     }
+    const selUid = document.getElementById('mo_user_select')?.value;
     const orderData = {
-      orderId, userId:'admin_manual', userEmail:getV('mo_email')||'manual_order@jersify.online',
+      orderId, userId: selUid || 'admin_manual', userEmail: getV('mo_email') || 'manual_order@jersify.online',
       customerName:name, phone, email:getV('mo_email')||'', address, city, state, pincode, country,
       items:_moCart, subtotal, discount:discountAbs, shipping:shippingVal, total,
       selectedSize:_moCart.length===1?_moCart[0].size:'Mixed',
@@ -3385,6 +3420,9 @@ async function saveManualOrder() {
       source:'Admin Manual Placement', createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()
     };
     await set(dbRef(db,`orders/${orderId}`), orderData);
+    if (selUid) {
+      await update(dbRef(db, `users/${selUid}/orders`), { [orderId]: true }).catch(() => {});
+    }
     closeModal('manualOrderModal');
     toast(`Order ${orderId} created! 📦`, 'success');
   } catch(err) { toast('Failed: '+err.message, 'error'); }
