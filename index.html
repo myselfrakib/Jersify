@@ -1187,8 +1187,9 @@
           const picContent = p.imgUrl
             ? `<div class="img-wrap"><img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy" style="pointer-events:none"/></div>`
             : `<div class="mini-jersey ${colors[i%colors.length]}" style="pointer-events:none"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`;
+          const playerTag = p.playerVersion ? `<div style="position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-size:9px;font-weight:800;padding:3px 6px;border-radius:4px;z-index:2;letter-spacing:0.5px;text-transform:uppercase;box-shadow:0 2px 4px rgba(0,0,0,0.2);">Player</div>` : '';
           return `<article class="loop-card" data-pid="${p._id}">
-            <div class="pic">${picContent}</div>
+            <div class="pic">${playerTag}${picContent}</div>
             <div class="loop-info">
               ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ""}
               <h4>${p.name||'Jersify Kit'}</h4>
@@ -1206,8 +1207,9 @@
           const picContent = p.imgUrl
             ? `<div class="img-wrap"><img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy"/></div>`
             : `<div class="mini-jersey ${colors[i%colors.length]}" style="width:72px;height:88px;"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`;
+          const playerTag = p.playerVersion ? `<div style="position:absolute;top:6px;left:6px;background:var(--accent);color:#fff;font-size:8px;font-weight:800;padding:2px 5px;border-radius:3px;z-index:2;letter-spacing:0.5px;text-transform:uppercase;box-shadow:0 2px 4px rgba(0,0,0,0.2);">Player</div>` : '';
           return `<article class="grid-product-card" data-pid="${p._id}">
-            <div class="pic">${picContent}</div>
+            <div class="pic">${playerTag}${picContent}</div>
             <div class="loop-info">
               ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ""}
               <h4>${p.name||'Jersify Kit'}</h4>
