@@ -841,22 +841,31 @@
 
     async function onUserLogin(user) {
       _currentUser = user;
-      const guestCart = getCart(); // whatever was in localStorage before login
+      const localCart = getCart(); // whatever was in localStorage before login
+      const syncedUid = localStorage.getItem('jersify_synced_uid');
       try {
         const snap = await get(ref(rtdb, `users/${user.uid}/cart`));
         const dbCart = snap.exists() ? (snap.val() || []) : [];
-        // Merge: DB cart is "base", guest additions on top
-        const merged = mergeCarts(dbCart, guestCart);
-        // Save merged back everywhere
-        localStorage.setItem('jersify_cart', JSON.stringify(merged));
-        await set(ref(rtdb, `users/${user.uid}/cart`), merged);
-        updateCartBadges();
-        if (guestCart.length > 0 && merged.length > dbCart.length) {
-          showToast(`✓ Cart synced (${merged.length} item${merged.length !== 1 ? 's' : ''})`);
+        
+        if (syncedUid === user.uid) {
+           const localStr = JSON.stringify(localCart);
+           const dbStr = JSON.stringify(dbCart);
+           if (localStr !== dbStr) {
+             localStorage.setItem('jersify_cart', dbStr);
+             updateCartBadges();
+           }
+        } else {
+           const merged = mergeCarts(dbCart, localCart);
+           localStorage.setItem('jersify_cart', JSON.stringify(merged));
+           localStorage.setItem('jersify_synced_uid', user.uid);
+           await set(ref(rtdb, `users/${user.uid}/cart`), merged);
+           updateCartBadges();
+           if (localCart.length > 0 && merged.length > dbCart.length) {
+             showToast(`✓ Cart synced (${merged.length} item${merged.length !== 1 ? 's' : ''})`);
+           }
         }
       } catch(e) {
         console.warn('[Cart] Login sync failed:', e.message);
-        // Gracefully fall back — localStorage cart still works
       }
     }
 
@@ -864,6 +873,7 @@
       _currentUser = null;
       // Clear local cart on logout so next user starts fresh
       localStorage.removeItem('jersify_cart');
+      localStorage.removeItem('jersify_synced_uid');
       updateCartBadges();
     }
 
