@@ -1211,13 +1211,7 @@ function buildHeroBg(cfg) {
    PAGE HTML BUILDER
 ================================================================ */
 function buildPageHTML(id, cfg, data) {
-  const honourCards = data.honours.map(h =>
-    `<div class="achievement-card">
-      <div class="achievement-icon">${h.icon}</div>
-      <div class="achievement-num"><span>${h.num}</span></div>
-      <div class="achievement-label">${h.label}</div>
-    </div>`
-  ).join('');
+
 
   const pills = data.pills.map(p =>
     `<div class="hero-stat-pill">${p}</div>`
@@ -1264,10 +1258,7 @@ function buildPageHTML(id, cfg, data) {
       </div>
     </section>
 
-    <section class="section" style="margin-top:20px;">
-      <div class="section-title">Honours</div>
-      <div class="achievements-row">${honourCards}</div>
-    </section>
+
 
     <div class="highlight-banner" data-emoji="${data.bannerEmoji}">
       <div class="hl-trophy">${data.bannerTrophy}</div>
