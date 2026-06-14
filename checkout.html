@@ -235,6 +235,7 @@
     }
     .size-btn:hover { border-color: var(--accent); color: var(--accent); }
     .size-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(198,31,47,.25); }
+    .size-btn.oos { opacity: .35; cursor: not-allowed; text-decoration: line-through; }
 
     .saved-addr {
       border: 1.5px solid var(--line); border-radius: 14px;
@@ -1611,10 +1612,12 @@
             </div>`;
 
             document.getElementById('sizeCard').style.display = 'block';
-            const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-            document.getElementById('sizeGrid').innerHTML = sizes.map(sz =>
-              `<button class="size-btn${(paramSize || 'M').toUpperCase() === sz ? ' active' : ''}" onclick="selectSize(this)">${sz}</button>`
-            ).join('');
+            const sizes = ['xs', 's', 'm', 'l', 'xl'];
+            document.getElementById('sizeGrid').innerHTML = sizes.map(sz => {
+              const avail = !p.sizes || Number(p.sizes[sz] || 0) > 0;
+              const isActive = (paramSize || 'm').toLowerCase() === sz && avail;
+              return `<button class="size-btn${isActive ? ' active' : ''}${!avail ? ' oos' : ''}" ${!avail ? 'disabled title="Out of Stock"' : `onclick="selectSize(this)"`} data-size="${sz.toUpperCase()}">${sz.toUpperCase()}</button>`;
+            }).join('');
           } else {
             orderBody.innerHTML = '<p style="color:var(--muted);font-size:13px;text-align:center;padding:12px 0">Product not found.</p>';
           }
