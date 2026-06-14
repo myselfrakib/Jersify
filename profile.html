@@ -3211,7 +3211,7 @@
       const typingId = "typing-" + Date.now();
       historyEl.insertAdjacentHTML("beforeend", `
         <div class="chat-msg bot" id="${typingId}">
-          <div class="bot-typing">J is typing...</div>
+          <div class="bot-typing">Jersify AI is typing...</div>
         </div>
       `);
       historyEl.scrollTop = historyEl.scrollHeight;
@@ -3221,7 +3221,7 @@
           "ID: " + p.id + " | Name: " + p.name + " | Team: " + (p.team || '') + " | Price: Rs." + p.price
         ).join("\n");
 
-        const prompt = "You are J, the helpful AI assistant for Jersify, an online football jersey store.\n" +
+        const prompt = "You are Jersify AI, the helpful AI assistant for Jersify, an online football jersey store.\n" +
           "The user asks: \"" + text + "\"\n" +
           "Here is the catalog of available products:\n" +
           productListStr + "\n" +
