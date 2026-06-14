@@ -1110,8 +1110,33 @@
     `;
     document.head.appendChild(authStyle);
 
+    let _prevUid = null;
+    function mergeCarts(base, incoming) {
+      const merged = [...base];
+      for (const item of incoming) {
+        const existing = merged.find(i => i.key === item.key);
+        if (existing) existing.qty = (existing.qty || 1) + (item.qty || 1);
+        else merged.push({ ...item });
+      }
+      return merged;
+    }
+
+    async function syncCartOnLogin(user) {
+      const guestCart = getCart();
+      try {
+        const snap = await get(ref(db, `users/${user.uid}/cart`));
+        const dbCart = snap.exists() ? (snap.val() || []) : [];
+        const merged = mergeCarts(dbCart, guestCart);
+        localStorage.setItem('jersify_cart', JSON.stringify(merged));
+        await set(ref(db, `users/${user.uid}/cart`), merged);
+        if (isCartMode && (guestCart.length > 0 || merged.length > guestCart.length)) {
+          window.location.reload();
+        }
+      } catch(e) { console.warn('[Cart] Login sync failed:', e.message); }
+    }
+
     let authToastTimer = null;
-    onAuthStateChanged(auth, user => {
+    onAuthStateChanged(auth, async user => {
       currentUser = user;
       updateUserBadge(user);
       updateAuthBanners(user);
@@ -1121,7 +1146,16 @@
         if (existingToast) existingToast.remove();
         prefillUserInfo(user);
         closeAuthModal();
+        if (user.uid !== _prevUid) {
+          _prevUid = user.uid;
+          await syncCartOnLogin(user);
+        }
       } else {
+        if (_prevUid !== null) {
+          _prevUid = null;
+          localStorage.removeItem('jersify_cart');
+          if (isCartMode) window.location.reload();
+        }
         if (!authToastTimer && !sessionStorage.getItem("jersify_unauth_dismissed")) {
           authToastTimer = setTimeout(() => {
             const toastDiv = document.createElement("div");
