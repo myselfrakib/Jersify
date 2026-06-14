@@ -782,6 +782,18 @@
     </div>
   </div>
 
+  <div id="priceChangeOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:10000;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:var(--surface);width:100%;max-width:400px;border-radius:24px;padding:24px;box-shadow:0 20px 40px rgba(0,0,0,0.3);animation:popIn 0.3s ease;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);margin-bottom:12px;letter-spacing:1px;">Price Update ⚠️</div>
+      <div id="priceChangeText" style="font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.6;"></div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <button onclick="acceptPriceChange()" style="background:var(--accent);color:#fff;border:none;padding:14px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;">Update & Continue</button>
+        <button onclick="removeChangedItems()" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:14px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;">Remove Items from Cart</button>
+        <button onclick="document.getElementById('priceChangeOverlay').style.display='none'" style="background:none;color:var(--muted);border:none;padding:10px;font-weight:600;font-size:13px;cursor:pointer;">Cancel Checkout</button>
+      </div>
+    </div>
+  </div>
+
   <div id="authBackdrop" onclick="closeAuthModal()"></div>
   <div id="authModal" role="dialog" aria-modal="true">
     <div class="auth-gradient-bar"></div>
@@ -1342,11 +1354,95 @@
       return { name, phone, email, address, city, state, pincode, country, valid: true };
     }
 
-    window.processOrder = async () => {
+    window.pendingPriceChanges = [];
+
+    window.acceptPriceChange = () => {
+      document.getElementById('priceChangeOverlay').style.display = 'none';
+      const cart = getCart();
+      window.pendingPriceChanges.forEach(change => {
+         const cartItem = cart.find(i => i.key === change.item.key);
+         if (cartItem) cartItem.price = change.newPrice;
+         const orderItem = orderItems.find(i => i.key === change.item.key);
+         if (orderItem) orderItem.price = change.newPrice;
+      });
+      if (isCartMode) {
+         saveCart(cart);
+         recalcCartTotal();
+      } else {
+         singleBasePrice = window.pendingPriceChanges[0].newPrice;
+         orderPrice = singleBasePrice * singleQty;
+         document.getElementById('singleProductPrice').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
+         discountAmount = 0; couponApplied = false;
+         document.getElementById('subTotal').textContent = `₹${orderPrice.toLocaleString('en-IN')}`;
+         updateTotal();
+         if (selectedPayMethod === 'partial_cod') updatePartialCodUI();
+      }
+      processOrder(true);
+    };
+
+    window.removeChangedItems = () => {
+      document.getElementById('priceChangeOverlay').style.display = 'none';
+      const keysToRemove = window.pendingPriceChanges.map(c => c.item.key);
+      let cart = getCart().filter(i => !keysToRemove.includes(i.key));
+      saveCart(cart);
+      orderItems = orderItems.filter(i => !keysToRemove.includes(i.key));
+      
+      keysToRemove.forEach(key => {
+         const safeKey = key ? key.replace(/[^a-zA-Z0-9]/g, '_') : '';
+         const el = document.getElementById(`cartItem_${safeKey}`);
+         if (el) el.remove();
+      });
+
+      if (!isCartMode || cart.length === 0) {
+         document.getElementById('orderItemsBody').innerHTML = `
+         <div class="empty-cart-hint">
+           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"/></svg>
+           <p>Your cart is empty.<br>Browse our jerseys and add items.</p>
+           <a href="shop.html" class="browse-btn">Browse Jerseys →</a>
+         </div>`;
+         document.getElementById('shippingProgressWrap').style.display = 'none';
+         orderPrice = 0;
+         document.getElementById('subTotal').textContent = '₹0';
+         document.getElementById('finalTotal').textContent = '₹0';
+      } else {
+         recalcCartTotal();
+      }
+    };
+
+    window.processOrder = async (skipPriceCheck = false) => {
       if (orderPrice === 0) { alert('Your cart is empty.'); return; }
       if (!currentUser) { openAuthModal('signin'); shakeField('confirmBtn'); return; }
       const addr = collectAddress();
       if (!addr) return;
+
+      if (!skipPriceCheck) {
+        setConfirmBtn(true, 'Verifying prices…');
+        try {
+          let priceChanged = false;
+          let changedItemsText = [];
+          window.pendingPriceChanges = [];
+          for (let item of orderItems) {
+            const snap = await get(ref(db, `products/${item.id}`));
+            if (snap.exists()) {
+              const currentPrice = parseInt(snap.val().price || 1499);
+              if (currentPrice !== parseInt(item.price)) {
+                priceChanged = true;
+                window.pendingPriceChanges.push({ item, newPrice: currentPrice });
+                changedItemsText.push(`• <b>${item.name}</b>: ₹${item.price.toLocaleString('en-IN')} → ₹${currentPrice.toLocaleString('en-IN')}`);
+              }
+            }
+          }
+          if (priceChanged) {
+            setConfirmBtn(false, selectedPayMethod === 'partial_cod' ? 'Pay Now (50% + ₹120) →' : 'Proceed to Payment →');
+            document.getElementById('priceChangeText').innerHTML = `The prices for the following items have changed since you added them:<br><br>` + changedItemsText.join('<br>') + `<br><br>Do you want to continue with the latest prices or remove them?`;
+            document.getElementById('priceChangeOverlay').style.display = 'flex';
+            return;
+          }
+        } catch (e) {
+          console.warn('[Price Check]', e);
+        }
+      }
+
       const { name, phone, email, address, city, state, pincode, country } = addr;
       const shipping = selectedPayMethod === 'partial_cod' ? 0 : getShippingFee(orderPrice);
       const selectedSize = isCartMode ? 'Mixed' : (document.querySelector('.size-btn.active')?.textContent || 'M');
