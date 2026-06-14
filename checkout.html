@@ -1612,7 +1612,7 @@
             </div>`;
 
             document.getElementById('sizeCard').style.display = 'block';
-            const sizes = ['xs', 's', 'm', 'l', 'xl'];
+            const sizes = ['xs', 's', 'm', 'l', 'xl', 'xxl'];
             document.getElementById('sizeGrid').innerHTML = sizes.map(sz => {
               const avail = !p.sizes || Number(p.sizes[sz] || 0) > 0;
               const isActive = (paramSize || 'm').toLowerCase() === sz && avail;
