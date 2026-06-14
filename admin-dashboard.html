@@ -992,6 +992,7 @@
           <div style="flex:1;text-align:center"><label style="font-size:10px">M</label><input type="number" id="p_m" value="0" min="0"/></div>
           <div style="flex:1;text-align:center"><label style="font-size:10px">L</label><input type="number" id="p_l" value="0" min="0"/></div>
           <div style="flex:1;text-align:center"><label style="font-size:10px">XL</label><input type="number" id="p_xl" value="0" min="0"/></div>
+          <div style="flex:1;text-align:center"><label style="font-size:10px">XXL</label><input type="number" id="p_xxl" value="0" min="0"/></div>
         </div>
       </div>
       <div style="margin-top:18px">
@@ -1020,6 +1021,7 @@
         <div style="flex:1;text-align:center"><label style="font-size:10px">M</label><input type="number" id="sq_m" value="0" min="0"/></div>
         <div style="flex:1;text-align:center"><label style="font-size:10px">L</label><input type="number" id="sq_l" value="0" min="0"/></div>
         <div style="flex:1;text-align:center"><label style="font-size:10px">XL</label><input type="number" id="sq_xl" value="0" min="0"/></div>
+        <div style="flex:1;text-align:center"><label style="font-size:10px">XXL</label><input type="number" id="sq_xxl" value="0" min="0"/></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -1921,7 +1923,7 @@ function renderProducts(data) {
   if (!data.length) { tbody.innerHTML = emptyRow(8, 'No products yet'); return; }
   tbody.innerHTML = data.map(p => {
     const sz = p.sizes||{};
-    const sizes = [['XS',sz.xs||0],['S',sz.s||0],['M',sz.m||0],['L',sz.l||0],['XL',sz.xl||0]];
+    const sizes = [['XS',sz.xs||0],['S',sz.s||0],['M',sz.m||0],['L',sz.l||0],['XL',sz.xl||0],['XXL',sz.xxl||0]];
     const totalStock = sizes.reduce((s,[,v])=>s+v,0);
     const sizePills = sizes.map(([lbl,qty]) => {
       const cls = qty===0?'zero':qty<=3?'low':'good';
@@ -1954,7 +1956,7 @@ function openProductModal(data) {
   document.getElementById('p_player_version').checked = !!data?.playerVersion;
   setV('p_price', data?.price||''); setV('p_badge', data?.badge||''); setV('p_status', data?.status||'active');
   const sz=data?.sizes||{};
-  setV('p_xs',sz.xs||0); setV('p_s',sz.s||0); setV('p_m',sz.m||0); setV('p_l',sz.l||0); setV('p_xl',sz.xl||0);
+  setV('p_xs',sz.xs||0); setV('p_s',sz.s||0); setV('p_m',sz.m||0); setV('p_l',sz.l||0); setV('p_xl',sz.xl||0); setV('p_xxl',sz.xxl||0);
   loadProductSlotsFromImages(data?.images||(data?.imgUrl?[data.imgUrl]:[]));
   openModal('productModal');
 }
@@ -1977,7 +1979,7 @@ async function saveProduct() {
       name, team:getV('p_team'), type:getV('p_type'), price:getV('p_price'), badge:getV('p_badge'), status:getV('p_status'),
       playerVersion: document.getElementById('p_player_version').checked,
       imgUrl: imageUrls[0]||'', images: imageUrls,
-      sizes: { xs:parseInt(getV('p_xs'))||0, s:parseInt(getV('p_s'))||0, m:parseInt(getV('p_m'))||0, l:parseInt(getV('p_l'))||0, xl:parseInt(getV('p_xl'))||0 },
+      sizes: { xs:parseInt(getV('p_xs'))||0, s:parseInt(getV('p_s'))||0, m:parseInt(getV('p_m'))||0, l:parseInt(getV('p_l'))||0, xl:parseInt(getV('p_xl'))||0, xxl:parseInt(getV('p_xxl'))||0 },
       updatedAt: Date.now()
     };
     await saveDoc('products', data, _editId);
@@ -1995,7 +1997,7 @@ function openStockQuickEdit(productId) {
   _stockEditId = productId;
   document.getElementById('stockModalTitle').textContent = `Stock — ${p.name}`;
   const sz = p.sizes||{};
-  setV('sq_xs',sz.xs||0); setV('sq_s',sz.s||0); setV('sq_m',sz.m||0); setV('sq_l',sz.l||0); setV('sq_xl',sz.xl||0);
+  setV('sq_xs',sz.xs||0); setV('sq_s',sz.s||0); setV('sq_m',sz.m||0); setV('sq_l',sz.l||0); setV('sq_xl',sz.xl||0); setV('sq_xxl',sz.xxl||0);
   openModal('stockModal');
 }
 
@@ -2003,7 +2005,7 @@ async function saveStockQuick() {
   if (!_stockEditId) return;
   const { db, dbRef, update } = await waitFb();
   await update(dbRef(db, `products/${_stockEditId}`), {
-    sizes: { xs:parseInt(getV('sq_xs'))||0, s:parseInt(getV('sq_s'))||0, m:parseInt(getV('sq_m'))||0, l:parseInt(getV('sq_l'))||0, xl:parseInt(getV('sq_xl'))||0 },
+    sizes: { xs:parseInt(getV('sq_xs'))||0, s:parseInt(getV('sq_s'))||0, m:parseInt(getV('sq_m'))||0, l:parseInt(getV('sq_l'))||0, xl:parseInt(getV('sq_xl'))||0, xxl:parseInt(getV('sq_xxl'))||0 },
     updatedAt: Date.now()
   });
   closeModal('stockModal');
