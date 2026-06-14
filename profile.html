@@ -2296,8 +2296,8 @@
 
   <!-- JERSIFY AI CHATBOT MODAL -->
   <div class="modal-overlay" id="chatbotModal">
-    <div class="modal-sheet" style="height:85vh; display:flex; flex-direction:column; padding-bottom: 20px;">
-      <div class="modal-handle"></div>
+    <div class="modal-sheet" style="height:100vh; width: 100vw; max-width: none; border-radius: 0; display:flex; flex-direction:column; padding: 20px; box-sizing: border-box;">
+      <div class="modal-handle" style="display: none;"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
         <div class="modal-title" style="margin-bottom:0;display:flex;align-items:center;gap:8px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -3273,6 +3273,13 @@
       checkSupportChatStatus();
     };
 
+    window.botBuyNow = (id, name, price, img) => {
+      const cart = JSON.parse(localStorage.getItem('jersify_cart') || '[]');
+      cart.push({ id, name, price, imgUrl: img, qty: 1, size: 'M' });
+      localStorage.setItem('jersify_cart', JSON.stringify(cart));
+      window.location.href = 'checkout.html';
+    };
+
     function renderChatHistory() {
       const historyEl = document.getElementById("chatbotHistory");
       if (!historyEl) return;
@@ -3308,7 +3315,7 @@
                   <div class="bot-product-name">${p.name}</div>
                   <div class="bot-product-price">₹${p.price}</div>
                 </div>
-                <button class="bot-product-buy" onclick="window.location.href='checkout.html?product_id=${p.id}'">Buy Now</button>
+                <button class="bot-product-buy" data-name="${p.name}" onclick="botBuyNow('${p.id}', this.dataset.name, ${p.price}, '${p.imgUrl}')">Buy Now</button>
               </div>
             `;
           });
