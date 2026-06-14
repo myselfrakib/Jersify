@@ -1,0 +1,6 @@
+node_modules/
+.env
+.firebase/
+firebase-debug.log
+*.local
+jersify-f9b5e-default-rtdb-export.json
