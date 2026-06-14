@@ -12,6 +12,12 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.5; }
+    }
+
     :root {
       --bg: #ffffff;
       --text: #111111;
@@ -2302,14 +2308,17 @@
             <line x1="8" y1="16" x2="8" y2="16" />
             <line x1="16" y1="16" x2="16" y2="16" />
           </svg>
-          Jersify AI Chatbot
+          JERSIFY AI CHATBOT
         </div>
-        <button onclick="closeModal('chatbotModal')"
-          style="width:32px;height:32px;border-radius:50%;border:none;background:#f5f5f5;display:grid;place-items:center;cursor:pointer;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
-        </button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div id="chatbotTalkHumanContainer"></div>
+          <button onclick="closeModal('chatbotModal')"
+            style="width:32px;height:32px;border-radius:50%;border:none;background:#f5f5f5;display:grid;place-items:center;cursor:pointer;outline:none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Chat History -->
@@ -2344,7 +2353,7 @@
   <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref as dbRef, get, set, update, push, remove, query, orderByChild, equalTo }
+    import { getDatabase, ref as dbRef, get, set, update, push, remove, query, orderByChild, equalTo, onValue }
       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
     import { getStorage, ref as stRef, uploadBytesResumable, getDownloadURL }
       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
@@ -2413,6 +2422,7 @@
         document.getElementById("authGate").classList.add("hidden");
         document.getElementById("profileContent").classList.remove("hidden");
         await loadUserProfile(user);
+        checkSupportChatStatus();
       } else {
         window.location.href = 'login.html?redirect=profile.html';
         return;
@@ -3173,10 +3183,11 @@
     /* =========================================================
        JERSIFY AI CHATBOT LOGIC
     ========================================================= */
-    // The API key is now securely stored in the backend server.
-    // Ensure you are running the backend server on port 3000.
     const BACKEND_URL = "https://us-central1-jersify-f9b5e.cloudfunctions.net/chat";
     let _botProducts = [];
+    let _chatMessages = [];
+    let _talkingToHuman = false;
+    let _supportChatListener = null;
 
     async function loadBotProducts() {
       try {
@@ -3188,9 +3199,188 @@
       } catch (err) { console.error("Failed to load products for bot", err); }
     }
 
+    function setupSupportChatListener() {
+      if (_supportChatListener) return;
+      
+      const chatRef = dbRef(rtdb, `support_chats/${currentUser.uid}`);
+      _supportChatListener = onValue(chatRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          if (data.status === 'resolved') {
+            _talkingToHuman = false;
+            if (_supportChatListener) {
+              _supportChatListener();
+              _supportChatListener = null;
+            }
+            _chatMessages.push({
+              role: "bot",
+              text: "Our support agent marked this ticket as resolved. Feel free to ask me any other questions, or request human support again!",
+              time: Date.now()
+            });
+            renderChatHistory();
+            updateTalkHumanButtonUI();
+            return;
+          }
+          
+          _talkingToHuman = true;
+          if (data.messages) {
+            _chatMessages = data.messages;
+            renderChatHistory();
+          }
+          updateTalkHumanButtonUI();
+        }
+      });
+    }
+
+    async function checkSupportChatStatus() {
+      if (!currentUser) return;
+      try {
+        const snap = await get(dbRef(rtdb, `support_chats/${currentUser.uid}`));
+        if (snap.exists()) {
+          const data = snap.val();
+          if (data.status !== 'resolved') {
+            _talkingToHuman = true;
+            if (data.messages) {
+              _chatMessages = data.messages;
+            }
+            setupSupportChatListener();
+          } else {
+            initDefaultAIChat();
+          }
+        } else {
+          initDefaultAIChat();
+        }
+        renderChatHistory();
+        updateTalkHumanButtonUI();
+      } catch (err) {
+        console.error("Error checking support chat status:", err);
+        initDefaultAIChat();
+      }
+    }
+
+    function initDefaultAIChat() {
+      _talkingToHuman = false;
+      _chatMessages = [{
+        role: "bot",
+        text: "Hi! I'm JERSIFY AI, your Jersify AI assistant. What kind of jersey are you looking for today?",
+        time: Date.now()
+      }];
+    }
+
     window.openChatbotModal = () => {
       openModal("chatbotModal");
       if (_botProducts.length === 0) loadBotProducts();
+      checkSupportChatStatus();
+    };
+
+    function renderChatHistory() {
+      const historyEl = document.getElementById("chatbotHistory");
+      if (!historyEl) return;
+      
+      let html = "";
+      _chatMessages.forEach(msg => {
+        const isUser = msg.role === "user";
+        const isAdmin = msg.role === "admin";
+        
+        let bubbleClass = "bot";
+        let displayName = "JERSIFY AI";
+        if (isUser) {
+          bubbleClass = "user";
+          displayName = "You";
+        } else if (isAdmin) {
+          bubbleClass = "bot";
+          displayName = "Support Agent (Human)";
+        }
+        
+        html += `
+          <div class="chat-msg ${bubbleClass}">
+            <div style="font-size:10px;color:var(--muted);margin-bottom:2px;padding:0 4px;align-self:${isUser ? 'flex-end' : 'flex-start'}">${displayName}</div>
+            <div class="msg-bubble">${msg.text}</div>
+          </div>
+        `;
+        
+        if (msg.products && msg.products.length > 0) {
+          msg.products.forEach(p => {
+            html += `
+              <div class="bot-product-card" style="margin-left: 4px;">
+                <img src="${p.imgUrl}" class="bot-product-img" />
+                <div class="bot-product-info">
+                  <div class="bot-product-name">${p.name}</div>
+                  <div class="bot-product-price">₹${p.price}</div>
+                </div>
+                <button class="bot-product-buy" onclick="window.location.href='checkout.html?product_id=${p.id}'">Buy Now</button>
+              </div>
+            `;
+          });
+        }
+      });
+      
+      historyEl.innerHTML = html;
+      historyEl.scrollTop = historyEl.scrollHeight;
+    }
+
+    function updateTalkHumanButtonUI() {
+      const container = document.getElementById("chatbotTalkHumanContainer");
+      if (!container) return;
+      
+      if (_talkingToHuman) {
+        container.innerHTML = `
+          <span style="background: rgba(37,211,102,.12); color: #25D366; padding: 6px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid rgba(37,211,102,.3); display: inline-flex; align-items: center; gap: 4px;">
+            <span style="width: 6px; height: 6px; background: #25D366; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span>
+            Human Representative
+          </span>
+        `;
+      } else {
+        container.innerHTML = `
+          <button id="chatbotTalkHumanBtn" onclick="window.escalateToHuman()"
+            style="padding: 6px 12px; border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; outline: none;">
+            Talk to Human 👤
+          </button>
+        `;
+      }
+    }
+
+    window.escalateToHuman = async () => {
+      if (!currentUser) {
+        showToast("Please log in first.");
+        return;
+      }
+      
+      const btn = document.getElementById("chatbotTalkHumanBtn");
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span>Connecting...</span>`;
+      }
+      
+      _chatMessages.push({
+        role: "bot",
+        text: "Connecting you to a support agent... Your query has been forwarded.",
+        time: Date.now()
+      });
+      renderChatHistory();
+      
+      const name = currentUser.displayName || userData.fullName || "Jersify User";
+      const email = currentUser.email || "";
+      
+      try {
+        await set(dbRef(rtdb, `support_chats/${currentUser.uid}`), {
+          name: name,
+          email: email,
+          timestamp: Date.now(),
+          status: "new",
+          messages: _chatMessages
+        });
+        
+        _talkingToHuman = true;
+        setupSupportChatListener();
+      } catch (err) {
+        console.error("Escalation failed:", err);
+        showToast("Could not contact support agent. Try again.");
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<span>Talk to Human 👤</span>`;
+        }
+      }
     };
 
     window.sendChatMsg = async () => {
@@ -3199,19 +3389,31 @@
       if (!text) return;
       inputEl.value = "";
 
+      _chatMessages.push({
+        role: "user",
+        text: text,
+        time: Date.now()
+      });
+      renderChatHistory();
+
+      if (_talkingToHuman) {
+        try {
+          await set(dbRef(rtdb, `support_chats/${currentUser.uid}/messages`), _chatMessages);
+          await update(dbRef(rtdb, `support_chats/${currentUser.uid}`), {
+            status: "new",
+            timestamp: Date.now()
+          });
+        } catch (err) {
+          console.error("Failed to sync support chat message to Firebase:", err);
+        }
+        return;
+      }
+
       const historyEl = document.getElementById("chatbotHistory");
-
-      historyEl.insertAdjacentHTML("beforeend", `
-        <div class="chat-msg user">
-          <div class="msg-bubble">${text}</div>
-        </div>
-      `);
-      historyEl.scrollTop = historyEl.scrollHeight;
-
       const typingId = "typing-" + Date.now();
       historyEl.insertAdjacentHTML("beforeend", `
         <div class="chat-msg bot" id="${typingId}">
-          <div class="bot-typing">Jersify AI is typing...</div>
+          <div class="bot-typing">JERSIFY AI is typing...</div>
         </div>
       `);
       historyEl.scrollTop = historyEl.scrollHeight;
@@ -3221,7 +3423,22 @@
           "ID: " + p.id + " | Name: " + p.name + " | Team: " + (p.team || '') + " | Price: Rs." + p.price
         ).join("\n");
 
-        const prompt = "You are Jersify AI, the helpful AI assistant for Jersify, an online football jersey store.\n" +
+        let ordersStr = "No orders found.";
+        if (window._jersifyOrders && window._jersifyOrders.length > 0) {
+          ordersStr = window._jersifyOrders.map(o => {
+            const displayId = (o.orderId || o._id || "JRF000").replace("JRS-", "").slice(-6).toUpperCase();
+            const itemsArr = Array.isArray(o.items) ? o.items : (o.items ? Object.values(o.items) : []);
+            const itemNames = itemsArr.map(item => `${item.name} (${item.size || "M"})`).join(", ");
+            return `Order ID: #${displayId} (Full ID: ${o.orderId || o._id}) | Status: ${o.status || "processing"} | Total: ₹${o.total || "–"} | Items: ${itemNames}`;
+          }).join("\n");
+        }
+
+        const prompt = "You are JERSIFY AI, the helpful AI assistant for Jersify, an online football jersey store.\n" +
+          "If the user asks for our WhatsApp number or contact number, tell them: 'Contact us on WhatsApp at https://wa.me/1234567890'.\n" +
+          "If the user asks for our Instagram handle, tell them: 'Follow/DM us at @jersify.online on Instagram (https://www.instagram.com/jersify.online?igsh=MTJuNGJhaDgxN2hlNg==)'.\n" +
+          "Here is the user's order history:\n" +
+          ordersStr + "\n" +
+          "If they ask about their order status, check their order history above and provide the current status. Mention the order ID they asked about if found, or show their recent orders.\n" +
           "The user asks: \"" + text + "\"\n" +
           "Here is the catalog of available products:\n" +
           productListStr + "\n" +
@@ -3229,7 +3446,6 @@
           "{\n  \"response_text\": \"Your friendly text response here\",\n  \"product_ids\": [\"ID_1\", \"ID_2\"]\n}\n" +
           "Do not include markdown blocks like ```json, just the raw JSON object. If you don't recommend any products, leave product_ids empty.";
 
-        // Call the secure local backend instead of Gemini directly
         const res = await fetch(BACKEND_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -3241,43 +3457,43 @@
         }
 
         const parsed = await res.json();
+        document.getElementById(typingId)?.remove();
 
-        document.getElementById(typingId).remove();
-
-        let botHtml = `<div class="chat-msg bot"><div class="msg-bubble">${parsed.response_text}</div>`;
-        
+        const recommendedProducts = [];
         if (parsed.product_ids && parsed.product_ids.length > 0) {
           parsed.product_ids.forEach(id => {
             const p = _botProducts.find(x => x.id === id);
             if (p) {
               const imgUrl = (p.images && p.images.length > 0) ? p.images[0] : (p.imgUrl || p.imageUrl || (p.media && p.media.length > 0 ? p.media[0] : '') || 'https://placehold.co/80x80?text=Jersey');
-              botHtml += `
-                <div class="bot-product-card">
-                  <img src="${imgUrl}" class="bot-product-img" />
-                  <div class="bot-product-info">
-                    <div class="bot-product-name">${p.name}</div>
-                    <div class="bot-product-price">₹${p.price}</div>
-                  </div>
-                  <button class="bot-product-buy" onclick="window.location.href='checkout.html?product_id=${p.id}'">Buy Now</button>
-                </div>
-              `;
+              recommendedProducts.push({
+                id: p.id,
+                name: p.name,
+                price: p.price,
+                imgUrl: imgUrl
+              });
             }
           });
         }
+
+        _chatMessages.push({
+          role: "bot",
+          text: parsed.response_text,
+          time: Date.now(),
+          products: recommendedProducts
+        });
         
-        botHtml += `</div>`;
-        historyEl.insertAdjacentHTML("beforeend", botHtml);
-        historyEl.scrollTop = historyEl.scrollHeight;
+        renderChatHistory();
 
       } catch (err) {
         console.error(err);
         document.getElementById(typingId)?.remove();
-        historyEl.insertAdjacentHTML("beforeend", `
-          <div class="chat-msg bot">
-            <div class="msg-bubble">Oops, I'm having trouble connecting to my brain right now. Try again!</div>
-          </div>
-        `);
-        historyEl.scrollTop = historyEl.scrollHeight;
+        
+        _chatMessages.push({
+          role: "bot",
+          text: "Oops, I'm having trouble connecting to my brain right now. Try again!",
+          time: Date.now()
+        });
+        renderChatHistory();
       }
     };
 

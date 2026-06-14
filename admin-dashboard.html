@@ -517,6 +517,13 @@
       Reviews
       <span class="nav-badge" id="reviewBadgeNav">0</span>
     </button>
+    <button class="nav-link" onclick="switchTab('support',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      Support Chats
+      <span class="nav-badge" id="supportBadgeNav" style="background: #ef4444; display: none;">0</span>
+    </button>
 
     <div class="nav-section-label">Settings</div>
     <button class="nav-link" onclick="switchTab('credentials',this)">
@@ -804,6 +811,47 @@
               </thead>
               <tbody id="reviewsTable">
                 <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SUPPORT CHATS TAB ══ -->
+      <div class="tab-pane" id="tab-support">
+        <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); margin-bottom: 20px;">
+          <div class="stat-card red">
+            <div class="stat-val" id="statNewChats">0</div>
+            <div class="stat-label">New Messages</div>
+            <div class="stat-icon">💬</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-val" id="statTotalChats">0</div>
+            <div class="stat-label">Total Chats</div>
+            <div class="stat-icon">👥</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-title">Customer Support Chats</div>
+              <div class="card-subtitle">Manage customer support escalations and chats</div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Email</th>
+                  <th>Last Active</th>
+                  <th>Last Message</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="supportTable">
+                <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">No support chats found</td></tr>
               </tbody>
             </table>
           </div>
@@ -1230,6 +1278,36 @@
   </div>
 </div>
 
+<!-- ══ SUPPORT CHAT MODAL ══ -->
+<div class="modal-overlay" id="supportModal">
+  <div class="modal" style="width:min(600px,95vw); display:flex; flex-direction:column; max-height:85vh;">
+    <div class="modal-header" style="flex-shrink:0;">
+      <div class="modal-title">💬 Support Chat: <span id="supportModalUser">Loading...</span></div>
+      <button class="modal-close" onclick="closeModal('supportModal')">×</button>
+    </div>
+    <div class="modal-body" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px; background:var(--surface2);" id="supportModalChatHistory">
+      <!-- Chat history bubble elements will be dynamically loaded here -->
+    </div>
+    <div class="modal-footer" style="flex-shrink:0; display:flex; flex-direction:column; gap:10px; border-top:1px solid var(--border); padding:16px;">
+      <div style="display:flex; gap:10px; width:100%;">
+        <input type="text" id="supportReplyInput" placeholder="Type your support response..." style="flex:1; padding:10px; border-radius:6px; border:1px solid var(--border); background:var(--surface3); color:var(--text); outline:none;" onkeydown="if(event.key==='Enter') sendSupportReply()"/>
+        <button class="btn btn-primary" onclick="sendSupportReply()" style="padding:10px 16px;">Send</button>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+        <div>
+          <span style="font-size:12px; color:var(--text2);">Status:</span>
+          <select id="supportStatusSelect" onchange="changeSupportStatus()" style="padding:4px 8px; border-radius:4px; border:1px solid var(--border); background:var(--surface3); color:var(--text);">
+            <option value="new">New / Waiting</option>
+            <option value="replied">Replied</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="markSupportResolved()">Mark Resolved</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ CONFIRM MODAL ══ -->
 <div class="modal-overlay confirm-modal" id="confirmModal">
   <div class="modal">
@@ -1351,7 +1429,7 @@ function closeSidebar() {
 }
 
 /* ─── TAB SWITCH ─── */
-const TAB_TITLES = { products:'Products / Kits', media:'Index Media', orders:'Orders', users:'Users', coupons:'Coupon Codes', reviews:'Customer Reviews', credentials:'Credentials Manager', pages:'Page Settings', shiprocket:'Shiprocket Shipping' };
+const TAB_TITLES = { products:'Products / Kits', media:'Index Media', orders:'Orders', users:'Users', coupons:'Coupon Codes', reviews:'Customer Reviews', credentials:'Credentials Manager', pages:'Page Settings', shiprocket:'Shiprocket Shipping', support:'Customer Support Chats' };
 function switchTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
@@ -1385,6 +1463,7 @@ async function initApp() {
   listenCol('indexMedia', renderIndexMediaData);
   listenCoupons();
   listenCol('reviews', renderReviews);
+  listenSupport();
   initPageSettings();
   if (typeof updateThemeUI === 'function') updateThemeUI(document.documentElement.classList.contains('dark-theme'));
 }
@@ -3785,6 +3864,222 @@ async function saveManualReview() {
       btn.textContent = 'Save Review';
     }
   }
+}
+
+/* ═══════════════════════════════════════════════
+   SUPPORT CHATS
+═══════════════════════════════════════════════ */
+let _allSupportChats = [];
+let _currentSupportChatId = null;
+
+async function listenSupport() {
+  const { db, dbRef, onValue } = await waitFb();
+  onValue(dbRef(db, 'support_chats'), snap => {
+    const data = [];
+    let newCount = 0;
+    if (snap.exists()) {
+      snap.forEach(d => {
+        const chat = { id: d.key, ...d.val() };
+        data.push(chat);
+        if (chat.status === 'new') {
+          newCount++;
+        }
+      });
+    }
+    _allSupportChats = data;
+    const badge = document.getElementById('supportBadgeNav');
+    if (badge) {
+      badge.textContent = newCount;
+      badge.style.display = newCount > 0 ? 'inline-block' : 'none';
+    }
+    renderSupportChats(data);
+  }, err => { toast(`Error loading support chats: ${err.message}`, 'error'); });
+}
+
+function renderSupportChats(chats) {
+  const tbody = document.getElementById("supportTable");
+  if (!tbody) return;
+  
+  const total = chats.length;
+  const newChats = chats.filter(c => c.status === 'new').length;
+  setEl('statNewChats', newChats);
+  setEl('statTotalChats', total);
+  
+  if (_currentSupportChatId) {
+    const activeChat = chats.find(c => c.id === _currentSupportChatId);
+    if (activeChat) {
+      renderSupportChatsHistory(activeChat.messages);
+    }
+  }
+  
+  if (total === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">No support chats found</td></tr>`;
+    return;
+  }
+  
+  // Sort by timestamp desc
+  chats.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  
+  tbody.innerHTML = chats.map(c => {
+    const date = c.timestamp ? new Date(c.timestamp).toLocaleString("en-IN") : "—";
+    
+    let lastMsg = "—";
+    if (c.messages && c.messages.length > 0) {
+      lastMsg = c.messages[c.messages.length - 1].text;
+      if (lastMsg.length > 50) lastMsg = lastMsg.slice(0, 47) + "...";
+    }
+    
+    let statusClass = "badge-orange";
+    let statusText = "New";
+    if (c.status === 'replied') {
+      statusClass = "badge-blue";
+      statusText = "Replied";
+    } else if (c.status === 'resolved') {
+      statusClass = "badge-green";
+      statusText = "Resolved";
+    }
+    
+    return `
+      <tr>
+        <td data-label="Customer"><strong>${esc(c.name || "Jersify User")}</strong></td>
+        <td data-label="Email">${esc(c.email || "—")}</td>
+        <td data-label="Last Active">${date}</td>
+        <td data-label="Last Message"><span style="color:var(--text2); font-size:12px;">${esc(lastMsg)}</span></td>
+        <td data-label="Status"><span class="badge ${statusClass}">${statusText}</span></td>
+        <td data-label="Action">
+          <button class="btn btn-primary btn-sm" onclick="openSupportChat('${c.id}')">View & Reply</button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function openSupportChat(chatId) {
+  const chat = _allSupportChats.find(c => c.id === chatId);
+  if (!chat) return;
+  
+  _currentSupportChatId = chatId;
+  
+  document.getElementById("supportModalUser").textContent = `${chat.name} (${chat.email})`;
+  document.getElementById("supportStatusSelect").value = chat.status || "new";
+  document.getElementById("supportReplyInput").value = "";
+  
+  renderSupportChatsHistory(chat.messages);
+  
+  openModal('supportModal');
+}
+
+function renderSupportChatsHistory(messages) {
+  const container = document.getElementById("supportModalChatHistory");
+  if (!container) return;
+  
+  if (!messages || messages.length === 0) {
+    container.innerHTML = `<div style="text-align:center;color:var(--muted);padding:20px;">No messages in this conversation.</div>`;
+    return;
+  }
+  
+  let html = "";
+  messages.forEach(msg => {
+    const isUser = msg.role === 'user';
+    const isAdmin = msg.role === 'admin';
+    const isBot = msg.role === 'bot';
+    
+    let bubbleBg = "var(--surface3)";
+    let bubbleColor = "var(--text)";
+    let align = "flex-start";
+    let senderName = "Jersify AI";
+    
+    if (isUser) {
+      bubbleBg = "var(--accent)";
+      bubbleColor = "#ffffff";
+      align = "flex-end";
+      senderName = "Customer";
+    } else if (isAdmin) {
+      bubbleBg = "var(--surface3)";
+      bubbleColor = "var(--text)";
+      align = "flex-start";
+      senderName = "Support Agent (You)";
+    }
+    
+    html += `
+      <div style="align-self: ${isUser ? "flex-end" : "flex-start"}; max-width: 80%; display: flex; flex-direction: column; gap: 4px;">
+        <span style="font-size: 10px; color: var(--muted); padding: 0 4px; align-self: ${isUser ? "flex-end" : "flex-start"}">${senderName}</span>
+        <div style="background: ${bubbleBg}; color: ${bubbleColor}; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.4; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+          ${esc(msg.text)}
+        </div>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendSupportReply() {
+  const input = document.getElementById("supportReplyInput");
+  const replyText = input.value.trim();
+  if (!replyText || !_currentSupportChatId) return;
+  
+  const chat = _allSupportChats.find(c => c.id === _currentSupportChatId);
+  if (!chat) return;
+  
+  const messages = chat.messages || [];
+  messages.push({
+    role: "admin",
+    text: replyText,
+    time: Date.now()
+  });
+  
+  const { db, dbRef, update } = await waitFb();
+  
+  try {
+    await update(dbRef(db, `support_chats/${_currentSupportChatId}`), {
+      messages: messages,
+      adminReply: replyText,
+      adminReplyTime: Date.now(),
+      status: "replied"
+    });
+    
+    input.value = "";
+    toast("Reply sent successfully!", "success");
+  } catch (err) {
+    console.error("Failed to send reply:", err);
+    toast("Failed to send reply: " + err.message, "error");
+  }
+}
+
+async function changeSupportStatus() {
+  const select = document.getElementById("supportStatusSelect");
+  const newStatus = select.value;
+  if (!_currentSupportChatId) return;
+  
+  const { db, dbRef, update } = await waitFb();
+  try {
+    await update(dbRef(db, `support_chats/${_currentSupportChatId}`), {
+      status: newStatus
+    });
+    toast("Status updated to " + newStatus, "success");
+  } catch (err) {
+    console.error("Failed to update status:", err);
+    toast("Failed to update status: " + err.message, "error");
+  }
+}
+
+async function markSupportResolved() {
+  if (!_currentSupportChatId) return;
+  
+  const { db, dbRef, update } = await waitFb();
+  try {
+    await update(dbRef(db, `support_chats/${_currentSupportChatId}`), {
+      status: "resolved"
+    });
+    document.getElementById("supportStatusSelect").value = "resolved";
+    toast("Ticket marked as resolved!", "success");
+  } catch (err) {
+    console.error("Failed to mark resolved:", err);
+    toast("Failed to mark resolved: " + err.message, "error");
+  }
+}
 }
 </script>
 </body>
