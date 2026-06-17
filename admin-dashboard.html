@@ -2776,7 +2776,7 @@
               <table>
                 <thead>
                   <tr>
-                    <th>User / Guest ID</th>
+                    <th>Customer</th>
                     <th>Contact Info</th>
                     <th>Total Items</th>
                     <th>Cart Value</th>
@@ -4618,13 +4618,24 @@
         let name = "Guest";
         let phone = "";
         let email = "";
+        let addressStr = "";
         
         if (!c.userId.startsWith("guest_")) {
           const userObj = _allUsers.find(u => u.id === c.userId);
           if (userObj) {
-            name = userObj.name || name;
-            phone = userObj.phone || "";
-            email = userObj.email || "";
+            name = userObj.displayName || (userObj.profile && userObj.profile.name) || userObj.name || name;
+            email = userObj.email || (userObj.profile && userObj.profile.email) || "";
+            phone = userObj.phone || (userObj.profile && userObj.profile.phone) || "";
+            
+            if (userObj.addresses && typeof userObj.addresses === 'object') {
+              const addrs = Object.values(userObj.addresses);
+              if (addrs.length > 0) {
+                const a = addrs[0];
+                if (!phone && a.phone) phone = a.phone;
+                if ((!name || name === "Guest") && a.name) name = a.name;
+                addressStr = [a.street, a.city, a.state, a.pin].filter(Boolean).join(', ');
+              }
+            }
           } else {
             name = "Registered User (" + c.userId.substring(0, 5) + "...)";
           }
@@ -4651,7 +4662,10 @@
         }
         
         return `<tr>
-          <td data-label="User / Guest ID"><strong>${esc(name)}</strong></td>
+          <td data-label="Customer">
+            <strong>${esc(name)}</strong>
+            ${addressStr ? `<br><span style="font-size:11px;color:var(--muted)">📍 ${esc(addressStr)}</span>` : ''}
+          </td>
           <td data-label="Contact Info"><span style="font-size:11px;color:var(--muted)">${esc(phone || email || '—')}</span></td>
           <td data-label="Total Items"><strong>${c.totalQty}</strong></td>
           <td data-label="Cart Value"><strong>₹${c.totalValue.toFixed(2)}</strong></td>
