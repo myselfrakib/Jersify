@@ -3872,21 +3872,25 @@
 
     async function listenCarts() {
       const { db, dbRef, onValue } = await waitFb();
-      onValue(dbRef(db, 'carts'), snap => {
+      onValue(dbRef(db, 'users'), snap => {
         let all = [];
         if (snap.exists()) {
           const raw = snap.val();
           for (let uid in raw) {
-            let userCarts = raw[uid];
-            let items = Object.values(userCarts);
-            let totalVal = items.reduce((sum, item) => sum + ((parseFloat(item.price)||0) * (parseInt(item.qty)||1)), 0);
-            let totalQty = items.reduce((sum, item) => sum + (parseInt(item.qty)||1), 0);
-            all.push({
-              userId: uid,
-              items: items,
-              totalValue: totalVal,
-              totalQty: totalQty
-            });
+            let userData = raw[uid];
+            if (userData.cart) {
+              let items = Array.isArray(userData.cart) ? userData.cart : Object.values(userData.cart);
+              if (items.length > 0) {
+                let totalVal = items.reduce((sum, item) => sum + ((parseFloat(item.price)||0) * (parseInt(item.qty)||1)), 0);
+                let totalQty = items.reduce((sum, item) => sum + (parseInt(item.qty)||1), 0);
+                all.push({
+                  userId: uid,
+                  items: items,
+                  totalValue: totalVal,
+                  totalQty: totalQty
+                });
+              }
+            }
           }
         }
         _allCarts = all;
