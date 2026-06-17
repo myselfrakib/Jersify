@@ -2339,6 +2339,23 @@
         Orders
         <span class="nav-badge" id="orderBadgeNav">0</span>
       </button>
+      <button class="nav-link" onclick="switchTab('pending',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Pending Orders
+        <span class="nav-badge orange" id="pendingBadgeNav" style="background:#f59e0b;">0</span>
+      </button>
+      <button class="nav-link" onclick="switchTab('carts',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"/>
+          <circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        Carts
+        <span class="nav-badge" id="cartBadgeNav">0</span>
+      </button>
       <button class="nav-link" onclick="switchTab('users',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -2663,7 +2680,6 @@
                 <select id="orderStatusFilter" onchange="filterOrders()"
                   style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none">
                   <option value="">All Statuses</option>
-                  <option value="pending">Pending</option>
                   <option value="confirmed">Confirmed</option>
                   <option value="shipped">Shipped</option>
                   <option value="delivered">Delivered</option>
@@ -2707,6 +2723,69 @@
                 <tbody id="ordersTable">
                   <tr>
                     <td colspan="10" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ PENDING ORDERS TAB ══ -->
+        <div class="tab-pane" id="tab-pending">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-title">Pending Orders</div>
+                <div class="card-subtitle">Orders waiting for payment (No shipping options)</div>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="pendingOrdersTable">
+                  <tr>
+                    <td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ CARTS TAB ══ -->
+        <div class="tab-pane" id="tab-carts">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-title">Active Carts</div>
+                <div class="card-subtitle">Remind users about their abandoned carts via WhatsApp or Email</div>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>User / Guest ID</th>
+                    <th>Contact Info</th>
+                    <th>Total Items</th>
+                    <th>Cart Value</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="cartsTable">
+                  <tr>
+                    <td colspan="5" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td>
                   </tr>
                 </tbody>
               </table>
@@ -3662,7 +3741,7 @@
 
     let _editId = null;
     let _stockEditId = null;
-    let _allOrders = [], _allUsers = [], _allProducts = [], _allIndexMedia = {}, _allCoupons = [];
+    let _allOrders = [], _allUsers = [], _allProducts = [], _allIndexMedia = {}, _allCoupons = [], _allCarts = [];
     let _pageSettings = {};
     let _pImgSlots = [{}, {}, {}, {}, {}];
     let _selectedOrders = new Set();
@@ -3712,6 +3791,7 @@
       buildProductImgSlots();
       listenCol('products', renderProducts);
       listenOrders();
+      listenCarts();
       listenCol('users', renderUsers);
       listenCol('indexMedia', renderIndexMediaData);
       listenCoupons();
@@ -3752,6 +3832,33 @@
         if (typeof filterReviews === 'function') filterReviews();
       }, err => {
         document.getElementById('ordersTable').innerHTML = emptyRow(10, '⚠ Could not load orders. Check Firebase rules.');
+      });
+    }
+
+    async function listenCarts() {
+      const { db, dbRef, onValue } = await waitFb();
+      onValue(dbRef(db, 'carts'), snap => {
+        let all = [];
+        if (snap.exists()) {
+          const raw = snap.val();
+          for (let uid in raw) {
+            let userCarts = raw[uid];
+            let items = Object.values(userCarts);
+            let totalVal = items.reduce((sum, item) => sum + ((parseFloat(item.price)||0) * (parseInt(item.qty)||1)), 0);
+            let totalQty = items.reduce((sum, item) => sum + (parseInt(item.qty)||1), 0);
+            all.push({
+              userId: uid,
+              items: items,
+              totalValue: totalVal,
+              totalQty: totalQty
+            });
+          }
+        }
+        _allCarts = all;
+        setEl('cartBadgeNav', all.length);
+        renderCarts();
+      }, err => {
+        console.error("Cart error", err);
       });
     }
 
@@ -4353,20 +4460,30 @@
     ═══════════════════════════════════════════════ */
     function renderOrders(data) {
       _allOrders = data;
-      setEl('stPending', data.filter(o => (o.status || 'pending') === 'pending').length);
+      const pendingData = data.filter(o => (o.status || 'pending') === 'pending');
+      const nonPendingData = data.filter(o => (o.status || 'pending') !== 'pending');
+
+      setEl('orderBadgeNav', nonPendingData.length);
+      setEl('pendingBadgeNav', pendingData.length);
+      setEl('stPending', pendingData.length);
       setEl('stConfirmed', data.filter(o => o.status === 'confirmed').length);
       setEl('stShipped', data.filter(o => o.status === 'shipped').length);
       setEl('stDelivered', data.filter(o => o.status === 'delivered').length);
       setEl('stCancelled', data.filter(o => o.status === 'cancelled').length);
       setEl('stCOD', data.filter(o => o.paymentMethod === 'cod').length);
+      
       filterOrders();
+      renderPendingOrders(pendingData);
     }
 
     function filterOrders() {
       const f = document.getElementById('orderStatusFilter').value;
       const pf = document.getElementById('orderPaymentFilter').value;
       const q = (document.getElementById('orderSearch')?.value || '').toLowerCase();
-      let data = f ? _allOrders.filter(o => (o.status || 'pending') === f) : _allOrders;
+      
+      // Exclude pending orders from the main orders tab
+      let data = _allOrders.filter(o => (o.status || 'pending') !== 'pending');
+      if (f) data = data.filter(o => (o.status || 'pending') === f);
       if (pf) data = data.filter(o => {
         let pm = (o.paymentMethod || 'prepaid').toLowerCase();
         if (pm === 'razorpay' || pm === 'online') pm = 'prepaid';
@@ -4412,6 +4529,95 @@
       <td data-label="Date" style="font-size:12px;color:var(--muted)">${date}</td>
       <td data-label="Action"><div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">View</button><button class="btn btn-danger btn-sm" onclick="deleteItem('orders','${o.id}')">Delete</button></div></td>
     </tr>`;
+      }).join('');
+    }
+
+    function renderPendingOrders(pendingData) {
+      const tbody = document.getElementById('pendingOrdersTable');
+      if (!tbody) return;
+      if (!pendingData.length) { tbody.innerHTML = emptyRow(8, 'No pending orders'); return; }
+      
+      const sorted = [...pendingData].sort((a, b) => {
+        const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return tB - tA;
+      });
+      
+      tbody.innerHTML = sorted.map(o => {
+        let pm = (o.paymentMethod || 'prepaid').toLowerCase();
+        let pmDisplay = pm === 'cod' ? 'COD' : (pm === 'partial_cod' ? 'PARTIAL COD' : 'PREPAID');
+        let pmBadge = pm === 'cod' ? 'badge-orange' : (pm === 'partial_cod' ? 'badge-gold' : 'badge-blue');
+        
+        const displayId = o.orderId || o.id || '—';
+        const itemsSummary = Array.isArray(o.items) && o.items.length ? o.items.map(i => `${i.name || 'Item'} ×${i.qty || 1}${i.size ? ' (' + i.size + ')' : ''}`).join(', ') : (o.productName || '—');
+        const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+        
+        return `<tr>
+          <td data-label="Order ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(displayId)}</span></td>
+          <td data-label="Customer"><strong>${esc(o.customerName || o.name || '—')}</strong><br><span style="font-size:11px;color:var(--muted)">${esc(o.phone || o.email || '')}</span></td>
+          <td data-label="Items" style="max-width:180px;font-size:12px;white-space:normal">${esc(itemsSummary)}</td>
+          <td data-label="Total"><strong>₹${parseFloat(o.total || 0).toFixed(2)}</strong></td>
+          <td data-label="Payment"><span class="badge ${pmBadge}">${pmDisplay}</span></td>
+          <td data-label="Status"><span class="badge badge-orange">pending</span></td>
+          <td data-label="Date" style="font-size:12px;color:var(--muted)">${date}</td>
+          <td data-label="Action">
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">View</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteItem('orders','${o.id}')">Delete</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderCarts() {
+      const tbody = document.getElementById('cartsTable');
+      if (!tbody) return;
+      if (!_allCarts.length) { tbody.innerHTML = emptyRow(5, 'No active carts'); return; }
+      
+      tbody.innerHTML = _allCarts.map(c => {
+        let name = "Guest";
+        let phone = "";
+        let email = "";
+        
+        if (!c.userId.startsWith("guest_")) {
+          const userObj = _allUsers.find(u => u.id === c.userId);
+          if (userObj) {
+            name = userObj.name || name;
+            phone = userObj.phone || "";
+            email = userObj.email || "";
+          } else {
+            name = "Registered User (" + c.userId.substring(0, 5) + "...)";
+          }
+        } else {
+          name = "Guest (" + c.userId.substring(6, 12) + ")";
+        }
+        
+        let actionHtml = '';
+        if (phone) {
+          const msg = encodeURIComponent("Hi there! We noticed you left some items in your cart at Jersify. Let us know if you need any help completing your order!");
+          const cleanPhone = phone.replace(/\D/g, '');
+          const waLink = `https://wa.me/${cleanPhone}?text=${msg}`;
+          actionHtml += `<a href="${waLink}" target="_blank" class="btn btn-sm" style="background:#25D366;color:#fff;border:none;margin-right:6px;text-decoration:none;">WhatsApp</a>`;
+        }
+        if (email) {
+          const subject = encodeURIComponent("Complete your Jersify Purchase");
+          const body = encodeURIComponent("Hi there!\n\nWe noticed you left some amazing items in your cart at Jersify.\n\nReturn to the store to complete your purchase now.\n\nThanks,\nJersify Team");
+          const mailLink = `mailto:${email}?subject=${subject}&body=${body}`;
+          actionHtml += `<a href="${mailLink}" target="_blank" class="btn btn-primary btn-sm" style="margin-right:6px;text-decoration:none;">Email</a>`;
+        }
+        
+        if (!actionHtml) {
+          actionHtml = '<span style="font-size:11px;color:var(--muted)">No Contact Info</span>';
+        }
+        
+        return `<tr>
+          <td data-label="User / Guest ID"><strong>${esc(name)}</strong></td>
+          <td data-label="Contact Info"><span style="font-size:11px;color:var(--muted)">${esc(phone || email || '—')}</span></td>
+          <td data-label="Total Items"><strong>${c.totalQty}</strong></td>
+          <td data-label="Cart Value"><strong>₹${c.totalValue.toFixed(2)}</strong></td>
+          <td data-label="Action" style="display:flex">${actionHtml}</td>
+        </tr>`;
       }).join('');
     }
 
@@ -4501,7 +4707,12 @@
       <div style="font-size:13px">${esc([o.address, o.city, o.state, o.pincode, o.country].filter(Boolean).join(', ') || '—')}</div>
     </div>`;
 
-      renderOrderSrSection(o);
+      if ((o.status || 'pending') === 'pending') {
+        document.getElementById('orderSrSection').style.display = 'none';
+      } else {
+        document.getElementById('orderSrSection').style.display = 'block';
+        renderOrderSrSection(o);
+      }
       setV('o_status', o.status || 'pending');
       setV('o_tracking', o.trackingNumber || o.srAwb || '');
       setV('o_notes', o.adminNotes || '');
