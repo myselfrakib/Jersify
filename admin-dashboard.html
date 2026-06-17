@@ -3901,17 +3901,19 @@
               if (items.length > 0) {
                 let totalVal = items.reduce((sum, item) => sum + ((parseFloat(item.price)||0) * (parseInt(item.qty)||1)), 0);
                 let totalQty = items.reduce((sum, item) => sum + (parseInt(item.qty)||1), 0);
+                let lastUpdated = userData.lastLogin || userData.createdAt || 0;
                 all.push({
                   userId: uid,
                   items: items,
                   totalValue: totalVal,
-                  totalQty: totalQty
+                  totalQty: totalQty,
+                  updatedAt: lastUpdated
                 });
               }
             }
           }
         }
-        _allCarts = all;
+        _allCarts = all.sort((a, b) => b.updatedAt - a.updatedAt);
         setEl('cartBadgeNav', all.length);
         renderCarts();
       }, err => {
@@ -4687,7 +4689,11 @@
             <strong>${esc(name)}</strong>
             ${addressStr ? `<br><span style="font-size:11px;color:var(--muted)">📍 ${esc(addressStr)}</span>` : ''}
           </td>
-          <td data-label="Contact Info"><span style="font-size:11px;color:var(--muted)">${esc(phone || email || '—')}</span></td>
+          <td data-label="Contact Info">
+            ${phone ? `<div style="font-size:12px;font-weight:600">${esc(phone)}</div>` : ''}
+            ${email ? `<div style="font-size:11px;color:var(--text2)">${esc(email)}</div>` : ''}
+            ${!phone && !email ? '<span style="font-size:11px;color:var(--muted)">—</span>' : ''}
+          </td>
           <td data-label="Total Items"><strong>${c.totalQty}</strong></td>
           <td data-label="Cart Value"><strong>₹${c.totalValue.toFixed(2)}</strong></td>
           <td data-label="Action" style="display:flex;align-items:center">${actionHtml}</td>
