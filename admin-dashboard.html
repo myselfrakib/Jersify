@@ -3252,13 +3252,12 @@
               style="font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;color:var(--accent);">
               Customer Details</div>
             <div class="form-grid" style="grid-template-columns:1fr;gap:10px;">
-              <div class="form-group">
+              <div class="form-group" style="position:relative;">
                 <label>Select Registered User <span
                     style="font-size:9px;color:var(--muted);text-transform:none;font-weight:400">(optional)</span></label>
-                <input type="text" id="mo_user_search" oninput="filterManualOrderUsers()" placeholder="Search users by name, email or phone..." style="margin-bottom:6px" />
-                <select id="mo_user_select" onchange="onManualOrderUserSelect()">
-                  <option value="">-- Guest / Manual Entry --</option>
-                </select>
+                <input type="text" id="mo_user_search" oninput="filterManualOrderUsers()" onfocus="filterManualOrderUsers()" onblur="setTimeout(()=>document.getElementById('mo_user_dropdown').style.display='none', 200)" placeholder="Search users by name, email or phone..." autocomplete="off" />
+                <div id="mo_user_dropdown" style="display:none; position:absolute; top:100%; left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid var(--border); border-radius:var(--radius-sm); z-index:100; box-shadow:var(--shadow-soft); margin-top:4px;"></div>
+                <input type="hidden" id="mo_user_select" value="" />
               </div>
               <div class="form-group"><label>Customer Name *</label><input type="text" id="mo_name"
                   placeholder="John Doe" /></div>
@@ -5646,6 +5645,7 @@
       setV('mo_payment_method', 'cod'); setV('mo_status', 'confirmed');
       _moCart = [];
       setV('mo_user_search', '');
+      document.getElementById('mo_user_select').value = '';
       filterManualOrderUsers();
       const ps = document.getElementById('mo_prod_select');
       ps.innerHTML = '<option value="">-- Choose Product --</option>' +
@@ -5657,23 +5657,40 @@
 
     function filterManualOrderUsers() {
       const query = (document.getElementById('mo_user_search')?.value || '').toLowerCase();
-      const us = document.getElementById('mo_user_select');
-      if (!us) return;
-      us.innerHTML = '<option value="">-- Guest / Manual Entry --</option>' +
-        _allUsers.filter(raw => {
-          if (!query) return true;
+      const dd = document.getElementById('mo_user_dropdown');
+      if (!dd) return;
+      
+      const filtered = _allUsers.filter(raw => {
+        if (!query) return true;
+        const u = normalizeUser(raw);
+        const text = `${u.name || ''} ${u.email || ''} ${u.phone || ''}`.toLowerCase();
+        return text.includes(query);
+      });
+
+      if (filtered.length === 0) {
+        dd.innerHTML = '<div style="padding:8px 12px;font-size:12px;color:var(--muted);">No users found</div>';
+      } else {
+        const guestHtml = `<div onclick="window.selectManualUser('', '')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--border);color:var(--accent);font-weight:600;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='none'">-- Guest / Manual Entry --</div>`;
+        const usersHtml = filtered.map(raw => {
           const u = normalizeUser(raw);
-          const text = `${u.name || ''} ${u.email || ''} ${u.phone || ''}`.toLowerCase();
-          return text.includes(query);
-        }).map(raw => {
-          const u = normalizeUser(raw);
-          return `<option value="${u.id}">${esc(u.name)} (${esc(u.email || u.phone || 'No contact')})</option>`;
+          const display = `${esc(u.name)} (${esc(u.email || u.phone || 'No contact')})`;
+          return `<div onclick="window.selectManualUser('${u.id}', '${esc(u.name).replace(/'/g, "\\'")}')" style="padding:8px 12px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--line);" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='none'">${display}</div>`;
         }).join('');
+        dd.innerHTML = guestHtml + usersHtml;
+      }
+      dd.style.display = 'block';
     }
 
-    function onManualOrderUserSelect() {
-      const uid = document.getElementById('mo_user_select').value;
-      if (!uid) return;
+    window.selectManualUser = function(uid, nameStr) {
+      document.getElementById('mo_user_select').value = uid || '';
+      document.getElementById('mo_user_search').value = uid ? nameStr : '';
+      document.getElementById('mo_user_dropdown').style.display = 'none';
+
+      if (!uid) {
+        ['mo_name', 'mo_email', 'mo_phone', 'mo_address', 'mo_city', 'mo_state', 'mo_pincode'].forEach(id => setV(id, ''));
+        setV('mo_country', 'India');
+        return;
+      }
       const raw = _allUsers.find(u => u.id === uid);
       if (!raw) return;
       const u = normalizeUser(raw);
@@ -5689,7 +5706,7 @@
         setV('mo_state', addr.state || '');
         setV('mo_pincode', addr.pincode || '');
       }
-    }
+    };
 
     function onManualOrderProductChange() {
       const prodId = document.getElementById('mo_prod_select').value;
