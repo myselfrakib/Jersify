@@ -3317,6 +3317,41 @@
     </div>
   </div>
 
+  <!-- ══ EDIT ORDER PRODUCTS MODAL ══ -->
+  <div class="modal-overlay" id="editOrderProductsModal">
+    <div class="modal" style="width:min(600px,95vw);">
+      <div class="modal-header">
+        <div class="modal-title">Edit Order Products</div>
+        <button class="modal-close" onclick="closeModal('editOrderProductsModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="font-weight:600;margin-bottom:8px">Current Items</div>
+        <div id="eop_cart_items" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:14px;max-height:200px;overflow-y:auto">
+          <!-- Rendered by JS -->
+        </div>
+        
+        <div style="font-weight:600;margin-bottom:8px;padding-top:10px;border-top:1px solid var(--border)">Add New Product</div>
+        <div class="form-grid" style="grid-template-columns:2fr 1fr 1fr;gap:10px;margin-bottom:14px">
+          <select id="eop_prod_select" onchange="onEopProductChange()" style="padding:8px;background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;outline:none"></select>
+          <select id="eop_size_select" style="padding:8px;background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;outline:none"><option value="">Size</option></select>
+          <input type="number" id="eop_qty" placeholder="Qty" min="1" value="1" style="padding:8px;background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;outline:none" />
+        </div>
+        <button class="btn btn-blue btn-sm" onclick="addEopProduct()" style="margin-bottom:14px">➕ Add to Order</button>
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-size:13px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>New Subtotal:</span><span id="eop_subtotal">₹0</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;color:var(--green)"><span>Discount:</span><span id="eop_discount">-₹0</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Shipping:</span><span id="eop_shipping">+₹0</span></div>
+          <div style="display:flex;justify-content:space-between;font-weight:700;border-top:1px solid var(--border);padding-top:6px"><span>New Total:</span><span id="eop_total" style="color:var(--accent)">₹0</span></div>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding:14px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px">
+        <button class="btn btn-ghost" onclick="closeModal('editOrderProductsModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEopProducts(event)">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ══ MANUAL ORDER MODAL ══ -->
   <div class="modal-overlay" id="manualOrderModal">
     <div class="modal" style="width:min(720px,95vw);">
@@ -4698,7 +4733,8 @@
       ${o.discount ? `<div style="display:flex;justify-content:space-between;padding:6px 0;color:var(--green);font-size:12px"><span>Discount</span><span>-₹${parseFloat(o.discount || 0).toFixed(2)}</span></div>` : ''}
       ${o.shipping ? `<div style="display:flex;justify-content:space-between;padding:6px 0;color:var(--text2);font-size:12px"><span>Shipping</span><span>+₹${parseFloat(o.shipping || 0).toFixed(2)}</span></div>` : ''}
       <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:700;border-top:2px solid var(--border);margin-top:6px"><span>Total</span><span style="color:var(--accent)">₹${parseFloat(o.total || 0).toFixed(2)}</span></div>
-      <div style="text-align:right;margin-top:12px;">
+      <div style="text-align:right;margin-top:12px;display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="openEditOrderProductsModal()">✏️ Edit Products</button>
         <button class="btn btn-ghost btn-sm" onclick="viewOrderImages('${o.id}')">📷 View Images</button>
       </div>
     </div>
@@ -4782,6 +4818,142 @@
         const cancelMsg = o.srCancelled ? '<div style="color:var(--orange);font-size:12px;font-weight:600;margin-bottom:6px">⚠️ Previous shipment was cancelled. You can re-ship this order below.</div>' : '';
         infoDiv.innerHTML = `${cancelMsg}<div style="color:var(--muted);font-size:12px">${o.srCancelled ? 'Click Ship Now to create a new shipment.' : 'No shipment created yet.'}</div>`;
         actionsDiv.innerHTML = `<button class="btn btn-teal" onclick="openSrShipModal('${id}')">🚚 Ship Now via Shiprocket</button>`;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════
+       EDIT ORDER PRODUCTS
+    ═══════════════════════════════════════════════ */
+    let _eopCart = [];
+    let _eopDiscount = 0;
+    let _eopShipping = 0;
+
+    function openEditOrderProductsModal() {
+      const o = _allOrders.find(x => x.id === _editId);
+      if (!o) return;
+      _eopCart = Array.isArray(o.items) ? JSON.parse(JSON.stringify(o.items)) : [];
+      if (_eopCart.length === 0 && o.productName) {
+        _eopCart.push({ name: o.productName, price: o.price || 0, qty: 1, size: o.selectedSize || '' });
+      }
+      _eopDiscount = parseFloat(o.discount || 0);
+      _eopShipping = parseFloat(o.shipping || 0);
+      
+      const ps = document.getElementById('eop_prod_select');
+      ps.innerHTML = '<option value="">-- Choose Product --</option>' +
+        _allProducts.filter(p => p.status !== 'inactive').map(p => `<option value="${p.id}">${esc(p.name)} - ₹${p.price}</option>`).join('');
+      onEopProductChange();
+      
+      renderEopCart();
+      openModal('editOrderProductsModal');
+    }
+
+    function onEopProductChange() {
+      const prodId = document.getElementById('eop_prod_select').value;
+      const ss = document.getElementById('eop_size_select');
+      if (!prodId) { ss.innerHTML = '<option value="">Size</option>'; return; }
+      const p = _allProducts.find(x => x.id === prodId);
+      if (!p) return;
+      const sizes = p.sizes || {};
+      const av = Object.keys(sizes).filter(k => sizes[k] > 0);
+      if (av.length === 0) { ss.innerHTML = '<option value="">Out of stock</option>'; }
+      else { ss.innerHTML = av.map(s => `<option value="${s}">${s} (${sizes[s]} left)</option>`).join(''); }
+    }
+
+    function addEopProduct() {
+      const prodId = document.getElementById('eop_prod_select').value;
+      const size = document.getElementById('eop_size_select').value;
+      const qty = parseInt(document.getElementById('eop_qty').value || 1);
+      if (!prodId || !size || qty < 1) { toast('Please select product, size and quantity', 'error'); return; }
+      const p = _allProducts.find(x => x.id === prodId);
+      if (!p) return;
+      const key = `${p.id}_${size.toLowerCase()}`;
+      const existing = _eopCart.find(i => (i.key === key) || (i.id === p.id && i.size === size));
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        _eopCart.push({
+          key: key,
+          id: p.id,
+          name: p.name,
+          team: p.team || '',
+          price: parseFloat(p.price || 0),
+          qty: qty,
+          size: size,
+          imgUrl: (p.images && p.images[0]) || p.image || p.imgUrl || '',
+          emoji: p.emoji || '👕'
+        });
+      }
+      setV('eop_qty', '1');
+      renderEopCart();
+      toast('Product added to order');
+    }
+
+    function removeEopProduct(idx) {
+      _eopCart.splice(idx, 1);
+      renderEopCart();
+    }
+
+    function renderEopCart() {
+      const container = document.getElementById('eop_cart_items');
+      if (_eopCart.length === 0) {
+        container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:10px">Cart is empty</div>';
+      } else {
+        container.innerHTML = _eopCart.map((i, idx) => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+            <div>
+              <div style="font-weight:600;font-size:13px">${esc(i.name)}</div>
+              <div style="font-size:11px;color:var(--muted)">Size: ${i.size || '—'} | ₹${i.price} × ${i.qty}</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="removeEopProduct(${idx})" style="color:var(--red);padding:4px 8px">🗑️</button>
+          </div>
+        `).join('');
+      }
+      
+      const sub = _eopCart.reduce((sum, i) => sum + (parseFloat(i.price) * parseInt(i.qty)), 0);
+      const tot = sub - _eopDiscount + _eopShipping;
+      
+      setEl('eop_subtotal', `₹${sub.toFixed(2)}`);
+      setEl('eop_discount', `-₹${_eopDiscount.toFixed(2)}`);
+      setEl('eop_shipping', `+₹${_eopShipping.toFixed(2)}`);
+      setEl('eop_total', `₹${tot.toFixed(2)}`);
+    }
+
+    async function saveEopProducts(event) {
+      if (!_editId) return;
+      if (_eopCart.length === 0) { toast('Cannot save an empty order. Delete the order instead.', 'error'); return; }
+      
+      const sub = _eopCart.reduce((sum, i) => sum + (parseFloat(i.price) * parseInt(i.qty)), 0);
+      const tot = sub - _eopDiscount + _eopShipping;
+      
+      const btn = event.currentTarget;
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      
+      try {
+        await saveDoc('orders', {
+          items: _eopCart,
+          subtotal: sub,
+          total: tot,
+          updatedAt: Date.now()
+        }, _editId);
+        
+        toast('Order products updated successfully!', 'success');
+        closeModal('editOrderProductsModal');
+        
+        // Wait for Firebase to sync before re-opening modal, or forcefully update _allOrders
+        const oIndex = _allOrders.findIndex(x => x.id === _editId);
+        if (oIndex > -1) {
+          _allOrders[oIndex].items = _eopCart;
+          _allOrders[oIndex].subtotal = sub;
+          _allOrders[oIndex].total = tot;
+        }
+        viewOrder(_editId);
+      } catch (err) {
+        console.error(err);
+        toast('Failed to update products', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Changes';
       }
     }
 
