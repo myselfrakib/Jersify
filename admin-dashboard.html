@@ -15,7 +15,7 @@
     rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <!-- Google Maps JS API -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74&libraries=places" async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74&libraries=places&loading=async" async defer></script>
 
   <script>
     (function () {
@@ -7210,44 +7210,50 @@
     }
 
     // Custom HTML Marker Overlay
-    class PulseMarker extends google.maps.OverlayView {
-      constructor(latlng, popupHtml, map) {
-        super();
-        this.latlng = latlng;
-        this.popupHtml = popupHtml;
-        this.div = null;
-        this.setMap(map);
-      }
-      onAdd() {
-        this.div = document.createElement("div");
-        this.div.style.position = "absolute";
-        this.div.style.cursor = "pointer";
-        this.div.className = "radar-ping-icon";
-        this.div.innerHTML = '<div class="radar-ping-ring"></div><div class="radar-ping-dot"></div>';
-        
-        const infoWindow = new google.maps.InfoWindow({ content: this.popupHtml });
-        this.div.addEventListener("click", () => {
-          infoWindow.setPosition(this.latlng);
-          infoWindow.open(this.getMap());
-        });
+    let PulseMarkerClass = null;
+    function getPulseMarkerClass() {
+      if (!PulseMarkerClass) {
+        PulseMarkerClass = class extends google.maps.OverlayView {
+          constructor(latlng, popupHtml, map) {
+            super();
+            this.latlng = latlng;
+            this.popupHtml = popupHtml;
+            this.div = null;
+            this.setMap(map);
+          }
+          onAdd() {
+            this.div = document.createElement("div");
+            this.div.style.position = "absolute";
+            this.div.style.cursor = "pointer";
+            this.div.className = "radar-ping-icon";
+            this.div.innerHTML = '<div class="radar-ping-ring"></div><div class="radar-ping-dot"></div>';
+            
+            const infoWindow = new google.maps.InfoWindow({ content: this.popupHtml });
+            this.div.addEventListener("click", () => {
+              infoWindow.setPosition(this.latlng);
+              infoWindow.open(this.getMap());
+            });
 
-        const panes = this.getPanes();
-        panes.overlayMouseTarget.appendChild(this.div);
+            const panes = this.getPanes();
+            panes.overlayMouseTarget.appendChild(this.div);
+          }
+          draw() {
+            const overlayProjection = this.getProjection();
+            const position = overlayProjection.fromLatLngToDivPixel(this.latlng);
+            if (this.div) {
+              this.div.style.left = (position.x - 20) + "px";
+              this.div.style.top = (position.y - 20) + "px";
+            }
+          }
+          onRemove() {
+            if (this.div && this.div.parentNode) {
+              this.div.parentNode.removeChild(this.div);
+              this.div = null;
+            }
+          }
+        };
       }
-      draw() {
-        const overlayProjection = this.getProjection();
-        const position = overlayProjection.fromLatLngToDivPixel(this.latlng);
-        if (this.div) {
-          this.div.style.left = (position.x - 20) + "px";
-          this.div.style.top = (position.y - 20) + "px";
-        }
-      }
-      onRemove() {
-        if (this.div && this.div.parentNode) {
-          this.div.parentNode.removeChild(this.div);
-          this.div = null;
-        }
-      }
+      return PulseMarkerClass;
     }
 
     const INDIA_STATES = {
@@ -7306,7 +7312,8 @@
         </div>
       `;
 
-      const marker = new PulseMarker(new google.maps.LatLng(lat, lng), popupHtml, radarMapInstance);
+      const MarkerClass = getPulseMarkerClass();
+      const marker = new MarkerClass(new google.maps.LatLng(lat, lng), popupHtml, radarMapInstance);
       radarOverlays.push(marker);
     }
 
