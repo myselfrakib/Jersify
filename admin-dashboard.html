@@ -14,8 +14,8 @@
     href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
     rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Google Maps JS API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74&libraries=places"></script>
 
   <script>
     (function () {
@@ -2596,8 +2596,13 @@
       <div class="content" id="mainContent">
 
         <!-- ══ Riaj Radar TAB ══ -->
-        <div class="tab-pane" id="tab-radar">
-          <div id="radarMap"></div>
+        <div class="tab-pane" id="tab-radar" style="position:relative;">
+          <div style="position:absolute; top:20px; left:50%; transform:translateX(-50%); z-index:10; background:var(--surface); padding:8px 12px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.3); display:flex; gap:10px; border:1px solid var(--border);">
+            <button class="btn btn-sm" id="radarThemeBtn" onclick="toggleRadarTheme()" style="background:transparent; border:none; color:var(--text); font-weight:600; display:flex; align-items:center; gap:6px;">
+              <span id="radarThemeIcon">🌙</span> <span id="radarThemeText">Night Mode</span>
+            </button>
+          </div>
+          <div id="radarMap" style="width:100%; height:100%;"></div>
         </div>
 
         <!-- ══ RAZORPAY TAB ══ -->
@@ -2608,17 +2613,21 @@
               <div class="card-subtitle">Test and verify pending orders via the Razorpay API</div>
             </div>
           </div>
-          
+
           <div class="card">
             <div class="card-hd">Verify Pending Order</div>
             <div class="card-body">
-              <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">Enter an Order ID (e.g., JRS-12345) or a Razorpay Payment ID (e.g., pay_XYZ) to instantly check its live status on Razorpay's servers. If paid, it will be automatically confirmed in the database.</p>
+              <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">Enter an Order ID (e.g., JRS-12345) or
+                a Razorpay Payment ID (e.g., pay_XYZ) to instantly check its live status on Razorpay's servers. If paid,
+                it will be automatically confirmed in the database.</p>
               <div style="display:flex; gap:10px; max-width:500px;">
-                <input type="text" id="rzpVerifyInput" class="form-input" placeholder="Order ID or Payment ID" style="flex:1" />
+                <input type="text" id="rzpVerifyInput" class="form-input" placeholder="Order ID or Payment ID"
+                  style="flex:1" />
                 <button class="btn btn-primary" id="rzpVerifyBtn" onclick="verifyRzpPayment()">Verify Status</button>
               </div>
-              
-              <div id="rzpVerifyResult" style="margin-top:20px; display:none; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px;">
+
+              <div id="rzpVerifyResult"
+                style="margin-top:20px; display:none; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px;">
                 <!-- Results go here -->
               </div>
             </div>
@@ -3502,12 +3511,14 @@
           <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>New Subtotal:</span><span
               id="eop_subtotal">₹0</span></div>
           <div style="display:flex;justify-content:space-between;margin-bottom:4px;color:var(--green)">
-            <span>Discount:</span><span id="eop_discount">-₹0</span></div>
+            <span>Discount:</span><span id="eop_discount">-₹0</span>
+          </div>
           <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Shipping:</span><span
               id="eop_shipping">+₹0</span></div>
           <div
             style="display:flex;justify-content:space-between;font-weight:700;border-top:1px solid var(--border);padding-top:6px">
-            <span>New Total:</span><span id="eop_total" style="color:var(--accent)">₹0</span></div>
+            <span>New Total:</span><span id="eop_total" style="color:var(--accent)">₹0</span>
+          </div>
         </div>
       </div>
       <div class="modal-footer"
@@ -4829,7 +4840,7 @@
       }).join('');
     }
 
-    window.markOrderConfirmed = async function(id) {
+    window.markOrderConfirmed = async function (id) {
       if (!confirm('Mark this pending order as Confirmed? Only do this if you have verified the payment in Razorpay.')) return;
       try {
         await update(ref(db, `orders/${id}`), {
@@ -7051,10 +7062,147 @@
     }
 
     /* ═══════════════════════════════════════════════
-       Riaj Radar LOGIC
+       Riaj Radar LOGIC (Google Maps)
     ═══════════════════════════════════════════════ */
     let radarMapInstance = null;
-    let radarMarkers = [];
+    let radarOverlays = [];
+    let radarTheme = 'night';
+
+    const NIGHT_STYLE = [
+      { elementType: "geometry", stylers: [{ color: "#212121" }] },
+      { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+      { elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
+      { elementType: "labels.text.stroke", stylers: [{ color: "#212121" }] },
+      { featureType: "administrative", elementType: "geometry", stylers: [{ color: "#757575" }] },
+      { featureType: "administrative.country", elementType: "labels.text.fill", stylers: [{ color: "#9e9e9e" }] },
+      { featureType: "administrative.land_parcel", stylers: [{ visibility: "off" }] },
+      { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#bdbdbd" }] },
+      { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
+      { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#181818" }] },
+      { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
+      { featureType: "poi.park", elementType: "labels.text.stroke", stylers: [{ color: "#1b1b1b" }] },
+      { featureType: "road", elementType: "geometry.fill", stylers: [{ color: "#2c2c2c" }] },
+      { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#8a8a8a" }] },
+      { featureType: "road.arterial", elementType: "geometry", stylers: [{ color: "#373737" }] },
+      { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#3c3c3c" }] },
+      { featureType: "road.highway.controlled_access", elementType: "geometry", stylers: [{ color: "#4e4e4e" }] },
+      { featureType: "road.local", elementType: "labels.text.fill", stylers: [{ color: "#616161" }] },
+      { featureType: "transit", elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
+      { featureType: "water", elementType: "geometry", stylers: [{ color: "#000000" }] },
+      { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#3d3d3d" }] }
+    ];
+
+    window.toggleRadarTheme = function() {
+      if (!radarMapInstance) return;
+      radarTheme = radarTheme === 'night' ? 'day' : 'night';
+      radarMapInstance.setOptions({ styles: radarTheme === 'night' ? NIGHT_STYLE : [] });
+      
+      const icon = document.getElementById('radarThemeIcon');
+      const text = document.getElementById('radarThemeText');
+      if (radarTheme === 'night') {
+        icon.textContent = '🌙'; text.textContent = 'Night Mode';
+      } else {
+        icon.textContent = '☀️'; text.textContent = 'Day Mode';
+      }
+    };
+
+    window.initRadarMap = function () {
+      if (!radarMapInstance) {
+        radarMapInstance = new google.maps.Map(document.getElementById("radarMap"), {
+          center: { lat: 22.5937, lng: 78.9629 },
+          zoom: 5,
+          styles: NIGHT_STYLE,
+          disableDefaultUI: true,
+          zoomControl: true,
+        });
+      }
+      setTimeout(() => {
+        window.plotRadarOrders();
+      }, 300);
+    };
+
+    // Geocoding queue
+    let geocodeQueue = [];
+    let isGeocoding = false;
+
+    async function processGeocodeQueue() {
+      if (isGeocoding || geocodeQueue.length === 0) return;
+      isGeocoding = true;
+      const geocoder = new google.maps.Geocoder();
+
+      while (geocodeQueue.length > 0) {
+        const order = geocodeQueue.shift();
+        const addressQuery = [order.address, order.city, order.state, order.pincode].filter(Boolean).join(', ');
+        
+        try {
+          const results = await new Promise((resolve, reject) => {
+            geocoder.geocode({ address: addressQuery }, (res, status) => {
+              if (status === 'OK') resolve(res);
+              else reject(status);
+            });
+          });
+          
+          if (results && results.length > 0) {
+            const loc = results[0].geometry.location;
+            const lat = loc.lat();
+            const lng = loc.lng();
+            
+            await update(ref(db, `orders/${order.id || order._id}`), { lat, lng });
+            order.lat = lat;
+            order.lng = lng;
+            plotSingleRadarMarker(order);
+          }
+        } catch(e) {
+          console.warn("Geocode failed for order", order.id, e);
+          plotSingleRadarMarker(order, true); 
+        }
+
+        // Wait 1 second to respect API limits
+        await new Promise(r => setTimeout(r, 1000));
+      }
+      isGeocoding = false;
+    }
+
+    // Custom HTML Marker Overlay
+    class PulseMarker extends google.maps.OverlayView {
+      constructor(latlng, popupHtml, map) {
+        super();
+        this.latlng = latlng;
+        this.popupHtml = popupHtml;
+        this.div = null;
+        this.setMap(map);
+      }
+      onAdd() {
+        this.div = document.createElement("div");
+        this.div.style.position = "absolute";
+        this.div.style.cursor = "pointer";
+        this.div.className = "radar-ping-icon";
+        this.div.innerHTML = '<div class="radar-ping-ring"></div><div class="radar-ping-dot"></div>';
+        
+        const infoWindow = new google.maps.InfoWindow({ content: this.popupHtml });
+        this.div.addEventListener("click", () => {
+          infoWindow.setPosition(this.latlng);
+          infoWindow.open(this.getMap());
+        });
+
+        const panes = this.getPanes();
+        panes.overlayMouseTarget.appendChild(this.div);
+      }
+      draw() {
+        const overlayProjection = this.getProjection();
+        const position = overlayProjection.fromLatLngToDivPixel(this.latlng);
+        if (this.div) {
+          this.div.style.left = (position.x - 20) + "px";
+          this.div.style.top = (position.y - 20) + "px";
+        }
+      }
+      onRemove() {
+        if (this.div && this.div.parentNode) {
+          this.div.parentNode.removeChild(this.div);
+          this.div = null;
+        }
+      }
+    }
 
     const INDIA_STATES = {
       "andhra pradesh": [15.9129, 79.7400], "arunachal pradesh": [28.2180, 94.7278], "assam": [26.2006, 92.9376], "bihar": [25.0961, 85.3131],
@@ -7081,72 +7229,61 @@
       "jabalpur": [23.1686, 79.9339], "coimbatore": [11.0168, 76.9558], "vijayawada": [16.5062, 80.6480], "jodhpur": [26.2389, 73.0243]
     };
 
-    window.initRadarMap = function () {
-      if (!radarMapInstance) {
-        radarMapInstance = L.map('radarMap').setView([22.5937, 78.9629], 5);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; <a href="https://carto.com/">CARTO</a>'
-        }).addTo(radarMapInstance);
+    function plotSingleRadarMarker(o, forceFallback = false) {
+      let lat = o.lat;
+      let lng = o.lng;
+
+      if (forceFallback || !lat || !lng) {
+        const city = (o.city || '').trim().toLowerCase();
+        const state = (o.state || '').trim().toLowerCase();
+        let latlngArr = null;
+
+        if (city && MAJOR_CITIES[city]) latlngArr = MAJOR_CITIES[city];
+        else if (state && INDIA_STATES[state]) latlngArr = INDIA_STATES[state];
+        if (!latlngArr) latlngArr = [22.5937, 78.9629];
+        
+        lat = latlngArr[0] + (Math.random() - 0.5) * 0.15;
+        lng = latlngArr[1] + (Math.random() - 0.5) * 0.15;
       }
-      setTimeout(() => {
-        radarMapInstance.invalidateSize();
-        window.plotRadarOrders();
-      }, 300);
-    };
 
-    window.plotRadarOrders = function() {
-      if (!radarMapInstance) return; // Map hasn't been initialized by opening the tab yet
+      let info = getPaymentInfo(o);
+      let pmDisplay = info.isCod ? 'COD' : (info.isPcod ? 'PARTIAL PAID' : 'PREPAID');
 
-      // Clear old markers
-      radarMarkers.forEach(m => radarMapInstance.removeLayer(m));
-      radarMarkers = [];
+      const popupHtml = `
+        <div style="color:#111; padding:4px;">
+          <div style="font-size:14px;font-weight:800;border-bottom:1px solid #ddd;margin-bottom:6px;padding-bottom:4px;">ORDER #${(o.orderId || o.id || '').replace('JRS-', '').toUpperCase()}</div>
+          <div style="font-size:12px;margin-bottom:2px;"><b>Customer:</b> ${esc(o.customerName || o.name || 'User')}</div>
+          <div style="font-size:12px;margin-bottom:2px;"><b>Location:</b> ${esc(o.city || 'Unknown')}, ${esc(o.state || '')}</div>
+          <div style="font-size:12px;margin-bottom:2px;"><b>Total:</b> ₹${o.total || 0}</div>
+          <div style="font-size:12px;margin-bottom:2px;"><b>Payment:</b> ${pmDisplay}</div>
+          <div style="font-size:12px;"><b>Status:</b> ${(o.status || '').toUpperCase()}</div>
+        </div>
+      `;
+
+      const marker = new PulseMarker(new google.maps.LatLng(lat, lng), popupHtml, radarMapInstance);
+      radarOverlays.push(marker);
+    }
+
+    window.plotRadarOrders = function () {
+      if (!radarMapInstance) return;
+
+      radarOverlays.forEach(m => m.setMap(null));
+      radarOverlays = [];
+      geocodeQueue = [];
 
       if (typeof _allOrders === 'undefined' || !_allOrders) return;
 
-      // Filter to all orders except pending
-      const validOrders = _allOrders.filter(o => {
-        const st = (o.status || 'pending').toLowerCase();
-        return st !== 'pending';
-      });
-
-      const icon = L.divIcon({
-        className: 'radar-ping-icon',
-        html: '<div class="radar-ping-ring"></div><div class="radar-ping-dot"></div>',
-        iconSize: [40, 40],
-        iconAnchor: [20, 20]
-      });
+      const validOrders = _allOrders.filter(o => (o.status || 'pending').toLowerCase() !== 'pending');
 
       validOrders.forEach(o => {
-        let latlng = null;
-        const city = (o.city || '').trim().toLowerCase();
-        const state = (o.state || '').trim().toLowerCase();
-
-        if (city && MAJOR_CITIES[city]) latlng = MAJOR_CITIES[city];
-        else if (state && INDIA_STATES[state]) latlng = INDIA_STATES[state];
-
-        // Default to middle of India if no state/city match
-        if (!latlng) latlng = [22.5937, 78.9629];
-
-        // Add small jitter so markers from same city don't overlap completely
-        const jitterLat = latlng[0] + (Math.random() - 0.5) * 0.15;
-        const jitterLng = latlng[1] + (Math.random() - 0.5) * 0.15;
-
-        let info = getPaymentInfo(o);
-        let pmDisplay = info.isCod ? 'COD' : (info.isPcod ? 'PARTIAL PAID' : 'PREPAID');
-
-        const popupHtml = `
-          <div class="radar-popup-title">ORDER #${(o.orderId || o.id || '').replace('JRS-', '').toUpperCase()}</div>
-          <div class="radar-popup-row"><span class="radar-popup-key">Customer:</span> <span class="radar-popup-val">${esc(o.customerName || o.name || 'User')}</span></div>
-          <div class="radar-popup-row"><span class="radar-popup-key">Location:</span> <span class="radar-popup-val">${esc(o.city || 'Unknown')}, ${esc(o.state || '')}</span></div>
-          <div class="radar-popup-row"><span class="radar-popup-key">Total:</span> <span class="radar-popup-val" style="color:#00f0ff">₹${o.total || 0}</span></div>
-          <div class="radar-popup-row"><span class="radar-popup-key">Payment:</span> <span class="radar-popup-val">${pmDisplay}</span></div>
-          <div class="radar-popup-row"><span class="radar-popup-key">Status:</span> <span class="radar-popup-val" style="color:#a78bfa">${(o.status || '').toUpperCase()}</span></div>
-        `;
-
-        const marker = L.marker([jitterLat, jitterLng], { icon }).bindPopup(popupHtml);
-        marker.addTo(radarMapInstance);
-        radarMarkers.push(marker);
+        if (o.lat && o.lng) {
+          plotSingleRadarMarker(o);
+        } else {
+          geocodeQueue.push(o);
+        }
       });
+
+      processGeocodeQueue();
     }
 
     /* ═══════════════════════════════════════════════
@@ -7175,7 +7312,7 @@
         const isPaid = data.isPaid;
         const color = isPaid ? '#10b981' : '#ef4444';
         const icon = isPaid ? '✅' : '❌';
-        
+
         let html = `
           <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div>
