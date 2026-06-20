@@ -2290,7 +2290,7 @@
       }
     }
 
-    /* ── RADAR VIEW ── */
+    /* ── Riaj Radar ── */
     #tab-radar {
       padding: 0 !important;
       height: calc(100vh - 65px);
@@ -2528,7 +2528,7 @@
           <circle cx="12" cy="12" r="2" />
           <line x1="12" y1="2" x2="12" y2="12" />
         </svg>
-        Radar View
+        Riaj Radar
       </button>
 
       <div class="sidebar-footer" style="display:flex;flex-direction:column;gap:8px;">
@@ -2589,7 +2589,7 @@
 
       <div class="content" id="mainContent">
 
-        <!-- ══ RADAR VIEW TAB ══ -->
+        <!-- ══ Riaj Radar TAB ══ -->
         <div class="tab-pane" id="tab-radar">
           <div id="radarMap"></div>
         </div>
@@ -3957,7 +3957,7 @@
     }
 
     /* ─── TAB SWITCH ─── */
-    const TAB_TITLES = { products: 'Products / Kits', media: 'Index Media', orders: 'Orders', users: 'Users', coupons: 'Coupon Codes', reviews: 'Customer Reviews', credentials: 'Credentials Manager', pages: 'Page Settings', shiprocket: 'Shiprocket Shipping', support: 'Customer Support Chats', radar: 'Radar View' };
+    const TAB_TITLES = { products: 'Products / Kits', media: 'Index Media', orders: 'Orders', users: 'Users', coupons: 'Coupon Codes', reviews: 'Customer Reviews', credentials: 'Credentials Manager', pages: 'Page Settings', shiprocket: 'Shiprocket Shipping', support: 'Customer Support Chats', radar: 'Riaj Radar' };
     function switchTab(name, el) {
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
       document.getElementById('tab-' + name).classList.add('active');
@@ -7006,7 +7006,7 @@
     }
 
     /* ═══════════════════════════════════════════════
-       RADAR VIEW LOGIC
+       Riaj Radar LOGIC
     ═══════════════════════════════════════════════ */
     let radarMapInstance = null;
     let radarMarkers = [];
