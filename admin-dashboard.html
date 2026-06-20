@@ -2536,6 +2536,16 @@
         </svg>
         Razorpay
       </button>
+      <button class="nav-link" onclick="switchTab('chatbot',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2a2 2 0 0 1 2 2c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2z"/>
+          <path d="M19 8h-2v4h2V8z"/>
+          <path d="M5 8H3v4h2V8z"/>
+          <path d="M17 14v4a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-4"/>
+          <path d="M7 8h10v6H7z"/>
+        </svg>
+        AI Chatbot Training
+      </button>
 
       <div class="sidebar-footer" style="display:flex;flex-direction:column;gap:8px;">
         <button class="logout-btn" onclick="toggleTheme()" style="color:var(--text2)">
@@ -3301,6 +3311,35 @@
           </div>
         </div>
 
+        <!-- ══ AI CHATBOT TAB ══ -->
+        <div class="tab-pane" id="tab-chatbot">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-title">🧠 AI Chatbot Training</div>
+                <div class="card-subtitle">Define core business rules, shipping costs, and instructions for Gemini.</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="saveChatbotTraining()" id="saveChatbotBtn">Save to Brain</button>
+            </div>
+            <div class="card-body" style="display:flex;gap:20px;min-height:500px;">
+              <div style="flex:1;display:flex;flex-direction:column;">
+                <label style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--text);">System Prompt & Rules</label>
+                <textarea id="chatbotTrainingText" style="flex:1;width:100%;border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:var(--radius-md);padding:14px;font-family:'Inter', sans-serif;font-size:13px;line-height:1.6;resize:none;" placeholder="Loading AI Brain..."></textarea>
+              </div>
+              <div style="width:340px;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;">
+                <div style="background:var(--surface2);padding:12px;border-bottom:1px solid var(--border);font-weight:600;font-size:13px;">Test Chatbot</div>
+                <div id="testChatLog" style="flex:1;padding:12px;overflow-y:auto;background:var(--surface);display:flex;flex-direction:column;gap:10px;">
+                  <div style="color:var(--muted);font-size:11px;text-align:center;margin-top:20px;">Chat with the AI to test its knowledge.</div>
+                </div>
+                <div style="padding:10px;border-top:1px solid var(--border);background:var(--surface2);display:flex;gap:8px;">
+                  <input type="text" id="testChatInput" placeholder="Ask a question..." style="flex:1;padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;" onkeypress="if(event.key==='Enter') testChatSend()">
+                  <button class="btn btn-primary btn-sm" onclick="testChatSend()">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -3328,6 +3367,7 @@
                 <option value="Italy">Italy</option>
                 <option value="Spain">Spain</option>
                 <option value="Portugal">Portugal</option>
+                <option value="Japan">Japan</option>
               </optgroup>
               <optgroup label="Clubs">
                 <option value="Barcelona">Barcelona</option>
@@ -5404,13 +5444,17 @@
     const SITE_PAGES = [
       { id: 'argentina', label: 'Argentina', file: 'argentina.html', icon: '🇦🇷', color: '#74ACDF' },
       { id: 'brazil', label: 'Brazil', file: 'brazil.html', icon: '🇧🇷', color: '#009c3b' },
+      { id: 'england', label: 'England', file: 'england.html', icon: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', color: '#ffffff' },
       { id: 'france', label: 'France', file: 'france.html', icon: '🇫🇷', color: '#002395' },
       { id: 'germany', label: 'Germany', file: 'germany.html', icon: '🇩🇪', color: '#222' },
+      { id: 'italy', label: 'Italy', file: 'italy.html', icon: '🇮🇹', color: '#0064aa' },
       { id: 'spain', label: 'Spain', file: 'spain.html', icon: '🇪🇸', color: '#AA151B' },
       { id: 'portugal', label: 'Portugal', file: 'portugal.html', icon: '🇵🇹', color: '#006600' },
+      { id: 'japan', label: 'Japan', file: 'japan.html', icon: '🇯🇵', color: '#bc002d' },
       { id: 'barcelona', label: 'FC Barcelona', file: 'barcelona.html', icon: '🔵', color: '#a50044' },
       { id: 'real-madrid', label: 'Real Madrid', file: 'real-madrid.html', icon: '⚪', color: '#febe10' },
       { id: 'chelsea', label: 'Chelsea FC', file: 'chelsea.html', icon: '🔷', color: '#034694' },
+      { id: 'liverpool', label: 'Liverpool', file: 'liverpool.html', icon: '🔴', color: '#c8102E' },
       { id: 'man-utd', label: 'Man United', file: 'man-utd.html', icon: '🔴', color: '#DA291C' },
       { id: 'man-city', label: 'Man City', file: 'man-city.html', icon: '🩵', color: '#6CABDD' },
       { id: 'psg', label: 'PSG', file: 'psg.html', icon: '🔵', color: '#004170' },
@@ -7345,6 +7389,87 @@
       } catch (err) {
         resDiv.innerHTML = `<div style="color:#ef4444;"><strong>Backend Error:</strong> ${err.message}</div>`;
       }
+    /* ═══════════════════════════════════════════════
+       AI CHATBOT TRAINING LOGIC
+    ═══════════════════════════════════════════════ */
+    async function loadChatbotTraining() {
+      const { db, dbRef, get } = await waitFb();
+      try {
+        const snapshot = await get(dbRef(db, 'settings/chatbotTraining'));
+        if (snapshot.exists()) {
+          document.getElementById('chatbotTrainingText').value = snapshot.val();
+        } else {
+          // Default pre-fill if not found in db
+          document.getElementById('chatbotTrainingText').value = `You are a friendly, concise, and helpful customer support agent for Jersify, an online store selling premium football kits in India.
+Core Business Rules:
+1. Shipping is a flat ₹120 on all orders.
+2. Delivery time is generally 5-7 working days.
+3. We offer Prepaid, COD (Cash on Delivery), and "Partial COD" payment options.
+4. "Partial COD" requires the customer to pay exactly half of the item price + the full ₹120 shipping upfront online. The remaining half of the item price is paid on delivery. Example: If an item is ₹1499, half is ₹750 (rounded). Upfront = ₹750 + ₹120 = ₹870. Pay on delivery = ₹749.
+
+Always output your response in strict JSON. Do not include markdown formatting.`;
+        }
+      } catch(e) {
+        console.error("Error loading training text", e);
+      }
+    }
+    
+    async function saveChatbotTraining() {
+      const btn = document.getElementById('saveChatbotBtn');
+      btn.textContent = "Saving...";
+      const text = document.getElementById('chatbotTrainingText').value;
+      try {
+        const { db, dbRef, set } = await waitFb();
+        await set(dbRef(db, 'settings/chatbotTraining'), text);
+        btn.textContent = "Saved ✓";
+        setTimeout(() => btn.textContent = "Save to Brain", 2000);
+      } catch(e) {
+        btn.textContent = "Error!";
+        console.error(e);
+        setTimeout(() => btn.textContent = "Save to Brain", 2000);
+      }
+    }
+    
+    async function testChatSend() {
+      const input = document.getElementById('testChatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      
+      const log = document.getElementById('testChatLog');
+      log.innerHTML += `<div style="align-self:flex-end;background:var(--accent);color:#fff;padding:8px 12px;border-radius:12px;font-size:13px;max-width:85%;">${esc(text)}</div>`;
+      input.value = "";
+      log.scrollTop = log.scrollHeight;
+      
+      const typingId = "typ_" + Date.now();
+      log.innerHTML += `<div id="${typingId}" style="align-self:flex-start;background:var(--surface2);color:var(--text);padding:8px 12px;border-radius:12px;font-size:13px;max-width:85%;color:var(--muted)">AI is typing...</div>`;
+      log.scrollTop = log.scrollHeight;
+      
+      try {
+        const res = await fetch("https://us-central1-jersify-f9b5e.cloudfunctions.net/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: text })
+        });
+        const data = await res.json();
+        document.getElementById(typingId).remove();
+        
+        let aiMsg = data.reply || data.response || data.message || JSON.stringify(data);
+        log.innerHTML += `<div style="align-self:flex-start;background:var(--surface2);color:var(--text);padding:8px 12px;border-radius:12px;font-size:13px;max-width:85%;">${esc(aiMsg)}</div>`;
+      } catch (e) {
+        document.getElementById(typingId).innerHTML = "❌ Error connecting to AI backend";
+      }
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // Hook into tab switching to load data once
+    let _chatbotLoaded = false;
+    const _originalSwitchTab = window.switchTab;
+    window.switchTab = function(tabId, btn) {
+      if(tabId === 'chatbot' && !_chatbotLoaded) {
+        _chatbotLoaded = true;
+        loadChatbotTraining();
+      }
+      if(_originalSwitchTab) _originalSwitchTab(tabId, btn);
     }
   </script>
 </body>
