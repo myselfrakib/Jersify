@@ -14,6 +14,8 @@
     href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
     rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
     (function () {
@@ -2287,6 +2289,108 @@
         gap: 8px;
       }
     }
+
+    /* ── RADAR VIEW ── */
+    #tab-radar {
+      padding: 0 !important;
+      height: calc(100vh - 65px);
+      position: relative;
+    }
+
+    #radarMap {
+      width: 100%;
+      height: 100%;
+      background: #0a0a0a;
+      z-index: 1;
+    }
+
+    .radar-ping-icon {
+      background: transparent;
+      border: none;
+    }
+
+    .radar-ping-dot {
+      width: 12px;
+      height: 12px;
+      background: #00f0ff;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
+    }
+
+    .radar-ping-ring {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #00f0ff;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: ping-pulse 2s infinite ease-out;
+      opacity: 0;
+    }
+
+    @keyframes ping-pulse {
+      0% {
+        transform: translate(-50%, -50%) scale(0.3);
+        opacity: 0.8;
+      }
+
+      80% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+      }
+    }
+
+    .leaflet-popup-content-wrapper {
+      background: rgba(20, 20, 25, 0.95) !important;
+      backdrop-filter: blur(8px);
+      border: 1px solid #00f0ff;
+      color: #fff !important;
+      border-radius: 12px !important;
+      box-shadow: 0 8px 32px rgba(0, 240, 255, 0.2) !important;
+    }
+
+    .leaflet-popup-tip {
+      background: rgba(20, 20, 25, 0.95) !important;
+      border: 1px solid #00f0ff;
+    }
+
+    .radar-popup-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #00f0ff;
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+      padding-bottom: 4px;
+    }
+
+    .radar-popup-row {
+      font-size: 12px;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .radar-popup-key {
+      color: #a1a1aa;
+    }
+
+    .radar-popup-val {
+      font-weight: 600;
+      color: #fff;
+      text-align: right;
+    }
   </style>
 </head>
 
@@ -2341,17 +2445,17 @@
       </button>
       <button class="nav-link" onclick="switchTab('pending',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
         </svg>
         Pending Orders
         <span class="nav-badge orange" id="pendingBadgeNav" style="background:#f59e0b;">0</span>
       </button>
       <button class="nav-link" onclick="switchTab('carts',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="9" cy="21" r="1"/>
-          <circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
         </svg>
         Carts
         <span class="nav-badge" id="cartBadgeNav">0</span>
@@ -2417,6 +2521,15 @@
         </svg>
         Shiprocket
       </button>
+      <button class="nav-link" onclick="switchTab('radar',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="2" />
+          <line x1="12" y1="2" x2="12" y2="12" />
+        </svg>
+        Radar View
+      </button>
 
       <div class="sidebar-footer" style="display:flex;flex-direction:column;gap:8px;">
         <button class="logout-btn" onclick="toggleTheme()" style="color:var(--text2)">
@@ -2475,6 +2588,11 @@
       </div>
 
       <div class="content" id="mainContent">
+
+        <!-- ══ RADAR VIEW TAB ══ -->
+        <div class="tab-pane" id="tab-radar">
+          <div id="radarMap"></div>
+        </div>
 
         <!-- ══ PRODUCTS TAB ══ -->
         <div class="tab-pane" id="tab-products">
@@ -2689,7 +2807,7 @@
                   style="background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none">
                   <option value="">All Payments</option>
                   <option value="prepaid">Prepaid</option>
-                  <option value="partial_cod">Partial COD</option>
+                  <option value="partial_cod">Partial Paid</option>
                   <option value="cod">COD</option>
                 </select>
                 <button class="btn btn-ghost btn-sm" onclick="manualRefreshOrders()">↻ Refresh</button>
@@ -3299,9 +3417,12 @@
           <div class="form-group span-2"><label>Admin Notes</label><textarea id="o_notes"
               placeholder="Internal notes…"></textarea></div>
           <div class="form-group span-2" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px">
-            <label style="color:var(--accent);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Edit Shipping Address</label>
+            <label
+              style="color:var(--accent);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Edit
+              Shipping Address</label>
           </div>
-          <div class="form-group span-2"><label>Street Address</label><textarea id="o_address" placeholder="Address..."></textarea></div>
+          <div class="form-group span-2"><label>Street Address</label><textarea id="o_address"
+              placeholder="Address..."></textarea></div>
           <div class="form-group"><label>City</label><input type="text" id="o_city" placeholder="City" /></div>
           <div class="form-group"><label>State</label><input type="text" id="o_state" placeholder="State" /></div>
           <div class="form-group"><label>Pincode</label><input type="text" id="o_pincode" placeholder="Pincode" /></div>
@@ -3326,26 +3447,40 @@
       </div>
       <div class="modal-body">
         <div style="font-weight:600;margin-bottom:8px">Current Items</div>
-        <div id="eop_cart_items" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:14px;max-height:200px;overflow-y:auto">
+        <div id="eop_cart_items"
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:14px;max-height:200px;overflow-y:auto">
           <!-- Rendered by JS -->
         </div>
-        
-        <div style="font-weight:600;margin-bottom:8px;padding-top:10px;border-top:1px solid var(--border)">Add New Product</div>
+
+        <div style="font-weight:600;margin-bottom:8px;padding-top:10px;border-top:1px solid var(--border)">Add New
+          Product</div>
         <div class="form-grid" style="grid-template-columns:2fr 1fr 1fr;gap:10px;margin-bottom:14px">
-          <select id="eop_prod_select" onchange="onEopProductChange()" style="padding:8px;background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;outline:none"></select>
-          <select id="eop_size_select" style="padding:8px;background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;outline:none"><option value="">Size</option></select>
-          <input type="number" id="eop_qty" placeholder="Qty" min="1" value="1" style="padding:8px;background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;outline:none" />
+          <select id="eop_prod_select" onchange="onEopProductChange()"
+            style="padding:8px;background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;outline:none"></select>
+          <select id="eop_size_select"
+            style="padding:8px;background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;outline:none">
+            <option value="">Size</option>
+          </select>
+          <input type="number" id="eop_qty" placeholder="Qty" min="1" value="1"
+            style="padding:8px;background:var(--surface3);border:1px solid var(--border);color:var(--text);border-radius:6px;outline:none" />
         </div>
         <button class="btn btn-blue btn-sm" onclick="addEopProduct()" style="margin-bottom:14px">➕ Add to Order</button>
 
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-size:13px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>New Subtotal:</span><span id="eop_subtotal">₹0</span></div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px;color:var(--green)"><span>Discount:</span><span id="eop_discount">-₹0</span></div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Shipping:</span><span id="eop_shipping">+₹0</span></div>
-          <div style="display:flex;justify-content:space-between;font-weight:700;border-top:1px solid var(--border);padding-top:6px"><span>New Total:</span><span id="eop_total" style="color:var(--accent)">₹0</span></div>
+        <div
+          style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-size:13px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>New Subtotal:</span><span
+              id="eop_subtotal">₹0</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;color:var(--green)">
+            <span>Discount:</span><span id="eop_discount">-₹0</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Shipping:</span><span
+              id="eop_shipping">+₹0</span></div>
+          <div
+            style="display:flex;justify-content:space-between;font-weight:700;border-top:1px solid var(--border);padding-top:6px">
+            <span>New Total:</span><span id="eop_total" style="color:var(--accent)">₹0</span></div>
         </div>
       </div>
-      <div class="modal-footer" style="padding:14px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px">
+      <div class="modal-footer"
+        style="padding:14px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px">
         <button class="btn btn-ghost" onclick="closeModal('editOrderProductsModal')">Cancel</button>
         <button class="btn btn-primary" onclick="saveEopProducts(event)">Save Changes</button>
       </div>
@@ -3360,11 +3495,13 @@
         <button class="modal-close" onclick="closeModal('cartDetailsModal')">×</button>
       </div>
       <div class="modal-body">
-        <div id="cartDetailsContent" style="max-height:400px;overflow-y:auto;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px">
+        <div id="cartDetailsContent"
+          style="max-height:400px;overflow-y:auto;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px">
           <!-- Rendered by JS -->
         </div>
       </div>
-      <div class="modal-footer" style="padding:14px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+      <div class="modal-footer"
+        style="padding:14px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
         <button class="btn btn-ghost" onclick="closeModal('cartDetailsModal')">Close</button>
       </div>
     </div>
@@ -3387,8 +3524,13 @@
               <div class="form-group" style="position:relative;">
                 <label>Select Registered User <span
                     style="font-size:9px;color:var(--muted);text-transform:none;font-weight:400">(optional)</span></label>
-                <input type="text" id="mo_user_search" oninput="filterManualOrderUsers()" onfocus="filterManualOrderUsers()" onblur="setTimeout(()=>document.getElementById('mo_user_dropdown').style.display='none', 200)" placeholder="Search users by name, email or phone..." autocomplete="off" />
-                <div id="mo_user_dropdown" style="display:none; position:absolute; top:100%; left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid var(--border); border-radius:var(--radius-sm); z-index:100; box-shadow:var(--shadow-soft); margin-top:4px;"></div>
+                <input type="text" id="mo_user_search" oninput="filterManualOrderUsers()"
+                  onfocus="filterManualOrderUsers()"
+                  onblur="setTimeout(()=>document.getElementById('mo_user_dropdown').style.display='none', 200)"
+                  placeholder="Search users by name, email or phone..." autocomplete="off" />
+                <div id="mo_user_dropdown"
+                  style="display:none; position:absolute; top:100%; left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid var(--border); border-radius:var(--radius-sm); z-index:100; box-shadow:var(--shadow-soft); margin-top:4px;">
+                </div>
                 <input type="hidden" id="mo_user_select" value="" />
               </div>
               <div class="form-group"><label>Customer Name *</label><input type="text" id="mo_name"
@@ -3465,7 +3607,8 @@
                   oninput="recalcManualOrderTotals()" /></div>
               <div
                 style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;border-top:2px solid var(--border);padding-top:6px;margin-top:4px;">
-                <span>Total:</span><strong id="mo_total_lbl" style="color:var(--accent)">₹0.00</strong></div>
+                <span>Total:</span><strong id="mo_total_lbl" style="color:var(--accent)">₹0.00</strong>
+              </div>
             </div>
           </div>
         </div>
@@ -3814,7 +3957,7 @@
     }
 
     /* ─── TAB SWITCH ─── */
-    const TAB_TITLES = { products: 'Products / Kits', media: 'Index Media', orders: 'Orders', users: 'Users', coupons: 'Coupon Codes', reviews: 'Customer Reviews', credentials: 'Credentials Manager', pages: 'Page Settings', shiprocket: 'Shiprocket Shipping', support: 'Customer Support Chats' };
+    const TAB_TITLES = { products: 'Products / Kits', media: 'Index Media', orders: 'Orders', users: 'Users', coupons: 'Coupon Codes', reviews: 'Customer Reviews', credentials: 'Credentials Manager', pages: 'Page Settings', shiprocket: 'Shiprocket Shipping', support: 'Customer Support Chats', radar: 'Radar View' };
     function switchTab(name, el) {
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
       document.getElementById('tab-' + name).classList.add('active');
@@ -3825,6 +3968,8 @@
       if (name === 'shiprocket') { srLoadConfig(); refreshShiprocketOverview(); }
       if (name === 'credentials') { loadCredentials(); }
       if (name === 'media') { buildWowPicksUI(); }
+      if (name === 'radar' && window.initRadarMap) { window.initRadarMap(); }
+      localStorage.setItem('jersify_admin_tab', name);
     }
 
 
@@ -3860,6 +4005,12 @@
       updateThemeUI(document.documentElement.classList.contains('dark-theme'));
       const mkInput = document.getElementById('masterKeyInput');
       if (mkInput) mkInput.addEventListener('keydown', e => { if (e.key === 'Enter') unlockCredentials(); });
+
+      const savedTab = localStorage.getItem('jersify_admin_tab');
+      if (savedTab) {
+        const btn = document.querySelector(`button[onclick*="'${savedTab}'"]`);
+        switchTab(savedTab, btn);
+      }
     });
 
     async function listenCol(col, cb) {
@@ -3899,8 +4050,8 @@
             if (userData.cart) {
               let items = Array.isArray(userData.cart) ? userData.cart : Object.values(userData.cart);
               if (items.length > 0) {
-                let totalVal = items.reduce((sum, item) => sum + ((parseFloat(item.price)||0) * (parseInt(item.qty)||1)), 0);
-                let totalQty = items.reduce((sum, item) => sum + (parseInt(item.qty)||1), 0);
+                let totalVal = items.reduce((sum, item) => sum + ((parseFloat(item.price) || 0) * (parseInt(item.qty) || 1)), 0);
+                let totalQty = items.reduce((sum, item) => sum + (parseInt(item.qty) || 1), 0);
                 let lastUpdated = userData.lastLogin || userData.createdAt || 0;
                 all.push({
                   userId: uid,
@@ -4515,6 +4666,19 @@
     }
 
     /* ═══════════════════════════════════════════════
+       PAYMENT INFO HELPER
+    ═══════════════════════════════════════════════ */
+    function getPaymentInfo(order) {
+      const pm = (order.paymentMethod || 'prepaid').toLowerCase().trim();
+      const isCod = (pm === 'cod' || pm === 'cash on delivery');
+      const isPcod = (pm === 'partial_cod' || pm === 'partial cod' || pm === 'pcod'
+        || (order.pcodPayNow !== undefined && order.pcodPayNow > 0)
+        || (order.status && order.status === 'confirmed_partial_cod'));
+      const remain = isPcod ? (parseFloat(order.pcodPayOnDelivery) || 0) : 0;
+      return { pmRaw: pm, isCod: isCod && !isPcod, isPcod, remain };
+    }
+
+    /* ═══════════════════════════════════════════════
        ORDERS
     ═══════════════════════════════════════════════ */
     function renderOrders(data) {
@@ -4530,16 +4694,18 @@
       setEl('stDelivered', data.filter(o => o.status === 'delivered').length);
       setEl('stCancelled', data.filter(o => o.status === 'cancelled').length);
       setEl('stCOD', data.filter(o => o.paymentMethod === 'cod').length);
-      
+
       filterOrders();
       renderPendingOrders(pendingData);
+
+      if (window.plotRadarOrders) window.plotRadarOrders();
     }
 
     function filterOrders() {
       const f = document.getElementById('orderStatusFilter').value;
       const pf = document.getElementById('orderPaymentFilter').value;
       const q = (document.getElementById('orderSearch')?.value || '').toLowerCase();
-      
+
       // Exclude pending orders from the main orders tab
       let data = _allOrders.filter(o => (o.status || 'pending') !== 'pending');
       if (f) data = data.filter(o => (o.status || 'pending') === f);
@@ -4564,14 +4730,15 @@
       tbody.innerHTML = sorted.map(o => {
         const st = o.status || 'pending';
         const badge = { pending: 'badge-orange', confirmed: 'badge-blue', shipped: 'badge-purple', delivered: 'badge-green', cancelled: 'badge-red' }[st] || 'badge-gray';
-        let pmStr = (o.paymentMethod || 'prepaid').toLowerCase().trim();
-        let pm = pmStr === 'partial cod' ? 'partial_cod' : pmStr;
+
+        let info = getPaymentInfo(o);
         let pmDisplay = 'PREPAID';
         let pmBadge = 'badge-blue';
-        if (pm === 'cod') { pmDisplay = 'COD'; pmBadge = 'badge-orange'; }
-        else if (pm === 'partial_cod') { pmDisplay = 'PARTIAL COD'; pmBadge = 'badge-gold'; }
-        else if (pm === 'razorpay' || pm === 'online' || pm === 'prepaid') { pmDisplay = 'PREPAID'; pmBadge = 'badge-blue'; }
-        else { pmDisplay = pm.toUpperCase().replace('_', ' '); pmBadge = 'badge-blue'; }
+        if (info.isCod) { pmDisplay = 'COD'; pmBadge = 'badge-orange'; }
+        else if (info.isPcod) { pmDisplay = 'PARTIAL PAID'; pmBadge = 'badge-gold'; }
+        else if (info.pmRaw === 'razorpay' || info.pmRaw === 'online' || info.pmRaw === 'prepaid') { pmDisplay = 'PREPAID'; pmBadge = 'badge-blue'; }
+        else { pmDisplay = info.pmRaw.toUpperCase().replace('_', ' '); pmBadge = 'badge-blue'; }
+
         const displayId = o.orderId || o.id || '—';
         const itemsSummary = Array.isArray(o.items) && o.items.length ? o.items.map(i => `${i.name || 'Item'} ×${i.qty || 1}${i.size ? ' (' + i.size + ')' : ''}`).join(', ') : (o.productName || '—');
         const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
@@ -4596,23 +4763,22 @@
       const tbody = document.getElementById('pendingOrdersTable');
       if (!tbody) return;
       if (!pendingData.length) { tbody.innerHTML = emptyRow(8, 'No pending orders'); return; }
-      
+
       const sorted = [...pendingData].sort((a, b) => {
         const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
         const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
         return tB - tA;
       });
-      
+
       tbody.innerHTML = sorted.map(o => {
-        let pmStr = (o.paymentMethod || 'prepaid').toLowerCase().trim();
-        let pm = pmStr === 'partial cod' ? 'partial_cod' : pmStr;
-        let pmDisplay = pm === 'cod' ? 'COD' : (pm === 'partial_cod' ? 'PARTIAL COD' : 'PREPAID');
-        let pmBadge = pm === 'cod' ? 'badge-orange' : (pm === 'partial_cod' ? 'badge-gold' : 'badge-blue');
-        
+        let info = getPaymentInfo(o);
+        let pmDisplay = info.isCod ? 'COD' : (info.isPcod ? 'PARTIAL PAID' : 'PREPAID');
+        let pmBadge = info.isCod ? 'badge-orange' : (info.isPcod ? 'badge-gold' : 'badge-blue');
+
         const displayId = o.orderId || o.id || '—';
         const itemsSummary = Array.isArray(o.items) && o.items.length ? o.items.map(i => `${i.name || 'Item'} ×${i.qty || 1}${i.size ? ' (' + i.size + ')' : ''}`).join(', ') : (o.productName || '—');
         const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
-        
+
         return `<tr>
           <td data-label="Order ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(displayId)}</span></td>
           <td data-label="Customer"><strong>${esc(o.customerName || o.name || '—')}</strong><br><span style="font-size:11px;color:var(--muted)">${esc(o.phone || o.email || '')}</span></td>
@@ -4635,20 +4801,20 @@
       const tbody = document.getElementById('cartsTable');
       if (!tbody) return;
       if (!_allCarts.length) { tbody.innerHTML = emptyRow(5, 'No active carts'); return; }
-      
+
       tbody.innerHTML = _allCarts.map(c => {
         let name = "Guest";
         let phone = "";
         let email = "";
         let addressStr = "";
-        
+
         if (!c.userId.startsWith("guest_")) {
           const userObj = _allUsers.find(u => u.id === c.userId);
           if (userObj) {
             name = userObj.displayName || (userObj.profile && userObj.profile.name) || userObj.name || name;
             email = userObj.email || (userObj.profile && userObj.profile.email) || "";
             phone = userObj.phone || (userObj.profile && userObj.profile.phone) || "";
-            
+
             if (userObj.addresses && typeof userObj.addresses === 'object') {
               const addrs = Object.values(userObj.addresses);
               if (addrs.length > 0) {
@@ -4664,7 +4830,7 @@
         } else {
           name = "Guest (" + c.userId.substring(6, 12) + ")";
         }
-        
+
         let actionHtml = '';
         if (phone) {
           const msg = encodeURIComponent("Hi there! We noticed you left some items in your cart at Jersify. Let us know if you need any help completing your order!");
@@ -4678,14 +4844,14 @@
           const mailLink = `mailto:${email}?subject=${subject}&body=${body}`;
           actionHtml += `<a href="${mailLink}" target="_blank" class="btn btn-primary btn-sm" style="margin-right:6px;text-decoration:none;">Email</a>`;
         }
-        
+
         const viewBtn = `<button class="btn btn-ghost btn-sm" onclick="viewCartDetails('${c.userId}')" style="margin-right:6px">View Details</button>`;
         if (!actionHtml) {
           actionHtml = viewBtn + '<span style="font-size:11px;color:var(--muted)">No Contact Info</span>';
         } else {
           actionHtml = viewBtn + actionHtml;
         }
-        
+
         return `<tr>
           <td data-label="Customer">
             <strong>${esc(name)}</strong>
@@ -4721,7 +4887,7 @@
           </div>
         </div>`;
       }).join('');
-      
+
       document.getElementById('cartDetailsContent').innerHTML = html;
       openModal('cartDetailsModal');
     }
@@ -4782,13 +4948,12 @@
         ? o.items.map(i => `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)"><span>${esc(i.name || 'Item')} ×${i.qty || 1} ${i.size ? `<span class="badge badge-gray">${i.size}</span>` : ''}</span><span>₹${parseFloat(i.price || 0).toFixed(2)}</span></div>`).join('')
         : `<div>${esc(o.productName || '—')}</div>`;
 
-      let pmStr = (o.paymentMethod || 'prepaid').toLowerCase().trim();
-      let pm = pmStr === 'partial cod' ? 'partial_cod' : pmStr;
+      let info = getPaymentInfo(o);
       let pmDisplay = 'PREPAID';
-      if (pm === 'cod') { pmDisplay = 'COD'; }
-      else if (pm === 'partial_cod') { pmDisplay = 'PARTIAL COD'; }
-      else if (pm === 'razorpay' || pm === 'online' || pm === 'prepaid') { pmDisplay = 'PREPAID'; }
-      else { pmDisplay = pm.toUpperCase().replace('_', ' '); }
+      if (info.isCod) { pmDisplay = 'COD'; }
+      else if (info.isPcod) { pmDisplay = 'PARTIAL PAID'; }
+      else if (info.pmRaw === 'razorpay' || info.pmRaw === 'online' || info.pmRaw === 'prepaid') { pmDisplay = 'PREPAID'; }
+      else { pmDisplay = info.pmRaw.toUpperCase().replace('_', ' '); }
 
       document.getElementById('orderDetailContent').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
@@ -4908,12 +5073,12 @@
       }
       _eopDiscount = parseFloat(o.discount || 0);
       _eopShipping = parseFloat(o.shipping || 0);
-      
+
       const ps = document.getElementById('eop_prod_select');
       ps.innerHTML = '<option value="">-- Choose Product --</option>' +
         _allProducts.filter(p => p.status !== 'inactive').map(p => `<option value="${p.id}">${esc(p.name)} - ₹${p.price}</option>`).join('');
       onEopProductChange();
-      
+
       renderEopCart();
       openModal('editOrderProductsModal');
     }
@@ -4979,10 +5144,10 @@
           </div>
         `).join('');
       }
-      
+
       const sub = _eopCart.reduce((sum, i) => sum + (parseFloat(i.price) * parseInt(i.qty)), 0);
       const tot = sub - _eopDiscount + _eopShipping;
-      
+
       setEl('eop_subtotal', `₹${sub.toFixed(2)}`);
       setEl('eop_discount', `-₹${_eopDiscount.toFixed(2)}`);
       setEl('eop_shipping', `+₹${_eopShipping.toFixed(2)}`);
@@ -4992,14 +5157,14 @@
     async function saveEopProducts(event) {
       if (!_editId) return;
       if (_eopCart.length === 0) { toast('Cannot save an empty order. Delete the order instead.', 'error'); return; }
-      
+
       const sub = _eopCart.reduce((sum, i) => sum + (parseFloat(i.price) * parseInt(i.qty)), 0);
       const tot = sub - _eopDiscount + _eopShipping;
-      
+
       const btn = event.currentTarget;
       btn.disabled = true;
       btn.textContent = 'Saving...';
-      
+
       try {
         await saveDoc('orders', {
           items: _eopCart,
@@ -5007,10 +5172,10 @@
           total: tot,
           updatedAt: Date.now()
         }, _editId);
-        
+
         toast('Order products updated successfully!', 'success');
         closeModal('editOrderProductsModal');
-        
+
         // Wait for Firebase to sync before re-opening modal, or forcefully update _allOrders
         const oIndex = _allOrders.findIndex(x => x.id === _editId);
         if (oIndex > -1) {
@@ -5030,16 +5195,16 @@
 
     async function updateOrder() {
       if (!_editId) return;
-      await saveDoc('orders', { 
-        status: getV('o_status'), 
-        trackingNumber: getV('o_tracking'), 
-        adminNotes: getV('o_notes'), 
+      await saveDoc('orders', {
+        status: getV('o_status'),
+        trackingNumber: getV('o_tracking'),
+        adminNotes: getV('o_notes'),
         address: getV('o_address'),
         city: getV('o_city'),
         state: getV('o_state'),
         pincode: getV('o_pincode'),
         country: getV('o_country'),
-        updatedAt: Date.now() 
+        updatedAt: Date.now()
       }, _editId);
       closeModal('orderModal');
       toast('Order updated!', 'success');
@@ -5663,7 +5828,7 @@
         billing_phone: String(order.phone || ''),
         shipping_is_billing: 1,
         order_items: items,
-        payment_method: ['cod', 'partial_cod'].includes((order.paymentMethod || '').toLowerCase().trim().replace(' ', '_')) ? 'COD' : 'Prepaid',
+        payment_method: (getPaymentInfo(order).isCod || getPaymentInfo(order).isPcod) ? 'COD' : 'Prepaid',
         sub_total: parseFloat(order.total || 0),
         length: cfg_length,
         breadth: cfg_breadth,
@@ -5689,20 +5854,16 @@
       setV('sr_ship_state', order.state || '');
       setV('sr_ship_pincode', order.pincode || '');
       setV('sr_ship_country', order.country || 'India');
-      let pmRaw = (order.paymentMethod || '').toLowerCase().trim().replace(' ', '_');
-      let isCod = pmRaw === 'cod';
-      let isPcod = pmRaw === 'partial_cod';
-      
-      setV('sr_ship_payment_method', (isCod || isPcod) ? 'COD' : 'Prepaid');
-      
-      if (isPcod) {
-        let discounted = (order.subtotal || 0) - (order.discount || 0);
-        let remain = discounted - Math.round(discounted / 2);
-        setV('sr_ship_cod_amount', remain);
+
+      let info = getPaymentInfo(order);
+      setV('sr_ship_payment_method', (info.isCod || info.isPcod) ? 'COD' : 'Prepaid');
+
+      if (info.isPcod) {
+        setV('sr_ship_cod_amount', info.remain);
       } else {
         setV('sr_ship_cod_amount', order.total || 0);
       }
-      
+
       toggleCodAmount();
       // Initialize pincode directly in case fetch fails
       setV('sr_ship_pickup_pin', localStorage.getItem('sr_pickup_pin') || '');
@@ -5882,8 +6043,8 @@
       const payload = buildSrPayload(order);
       payload.billing_customer_name = shipName;
       payload.pickup_location = getV('sr_ship_pickup_loc') || localStorage.getItem('sr_pickup') || 'Primary';
-      let pmRaw = (order.paymentMethod || '').toLowerCase().trim().replace(' ', '_');
-      payload.payment_method = getV('sr_ship_payment_method') || ((pmRaw === 'cod' || pmRaw === 'partial_cod') ? 'COD' : 'Prepaid');
+      let info = getPaymentInfo(order);
+      payload.payment_method = getV('sr_ship_payment_method') || ((info.isCod || info.isPcod) ? 'COD' : 'Prepaid');
       payload.sub_total = payload.payment_method === 'COD' ? (parseFloat(getV('sr_ship_cod_amount')) || 0) : parseFloat(order.total || 0);
       payload.billing_email = getV('sr_ship_email');
       payload.billing_phone = shipPhone;
@@ -6126,7 +6287,7 @@
       const query = (document.getElementById('mo_user_search')?.value || '').toLowerCase();
       const dd = document.getElementById('mo_user_dropdown');
       if (!dd) return;
-      
+
       const filtered = _allUsers.filter(raw => {
         if (!query) return true;
         const u = normalizeUser(raw);
@@ -6148,7 +6309,7 @@
       dd.style.display = 'block';
     }
 
-    window.selectManualUser = function(uid, nameStr) {
+    window.selectManualUser = function (uid, nameStr) {
       document.getElementById('mo_user_select').value = uid || '';
       document.getElementById('mo_user_search').value = uid ? nameStr : '';
       document.getElementById('mo_user_dropdown').style.display = 'none';
@@ -6843,6 +7004,106 @@
         toast("Failed to mark resolved: " + err.message, "error");
       }
     }
+
+    /* ═══════════════════════════════════════════════
+       RADAR VIEW LOGIC
+    ═══════════════════════════════════════════════ */
+    let radarMapInstance = null;
+    let radarMarkers = [];
+
+    const INDIA_STATES = {
+      "andhra pradesh": [15.9129, 79.7400], "arunachal pradesh": [28.2180, 94.7278], "assam": [26.2006, 92.9376], "bihar": [25.0961, 85.3131],
+      "chhattisgarh": [21.2787, 81.8661], "goa": [15.2993, 74.1240], "gujarat": [22.2587, 71.1924], "haryana": [29.0588, 76.0856],
+      "himachal pradesh": [31.1048, 77.1665], "jharkhand": [23.6102, 85.2799], "karnataka": [15.3173, 75.7139], "kerala": [10.8505, 76.2711],
+      "madhya pradesh": [22.9734, 78.6569], "maharashtra": [19.7515, 75.7139], "manipur": [24.6637, 93.9063], "meghalaya": [25.4670, 91.3662],
+      "mizoram": [23.1645, 92.9376], "nagaland": [26.1584, 94.5624], "odisha": [20.9517, 85.0985], "punjab": [31.1471, 75.3412],
+      "rajasthan": [27.0238, 74.2179], "sikkim": [27.5330, 88.5122], "tamil nadu": [11.1271, 78.6569], "telangana": [18.1124, 79.0193],
+      "tripura": [23.9408, 91.9882], "uttar pradesh": [26.8467, 80.9462], "uttarakhand": [30.0668, 79.0193], "west bengal": [22.9868, 87.8550],
+      "delhi": [28.7041, 77.1025], "jammu and kashmir": [33.7782, 76.5762]
+    };
+
+    const MAJOR_CITIES = {
+      "mumbai": [19.0760, 72.8777], "delhi": [28.7041, 77.1025], "bangalore": [12.9716, 77.5946], "bengaluru": [12.9716, 77.5946],
+      "hyderabad": [17.3850, 78.4867], "ahmedabad": [23.0225, 72.5714], "chennai": [13.0827, 80.2707], "kolkata": [22.5726, 88.3639],
+      "surat": [21.1702, 72.8311], "pune": [18.5204, 73.8567], "jaipur": [26.9124, 75.7873], "lucknow": [26.8467, 80.9462],
+      "kanpur": [26.4499, 80.3319], "nagpur": [21.1458, 79.0882], "indore": [22.7196, 75.8577], "thane": [19.2183, 72.9781],
+      "bhopal": [23.2599, 77.4126], "visakhapatnam": [17.6868, 83.2185], "pimpri-chinchwad": [18.6298, 73.7997], "patna": [25.5941, 85.1376],
+      "vadodara": [22.3072, 73.1812], "ghaziabad": [28.6692, 77.4538], "ludhiana": [30.9010, 75.8573], "agra": [27.1767, 78.0081],
+      "nashik": [19.9975, 73.7898], "faridabad": [28.4089, 77.3178], "meerut": [28.9845, 77.7064], "rajkot": [22.3039, 70.8022],
+      "kalyan-dombivli": [19.2403, 73.1305], "vasai-virar": [19.3919, 72.8397], "varanasi": [25.3176, 82.9739], "srinagar": [34.0837, 74.7973],
+      "aurangabad": [19.8762, 75.3433], "dhanbad": [23.7957, 86.4304], "amritsar": [31.6340, 74.8723], "navi mumbai": [19.0330, 73.0297],
+      "allahabad": [25.4358, 81.8463], "howrah": [22.5958, 88.3247], "ranchi": [23.3441, 85.3096], "gwalior": [26.2183, 78.1828],
+      "jabalpur": [23.1686, 79.9339], "coimbatore": [11.0168, 76.9558], "vijayawada": [16.5062, 80.6480], "jodhpur": [26.2389, 73.0243]
+    };
+
+    window.initRadarMap = function () {
+      if (!radarMapInstance) {
+        radarMapInstance = L.map('radarMap').setView([22.5937, 78.9629], 5);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; <a href="https://carto.com/">CARTO</a>'
+        }).addTo(radarMapInstance);
+      }
+      setTimeout(() => {
+        radarMapInstance.invalidateSize();
+        window.plotRadarOrders();
+      }, 300);
+    };
+
+    window.plotRadarOrders = function() {
+      if (!radarMapInstance) return; // Map hasn't been initialized by opening the tab yet
+
+      // Clear old markers
+      radarMarkers.forEach(m => radarMapInstance.removeLayer(m));
+      radarMarkers = [];
+
+      if (typeof _allOrders === 'undefined' || !_allOrders) return;
+
+      // Filter to all orders except pending
+      const validOrders = _allOrders.filter(o => {
+        const st = (o.status || 'pending').toLowerCase();
+        return st !== 'pending';
+      });
+
+      const icon = L.divIcon({
+        className: 'radar-ping-icon',
+        html: '<div class="radar-ping-ring"></div><div class="radar-ping-dot"></div>',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+      });
+
+      validOrders.forEach(o => {
+        let latlng = null;
+        const city = (o.city || '').trim().toLowerCase();
+        const state = (o.state || '').trim().toLowerCase();
+
+        if (city && MAJOR_CITIES[city]) latlng = MAJOR_CITIES[city];
+        else if (state && INDIA_STATES[state]) latlng = INDIA_STATES[state];
+
+        // Default to middle of India if no state/city match
+        if (!latlng) latlng = [22.5937, 78.9629];
+
+        // Add small jitter so markers from same city don't overlap completely
+        const jitterLat = latlng[0] + (Math.random() - 0.5) * 0.15;
+        const jitterLng = latlng[1] + (Math.random() - 0.5) * 0.15;
+
+        let info = getPaymentInfo(o);
+        let pmDisplay = info.isCod ? 'COD' : (info.isPcod ? 'PARTIAL PAID' : 'PREPAID');
+
+        const popupHtml = `
+          <div class="radar-popup-title">ORDER #${(o.orderId || o.id || '').replace('JRS-', '').toUpperCase()}</div>
+          <div class="radar-popup-row"><span class="radar-popup-key">Customer:</span> <span class="radar-popup-val">${esc(o.customerName || o.name || 'User')}</span></div>
+          <div class="radar-popup-row"><span class="radar-popup-key">Location:</span> <span class="radar-popup-val">${esc(o.city || 'Unknown')}, ${esc(o.state || '')}</span></div>
+          <div class="radar-popup-row"><span class="radar-popup-key">Total:</span> <span class="radar-popup-val" style="color:#00f0ff">₹${o.total || 0}</span></div>
+          <div class="radar-popup-row"><span class="radar-popup-key">Payment:</span> <span class="radar-popup-val">${pmDisplay}</span></div>
+          <div class="radar-popup-row"><span class="radar-popup-key">Status:</span> <span class="radar-popup-val" style="color:#a78bfa">${(o.status || '').toUpperCase()}</span></div>
+        `;
+
+        const marker = L.marker([jitterLat, jitterLng], { icon }).bindPopup(popupHtml);
+        marker.addTo(radarMapInstance);
+        radarMarkers.push(marker);
+      });
+    }
+
   </script>
 </body>
 
