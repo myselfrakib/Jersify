@@ -2720,12 +2720,17 @@
 
       const trackingHtml = o.trackingNumber
         ? `<div class="od-section-title">Tracking</div>
-           <div class="od-tracking-pill">
-             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-             <div class="od-tracking-text">
-               <div class="od-tracking-label">Tracking Number</div>
-               <div class="od-tracking-num">${o.trackingNumber}</div>
+           <div class="od-tracking-pill" style="display:flex; justify-content:space-between; align-items:center;">
+             <div style="display:flex; align-items:center; gap:12px;">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;color:var(--accent);"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+               <div class="od-tracking-text">
+                 <div class="od-tracking-label" style="font-size:11px;color:var(--muted);">Tracking Number</div>
+                 <div class="od-tracking-num" style="font-weight:700;font-size:14px;letter-spacing:0.5px;">${o.trackingNumber}</div>
+               </div>
              </div>
+             <a href="https://shiprocket.co/tracking/${o.trackingNumber}" target="_blank" style="background:var(--accent);color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 4px 10px rgba(198,31,47,0.2);">
+               Track Now
+             </a>
            </div>` : "";
 
       document.getElementById("odTitle").textContent = `#${displayId.replace("JRS-", "").slice(-6).toUpperCase()}`;
@@ -2773,7 +2778,7 @@
         <div class="od-info-rows">
           ${o.customerName ? `<div class="od-info-row"><span class="od-info-key">Name</span><span class="od-info-val">${o.customerName}</span></div>` : ""}
           ${o.phone ? `<div class="od-info-row"><span class="od-info-key">Phone</span><span class="od-info-val">${o.phone}</span></div>` : ""}
-          ${o.address ? `<div class="od-info-row"><span class="od-info-key">Address</span><span class="od-info-val">${o.address}${o.country ? ", " + o.country : ""}</span></div>` : ""}
+          ${o.address ? `<div class="od-info-row"><span class="od-info-key">Address</span><span class="od-info-val">${[o.address, o.city, o.state, o.pincode, o.country].filter(Boolean).join(', ')}</span></div>` : ""}
         </div>
 
         ${trackingHtml}
