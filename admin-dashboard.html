@@ -7147,7 +7147,9 @@
             const lat = loc.lat();
             const lng = loc.lng();
             
-            await update(ref(db, `orders/${order.id || order._id}`), { lat, lng });
+            const { db, dbRef, update } = await waitFb();
+            await update(dbRef(db, `orders/${order.id || order._id}`), { lat, lng });
+            
             order.lat = lat;
             order.lng = lng;
             plotSingleRadarMarker(order);
