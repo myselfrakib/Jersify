@@ -2530,6 +2530,12 @@
         </svg>
         Riaj Radar
       </button>
+      <button class="nav-link" onclick="switchTab('razorpay',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+        Razorpay
+      </button>
 
       <div class="sidebar-footer" style="display:flex;flex-direction:column;gap:8px;">
         <button class="logout-btn" onclick="toggleTheme()" style="color:var(--text2)">
@@ -2592,6 +2598,31 @@
         <!-- ══ Riaj Radar TAB ══ -->
         <div class="tab-pane" id="tab-radar">
           <div id="radarMap"></div>
+        </div>
+
+        <!-- ══ RAZORPAY TAB ══ -->
+        <div class="tab-pane" id="tab-razorpay">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
+            <div class="card-header-left">
+              <div class="card-title">Razorpay Verification Hub</div>
+              <div class="card-subtitle">Test and verify pending orders via the Razorpay API</div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-hd">Verify Pending Order</div>
+            <div class="card-body">
+              <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">Enter an Order ID (e.g., JRS-12345) or a Razorpay Payment ID (e.g., pay_XYZ) to instantly check its live status on Razorpay's servers. If paid, it will be automatically confirmed in the database.</p>
+              <div style="display:flex; gap:10px; max-width:500px;">
+                <input type="text" id="rzpVerifyInput" class="form-input" placeholder="Order ID or Payment ID" style="flex:1" />
+                <button class="btn btn-primary" id="rzpVerifyBtn" onclick="verifyRzpPayment()">Verify Status</button>
+              </div>
+              
+              <div id="rzpVerifyResult" style="margin-top:20px; display:none; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px;">
+                <!-- Results go here -->
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- ══ PRODUCTS TAB ══ -->
@@ -4789,6 +4820,7 @@
           <td data-label="Date" style="font-size:12px;color:var(--muted)">${date}</td>
           <td data-label="Action">
             <div style="display:flex;gap:6px">
+              <button class="btn btn-success btn-sm" onclick="markOrderConfirmed('${o.id}')">Confirm</button>
               <button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">View</button>
               <button class="btn btn-danger btn-sm" onclick="deleteItem('orders','${o.id}')">Delete</button>
             </div>
@@ -4796,6 +4828,19 @@
         </tr>`;
       }).join('');
     }
+
+    window.markOrderConfirmed = async function(id) {
+      if (!confirm('Mark this pending order as Confirmed? Only do this if you have verified the payment in Razorpay.')) return;
+      try {
+        await update(ref(db, `orders/${id}`), {
+          status: 'confirmed',
+          confirmedAt: new Date().toISOString()
+        });
+        toast('Order confirmed successfully!', 'success');
+      } catch (err) {
+        toast('Failed to confirm order: ' + err.message, 'error');
+      }
+    };
 
     function renderCarts() {
       const tbody = document.getElementById('cartsTable');
@@ -7104,6 +7149,64 @@
       });
     }
 
+    /* ═══════════════════════════════════════════════
+       RAZORPAY VERIFICATION LOGIC
+    ═══════════════════════════════════════════════ */
+    async function verifyRzpPayment() {
+      const q = document.getElementById('rzpVerifyInput').value.trim();
+      const resDiv = document.getElementById('rzpVerifyResult');
+
+      if (!q) return toast('Please enter an Order ID or Payment ID', 'error');
+
+      resDiv.style.display = 'block';
+      resDiv.innerHTML = '<div style="color:var(--muted)">Fetching live data securely from backend...</div>';
+
+      try {
+        const res = await fetch('https://us-central1-jersify-f9b5e.cloudfunctions.net/verifyRazorpayPayment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ q })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Verification failed');
+
+        const payment = data.payment;
+        const isPaid = data.isPaid;
+        const color = isPaid ? '#10b981' : '#ef4444';
+        const icon = isPaid ? '✅' : '❌';
+        
+        let html = `
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <div style="font-size:18px; font-weight:700; color:${color}; margin-bottom:4px;">${icon} Payment ${payment.status.toUpperCase()}</div>
+              <div style="font-size:13px; color:var(--text2)">Razorpay ID: <strong>${payment.id}</strong></div>
+              <div style="font-size:13px; color:var(--text2)">Amount: ₹${payment.amount / 100} ${payment.currency}</div>
+              <div style="font-size:13px; color:var(--text2)">Method: ${payment.method || 'Unknown'}</div>
+              <div style="font-size:13px; color:var(--text2)">Email: ${payment.email} | Contact: ${payment.contact}</div>
+            </div>
+        `;
+
+        if (isPaid) {
+          html += `
+            <div style="background:#10b98122; color:#10b981; padding:8px 12px; border-radius:6px; font-weight:600; font-size:13px;">
+              Successfully Verified & Confirmed in Database!
+            </div>
+          `;
+        }
+
+        html += `</div>
+          <div style="margin-top:16px; background:#1e1e2d; padding:10px; border-radius:6px; font-family:monospace; font-size:11px; color:#8b949e; overflow-x:auto;">
+            ${JSON.stringify(payment, null, 2)}
+          </div>
+        `;
+
+        resDiv.innerHTML = html;
+
+      } catch (err) {
+        resDiv.innerHTML = `<div style="color:#ef4444;"><strong>Backend Error:</strong> ${err.message}</div>`;
+      }
+    }
   </script>
 </body>
 
