@@ -4564,7 +4564,8 @@
       tbody.innerHTML = sorted.map(o => {
         const st = o.status || 'pending';
         const badge = { pending: 'badge-orange', confirmed: 'badge-blue', shipped: 'badge-purple', delivered: 'badge-green', cancelled: 'badge-red' }[st] || 'badge-gray';
-        let pm = (o.paymentMethod || 'prepaid').toLowerCase();
+        let pmStr = (o.paymentMethod || 'prepaid').toLowerCase().trim();
+        let pm = pmStr === 'partial cod' ? 'partial_cod' : pmStr;
         let pmDisplay = 'PREPAID';
         let pmBadge = 'badge-blue';
         if (pm === 'cod') { pmDisplay = 'COD'; pmBadge = 'badge-orange'; }
@@ -4603,7 +4604,8 @@
       });
       
       tbody.innerHTML = sorted.map(o => {
-        let pm = (o.paymentMethod || 'prepaid').toLowerCase();
+        let pmStr = (o.paymentMethod || 'prepaid').toLowerCase().trim();
+        let pm = pmStr === 'partial cod' ? 'partial_cod' : pmStr;
         let pmDisplay = pm === 'cod' ? 'COD' : (pm === 'partial_cod' ? 'PARTIAL COD' : 'PREPAID');
         let pmBadge = pm === 'cod' ? 'badge-orange' : (pm === 'partial_cod' ? 'badge-gold' : 'badge-blue');
         
@@ -4780,7 +4782,8 @@
         ? o.items.map(i => `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)"><span>${esc(i.name || 'Item')} ×${i.qty || 1} ${i.size ? `<span class="badge badge-gray">${i.size}</span>` : ''}</span><span>₹${parseFloat(i.price || 0).toFixed(2)}</span></div>`).join('')
         : `<div>${esc(o.productName || '—')}</div>`;
 
-      let pm = (o.paymentMethod || 'prepaid').toLowerCase();
+      let pmStr = (o.paymentMethod || 'prepaid').toLowerCase().trim();
+      let pm = pmStr === 'partial cod' ? 'partial_cod' : pmStr;
       let pmDisplay = 'PREPAID';
       if (pm === 'cod') { pmDisplay = 'COD'; }
       else if (pm === 'partial_cod') { pmDisplay = 'PARTIAL COD'; }
@@ -5660,7 +5663,7 @@
         billing_phone: String(order.phone || ''),
         shipping_is_billing: 1,
         order_items: items,
-        payment_method: order.paymentMethod === 'cod' ? 'COD' : 'Prepaid',
+        payment_method: ['cod', 'partial_cod'].includes((order.paymentMethod || '').toLowerCase().trim().replace(' ', '_')) ? 'COD' : 'Prepaid',
         sub_total: parseFloat(order.total || 0),
         length: cfg_length,
         breadth: cfg_breadth,
@@ -5686,8 +5689,20 @@
       setV('sr_ship_state', order.state || '');
       setV('sr_ship_pincode', order.pincode || '');
       setV('sr_ship_country', order.country || 'India');
-      setV('sr_ship_payment_method', order.paymentMethod === 'cod' ? 'COD' : 'Prepaid');
-      setV('sr_ship_cod_amount', order.total || 0);
+      let pmRaw = (order.paymentMethod || '').toLowerCase().trim().replace(' ', '_');
+      let isCod = pmRaw === 'cod';
+      let isPcod = pmRaw === 'partial_cod';
+      
+      setV('sr_ship_payment_method', (isCod || isPcod) ? 'COD' : 'Prepaid');
+      
+      if (isPcod) {
+        let discounted = (order.subtotal || 0) - (order.discount || 0);
+        let remain = discounted - Math.round(discounted / 2);
+        setV('sr_ship_cod_amount', remain);
+      } else {
+        setV('sr_ship_cod_amount', order.total || 0);
+      }
+      
       toggleCodAmount();
       // Initialize pincode directly in case fetch fails
       setV('sr_ship_pickup_pin', localStorage.getItem('sr_pickup_pin') || '');
@@ -5867,7 +5882,8 @@
       const payload = buildSrPayload(order);
       payload.billing_customer_name = shipName;
       payload.pickup_location = getV('sr_ship_pickup_loc') || localStorage.getItem('sr_pickup') || 'Primary';
-      payload.payment_method = getV('sr_ship_payment_method') || (order.paymentMethod === 'cod' ? 'COD' : 'Prepaid');
+      let pmRaw = (order.paymentMethod || '').toLowerCase().trim().replace(' ', '_');
+      payload.payment_method = getV('sr_ship_payment_method') || ((pmRaw === 'cod' || pmRaw === 'partial_cod') ? 'COD' : 'Prepaid');
       payload.sub_total = payload.payment_method === 'COD' ? (parseFloat(getV('sr_ship_cod_amount')) || 0) : parseFloat(order.total || 0);
       payload.billing_email = getV('sr_ship_email');
       payload.billing_phone = shipPhone;
@@ -6831,4 +6847,3 @@
 </body>
 
 </html>
-  
