@@ -4219,7 +4219,7 @@
         setEl('orderBadgeNav', data.length);
         const rev = data.reduce((s, o) => s + (parseFloat(o.total) || 0), 0);
         setEl('statRevenue', '₹' + (rev >= 100000 ? (rev / 100000).toFixed(1) + 'L' : rev >= 1000 ? (rev / 1000).toFixed(1) + 'K' : rev.toFixed(0)));
-        const pending = data.filter(o => (o.status || 'pending') === 'pending').length;
+        const pending = getDedupedPending(data).length;
         setEl('statPendingHome', pending);
         renderSalesChart(data);
         renderDonutChart(data);
@@ -4812,9 +4812,25 @@
     /* ═══════════════════════════════════════════════
        ORDERS
     ═══════════════════════════════════════════════ */
+    function getDedupedPending(data) {
+      const pendingData = data.filter(o => (o.status || 'pending') === 'pending');
+      pendingData.sort((a, b) => (b.createdAt ? new Date(b.createdAt).getTime() : 0) - (a.createdAt ? new Date(a.createdAt).getTime() : 0));
+      const dedupedPending = [];
+      const seenPending = new Set();
+      pendingData.forEach(o => {
+        const cust = (o.email || o.phone || o.customerName || '').toLowerCase().trim();
+        const itemsKey = (o.items && o.items.length) ? o.items.map(i => `${i.id || i.name}`).sort().join('|') : (o.productName || '');
+        const key = cust + '::' + itemsKey;
+        if (cust && itemsKey && seenPending.has(key)) return;
+        if (cust && itemsKey) seenPending.add(key);
+        dedupedPending.push(o);
+      });
+      return dedupedPending;
+    }
+
     function renderOrders(data) {
       _allOrders = data;
-      const pendingData = data.filter(o => (o.status || 'pending') === 'pending');
+      const pendingData = getDedupedPending(data);
       const nonPendingData = data.filter(o => (o.status || 'pending') !== 'pending');
 
       setEl('orderBadgeNav', nonPendingData.length);
@@ -4922,7 +4938,7 @@
           <td data-label="Date" style="font-size:12px;color:var(--muted)">${date}</td>
           <td data-label="Action">
             <div style="display:flex;gap:6px">
-              <button class="btn btn-success btn-sm" onclick="markOrderConfirmed('${o.id}')">Confirm</button>
+              <button class="btn btn-success btn-sm" onclick="verifyAndConfirmOrder('${o.id}', '${esc(displayId)}', '${info.pmRaw}')">Verify</button>
               <button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">View</button>
               <button class="btn btn-danger btn-sm" onclick="deleteItem('orders','${o.id}')">Delete</button>
             </div>
@@ -4933,6 +4949,41 @@
 
     window.markOrderConfirmed = async function (id) {
       if (!confirm('Mark this pending order as Confirmed? Only do this if you have verified the payment in Razorpay.')) return;
+      try {
+        await update(ref(db, `orders/${id}`), {
+          status: 'confirmed',
+          confirmedAt: new Date().toISOString()
+        });
+        toast('Order confirmed successfully!', 'success');
+      } catch (err) {
+        toast('Failed to confirm order: ' + err.message, 'error');
+      }
+    };
+
+    window.verifyAndConfirmOrder = async function (id, displayId, pmRaw) {
+      if (pmRaw === 'razorpay' || pmRaw === 'online' || pmRaw === 'prepaid') {
+        toast('Verifying payment with Razorpay...', 'info');
+        try {
+          const res = await fetch('https://us-central1-jersify-f9b5e.cloudfunctions.net/verifyRazorpayPayment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ q: displayId !== '—' ? displayId : id })
+          });
+          const data = await res.json();
+          if (!res.ok || !data.isPaid) {
+            toast('Payment not verified in Razorpay.', 'error');
+            if (!confirm('Razorpay payment not found or unpaid. Confirm manually anyway?')) return;
+          } else {
+            toast('Payment verified automatically!', 'success');
+          }
+        } catch(e) {
+          toast('Razorpay check failed: ' + e.message, 'error');
+          if (!confirm('Razorpay check failed. Confirm anyway?')) return;
+        }
+      } else {
+        if (!confirm('Mark this pending order as Confirmed?')) return;
+      }
+      
       try {
         await update(ref(db, `orders/${id}`), {
           status: 'confirmed',
