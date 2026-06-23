@@ -806,72 +806,35 @@
       </div>
       <button class="auth-modal-close" onclick="closeAuthModal()">✕</button>
     </div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tabSignin" onclick="switchAuthTab('signin')">Sign In</button>
-      <button class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Create Account</button>
-    </div>
-    <div class="auth-body">
+    <div class="auth-body" style="padding-top:16px;">
       <div class="auth-error" id="authError"></div>
       <div class="auth-success-msg" id="authSuccess"></div>
-      <div id="signinPanel">
-        <div class="auth-welcome-title">Welcome back 👋</div>
-        <div class="auth-welcome-sub">Sign in to continue to your order.</div>
-        <div class="auth-form-group"><label>Email Address</label><input type="email" id="siEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
+      
+      <div id="phoneInputPanel">
+        <div class="auth-welcome-title">Sign in to Jersify 🎽</div>
+        <div class="auth-welcome-sub">Enter your mobile number to get an OTP.</div>
         <div class="auth-form-group">
-          <label>Password</label>
-          <input type="password" id="siPassword" class="auth-input has-icon" placeholder="Your password" autocomplete="current-password">
-          <button type="button" class="pw-toggle" onclick="togglePw('siPassword',this)" tabindex="-1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
+          <label>Mobile Number</label>
+          <input type="tel" id="phoneNumber" class="auth-input" placeholder="+91 9876543210" autocomplete="tel">
         </div>
-        <a class="auth-forgot" onclick="showResetPanel()">Forgot password?</a>
-        <button class="auth-submit-btn" id="siBtn" onclick="doSignIn()">
-          <div class="auth-btn-spinner"></div><span class="auth-btn-text">Sign In & Continue</span>
-        </button>
-        <div class="auth-divider"><span>or continue with</span></div>
-        <button class="auth-google-btn" id="siGoogleBtn" onclick="doGoogleSignIn()">
-          <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-          Continue with Google
+        <div id="recaptcha-container"></div>
+        <button class="auth-submit-btn" id="sendOtpBtn" onclick="doSendOtp()">
+          <div class="auth-btn-spinner"></div><span class="auth-btn-text">Send OTP</span>
         </button>
         <div class="auth-terms">By signing in you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
       </div>
-      <div id="signupPanel" style="display:none;">
-        <div class="auth-welcome-title">Create account 🎽</div>
-        <div class="auth-welcome-sub">Join Jersify and get exclusive drops & offers.</div>
-        <div class="auth-form-group"><label>Full Name</label><input type="text" id="suName" class="auth-input" placeholder="Your full name" autocomplete="name"></div>
-        <div class="auth-form-group"><label>Email Address</label><input type="email" id="suEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
+
+      <div id="otpInputPanel" style="display:none;">
+        <div class="auth-welcome-title">Enter OTP 🔑</div>
+        <div class="auth-welcome-sub">We sent a verification code to your number.</div>
         <div class="auth-form-group">
-          <label>Password</label>
-          <input type="password" id="suPassword" class="auth-input has-icon" placeholder="Min. 6 characters" autocomplete="new-password">
-          <button type="button" class="pw-toggle" onclick="togglePw('suPassword',this)" tabindex="-1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
+          <label>OTP</label>
+          <input type="text" id="otpCode" class="auth-input" placeholder="123456" autocomplete="one-time-code">
         </div>
-        <div class="auth-form-group">
-          <label>Confirm Password</label>
-          <input type="password" id="suConfirm" class="auth-input has-icon" placeholder="Repeat password" autocomplete="new-password">
-          <button type="button" class="pw-toggle" onclick="togglePw('suConfirm',this)" tabindex="-1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <button class="auth-submit-btn" id="suBtn" onclick="doSignUp()">
-          <div class="auth-btn-spinner"></div><span class="auth-btn-text">Create Account & Continue</span>
+        <button class="auth-submit-btn" id="verifyOtpBtn" onclick="doVerifyOtp()">
+          <div class="auth-btn-spinner"></div><span class="auth-btn-text">Verify & Continue</span>
         </button>
-        <div class="auth-divider"><span>or continue with</span></div>
-        <button class="auth-google-btn" id="suGoogleBtn" onclick="doGoogleSignIn()">
-          <svg class="google-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-          Continue with Google
-        </button>
-        <div class="auth-terms">By creating an account you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
-      </div>
-      <div id="resetPanel">
-        <div class="auth-welcome-title">Reset Password 🔑</div>
-        <div class="auth-welcome-sub">Enter your email and we'll send a reset link.</div>
-        <div class="auth-form-group"><label>Email Address</label><input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com" autocomplete="email"></div>
-        <button class="auth-submit-btn" id="resetBtn" onclick="doResetPassword()">
-          <div class="auth-btn-spinner"></div><span class="auth-btn-text">Send Reset Link</span>
-        </button>
-        <div style="text-align:center;margin-top:14px;"><a onclick="hideResetPanel()" style="font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;">← Back to Sign In</a></div>
+        <div style="text-align:center;margin-top:14px;"><a onclick="resetPhoneAuth()" style="font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;">← Change Mobile Number</a></div>
       </div>
     </div>
   </div>
@@ -879,9 +842,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import {
-      getAuth, onAuthStateChanged, signInWithEmailAndPassword,
-      createUserWithEmailAndPassword, sendPasswordResetEmail,
-      GoogleAuthProvider, signInWithPopup, signOut, updateProfile
+      getAuth, onAuthStateChanged, RecaptchaVerifier, signInWithPhoneNumber, signOut
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import {
       getDatabase, ref, get, set, update, push, child
@@ -904,7 +865,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
-    const gProvider = new GoogleAuthProvider();
+
 
     let orderPrice = 0;
     let orderItems = [];
@@ -1030,74 +991,68 @@
       window.location.href = 'shop.html';
     };
 
-    window.openAuthModal = (tab = 'signin') => { switchAuthTab(tab); clearAuthMessages(); document.getElementById('authModal').classList.add('show'); document.getElementById('authBackdrop').classList.add('show'); document.body.style.overflow = 'hidden'; };
+    let recaptchaInitialized = false;
+    window.initRecaptcha = () => {
+      if (!recaptchaInitialized) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          'size': 'invisible',
+          'callback': (response) => {}
+        });
+        recaptchaInitialized = true;
+      }
+    };
+
+    window.openAuthModal = () => { clearAuthMessages(); document.getElementById('authModal').classList.add('show'); document.getElementById('authBackdrop').classList.add('show'); document.body.style.overflow = 'hidden'; window.initRecaptcha(); };
     window.closeAuthModal = () => { document.getElementById('authModal').classList.remove('show'); document.getElementById('authBackdrop').classList.remove('show'); document.body.style.overflow = ''; };
-    window.switchAuthTab = (tab) => { const s = tab === 'signin'; document.getElementById('tabSignin').classList.toggle('active', s); document.getElementById('tabSignup').classList.toggle('active', !s); document.getElementById('signinPanel').style.display = s ? 'block' : 'none'; document.getElementById('signupPanel').style.display = !s ? 'block' : 'none'; document.getElementById('resetPanel').style.display = 'none'; clearAuthMessages(); };
-    window.showResetPanel = () => { document.getElementById('signinPanel').style.display = 'none'; document.getElementById('resetPanel').style.display = 'block'; clearAuthMessages(); };
-    window.hideResetPanel = () => { document.getElementById('resetPanel').style.display = 'none'; document.getElementById('signinPanel').style.display = 'block'; clearAuthMessages(); };
-    window.togglePw = (id, btn) => { const inp = document.getElementById(id); const s = inp.type === 'text'; inp.type = s ? 'password' : 'text'; btn.innerHTML = s ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`; };
 
     function setAuthLoading(id, v) { const b = document.getElementById(id); if (b) { b.classList.toggle('loading', v); b.disabled = v; } }
     function showAuthError(m) { const e = document.getElementById('authError'); e.textContent = m; e.classList.add('show'); document.getElementById('authSuccess').classList.remove('show'); }
     function showAuthSuccess(m) { const e = document.getElementById('authSuccess'); e.textContent = m; e.classList.add('show'); document.getElementById('authError').classList.remove('show'); }
     function clearAuthMessages() { document.getElementById('authError').classList.remove('show'); document.getElementById('authSuccess').classList.remove('show'); }
 
-    window.doSignIn = async () => {
-      const email = document.getElementById('siEmail').value.trim();
-      const pw = document.getElementById('siPassword').value;
-      if (!email || !pw) { showAuthError('Please enter your email and password.'); return; }
-      setAuthLoading('siBtn', true); clearAuthMessages();
-      try { await signInWithEmailAndPassword(auth, email, pw); }
-      catch (err) { setAuthLoading('siBtn', false); showAuthError(friendlyAuthError(err.code)); }
-    };
-
-    window.doSignUp = async () => {
-      const name = document.getElementById('suName').value.trim();
-      const email = document.getElementById('suEmail').value.trim();
-      const pw = document.getElementById('suPassword').value;
-      const confirm = document.getElementById('suConfirm').value;
-      if (!name) { showAuthError('Please enter your full name.'); return; }
-      if (!email) { showAuthError('Please enter your email.'); return; }
-      if (pw.length < 6) { showAuthError('Password must be at least 6 characters.'); return; }
-      if (pw !== confirm) { showAuthError('Passwords do not match.'); return; }
-      setAuthLoading('suBtn', true); clearAuthMessages();
+    window.doSendOtp = async () => {
+      let phoneNumber = document.getElementById('phoneNumber').value.trim();
+      if (!phoneNumber) { showAuthError('Please enter your mobile number.'); return; }
+      if (!phoneNumber.startsWith('+')) {
+        phoneNumber = '+91' + phoneNumber;
+      }
+      setAuthLoading('sendOtpBtn', true); clearAuthMessages();
       try {
-        const cred = await createUserWithEmailAndPassword(auth, email, pw);
-        await updateProfile(cred.user, { displayName: name });
-        try { await set(ref(db, `users/${cred.user.uid}/profile`), { name, email }); } catch (_) {}
-      } catch (err) { setAuthLoading('suBtn', false); showAuthError(friendlyAuthError(err.code)); }
+        window.initRecaptcha();
+        window.confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
+        document.getElementById('phoneInputPanel').style.display = 'none';
+        document.getElementById('otpInputPanel').style.display = 'block';
+        setAuthLoading('sendOtpBtn', false);
+      } catch (err) {
+        setAuthLoading('sendOtpBtn', false);
+        showAuthError(err.message || 'Failed to send OTP. Please try again.');
+        if(window.recaptchaVerifier) window.recaptchaVerifier.render().then(w => window.recaptchaVerifier.reset(w));
+      }
     };
 
-    window.doGoogleSignIn = async () => {
-      setAuthLoading('siGoogleBtn', true); setAuthLoading('suGoogleBtn', true); clearAuthMessages();
-      try { await signInWithPopup(auth, gProvider); }
-      catch (err) { setAuthLoading('siGoogleBtn', false); setAuthLoading('suGoogleBtn', false); showAuthError(friendlyAuthError(err.code)); }
+    window.doVerifyOtp = async () => {
+      const otpCode = document.getElementById('otpCode').value.trim();
+      if (!otpCode) { showAuthError('Please enter the OTP.'); return; }
+      setAuthLoading('verifyOtpBtn', true); clearAuthMessages();
+      try {
+        await window.confirmationResult.confirm(otpCode);
+        setAuthLoading('verifyOtpBtn', false);
+      } catch (err) {
+        setAuthLoading('verifyOtpBtn', false);
+        showAuthError('Incorrect OTP. Please try again.');
+      }
     };
 
-    window.doResetPassword = async () => {
-      const email = document.getElementById('resetEmail').value.trim();
-      if (!email) { showAuthError('Please enter your email address.'); return; }
-      setAuthLoading('resetBtn', true); clearAuthMessages();
-      try { await sendPasswordResetEmail(auth, email); setAuthLoading('resetBtn', false); showAuthSuccess('Reset link sent! Check your inbox.'); }
-      catch (err) { setAuthLoading('resetBtn', false); showAuthError(friendlyAuthError(err.code)); }
+    window.resetPhoneAuth = () => {
+      document.getElementById('otpInputPanel').style.display = 'none';
+      document.getElementById('phoneInputPanel').style.display = 'block';
+      document.getElementById('otpCode').value = '';
+      setAuthLoading('sendOtpBtn', false);
+      setAuthLoading('verifyOtpBtn', false);
+      clearAuthMessages();
     };
 
     window.handleSignOut = async () => { if (!confirm('Sign out?')) return; await signOut(auth); };
-
-    function friendlyAuthError(code) {
-      const m = {
-        'auth/user-not-found': 'No account found with this email.',
-        'auth/wrong-password': 'Incorrect password.',
-        'auth/invalid-email': 'Please enter a valid email.',
-        'auth/email-already-in-use': 'An account with this email already exists.',
-        'auth/weak-password': 'Password must be at least 6 characters.',
-        'auth/too-many-requests': 'Too many attempts. Please try again later.',
-        'auth/popup-closed-by-user': 'Sign-in popup was closed.',
-        'auth/network-request-failed': 'Network error. Check your connection.',
-        'auth/invalid-credential': 'Incorrect email or password.',
-      };
-      return m[code] || 'Something went wrong. Please try again.';
-    }
 
     const authStyle = document.createElement("style");
     authStyle.innerHTML = `
@@ -1522,7 +1477,8 @@
         })
       };
       const dataB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-      const bookingBase = 'https://waveridrentals.vercel.app/jersifybooking.html';
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const bookingBase = isLocal ? '/jersifybooking.html' : 'https://waveridrentals.vercel.app/jersifybooking.html';
 
       // For partial COD the booking page should only charge pcodPayNow
       const chargeAmount = selectedPayMethod === 'partial_cod' ? pcodPayNow : finalPrice;
@@ -1574,30 +1530,12 @@
         if (!uid) {
            uid = (typeof auth !== 'undefined' && auth.currentUser) ? auth.currentUser.uid : 'anonymous';
         }
-        const ue = payload.userEmail || params.get('ue') || '';
-        const email = payload.email || params.get('e') || '';
-        const phone = payload.phone || params.get('ph') || '';
         const fullTotal = parseInt(params.get('amt') || '0');
         const pm = params.get('pm') || 'online';
-        const orderRef = ref(db, `orders/${orderId}`);
-        await set(orderRef, {
-          orderId, userId: uid, userEmail: ue, customerName: name, phone, email,
-          address: payload.address || '', city: payload.city || '', state: payload.state || '',
-          pincode: payload.pincode || '', country: payload.country || '',
-          items: payload.items || [], subtotal: payload.subtotal || 0, discount: payload.discount || 0,
-          shipping: payload.shipping || 0,
-          total: payload.subtotal - (payload.discount||0) + (payload.shipping||0) + (payload.pcodCharge||0),
-          amountPaid: fullTotal,
-          ...(pm === 'partial_cod' && {
-            pcodCharge: payload.pcodCharge || 0,
-            pcodPayNow: payload.pcodPayNow || 0,
-            pcodPayOnDelivery: payload.pcodPayOnDelivery || 0,
-          }),
-          selectedSize, paymentMethod: pm === 'partial_cod' ? 'Partial COD' : 'Online Payment', paymentId,
-          status: pm === 'partial_cod' ? 'confirmed_partial_cod' : 'confirmed',
-          source: 'jersify.online callback',
-          createdAt: new Date().toISOString(), confirmedAt: new Date().toISOString()
-        });
+        
+        // Skip writing to Firebase here because the secure backend already verified
+        // the Razorpay signature and marked the order as confirmed.
+        
         try { if (uid && uid !== 'anonymous') await update(ref(db, `users/${uid}/orders`), { [orderId]: true }); } catch (e) {}
         localStorage.removeItem('jersify_cart');
         if (uid && uid !== 'anonymous') set(ref(db, `users/${uid}/cart`), []).catch(e => console.warn(e));
