@@ -2720,25 +2720,6 @@
 
           <div id="lowStockAlert"></div>
 
-          <div class="chart-row">
-            <div class="mini-chart-card">
-              <div class="mini-chart-title">Sales Trend — Last 7 Days</div>
-              <svg id="salesSvgChart" width="100%" height="130" viewBox="0 0 520 130"
-                style="overflow:visible;font-family:inherit;">
-                <text x="260" y="65" fill="var(--muted)" font-size="12" text-anchor="middle">Loading…</text>
-              </svg>
-            </div>
-            <div class="mini-chart-card">
-              <div class="mini-chart-title">Orders by Status</div>
-              <div class="donut-wrap" id="donutWrap">
-                <svg id="donutChart" width="100" height="100" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="36" fill="none" stroke="var(--border)" stroke-width="18" />
-                </svg>
-                <div class="donut-legend" id="donutLegend"></div>
-              </div>
-            </div>
-          </div>
-
           <div class="card">
             <div class="card-header">
               <div class="card-header-left">
@@ -2873,7 +2854,31 @@
               <div class="stat-val" id="stCOD">—</div>
               <div class="stat-label">COD Orders</div>
             </div>
+            <div class="stat-card teal">
+              <div class="stat-val" id="stConfRev">—</div>
+              <div class="stat-label">Confirmed Rev.</div>
+            </div>
           </div>
+
+          <div class="chart-row">
+            <div class="mini-chart-card">
+              <div class="mini-chart-title">Sales Trend — Last 7 Days</div>
+              <svg id="salesSvgChart" width="100%" height="130" viewBox="0 0 520 130"
+                style="overflow:visible;font-family:inherit;">
+                <text x="260" y="65" fill="var(--muted)" font-size="12" text-anchor="middle">Loading…</text>
+              </svg>
+            </div>
+            <div class="mini-chart-card">
+              <div class="mini-chart-title">Orders by Status</div>
+              <div class="donut-wrap" id="donutWrap">
+                <svg id="donutChart" width="100" height="100" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="var(--border)" stroke-width="18" />
+                </svg>
+                <div class="donut-legend" id="donutLegend"></div>
+              </div>
+            </div>
+          </div>
+
           <div class="card">
             <div class="card-header">
               <div class="card-header-left">
@@ -4267,6 +4272,7 @@
         days.push(d.toLocaleDateString('en-IN', { month: 'short', day: '2-digit' }));
       }
       const revenue = Array(7).fill(0);
+      const counts = Array(7).fill(0);
       orders.forEach(o => {
         if ((o.status || 'pending') === 'cancelled' || !o.createdAt) return;
         let oDate;
@@ -4276,7 +4282,7 @@
           else { const asNum = Number(ts); if (!isNaN(asNum) && asNum > 1e12) { oDate = new Date(asNum).toISOString().split('T')[0]; } else { oDate = String(ts).split('T')[0]; } }
         } catch (_) { return; }
         const idx = dayKeys.indexOf(oDate);
-        if (idx !== -1) revenue[idx] += parseFloat(o.total) || 0;
+        if (idx !== -1) { revenue[idx] += parseFloat(o.total) || 0; counts[idx]++; }
       });
       const maxRevenue = Math.max(...revenue, 500);
       const padL = 52, padR = 10, padT = 18, padB = 26, W = 520, H = 130;
@@ -4294,8 +4300,12 @@
       html += `<path d="${areaD}" fill="url(#cg)"/><path d="${pathD}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
       pts.forEach((p, i) => {
         html += `<text x="${p.x.toFixed(1)}" y="${H - 8}" fill="var(--muted)" font-size="9" text-anchor="middle">${days[i]}</text>`;
+        html += `<g class="chart-pt-group" style="cursor:pointer">`;
+        html += `<title>${days[i]} - Revenue: ₹${p.val.toFixed(2)} | Orders: ${counts[i]}</title>`;
+        html += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="8" fill="transparent"/>`;
         html += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/>`;
-        if (p.val > 0) html += `<text x="${p.x.toFixed(1)}" y="${(p.y - 9).toFixed(1)}" fill="var(--text)" font-weight="600" font-size="9" text-anchor="middle">₹${p.val >= 1000 ? (p.val / 1000).toFixed(1) + 'K' : p.val.toFixed(0)}</text>`;
+        if (p.val > 0) html += `<text x="${p.x.toFixed(1)}" y="${(p.y - 14).toFixed(1)}" fill="var(--text)" font-weight="600" font-size="9" text-anchor="middle" style="pointer-events:none;">₹${p.val >= 1000 ? (p.val / 1000).toFixed(1) + 'K' : p.val.toFixed(0)}</text>`;
+        html += `</g>`;
       });
       svg.innerHTML = html;
     }
@@ -4815,6 +4825,8 @@
       setEl('stDelivered', data.filter(o => o.status === 'delivered').length);
       setEl('stCancelled', data.filter(o => o.status === 'cancelled').length);
       setEl('stCOD', data.filter(o => o.paymentMethod === 'cod').length);
+      const confRev = data.filter(o => ['confirmed', 'shipped', 'delivered'].includes(o.status)).reduce((s, o) => s + (parseFloat(o.total) || 0), 0);
+      setEl('stConfRev', '₹' + (confRev >= 100000 ? (confRev / 100000).toFixed(2) + 'L' : confRev >= 1000 ? (confRev / 1000).toFixed(1) + 'K' : confRev.toFixed(0)));
 
       filterOrders();
       renderPendingOrders(pendingData);
