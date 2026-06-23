@@ -7522,10 +7522,12 @@ Always output your response in strict JSON. Do not include markdown formatting.`
       const tbody = document.getElementById('rzpOrdersTableBody');
       if (!tbody) return;
 
-      const rzpOrders = _allOrders.filter(o => 
-        (o.paymentMethod === 'razorpay' || o.paymentMethod === 'partial_cod') &&
-        (o.paymentId || (o.amountPaid && o.amountPaid > 0) || o.status !== 'pending')
-      ).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      const rzpOrders = (_allOrders || []).filter(o => {
+        const pm = (o.paymentMethod || '').toLowerCase().trim();
+        const isRzp = pm === 'razorpay' || pm === 'online' || pm === 'partial_cod' || pm === 'pcod';
+        const hasRzpId = o.paymentId && o.paymentId.startsWith('pay_');
+        return isRzp || hasRzpId;
+      }).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
       const filtered = rzpOrders.filter(o => {
         if (!q) return true;
