@@ -2648,11 +2648,16 @@
             <div class="card-header">
               <div class="card-header-left">
                 <div class="card-title">Razorpay Payments List</div>
-                <div class="card-subtitle">All orders paid via Razorpay (Online & Partial COD)</div>
+                <div class="card-subtitle">All successful payments fetched directly from Razorpay API</div>
               </div>
-              <div class="search-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
-                <input class="search-input" id="rzpSearchInput" placeholder="Search Payments…" oninput="renderRazorpayOrders()" />
+              <div class="search-wrap" style="display:flex;gap:10px;">
+                <button class="btn btn-ghost btn-sm" onclick="fetchRazorpayPayments(true)" id="rzpRefreshBtn" title="Refresh Payments">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 2.13-5.83L2 8"/></svg>
+                </button>
+                <div style="position:relative">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none;"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+                  <input class="search-input" id="rzpSearchInput" placeholder="Search Payments…" oninput="renderRazorpayOrders()" />
+                </div>
               </div>
             </div>
             <div class="card-body" style="padding:0;">
@@ -2660,6 +2665,7 @@
                 <table style="width:100%;">
                   <thead>
                     <tr>
+                      <th>Sl No.</th>
                       <th>Date</th>
                       <th>Order ID</th>
                       <th>Payment ID</th>
@@ -7517,57 +7523,86 @@ Always output your response in strict JSON. Do not include markdown formatting.`
     }
 
     /* -- Render Razorpay Orders -- */
+    let _rzpPaymentsCache = null;
+
+    window.fetchRazorpayPayments = async function(force = false) {
+      const tbody = document.getElementById('rzpOrdersTableBody');
+      const btn = document.getElementById('rzpRefreshBtn');
+      if (!tbody) return;
+
+      if (_rzpPaymentsCache && !force) {
+        window.renderRazorpayOrders();
+        return;
+      }
+
+      if (btn) btn.style.opacity = '0.5';
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted)">Fetching live data from Razorpay API...</td></tr>`;
+
+      try {
+        const res = await fetch("https://us-central1-jersify-f9b5e.cloudfunctions.net/getAllRazorpayPayments");
+        const data = await res.json();
+        
+        if (data.error) throw new Error(data.error);
+        
+        _rzpPaymentsCache = data.payments || [];
+        window.renderRazorpayOrders();
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:#ef4444">Error fetching from Razorpay: ${esc(err.message)}</td></tr>`;
+      } finally {
+        if (btn) btn.style.opacity = '1';
+      }
+    };
+
     window.renderRazorpayOrders = function() {
       const q = (document.getElementById('rzpSearchInput')?.value || '').toLowerCase();
       const tbody = document.getElementById('rzpOrdersTableBody');
-      if (!tbody) return;
+      if (!tbody || !_rzpPaymentsCache) return;
 
-      const rzpOrders = (_allOrders || []).filter(o => {
-        const pm = (o.paymentMethod || '').toLowerCase().trim();
-        const isRzp = pm === 'razorpay' || pm === 'online' || pm === 'partial_cod' || pm === 'pcod';
-        const hasRzpId = o.paymentId && o.paymentId.startsWith('pay_');
-        return isRzp || hasRzpId;
-      }).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-
-      const filtered = rzpOrders.filter(o => {
+      const filtered = _rzpPaymentsCache.filter(o => {
         if (!q) return true;
-        const text = `${o.orderId||o.id||''} ${o.paymentId||''} ${o.customerName||o.name||''} ${o.email||''} ${o.phone||''}`.toLowerCase();
+        const text = `${o.id||''} ${o.notes?.orderId||''} ${o.receipt||''} ${o.email||''} ${o.contact||''}`.toLowerCase();
         return text.includes(q);
       });
 
       if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted)">No Razorpay payments found</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted)">No successful Razorpay payments found</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = filtered.map(o => {
-        const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleString('en-IN') : '--';
-        let st = o.status || 'Processing';
-        let badge = 'badge-gray';
-        if (st === 'confirmed' || st === 'confirmed_partial_cod') badge = 'badge-blue';
-        else if (st === 'shipped') badge = 'badge-purple';
-        else if (st === 'delivered') badge = 'badge-green';
-        else if (st === 'cancelled') badge = 'badge-red';
-        else if (st === 'pending') badge = 'badge-orange';
-        
-        const methodBadge = o.paymentMethod === 'partial_cod' 
-            ? `<span class="badge badge-orange">Partial COD</span>` 
-            : `<span class="badge badge-teal">Prepaid</span>`;
+      tbody.innerHTML = filtered.map((o, index) => {
+        const dateStr = new Date(o.created_at * 1000).toLocaleString('en-IN');
+        const amountStr = '₹' + (o.amount / 100).toFixed(2);
+        const orderId = o.notes?.orderId || o.receipt || '--';
         
         return `<tr>
+          <td data-label="Sl No." style="font-size:12px;color:var(--text);font-weight:600">${index + 1}</td>
           <td data-label="Date" style="font-size:12px;color:var(--muted)">${dateStr}</td>
-          <td data-label="Order ID"><span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--text)">${esc(o.orderId || o.id)}</span></td>
-          <td data-label="Payment ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(o.paymentId || '--')}</span></td>
+          <td data-label="Order ID"><span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--text)">${esc(orderId)}</span></td>
+          <td data-label="Payment ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(o.id || '--')}</span></td>
           <td data-label="Customer">
-            <div style="font-size:13px;font-weight:600">${esc(o.customerName || o.name || '--')}</div>
-            <div style="font-size:11px;color:var(--muted)">${esc(o.email || o.phone || '')}</div>
+            <div style="font-size:11px;color:var(--muted)">${esc(o.email || '')}</div>
+            <div style="font-size:11px;color:var(--muted)">${esc(o.contact || '')}</div>
           </td>
-          <td data-label="Method">${methodBadge}</td>
-          <td data-label="Amount Paid"><span style="font-weight:700;color:var(--accent)">₹${o.amountPaid || o.total || 0}</span></td>
-          <td data-label="Status"><span class="badge ${badge}">${st.toUpperCase()}</span></td>
+          <td data-label="Method"><span class="badge badge-teal" style="text-transform:uppercase">${esc(o.method || 'Online')}</span></td>
+          <td data-label="Amount Paid"><span style="font-weight:700;color:var(--accent)">${amountStr}</span></td>
+          <td data-label="Status"><span class="badge badge-green">SUCCESSFUL</span></td>
         </tr>`;
       }).join('');
     };
+
+    // Hook into tab switching
+    let _chatbotLoaded = false;
+    const _originalSwitchTab = window.switchTab;
+    window.switchTab = function(tabId, btn) {
+      if(tabId === 'chatbot' && !_chatbotLoaded) {
+        _chatbotLoaded = true;
+        loadChatbotTraining();
+      }
+      if(tabId === 'razorpay') {
+        setTimeout(() => { if(window.fetchRazorpayPayments) window.fetchRazorpayPayments(); }, 100);
+      }
+      if(_originalSwitchTab) _originalSwitchTab(tabId, btn);
+    }
   </script>
 </body>
 
