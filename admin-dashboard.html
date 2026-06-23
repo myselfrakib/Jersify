@@ -2642,6 +2642,39 @@
               </div>
             </div>
           </div>
+
+          <!-- Razorpay Payments Table -->
+          <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-title">Razorpay Payments List</div>
+                <div class="card-subtitle">All orders paid via Razorpay (Online & Partial COD)</div>
+              </div>
+              <div class="search-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+                <input class="search-input" id="rzpSearchInput" placeholder="Search Payments…" oninput="renderRazorpayOrders()" />
+              </div>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <div class="table-wrap">
+                <table style="width:100%;">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Order ID</th>
+                      <th>Payment ID</th>
+                      <th>Customer</th>
+                      <th>Method</th>
+                      <th>Amount Paid</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rzpOrdersTableBody">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- ══ PRODUCTS TAB ══ -->
@@ -5444,7 +5477,7 @@
     const SITE_PAGES = [
       { id: 'argentina', label: 'Argentina', file: 'argentina.html', icon: '🇦🇷', color: '#74ACDF' },
       { id: 'brazil', label: 'Brazil', file: 'brazil.html', icon: '🇧🇷', color: '#009c3b' },
-      { id: 'england', label: 'England', file: 'england.html', icon: 'Eng', color: '#ffffff' },
+      { id: 'england', label: 'England', file: 'england.html', icon: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', color: '#ffffff' },
       { id: 'france', label: 'France', file: 'france.html', icon: '🇫🇷', color: '#002395' },
       { id: 'germany', label: 'Germany', file: 'germany.html', icon: '🇩🇪', color: '#222' },
       { id: 'italy', label: 'Italy', file: 'italy.html', icon: '🇮🇹', color: '#0064aa' },
@@ -7477,8 +7510,62 @@ Always output your response in strict JSON. Do not include markdown formatting.`
         _chatbotLoaded = true;
         loadChatbotTraining();
       }
+      if(tabId === 'razorpay') {
+        setTimeout(() => { if(window.renderRazorpayOrders) window.renderRazorpayOrders(); }, 100);
+      }
       if(_originalSwitchTab) _originalSwitchTab(tabId, btn);
     }
+
+    /* ── Render Razorpay Orders ── */
+    window.renderRazorpayOrders = function() {
+      const q = (document.getElementById('rzpSearchInput')?.value || '').toLowerCase();
+      const tbody = document.getElementById('rzpOrdersTableBody');
+      if (!tbody) return;
+
+      const rzpOrders = _allOrders.filter(o => 
+        (o.paymentMethod === 'razorpay' || o.paymentMethod === 'partial_cod') &&
+        (o.paymentId || (o.amountPaid && o.amountPaid > 0) || o.status !== 'pending')
+      ).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+      const filtered = rzpOrders.filter(o => {
+        if (!q) return true;
+        const text = `${o.orderId||o.id||''} ${o.paymentId||''} ${o.customerName||o.name||''} ${o.email||''} ${o.phone||''}`.toLowerCase();
+        return text.includes(q);
+      });
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted)">No Razorpay payments found</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(o => {
+        const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleString('en-IN') : '—';
+        let st = o.status || 'Processing';
+        let badge = 'badge-gray';
+        if (st === 'confirmed' || st === 'confirmed_partial_cod') badge = 'badge-blue';
+        else if (st === 'shipped') badge = 'badge-purple';
+        else if (st === 'delivered') badge = 'badge-green';
+        else if (st === 'cancelled') badge = 'badge-red';
+        else if (st === 'pending') badge = 'badge-orange';
+        
+        const methodBadge = o.paymentMethod === 'partial_cod' 
+            ? `<span class="badge badge-orange">Partial COD</span>` 
+            : `<span class="badge badge-teal">Prepaid</span>`;
+        
+        return `<tr>
+          <td data-label="Date" style="font-size:12px;color:var(--muted)">${dateStr}</td>
+          <td data-label="Order ID"><span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--text)">${esc(o.orderId || o.id)}</span></td>
+          <td data-label="Payment ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(o.paymentId || '—')}</span></td>
+          <td data-label="Customer">
+            <div style="font-size:13px;font-weight:600">${esc(o.customerName || o.name || '—')}</div>
+            <div style="font-size:11px;color:var(--muted)">${esc(o.email || o.phone || '')}</div>
+          </td>
+          <td data-label="Method">${methodBadge}</td>
+          <td data-label="Amount Paid"><span style="font-weight:700;color:var(--accent)">₹${o.amountPaid || o.total || 0}</span></td>
+          <td data-label="Status"><span class="badge ${badge}">${st.toUpperCase()}</span></td>
+        </tr>`;
+      }).join('');
+    };
   </script>
 </body>
 
