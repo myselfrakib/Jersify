@@ -7516,7 +7516,7 @@ Always output your response in strict JSON. Do not include markdown formatting.`
       if(_originalSwitchTab) _originalSwitchTab(tabId, btn);
     }
 
-    /* ── Render Razorpay Orders ── */
+    /* -- Render Razorpay Orders -- */
     window.renderRazorpayOrders = function() {
       const q = (document.getElementById('rzpSearchInput')?.value || '').toLowerCase();
       const tbody = document.getElementById('rzpOrdersTableBody');
@@ -7539,7 +7539,7 @@ Always output your response in strict JSON. Do not include markdown formatting.`
       }
 
       tbody.innerHTML = filtered.map(o => {
-        const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleString('en-IN') : '—';
+        const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleString('en-IN') : '--';
         let st = o.status || 'Processing';
         let badge = 'badge-gray';
         if (st === 'confirmed' || st === 'confirmed_partial_cod') badge = 'badge-blue';
@@ -7555,9 +7555,9 @@ Always output your response in strict JSON. Do not include markdown formatting.`
         return `<tr>
           <td data-label="Date" style="font-size:12px;color:var(--muted)">${dateStr}</td>
           <td data-label="Order ID"><span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--text)">${esc(o.orderId || o.id)}</span></td>
-          <td data-label="Payment ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(o.paymentId || '—')}</span></td>
+          <td data-label="Payment ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(o.paymentId || '--')}</span></td>
           <td data-label="Customer">
-            <div style="font-size:13px;font-weight:600">${esc(o.customerName || o.name || '—')}</div>
+            <div style="font-size:13px;font-weight:600">${esc(o.customerName || o.name || '--')}</div>
             <div style="font-size:11px;color:var(--muted)">${esc(o.email || o.phone || '')}</div>
           </td>
           <td data-label="Method">${methodBadge}</td>
