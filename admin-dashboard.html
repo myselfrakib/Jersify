@@ -5167,6 +5167,7 @@
       ${o.discount ? `<div style="display:flex;justify-content:space-between;padding:6px 0;color:var(--green);font-size:12px"><span>Discount</span><span>-₹${parseFloat(o.discount || 0).toFixed(2)}</span></div>` : ''}
       ${o.shipping ? `<div style="display:flex;justify-content:space-between;padding:6px 0;color:var(--text2);font-size:12px"><span>Shipping</span><span>+₹${parseFloat(o.shipping || 0).toFixed(2)}</span></div>` : ''}
       <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:700;border-top:2px solid var(--border);margin-top:6px"><span>Total</span><span style="color:var(--accent)">₹${parseFloat(o.total || 0).toFixed(2)}</span></div>
+      <div id="amountPaidContainer_${o.id}"></div>
       <div style="text-align:right;margin-top:12px;display:flex;justify-content:flex-end;gap:8px">
         <button class="btn btn-ghost btn-sm" onclick="openEditOrderProductsModal()">✏️ Edit Products</button>
         <button class="btn btn-ghost btn-sm" onclick="viewOrderImages('${o.id}')">📷 View Images</button>
@@ -5192,6 +5193,35 @@
       setV('o_pincode', o.pincode || '');
       setV('o_country', o.country || '');
       openModal('orderModal');
+
+      const qValue = o.paymentId || (o.orderId ? o.orderId : o.id);
+      if (!info.isCod && qValue) {
+        const amtContainer = document.getElementById(`amountPaidContainer_${o.id}`);
+        if (amtContainer) {
+          amtContainer.innerHTML = `<div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:12px;color:var(--muted)"><span>Amount Paid (Razorpay)</span><span>Fetching...</span></div>`;
+          fetch('https://us-central1-jersify-f9b5e.cloudfunctions.net/verifyRazorpayPayment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ q: qValue })
+          })
+          .then(res => res.json())
+          .then(data => {
+            const el = document.getElementById(`amountPaidContainer_${o.id}`);
+            if (el) {
+              if (data.isPaid && data.payment) {
+                const amt = (data.payment.amount / 100).toFixed(2);
+                el.innerHTML = `<div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:700;color:var(--green)"><span>Amount Paid (Razorpay)</span><span>₹${amt}</span></div>`;
+              } else {
+                el.innerHTML = `<div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:12px;color:var(--orange)"><span>Amount Paid (Razorpay)</span><span>Not Paid / Not Found</span></div>`;
+              }
+            }
+          })
+          .catch(err => {
+            const el = document.getElementById(`amountPaidContainer_${o.id}`);
+            if (el) el.innerHTML = `<div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:12px;color:var(--accent)"><span>Amount Paid (Razorpay)</span><span>Error Fetching</span></div>`;
+          });
+        }
+      }
     }
 
     function viewOrderImages(orderId) {
