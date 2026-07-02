@@ -813,6 +813,7 @@
             <span id="shippingVal" style="color:var(--success);font-weight:700;">FREE</span>
           </div>
           <div class="summary-row discount-row" id="discountRow" style="display:none;"><span>Discount</span><span id="discountVal">-₹0</span></div>
+          <div class="summary-row" id="addonRow" style="display:none;"><span>Name Addon 👕</span><span id="addonVal" style="color:var(--accent);font-weight:800;">+₹299</span></div>
           <div class="summary-row discount-row" id="pcodChargeRow" style="display:none;"><span>Partial COD charge</span><span id="pcodChargeVal" style="color:var(--gold) !important;">+₹120</span></div>
           <div class="summary-divider"></div>
           <div class="summary-total">
@@ -976,6 +977,9 @@
       const fields = document.getElementById('addonFields');
       row.classList.toggle('active', addonEnabled);
       fields.classList.toggle('show', addonEnabled);
+      // Show/hide addon row in Order Summary
+      const addonRow = document.getElementById('addonRow');
+      if (addonRow) addonRow.style.display = addonEnabled ? 'flex' : 'none';
       // Recalculate totals
       updateTotal();
       document.getElementById('subTotal').textContent = `₹${getEffectiveOrderPrice().toLocaleString('en-IN')}`;
