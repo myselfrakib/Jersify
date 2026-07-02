@@ -534,6 +534,38 @@
     .free-shipping-banner svg { width: 14px; height: 14px; flex-shrink: 0; }
     .free-shipping-progress { height: 4px; background: rgba(30,140,74,.15); border-radius: 99px; margin-top: 7px; overflow: hidden; }
     .free-shipping-progress-fill { height: 100%; background: linear-gradient(90deg,#1e8c4a,#34d06a); border-radius: 99px; transition: width .5s ease; }
+
+    /* ── Addons card ── */
+    .addon-toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 14px;
+      cursor: pointer; transition: all .22s; background: #fff; margin-bottom: 10px;
+    }
+    .addon-toggle-row:hover { border-color: var(--accent); background: rgba(198,31,47,.02); }
+    .addon-toggle-row.active { border-color: var(--accent); background: rgba(198,31,47,.04); box-shadow: 0 0 0 3px rgba(198,31,47,.08); }
+    .addon-toggle-left { display: flex; align-items: center; gap: 12px; }
+    .addon-toggle-icon { width: 38px; height: 38px; border-radius: 10px; background: #f4f4f4; display: grid; place-items: center; font-size: 18px; transition: background .22s; flex-shrink: 0; }
+    .addon-toggle-row.active .addon-toggle-icon { background: rgba(198,31,47,.1); }
+    .addon-toggle-text { font-size: 14px; font-weight: 800; }
+    .addon-toggle-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .addon-toggle-right { display: flex; align-items: center; gap: 10px; }
+    .addon-price-badge { font-family: 'Bebas Neue',sans-serif; font-size: 20px; color: var(--accent); letter-spacing: .5px; }
+    .addon-switch { width: 42px; height: 24px; border-radius: 99px; background: #e0e0e0; position: relative; transition: background .25s; flex-shrink: 0; }
+    .addon-switch::after { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: left .25s; box-shadow: 0 1px 4px rgba(0,0,0,.18); }
+    .addon-toggle-row.active .addon-switch { background: var(--accent); }
+    .addon-toggle-row.active .addon-switch::after { left: 21px; }
+
+    .addon-fields { display: none; margin-top: 14px; }
+    .addon-fields.show { display: block; animation: fadeInUp .25s ease both; }
+    .addon-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .addon-hint { font-size: 10px; color: var(--muted); margin-top: 4px; }
+    .addon-char-counter { font-size: 10px; color: var(--muted); text-align: right; margin-top: 3px; transition: color .2s; }
+    .addon-char-counter.warn { color: var(--accent); font-weight: 700; }
+    .addon-preview { margin-top: 14px; border-radius: 14px; background: linear-gradient(135deg,#1a1a1a,#111); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .addon-preview-label { font-size: 9px; font-weight: 800; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+    .addon-preview-name { font-family: 'Bebas Neue',sans-serif; font-size: 22px; color: #fff; letter-spacing: 3px; line-height: 1; }
+    .addon-preview-num { font-family: 'Bebas Neue',sans-serif; font-size: 42px; color: #fff; letter-spacing: 2px; line-height: 1; }
+    .addon-preview-divider { width: 1px; height: 50px; background: rgba(255,255,255,.12); }
   </style>
 </head>
 
@@ -610,6 +642,59 @@
             Select Size
           </div>
           <div class="size-grid" id="sizeGrid"></div>
+        </div>
+
+        <!-- ── Addons Card ── -->
+        <div class="card" id="addonsCard">
+          <div class="card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Player Customization
+          </div>
+
+          <div class="addon-toggle-row" id="addonToggleRow" onclick="toggleAddon()">
+            <div class="addon-toggle-left">
+              <div class="addon-toggle-icon">👕</div>
+              <div>
+                <div class="addon-toggle-text">Add Name &amp; Number</div>
+                <div class="addon-toggle-sub">Printed on the back of your jersey</div>
+              </div>
+            </div>
+            <div class="addon-toggle-right">
+              <span class="addon-price-badge">+₹299</span>
+              <div class="addon-switch"></div>
+            </div>
+          </div>
+
+          <div class="addon-fields" id="addonFields">
+            <div class="addon-field-row">
+              <div class="form-group" style="margin-bottom:0">
+                <label>Player Name <span style="color:var(--muted);font-weight:500;">(max 7 letters)</span></label>
+                <input type="text" id="addonName" class="form-input" placeholder="e.g. RONALDO"
+                  maxlength="7" autocomplete="off"
+                  oninput="addonInputChanged(this, 'addonNameCounter', 7)">
+                <div class="addon-char-counter" id="addonNameCounter">0 / 7</div>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label>Player Number <span style="color:var(--muted);font-weight:500;">(max 2 digits)</span></label>
+                <input type="text" id="addonNumber" class="form-input" placeholder="e.g. 07"
+                  maxlength="2" autocomplete="off" inputmode="numeric"
+                  oninput="addonNumberChanged(this)">
+                <div class="addon-char-counter" id="addonNumberCounter">0 / 2</div>
+              </div>
+            </div>
+
+            <div class="addon-preview" id="addonPreview">
+              <div>
+                <div class="addon-preview-label">Name</div>
+                <div class="addon-preview-name" id="addonPreviewName">NAME</div>
+              </div>
+              <div class="addon-preview-divider"></div>
+              <div style="text-align:right">
+                <div class="addon-preview-label">Number</div>
+                <div class="addon-preview-num" id="addonPreviewNum">00</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="card">
@@ -880,6 +965,57 @@
 
     let singleQty = 1;
     let singleBasePrice = 0;
+
+    // ── Addons ──
+    const ADDON_PRICE = 299;
+    let addonEnabled = false;
+
+    window.toggleAddon = () => {
+      addonEnabled = !addonEnabled;
+      const row = document.getElementById('addonToggleRow');
+      const fields = document.getElementById('addonFields');
+      row.classList.toggle('active', addonEnabled);
+      fields.classList.toggle('show', addonEnabled);
+      // Recalculate totals
+      updateTotal();
+      document.getElementById('subTotal').textContent = `₹${getEffectiveOrderPrice().toLocaleString('en-IN')}`;
+      if (selectedPayMethod === 'partial_cod') updatePartialCodUI();
+    };
+
+    // Returns orderPrice including the addon charge
+    function getEffectiveOrderPrice() {
+      return orderPrice + (addonEnabled ? ADDON_PRICE : 0);
+    }
+
+    window.addonInputChanged = (input, counterId, maxLen) => {
+      // Letters only, uppercase
+      input.value = input.value.replace(/[^a-zA-Z ]/g, '').toUpperCase().slice(0, maxLen);
+      const len = input.value.replace(/ /g, '').length;
+      const counter = document.getElementById(counterId);
+      counter.textContent = `${len} / ${maxLen}`;
+      counter.classList.toggle('warn', len === maxLen);
+      // Update preview
+      const previewName = document.getElementById('addonPreviewName');
+      if (previewName) previewName.textContent = input.value.trim() || 'NAME';
+    };
+
+    window.addonNumberChanged = (input) => {
+      input.value = input.value.replace(/[^0-9]/g, '').slice(0, 2);
+      const len = input.value.length;
+      const counter = document.getElementById('addonNumberCounter');
+      counter.textContent = `${len} / 2`;
+      counter.classList.toggle('warn', len === 2);
+      // Update preview
+      const previewNum = document.getElementById('addonPreviewNum');
+      if (previewNum) previewNum.textContent = input.value || '00';
+    };
+
+    function collectAddon() {
+      if (!addonEnabled) return null;
+      const name = (document.getElementById('addonName')?.value || '').trim().toUpperCase();
+      const number = (document.getElementById('addonNumber')?.value || '').trim();
+      return { playerName: name, playerNumber: number, price: ADDON_PRICE };
+    }
 
     function getShippingFee(subtotal) {
       return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : DELIVERY_FEE;
@@ -1282,11 +1418,12 @@
     };
 
     function updateTotal() {
-      const shipping = selectedPayMethod === 'partial_cod' ? 0 : getShippingFee(orderPrice);
+      const effectivePrice = getEffectiveOrderPrice();
+      const shipping = selectedPayMethod === 'partial_cod' ? 0 : getShippingFee(effectivePrice);
       const pcodExtra = selectedPayMethod === 'partial_cod' ? PARTIAL_COD_CHARGE : 0;
-      const total = orderPrice - discountAmount + shipping + pcodExtra;
+      const total = effectivePrice - discountAmount + shipping + pcodExtra;
       document.getElementById('finalTotal').textContent = `₹${total.toLocaleString('en-IN')}`;
-      updateShippingUI(orderPrice);
+      updateShippingUI(effectivePrice);
     }
 
     window.changeQty = (key, delta) => {
@@ -1415,6 +1552,7 @@
     };
 
     window.processOrder = async (skipPriceCheck = false) => {
+      if (orderPrice === 0 && !addonEnabled) { alert('Your cart is empty.'); return; }
       if (orderPrice === 0) { alert('Your cart is empty.'); return; }
       if (!currentUser) { openAuthModal('signin'); shakeField('confirmBtn'); return; }
       const addr = collectAddress();
@@ -1449,27 +1587,30 @@
       }
 
       const { name, phone, email, address, city, state, pincode, country } = addr;
-      const shipping = selectedPayMethod === 'partial_cod' ? 0 : getShippingFee(orderPrice);
+      const effectivePrice = getEffectiveOrderPrice();
+      const shipping = selectedPayMethod === 'partial_cod' ? 0 : getShippingFee(effectivePrice);
       const selectedSize = isCartMode ? 'Mixed' : (document.querySelector('.size-btn.active')?.textContent || 'M');
       const orderId = `JRS-${Date.now()}`;
+      const addonData = collectAddon();
 
       let finalPrice, pcodPayNow = 0, pcodPayOnDelivery = 0;
       if (selectedPayMethod === 'partial_cod') {
-        const discounted = orderPrice - discountAmount;
+        const discounted = effectivePrice - discountAmount;
         const pcod = calcPartialCod(discounted);
         pcodPayNow = pcod.payNow;
         pcodPayOnDelivery = pcod.payOnDelivery;
         finalPrice = discounted + shipping + PARTIAL_COD_CHARGE; // total order value incl. charge
       } else {
-        finalPrice = orderPrice - discountAmount + shipping;
+        finalPrice = effectivePrice - discountAmount + shipping;
       }
 
       const payload = {
         items: orderItems, address, city, state, pincode, country,
-        subtotal: orderPrice, discount: discountAmount, shipping,
+        subtotal: effectivePrice, discount: discountAmount, shipping,
         paymentMethod: selectedPayMethod,
         uid: currentUser.uid, userEmail: currentUser.email || '',
         name, phone, email, selectedSize,
+        ...(addonData && { addon: addonData }),
         ...(selectedPayMethod === 'partial_cod' && {
           pcodCharge: PARTIAL_COD_CHARGE,
           pcodPayNow,
@@ -1489,9 +1630,10 @@
         await set(orderRef, {
           orderId, userId: currentUser.uid, userEmail: currentUser.email || '', customerName: name, phone, email,
           address, city, state, pincode, country,
-          items: orderItems, subtotal: orderPrice, discount: discountAmount,
+          items: orderItems, subtotal: effectivePrice, discount: discountAmount,
           shipping, total: finalPrice, amountPaid: 0,
           selectedSize, paymentMethod: selectedPayMethod,
+          ...(addonData && { addon: addonData }),
           status: 'pending',
           source: 'checkout_redirect',
           createdAt: new Date().toISOString()
