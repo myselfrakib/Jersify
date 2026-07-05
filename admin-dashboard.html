@@ -15,7 +15,9 @@
     rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <!-- Google Maps JS API -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74&libraries=places&loading=async" async defer></script>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74&libraries=places&loading=async"
+    async defer></script>
 
   <script>
     (function () {
@@ -2391,6 +2393,30 @@
       color: #fff;
       text-align: right;
     }
+
+    /* ── Razorpay preset filter buttons ── */
+    .rzp-preset-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: .15s;
+      white-space: nowrap;
+    }
+    .rzp-preset-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-bg);
+    }
+    .rzp-preset-btn.rzp-preset-active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
   </style>
 </head>
 
@@ -2538,11 +2564,11 @@
       </button>
       <button class="nav-link" onclick="switchTab('chatbot',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2a2 2 0 0 1 2 2c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2z"/>
-          <path d="M19 8h-2v4h2V8z"/>
-          <path d="M5 8H3v4h2V8z"/>
-          <path d="M17 14v4a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-4"/>
-          <path d="M7 8h10v6H7z"/>
+          <path d="M12 2a2 2 0 0 1 2 2c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2z" />
+          <path d="M19 8h-2v4h2V8z" />
+          <path d="M5 8H3v4h2V8z" />
+          <path d="M17 14v4a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-4" />
+          <path d="M7 8h10v6H7z" />
         </svg>
         AI Chatbot Training
       </button>
@@ -2607,8 +2633,10 @@
 
         <!-- ══ Riaj Radar TAB ══ -->
         <div class="tab-pane" id="tab-radar" style="position:relative;">
-          <div style="position:absolute; top:20px; left:50%; transform:translateX(-50%); z-index:10; background:var(--surface); padding:8px 12px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.3); display:flex; gap:10px; border:1px solid var(--border);">
-            <button class="btn btn-sm" id="radarThemeBtn" onclick="toggleRadarTheme()" style="background:transparent; border:none; color:var(--text); font-weight:600; display:flex; align-items:center; gap:6px;">
+          <div
+            style="position:absolute; top:20px; left:50%; transform:translateX(-50%); z-index:10; background:var(--surface); padding:8px 12px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.3); display:flex; gap:10px; border:1px solid var(--border);">
+            <button class="btn btn-sm" id="radarThemeBtn" onclick="toggleRadarTheme()"
+              style="background:transparent; border:none; color:var(--text); font-weight:600; display:flex; align-items:center; gap:6px;">
               <span id="radarThemeIcon">🌙</span> <span id="radarThemeText">Night Mode</span>
             </button>
           </div>
@@ -2617,66 +2645,162 @@
 
         <!-- ══ RAZORPAY TAB ══ -->
         <div class="tab-pane" id="tab-razorpay">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
-            <div class="card-header-left">
-              <div class="card-title">Razorpay Verification Hub</div>
-              <div class="card-subtitle">Test and verify pending orders via the Razorpay API</div>
+
+          <!-- ── STAT CARDS ── -->
+          <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:20px;">
+            <div class="stat-card green">
+              <div class="stat-val" id="rzpStatTotal">—</div>
+              <div class="stat-label">Total Payments</div>
+              <div class="stat-icon">💳</div>
+            </div>
+            <div class="stat-card orange">
+              <div class="stat-val" id="rzpStatRevenue">—</div>
+              <div class="stat-label">Total Revenue</div>
+              <div class="stat-icon">💰</div>
+            </div>
+            <div class="stat-card blue">
+              <div class="stat-val" id="rzpStatAvg">—</div>
+              <div class="stat-label">Avg Transaction</div>
+              <div class="stat-icon">📊</div>
+            </div>
+            <div class="stat-card teal">
+              <div class="stat-val" id="rzpStatToday">—</div>
+              <div class="stat-label">Today's Payments</div>
+              <div class="stat-icon">📅</div>
             </div>
           </div>
 
-          <div class="card">
-            <div class="card-hd">Verify Pending Order</div>
-            <div class="card-body">
-              <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">Enter an Order ID (e.g., JRS-12345) or
-                a Razorpay Payment ID (e.g., pay_XYZ) to instantly check its live status on Razorpay's servers. If paid,
-                it will be automatically confirmed in the database.</p>
-              <div style="display:flex; gap:10px; max-width:500px;">
-                <input type="text" id="rzpVerifyInput" class="form-input" placeholder="Order ID or Payment ID"
-                  style="flex:1" />
-                <button class="btn btn-primary" id="rzpVerifyBtn" onclick="verifyRzpPayment()">Verify Status</button>
-              </div>
-
-              <div id="rzpVerifyResult"
-                style="margin-top:20px; display:none; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px;">
-                <!-- Results go here -->
-              </div>
-            </div>
-          </div>
-
-          <!-- Razorpay Payments Table -->
-          <div class="card" style="margin-top: 20px;">
+          <!-- ── VERIFY CARD ── -->
+          <div class="card" style="margin-bottom:20px;">
             <div class="card-header">
               <div class="card-header-left">
-                <div class="card-title">Razorpay Payments List</div>
-                <div class="card-subtitle">All successful payments fetched directly from Razorpay API</div>
-              </div>
-              <div class="search-wrap" style="display:flex;gap:10px;">
-                <button class="btn btn-ghost btn-sm" onclick="fetchRazorpayPayments(true)" id="rzpRefreshBtn" title="Refresh Payments">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 2.13-5.83L2 8"/></svg>
-                </button>
-                <div style="position:relative">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none;"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
-                  <input class="search-input" id="rzpSearchInput" placeholder="Search Payments…" oninput="renderRazorpayOrders()" />
-                </div>
+                <div class="card-title">Verify Pending Order</div>
+                <div class="card-subtitle">Check live payment status from Razorpay servers</div>
               </div>
             </div>
+            <div class="card-body">
+              <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Enter an Order ID (e.g., JRS-12345) or a Razorpay Payment ID (e.g., pay_XYZ) to instantly check live status. If paid, it auto-confirms in the database.</p>
+              <div style="display:flex;gap:10px;max-width:500px;">
+                <input type="text" id="rzpVerifyInput" class="form-input" placeholder="Order ID or Payment ID" style="flex:1" />
+                <button class="btn btn-primary" id="rzpVerifyBtn" onclick="verifyRzpPayment()">Verify Status</button>
+              </div>
+              <div id="rzpVerifyResult" style="margin-top:20px;display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;"></div>
+            </div>
+          </div>
+
+          <!-- ── PAYMENTS TABLE CARD ── -->
+          <div class="card">
+            <div class="card-header" style="flex-wrap:wrap;gap:12px;">
+              <div class="card-header-left">
+                <div class="card-title">All Razorpay Payments</div>
+                <div class="card-subtitle" id="rzpTableSubtitle">Loading payments from Razorpay API…</div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <button class="btn btn-ghost btn-sm" onclick="exportRzpCSV()" title="Export to CSV">📥 CSV</button>
+                <button class="btn btn-ghost btn-sm" onclick="fetchRazorpayPayments(true)" id="rzpRefreshBtn" title="Refresh">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 2.13-5.83L2 8"/></svg>
+                  Refresh
+                </button>
+              </div>
+            </div>
+
+            <!-- ── FILTER BAR ── -->
+            <div style="padding:14px 20px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+
+              <!-- Quick Presets -->
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Quick Filter</label>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                  <button id="rzpPreset_all" class="btn btn-sm rzp-preset-btn rzp-preset-active" onclick="setRzpPreset('all')">All Time</button>
+                  <button id="rzpPreset_today" class="btn btn-sm rzp-preset-btn" onclick="setRzpPreset('today')">Today</button>
+                  <button id="rzpPreset_week" class="btn btn-sm rzp-preset-btn" onclick="setRzpPreset('week')">This Week</button>
+                  <button id="rzpPreset_month" class="btn btn-sm rzp-preset-btn" onclick="setRzpPreset('month')">This Month</button>
+                  <button id="rzpPreset_lastmonth" class="btn btn-sm rzp-preset-btn" onclick="setRzpPreset('lastmonth')">Last Month</button>
+                  <button id="rzpPreset_custom" class="btn btn-sm rzp-preset-btn" onclick="setRzpPreset('custom')">Custom</button>
+                </div>
+              </div>
+
+              <!-- Month + Year Picker -->
+              <div style="display:flex;gap:8px;align-items:flex-end;">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Month</label>
+                  <select id="rzpMonthFilter" onchange="onRzpMonthYearChange()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none;">
+                    <option value="">All Months</option>
+                    <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+                    <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+                    <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+                    <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+                  </select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Year</label>
+                  <select id="rzpYearFilter" onchange="onRzpMonthYearChange()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none;">
+                    <option value="">All Years</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Date Range -->
+              <div id="rzpCustomDateRange" style="display:flex;gap:8px;align-items:flex-end;">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">From Date</label>
+                  <input type="date" id="rzpDateFrom" onchange="renderRazorpayOrders()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none;" />
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">To Date</label>
+                  <input type="date" id="rzpDateTo" onchange="renderRazorpayOrders()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none;" />
+                </div>
+              </div>
+
+              <!-- Method + Search -->
+              <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Method</label>
+                  <select id="rzpMethodFilter" onchange="renderRazorpayOrders()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none;">
+                    <option value="">All Methods</option>
+                    <option value="upi">UPI</option>
+                    <option value="card">Card</option>
+                    <option value="netbanking">Net Banking</option>
+                    <option value="wallet">Wallet</option>
+                    <option value="emi">EMI</option>
+                  </select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Search</label>
+                  <div style="position:relative;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--muted);pointer-events:none;"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                    <input class="search-input" id="rzpSearchInput" placeholder="Order ID, email, phone…" oninput="renderRazorpayOrders()" style="padding-left:30px;" />
+                  </div>
+                </div>
+                <button class="btn btn-ghost btn-sm" onclick="clearRzpFilters()" style="align-self:flex-end;">✕ Clear</button>
+              </div>
+            </div>
+
+            <!-- ── SUMMARY STRIP ── -->
+            <div id="rzpSummaryStrip" style="padding:10px 20px;background:var(--accent-bg);border-bottom:1px solid var(--accent-border);display:none;flex-wrap:wrap;gap:20px;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:var(--accent);">Filtered:</span>
+              <span style="font-size:12px;color:var(--text2);"><strong id="rzpSumCount">0</strong> payments</span>
+              <span style="font-size:12px;color:var(--text2);">Total: <strong id="rzpSumAmount" style="color:var(--accent);">₹0</strong></span>
+              <span style="font-size:12px;color:var(--text2);">Avg: <strong id="rzpSumAvg">₹0</strong></span>
+              <span style="font-size:12px;color:var(--text2);">Highest: <strong id="rzpSumMax">₹0</strong></span>
+            </div>
+
             <div class="card-body" style="padding:0;">
               <div class="table-wrap">
                 <table style="width:100%;">
                   <thead>
                     <tr>
-                      <th>Sl No.</th>
-                      <th>Date</th>
+                      <th>#</th>
+                      <th>Date &amp; Time</th>
                       <th>Order ID</th>
                       <th>Payment ID</th>
                       <th>Customer</th>
                       <th>Method</th>
-                      <th>Amount Paid</th>
+                      <th>Amount</th>
                       <th>Status</th>
                     </tr>
                   </thead>
-                  <tbody id="rzpOrdersTableBody">
-                  </tbody>
+                  <tbody id="rzpOrdersTableBody"></tbody>
                 </table>
               </div>
             </div>
@@ -3361,22 +3485,35 @@
             <div class="card-header">
               <div class="card-header-left">
                 <div class="card-title">🧠 AI Chatbot Training</div>
-                <div class="card-subtitle">Define core business rules, shipping costs, and instructions for Gemini.</div>
+                <div class="card-subtitle">Define core business rules, shipping costs, and instructions for Gemini.
+                </div>
               </div>
-              <button class="btn btn-primary btn-sm" onclick="saveChatbotTraining()" id="saveChatbotBtn">Save to Brain</button>
+              <button class="btn btn-primary btn-sm" onclick="saveChatbotTraining()" id="saveChatbotBtn">Save to
+                Brain</button>
             </div>
             <div class="card-body" style="display:flex;gap:20px;min-height:500px;">
               <div style="flex:1;display:flex;flex-direction:column;">
-                <label style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--text);">System Prompt & Rules</label>
-                <textarea id="chatbotTrainingText" style="flex:1;width:100%;border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:var(--radius-md);padding:14px;font-family:'Inter', sans-serif;font-size:13px;line-height:1.6;resize:none;" placeholder="Loading AI Brain..."></textarea>
+                <label style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--text);">System Prompt &
+                  Rules</label>
+                <textarea id="chatbotTrainingText"
+                  style="flex:1;width:100%;border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:var(--radius-md);padding:14px;font-family:'Inter', sans-serif;font-size:13px;line-height:1.6;resize:none;"
+                  placeholder="Loading AI Brain..."></textarea>
               </div>
-              <div style="width:340px;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;">
-                <div style="background:var(--surface2);padding:12px;border-bottom:1px solid var(--border);font-weight:600;font-size:13px;">Test Chatbot</div>
-                <div id="testChatLog" style="flex:1;padding:12px;overflow-y:auto;background:var(--surface);display:flex;flex-direction:column;gap:10px;">
-                  <div style="color:var(--muted);font-size:11px;text-align:center;margin-top:20px;">Chat with the AI to test its knowledge.</div>
+              <div
+                style="width:340px;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;">
+                <div
+                  style="background:var(--surface2);padding:12px;border-bottom:1px solid var(--border);font-weight:600;font-size:13px;">
+                  Test Chatbot</div>
+                <div id="testChatLog"
+                  style="flex:1;padding:12px;overflow-y:auto;background:var(--surface);display:flex;flex-direction:column;gap:10px;">
+                  <div style="color:var(--muted);font-size:11px;text-align:center;margin-top:20px;">Chat with the AI to
+                    test its knowledge.</div>
                 </div>
-                <div style="padding:10px;border-top:1px solid var(--border);background:var(--surface2);display:flex;gap:8px;">
-                  <input type="text" id="testChatInput" placeholder="Ask a question..." style="flex:1;padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;" onkeypress="if(event.key==='Enter') testChatSend()">
+                <div
+                  style="padding:10px;border-top:1px solid var(--border);background:var(--surface2);display:flex;gap:8px;">
+                  <input type="text" id="testChatInput" placeholder="Ask a question..."
+                    style="flex:1;padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;"
+                    onkeypress="if(event.key==='Enter') testChatSend()">
                   <button class="btn btn-primary btn-sm" onclick="testChatSend()">Send</button>
                 </div>
               </div>
@@ -4976,14 +5113,14 @@
           } else {
             toast('Payment verified automatically!', 'success');
           }
-        } catch(e) {
+        } catch (e) {
           toast('Razorpay check failed: ' + e.message, 'error');
           if (!confirm('Razorpay check failed. Confirm anyway?')) return;
         }
       } else {
         if (!confirm('Mark this pending order as Confirmed?')) return;
       }
-      
+
       try {
         await update(ref(db, `orders/${id}`), {
           status: 'confirmed',
@@ -5212,22 +5349,22 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ q: qValue })
           })
-          .then(res => res.json())
-          .then(data => {
-            const el = document.getElementById(`amountPaidContainer_${o.id}`);
-            if (el) {
-              if (data.isPaid && data.payment) {
-                const amt = (data.payment.amount / 100).toFixed(2);
-                el.innerHTML = `<div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:700;color:var(--green)"><span>Amount Paid (Razorpay)</span><span>₹${amt}</span></div>`;
-              } else {
-                el.innerHTML = `<div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:12px;color:var(--orange)"><span>Amount Paid (Razorpay)</span><span>Not Paid / Not Found</span></div>`;
+            .then(res => res.json())
+            .then(data => {
+              const el = document.getElementById(`amountPaidContainer_${o.id}`);
+              if (el) {
+                if (data.isPaid && data.payment) {
+                  const amt = (data.payment.amount / 100).toFixed(2);
+                  el.innerHTML = `<div style="display:flex;justify-content:space-between;padding:10px 0 0;font-weight:700;color:var(--green)"><span>Amount Paid (Razorpay)</span><span>₹${amt}</span></div>`;
+                } else {
+                  el.innerHTML = `<div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:12px;color:var(--orange)"><span>Amount Paid (Razorpay)</span><span>Not Paid / Not Found</span></div>`;
+                }
               }
-            }
-          })
-          .catch(err => {
-            const el = document.getElementById(`amountPaidContainer_${o.id}`);
-            if (el) el.innerHTML = `<div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:12px;color:var(--accent)"><span>Amount Paid (Razorpay)</span><span>Error Fetching</span></div>`;
-          });
+            })
+            .catch(err => {
+              const el = document.getElementById(`amountPaidContainer_${o.id}`);
+              if (el) el.innerHTML = `<div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:12px;color:var(--accent)"><span>Amount Paid (Razorpay)</span><span>Error Fetching</span></div>`;
+            });
         }
       }
     }
@@ -7276,11 +7413,11 @@
       { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#3d3d3d" }] }
     ];
 
-    window.toggleRadarTheme = function() {
+    window.toggleRadarTheme = function () {
       if (!radarMapInstance) return;
       radarTheme = radarTheme === 'night' ? 'day' : 'night';
       radarMapInstance.setOptions({ styles: radarTheme === 'night' ? NIGHT_STYLE : [] });
-      
+
       const icon = document.getElementById('radarThemeIcon');
       const text = document.getElementById('radarThemeText');
       if (radarTheme === 'night') {
@@ -7317,7 +7454,7 @@
       while (geocodeQueue.length > 0) {
         const order = geocodeQueue.shift();
         const addressQuery = [order.address, order.city, order.state, order.pincode].filter(Boolean).join(', ');
-        
+
         try {
           const results = await new Promise((resolve, reject) => {
             geocoder.geocode({ address: addressQuery }, (res, status) => {
@@ -7325,22 +7462,22 @@
               else reject(status);
             });
           });
-          
+
           if (results && results.length > 0) {
             const loc = results[0].geometry.location;
             const lat = loc.lat();
             const lng = loc.lng();
-            
+
             const { db, dbRef, update } = await waitFb();
             await update(dbRef(db, `orders/${order.id || order._id}`), { lat, lng });
-            
+
             order.lat = lat;
             order.lng = lng;
             plotSingleRadarMarker(order);
           }
-        } catch(e) {
+        } catch (e) {
           console.warn("Geocode failed for order", order.id, e);
-          plotSingleRadarMarker(order, true); 
+          plotSingleRadarMarker(order, true);
         }
 
         // Wait 1 second to respect API limits
@@ -7367,7 +7504,7 @@
             this.div.style.cursor = "pointer";
             this.div.className = "radar-ping-icon";
             this.div.innerHTML = '<div class="radar-ping-ring"></div><div class="radar-ping-dot"></div>';
-            
+
             const infoWindow = new google.maps.InfoWindow({ content: this.popupHtml });
             this.div.addEventListener("click", () => {
               infoWindow.setPosition(this.latlng);
@@ -7433,7 +7570,7 @@
         if (city && MAJOR_CITIES[city]) latlngArr = MAJOR_CITIES[city];
         else if (state && INDIA_STATES[state]) latlngArr = INDIA_STATES[state];
         if (!latlngArr) latlngArr = [22.5937, 78.9629];
-        
+
         lat = latlngArr[0] + (Math.random() - 0.5) * 0.15;
         lng = latlngArr[1] + (Math.random() - 0.5) * 0.15;
       }
@@ -7608,11 +7745,11 @@ Core Business Rules:
 
 Always output your response in strict JSON. Do not include markdown formatting.`;
         }
-      } catch(e) {
+      } catch (e) {
         console.error("Error loading training text", e);
       }
     }
-    
+
     async function saveChatbotTraining() {
       const btn = document.getElementById('saveChatbotBtn');
       btn.textContent = "Saving...";
@@ -7622,27 +7759,27 @@ Always output your response in strict JSON. Do not include markdown formatting.`
         await set(dbRef(db, 'settings/chatbotTraining'), text);
         btn.textContent = "Saved ✓";
         setTimeout(() => btn.textContent = "Save to Brain", 2000);
-      } catch(e) {
+      } catch (e) {
         btn.textContent = "Error!";
         console.error(e);
         setTimeout(() => btn.textContent = "Save to Brain", 2000);
       }
     }
-    
+
     async function testChatSend() {
       const input = document.getElementById('testChatInput');
       const text = input.value.trim();
       if (!text) return;
-      
+
       const log = document.getElementById('testChatLog');
       log.innerHTML += `<div style="align-self:flex-end;background:var(--accent);color:#fff;padding:8px 12px;border-radius:12px;font-size:13px;max-width:85%;">${esc(text)}</div>`;
       input.value = "";
       log.scrollTop = log.scrollHeight;
-      
+
       const typingId = "typ_" + Date.now();
       log.innerHTML += `<div id="${typingId}" style="align-self:flex-start;background:var(--surface2);color:var(--text);padding:8px 12px;border-radius:12px;font-size:13px;max-width:85%;color:var(--muted)">AI is typing...</div>`;
       log.scrollTop = log.scrollHeight;
-      
+
       try {
         const res = await fetch("https://us-central1-jersify-f9b5e.cloudfunctions.net/chat", {
           method: "POST",
@@ -7651,7 +7788,7 @@ Always output your response in strict JSON. Do not include markdown formatting.`
         });
         const data = await res.json();
         document.getElementById(typingId).remove();
-        
+
         let aiMsg = data.reply || data.response || data.message || JSON.stringify(data);
         log.innerHTML += `<div style="align-self:flex-start;background:var(--surface2);color:var(--text);padding:8px 12px;border-radius:12px;font-size:13px;max-width:85%;">${esc(aiMsg)}</div>`;
       } catch (e) {
@@ -7665,7 +7802,7 @@ Always output your response in strict JSON. Do not include markdown formatting.`
     /* -- Render Razorpay Orders -- */
     let _rzpPaymentsCache = null;
 
-    window.fetchRazorpayPayments = async function(force = false) {
+    window.fetchRazorpayPayments = async function (force = false) {
       const tbody = document.getElementById('rzpOrdersTableBody');
       const btn = document.getElementById('rzpRefreshBtn');
       if (!tbody) return;
@@ -7681,10 +7818,23 @@ Always output your response in strict JSON. Do not include markdown formatting.`
       try {
         const res = await fetch("https://us-central1-jersify-f9b5e.cloudfunctions.net/getAllRazorpayPayments");
         const data = await res.json();
-        
+
         if (data.error) throw new Error(data.error);
-        
+
         _rzpPaymentsCache = data.payments || [];
+        populateRzpYearFilter(_rzpPaymentsCache);
+        // Update stat cards with all-time data
+        const allTotal = _rzpPaymentsCache.length;
+        const allRev   = _rzpPaymentsCache.reduce((a,p) => a + p.amount/100, 0);
+        const allAvg   = allTotal ? allRev / allTotal : 0;
+        const todayMid = new Date(); todayMid.setHours(0,0,0,0);
+        const todayCnt = _rzpPaymentsCache.filter(p => p.created_at*1000 >= todayMid.getTime()).length;
+        const fmtK = n => n >= 1000 ? '₹'+( n/1000).toFixed(1)+'K' : '₹'+n.toFixed(0);
+        const el = id => document.getElementById(id);
+        if(el('rzpStatTotal'))   el('rzpStatTotal').textContent   = allTotal;
+        if(el('rzpStatRevenue')) el('rzpStatRevenue').textContent = fmtK(allRev);
+        if(el('rzpStatAvg'))     el('rzpStatAvg').textContent     = fmtK(allAvg);
+        if(el('rzpStatToday'))   el('rzpStatToday').textContent   = todayCnt;
         window.renderRazorpayOrders();
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:#ef4444">Error fetching from Razorpay: ${esc(err.message)}</td></tr>`;
@@ -7693,39 +7843,184 @@ Always output your response in strict JSON. Do not include markdown formatting.`
       }
     };
 
-    window.renderRazorpayOrders = function() {
-      const q = (document.getElementById('rzpSearchInput')?.value || '').toLowerCase();
+    /* ─── RZP PRESET / FILTER HELPERS ─── */
+    let _rzpActivePreset = 'all';
+
+    function setRzpPreset(preset) {
+      _rzpActivePreset = preset;
+      document.querySelectorAll('.rzp-preset-btn').forEach(b => b.classList.remove('rzp-preset-active'));
+      const btn = document.getElementById('rzpPreset_' + preset);
+      if (btn) btn.classList.add('rzp-preset-active');
+
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+
+      const fromEl = document.getElementById('rzpDateFrom');
+      const toEl   = document.getElementById('rzpDateTo');
+      const mEl    = document.getElementById('rzpMonthFilter');
+      const yEl    = document.getElementById('rzpYearFilter');
+
+      // Reset month/year pickers when using presets (except custom)
+      if (preset !== 'custom') { mEl.value = ''; yEl.value = ''; }
+
+      if (preset === 'today') {
+        fromEl.value = fmt(now); toEl.value = fmt(now);
+      } else if (preset === 'week') {
+        const start = new Date(now); start.setDate(now.getDate() - now.getDay());
+        fromEl.value = fmt(start); toEl.value = fmt(now);
+      } else if (preset === 'month') {
+        fromEl.value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-01`;
+        toEl.value = fmt(now);
+      } else if (preset === 'lastmonth') {
+        const lm = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lme = new Date(now.getFullYear(), now.getMonth(), 0);
+        fromEl.value = fmt(lm); toEl.value = fmt(lme);
+      } else {
+        fromEl.value = ''; toEl.value = '';
+      }
+      renderRazorpayOrders();
+    }
+
+    function onRzpMonthYearChange() {
+      // Switch to custom preset and clear date range when month/year pickers are used
+      _rzpActivePreset = 'custom';
+      document.querySelectorAll('.rzp-preset-btn').forEach(b => b.classList.remove('rzp-preset-active'));
+      const btn = document.getElementById('rzpPreset_custom');
+      if (btn) btn.classList.add('rzp-preset-active');
+      document.getElementById('rzpDateFrom').value = '';
+      document.getElementById('rzpDateTo').value = '';
+      renderRazorpayOrders();
+    }
+
+    function clearRzpFilters() {
+      document.getElementById('rzpSearchInput').value = '';
+      document.getElementById('rzpDateFrom').value = '';
+      document.getElementById('rzpDateTo').value = '';
+      document.getElementById('rzpMonthFilter').value = '';
+      document.getElementById('rzpYearFilter').value = '';
+      document.getElementById('rzpMethodFilter').value = '';
+      setRzpPreset('all');
+    }
+
+    function populateRzpYearFilter(payments) {
+      const sel = document.getElementById('rzpYearFilter');
+      if (!sel) return;
+      const years = [...new Set(payments.map(p => new Date(p.created_at * 1000).getFullYear()))].sort((a,b) => b-a);
+      const current = sel.value;
+      sel.innerHTML = '<option value="">All Years</option>' + years.map(y => `<option value="${y}"${y==current?' selected':''}>${y}</option>`).join('');
+    }
+
+    function exportRzpCSV() {
+      if (!_rzpPaymentsCache) return toast('No data to export', 'error');
+      const filtered = applyRzpFilters(_rzpPaymentsCache);
+      if (!filtered.length) return toast('No payments match current filters', 'error');
+      const headers = ['#','Date','Order ID','Payment ID','Email','Phone','Method','Amount (₹)','Status'];
+      const rows = filtered.map((o,i) => [
+        i+1,
+        new Date(o.created_at*1000).toLocaleString('en-IN'),
+        o.notes?.orderId || o.receipt || '',
+        o.id || '',
+        o.email || '',
+        o.contact || '',
+        o.method || '',
+        (o.amount/100).toFixed(2),
+        'SUCCESSFUL'
+      ]);
+      const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `razorpay_payments_${Date.now()}.csv`;
+      a.click();
+      toast('CSV exported!', 'success');
+    }
+
+    function applyRzpFilters(payments) {
+      const q      = (document.getElementById('rzpSearchInput')?.value || '').toLowerCase().trim();
+      const fromV  = document.getElementById('rzpDateFrom')?.value;
+      const toV    = document.getElementById('rzpDateTo')?.value;
+      const month  = document.getElementById('rzpMonthFilter')?.value;
+      const year   = document.getElementById('rzpYearFilter')?.value;
+      const method = (document.getElementById('rzpMethodFilter')?.value || '').toLowerCase();
+
+      const fromTs = fromV ? new Date(fromV + 'T00:00:00').getTime() : null;
+      const toTs   = toV   ? new Date(toV   + 'T23:59:59').getTime() : null;
+
+      return payments.filter(o => {
+        const ts = o.created_at * 1000;
+        const d  = new Date(ts);
+        if (fromTs && ts < fromTs) return false;
+        if (toTs   && ts > toTs)   return false;
+        if (month !== '' && month != null && String(d.getMonth()) !== month) return false;
+        if (year  && String(d.getFullYear()) !== year) return false;
+        if (method && (o.method || '').toLowerCase() !== method) return false;
+        if (q) {
+          const text = `${o.id||''} ${o.notes?.orderId||''} ${o.receipt||''} ${o.email||''} ${o.contact||''}`.toLowerCase();
+          if (!text.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    window.renderRazorpayOrders = function () {
       const tbody = document.getElementById('rzpOrdersTableBody');
+      const subtitle = document.getElementById('rzpTableSubtitle');
+      const strip = document.getElementById('rzpSummaryStrip');
       if (!tbody || !_rzpPaymentsCache) return;
 
-      const filtered = _rzpPaymentsCache.filter(o => {
-        if (!q) return true;
-        const text = `${o.id||''} ${o.notes?.orderId||''} ${o.receipt||''} ${o.email||''} ${o.contact||''}`.toLowerCase();
-        return text.includes(q);
-      });
+      const filtered = applyRzpFilters(_rzpPaymentsCache);
+      const total = _rzpPaymentsCache.length;
+
+      // Update subtitle
+      if (subtitle) subtitle.textContent = `Showing ${filtered.length} of ${total} successful payments`;
+
+      // Update summary strip
+      if (strip) {
+        const isFiltered = filtered.length < total;
+        strip.style.display = isFiltered ? 'flex' : 'none';
+        if (isFiltered && filtered.length > 0) {
+          const sum  = filtered.reduce((a,o) => a + o.amount/100, 0);
+          const avg  = sum / filtered.length;
+          const max  = Math.max(...filtered.map(o => o.amount/100));
+          document.getElementById('rzpSumCount').textContent  = filtered.length;
+          document.getElementById('rzpSumAmount').textContent = '₹' + sum.toFixed(2);
+          document.getElementById('rzpSumAvg').textContent    = '₹' + avg.toFixed(2);
+          document.getElementById('rzpSumMax').textContent    = '₹' + max.toFixed(2);
+        }
+      }
 
       if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted)">No successful Razorpay payments found</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:28px;margin-bottom:8px;">🔍</div><div style="font-weight:600;">No payments match your filters</div><div style="font-size:12px;margin-top:4px;">Try adjusting the date range or clearing filters</div></td></tr>`;
         return;
       }
 
-      tbody.innerHTML = filtered.map((o, index) => {
-        const dateStr = new Date(o.created_at * 1000).toLocaleString('en-IN');
+      // Sort newest first
+      const sorted = [...filtered].sort((a,b) => b.created_at - a.created_at);
+
+      tbody.innerHTML = sorted.map((o, index) => {
+        const d = new Date(o.created_at * 1000);
+        const dateStr = d.toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+        const timeStr = d.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
         const amountStr = '₹' + (o.amount / 100).toFixed(2);
         const orderId = o.notes?.orderId || o.receipt || '--';
-        
+        const methodBadge = {'upi':'badge-teal','card':'badge-blue','netbanking':'badge-purple','wallet':'badge-gold','emi':'badge-orange'}[o.method] || 'badge-gray';
+
         return `<tr>
-          <td data-label="Sl No." style="font-size:12px;color:var(--text);font-weight:600">${index + 1}</td>
-          <td data-label="Date" style="font-size:12px;color:var(--muted)">${dateStr}</td>
-          <td data-label="Order ID"><span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--text)">${esc(orderId)}</span></td>
-          <td data-label="Payment ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(o.id || '--')}</span></td>
-          <td data-label="Customer">
-            <div style="font-size:11px;color:var(--muted)">${esc(o.email || '')}</div>
-            <div style="font-size:11px;color:var(--muted)">${esc(o.contact || '')}</div>
+          <td style="font-size:12px;color:var(--muted);font-weight:600;">${index + 1}</td>
+          <td style="font-size:12px;">
+            <div style="font-weight:600;color:var(--text);">${dateStr}</div>
+            <div style="color:var(--muted);font-size:11px;">${timeStr}</div>
           </td>
-          <td data-label="Method"><span class="badge badge-teal" style="text-transform:uppercase">${esc(o.method || 'Online')}</span></td>
-          <td data-label="Amount Paid"><span style="font-weight:700;color:var(--accent)">${amountStr}</span></td>
-          <td data-label="Status"><span class="badge badge-green">SUCCESSFUL</span></td>
+          <td><span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--text);background:var(--surface2);padding:2px 6px;border-radius:4px;border:1px solid var(--border);">${esc(orderId)}</span></td>
+          <td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue);">${esc(o.id || '--')}</span></td>
+          <td>
+            <div style="font-size:12px;font-weight:600;color:var(--text);">${esc(o.email || '—')}</div>
+            <div style="font-size:11px;color:var(--muted);">${esc(o.contact || '')}</div>
+          </td>
+          <td><span class="badge ${methodBadge}" style="text-transform:uppercase;font-size:10px;">${esc(o.method || 'Online')}</span></td>
+          <td><span style="font-weight:800;font-size:13px;color:var(--accent);">${amountStr}</span></td>
+          <td><span class="badge badge-green" style="font-size:10px;">✓ SUCCESS</span></td>
         </tr>`;
       }).join('');
     };
@@ -7733,15 +8028,15 @@ Always output your response in strict JSON. Do not include markdown formatting.`
     // Hook into tab switching
     let _chatbotLoaded = false;
     const _originalSwitchTab = window.switchTab;
-    window.switchTab = function(tabId, btn) {
-      if(tabId === 'chatbot' && !_chatbotLoaded) {
+    window.switchTab = function (tabId, btn) {
+      if (tabId === 'chatbot' && !_chatbotLoaded) {
         _chatbotLoaded = true;
         loadChatbotTraining();
       }
-      if(tabId === 'razorpay') {
-        setTimeout(() => { if(window.fetchRazorpayPayments) window.fetchRazorpayPayments(); }, 100);
+      if (tabId === 'razorpay') {
+        setTimeout(() => { if (window.fetchRazorpayPayments) window.fetchRazorpayPayments(); }, 100);
       }
-      if(_originalSwitchTab) _originalSwitchTab(tabId, btn);
+      if (_originalSwitchTab) _originalSwitchTab(tabId, btn);
     }
   </script>
 </body>
