@@ -2544,6 +2544,8 @@
           }
         } catch (e) { }
 
+        orders = orders.filter(o => o.status !== 'pending');
+
         orders.sort((a, b) => {
           const tA = a.createdAt ? (typeof a.createdAt === 'number' ? a.createdAt : Date.parse(a.createdAt)) : 0;
           const tB = b.createdAt ? (typeof b.createdAt === 'number' ? b.createdAt : Date.parse(b.createdAt)) : 0;
@@ -2628,6 +2630,7 @@
             <div class="order-info">
               <div class="order-name">${item.name || "Jersify Jersey"}</div>
               <div class="order-meta">${itemsArr.length} item${itemsArr.length !== 1 ? "s" : ""} · Size ${(item.size || "M").toUpperCase()}${extraCount ? " · " + extraCount : ""}</div>
+              ${o.addon && o.addon.playerName ? `<div style="display:inline-flex;align-items:center;gap:5px;background:rgba(198,31,47,.08);border:1px solid rgba(198,31,47,.18);border-radius:999px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--accent);margin-top:4px;">✦ ${o.addon.playerName}${o.addon.playerNumber ? ' ' + o.addon.playerNumber : ''}</div>` : ""}
               <div class="order-price">₹${o.total || item.price || "–"}</div>
             </div>
           </div>
@@ -2748,6 +2751,17 @@
 
         <div class="od-section-title">Items Ordered</div>
         <div class="od-items">${itemsHtml}</div>
+
+        ${o.addon && o.addon.playerName ? `
+        <div class="od-section-title">✦ Player Customization</div>
+        <div class="od-info-rows" style="background:linear-gradient(135deg,rgba(198,31,47,.06),rgba(198,31,47,.02));border:1px solid rgba(198,31,47,.18);border-radius:14px;padding:12px 14px;">
+          <div class="od-info-row">
+            <span class="od-info-key">Player Name</span>
+            <span class="od-info-val" style="font-weight:800;color:var(--accent);">${o.addon.playerName}</span>
+          </div>
+          ${o.addon.playerNumber ? `<div class="od-info-row"><span class="od-info-key">Number</span><span class="od-info-val" style="font-weight:800;color:var(--accent);">${o.addon.playerNumber}</span></div>` : ""}
+          ${o.addon.price ? `<div class="od-info-row"><span class="od-info-key">Addon Fee</span><span class="od-info-val">+₹${o.addon.price}</span></div>` : ""}
+        </div>` : ""}
 
         <div class="od-section-title">Order Info</div>
         <div class="od-info-rows">
