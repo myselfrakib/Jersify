@@ -4897,7 +4897,7 @@
       <td><input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleOrderSelect('${o.id}',this.checked)"/></td>
       <td data-label="Order ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(displayId)}</span></td>
       <td data-label="Customer"><strong>${esc(o.customerName || o.name || '—')}</strong><br><span style="font-size:11px;color:var(--muted)">${esc(o.phone || o.email || '')}</span></td>
-      <td data-label="Items" style="max-width:180px;font-size:12px;white-space:normal">${esc(itemsSummary)}</td>
+      <td data-label="Items" style="max-width:180px;font-size:12px;white-space:normal">${esc(itemsSummary)}${o.addon && o.addon.playerName ? `<br><span style="display:inline-flex;align-items:center;gap:4px;background:rgba(198,31,47,.10);border:1px solid rgba(198,31,47,.2);border-radius:999px;padding:1px 7px;font-size:10px;font-weight:700;color:var(--accent);margin-top:3px;">✦ ${esc(o.addon.playerName)}${o.addon.playerNumber ? ' ' + esc(String(o.addon.playerNumber)) : ''}</span>` : ''}</td>
       <td data-label="Total"><strong>₹${parseFloat(o.total || 0).toFixed(2)}</strong></td>
       <td data-label="Payment"><span class="badge ${pmBadge}">${pmDisplay}</span></td>
       <td data-label="Status"><span class="badge ${badge}">${st}</span></td>
@@ -4931,7 +4931,7 @@
         return `<tr>
           <td data-label="Order ID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">${esc(displayId)}</span></td>
           <td data-label="Customer"><strong>${esc(o.customerName || o.name || '—')}</strong><br><span style="font-size:11px;color:var(--muted)">${esc(o.phone || o.email || '')}</span></td>
-          <td data-label="Items" style="max-width:180px;font-size:12px;white-space:normal">${esc(itemsSummary)}</td>
+          <td data-label="Items" style="max-width:180px;font-size:12px;white-space:normal">${esc(itemsSummary)}${o.addon && o.addon.playerName ? `<br><span style="display:inline-flex;align-items:center;gap:4px;background:rgba(198,31,47,.10);border:1px solid rgba(198,31,47,.2);border-radius:999px;padding:1px 7px;font-size:10px;font-weight:700;color:var(--accent);margin-top:3px;">✦ ${esc(o.addon.playerName)}${o.addon.playerNumber ? ' ' + esc(String(o.addon.playerNumber)) : ''}</span>` : ''}</td>
           <td data-label="Total"><strong>₹${parseFloat(o.total || 0).toFixed(2)}</strong></td>
           <td data-label="Payment"><span class="badge ${pmBadge}">${pmDisplay}</span></td>
           <td data-label="Status"><span class="badge badge-orange">pending</span></td>
@@ -5176,7 +5176,15 @@
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px">
       <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Shipping Address</div>
       <div style="font-size:13px">${esc([o.address, o.city, o.state, o.pincode, o.country].filter(Boolean).join(', ') || '—')}</div>
-    </div>`;
+    </div>
+    ${o.addon && o.addon.playerName ? `<div style="background:linear-gradient(135deg,rgba(198,31,47,.07),rgba(198,31,47,.02));border:1px solid rgba(198,31,47,.2);border-radius:var(--radius-sm);padding:12px;margin-top:10px">
+      <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">✦ Player Customization</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
+        <div><div style="font-size:10px;color:var(--muted);margin-bottom:2px">PLAYER NAME</div><div style="font-weight:700">${esc(o.addon.playerName)}</div></div>
+        ${o.addon.playerNumber ? `<div><div style="font-size:10px;color:var(--muted);margin-bottom:2px">NUMBER</div><div style="font-weight:700">${esc(String(o.addon.playerNumber))}</div></div>` : ''}
+        ${o.addon.price ? `<div><div style="font-size:10px;color:var(--muted);margin-bottom:2px">ADDON FEE</div><div style="font-weight:700">+₹${esc(String(o.addon.price))}</div></div>` : ''}
+      </div>
+    </div>` : ''}`;
 
       if ((o.status || 'pending') === 'pending') {
         document.getElementById('orderSrSection').style.display = 'none';
