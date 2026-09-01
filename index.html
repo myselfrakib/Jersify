@@ -147,19 +147,21 @@
 
     /* ── SHOP BY CLUBS (Circular 61px icons) ── */
     .clubs-scroll-row {
-      display: flex; gap: 10px; overflow-x: auto; padding: 0 11px 20px 11px;
+      display: flex; gap: 12px; overflow-x: auto; padding: 10px 14px 22px 14px;
       scrollbar-width: none; -webkit-overflow-scrolling: touch;
     }
     .clubs-scroll-row::-webkit-scrollbar { display: none; }
     .club-badge-circle {
-      flex: 0 0 61px; height: 61px; border-radius: 50%; overflow: hidden;
+      flex: 0 0 61px; height: 61px; border-radius: 50%;
       background: #ffffff; border: 1.5px solid #ffffff; cursor: pointer;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.10); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15), 0 0 10px rgba(0,0,0,0.08);
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.14));
       transition: transform .2s ease, box-shadow .2s ease;
       display: flex; align-items: center; justify-content: center;
+      position: relative;
     }
-    .club-badge-circle:active { transform: scale(0.92); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
-    .club-badge-circle img { width: 100%; height: 100%; object-fit: cover; }
+    .club-badge-circle:active { transform: scale(0.93); }
+    .club-badge-circle img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
     /* ── 2-COLUMN PRODUCT CARDS (Figma Specs: 182px x 278px, radius 5px) ── */
     .product-grid-2col {
