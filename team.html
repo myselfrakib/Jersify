@@ -1,1795 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="icon" type="image/png" sizes="32x32" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260510-WA0000%20(1).jpg?alt=media&token=f4429d90-710f-4ef2-8587-ef383e89e622">
-<link rel="apple-touch-icon" sizes="180x180" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260510-WA0000%20(1).jpg?alt=media&token=f4429d90-710f-4ef2-8587-ef383e89e622">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JERSIFY</title>
+  <title>JERSIFY – Team</title>
+
+  <!-- Google Fonts required by Figma Design Spec (Node 69:46) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://firebasestorage.googleapis.com">
-  <link rel="dns-prefetch" href="https://jersify-f9b5e-default-rtdb.firebaseio.com">
-  <link rel="prefetch" href="shop.html" as="document">
-  <link rel="prefetch" href="index.html" as="document">
-  <link rel="prefetch" href="checkout.html" as="document">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style id="root-vars">/* injected dynamically */</style>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Krona+One&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Varela+Round&display=swap" rel="stylesheet">
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { min-height: 100%; }
-    body {
-      font-family: 'Barlow', sans-serif;
-      background: #fff5f5;
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
+    :root {
+      --bg: #ffffff;
+      --card-bg: #ffffff;
+      --text: #000000;
+      --muted: #888888;
+      --accent: #c61f2f;
+      --line: #e5e5e5;
+      --radius-lg: 20px;
+      --radius-sm: 5px;
+      --radius-pill: 17px;
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { background: #f5f5f5; color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    button, input { font: inherit; }
+
+    /* ══ MAIN CONTAINER (Center aligned max 430px for mobile frame parity) ══ */
     .page {
-      width: min(100%, var(--maxw));
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      background: #ffffff;
       min-height: 100vh;
-      background: var(--page-bg, #fff5f5);
       position: relative;
-      overflow: hidden;
-      border-left: 1px solid rgba(0,0,0,.04);
-      border-right: 1px solid rgba(0,0,0,.04);
-      padding-bottom: 100px;
+      overflow-x: hidden;
+      padding-bottom: 90px;
+      box-shadow: 0 0 30px rgba(0,0,0,.05);
     }
 
-    /* ========== HERO ========== */
-    .hero {
-      position: relative;
-      height: 460px;
-      overflow: hidden;
-      background: var(--dark);
-    }
-    .hero-bg-stripes {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      opacity: 1;
-      transition: background-image 0.5s ease;
-    }
-    .hero-sun {
-      position: absolute;
-      top: -60px; right: -60px;
-      width: 260px; height: 260px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(var(--sky-rgb),0.3) 0%, rgba(var(--sky-rgb),0.08) 50%, transparent 70%);
-      animation: pulse-sun 3s ease-in-out infinite;
-    }
-    .hero-sun2 {
-      position: absolute;
-      bottom: -40px; left: -60px;
-      width: 200px; height: 200px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(var(--sky-rgb),0.2) 0%, transparent 70%);
-      animation: pulse-sun 4s 1s ease-in-out infinite;
-    }
-    @keyframes pulse-sun {
-      0%,100% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.08); opacity: 1; }
-    }
-    .hero-sun-rays {
-      position: absolute;
-      top: -80px; right: -80px;
-      width: 320px; height: 320px;
-      pointer-events: none;
-    }
-    .hero-sun-rays svg {
-      width: 100%; height: 100%;
-      animation: spin-slow 20s linear infinite;
-    }
-    @keyframes spin-slow {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.18) 0%,
-        rgba(0,0,0,0.05) 40%,
-        rgba(0,0,0,0.6) 100%
-      );
-      z-index: 2;
-    }
+    /* ── HEADER ── */
     .topbar {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      position: sticky; top: 0;
+      background: rgba(255,255,255,.98); backdrop-filter: blur(10px);
+      z-index: 40; border-bottom: 1px solid rgba(0,0,0,.05);
     }
-    .back-btn, .wishlist-btn {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(255,255,255,0.3);
-      background: rgba(255,255,255,0.1);
-      backdrop-filter: blur(8px);
-      color: #fff;
-      display: grid;
+    .logo-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .logo-img { height: 36px; width: auto; max-width: 150px; object-fit: contain; }
+    .logo-text-fallback { font-family: 'Krona One', sans-serif; font-size: 20px; letter-spacing: 2px; color: #000; }
+    
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .header-btn {
+      width: 36px; height: 36px; border: none; border-radius: 50%;
+      background: #f2f2f2; color: #111; display: grid; place-items: center;
+      cursor: pointer; position: relative; transition: transform .2s ease;
+    }
+    .header-btn:active { transform: scale(0.95); }
+    .header-btn svg { width: 18px; height: 18px; }
+    .cart-badge {
+      position: absolute; top: -3px; right: -3px; width: 16px; height: 16px;
+      border-radius: 50%; background: #000; color: #fff; font-size: 9px;
+      font-weight: 800; display: none; place-items: center; font-family: 'DM Sans', sans-serif;
+    }
+    .cart-badge.show { display: grid; }
+
+    /* ── SEARCH BAR (Exact Figma Specs: #f2f2f2, border #d9d9d9, radius 17px) ── */
+    .search-section { padding: 12px 11px; display: flex; align-items: center; gap: 8px; }
+    .search-box {
+      flex: 1; height: 33px; background: #f2f2f2; border: 0.85px solid #d9d9d9;
+      border-radius: 17px; display: flex; align-items: center; padding: 0 11px; gap: 8px;
+    }
+    .search-box svg { width: 14px; height: 14px; color: #999999; flex-shrink: 0; }
+    .search-box input {
+      border: none; outline: none; background: transparent; width: 100%;
+      font-family: 'Inter', sans-serif; font-size: 12px; color: #111;
+    }
+    .search-box input::placeholder { color: #999999; }
+    .filter-btn {
+      width: 33px; height: 33px; background: #f2f2f2; border: 0.85px solid #d9d9d9;
+      border-radius: 17px; display: grid; place-items: center; cursor: pointer; flex-shrink: 0;
+    }
+    .filter-btn svg { width: 16px; height: 16px; color: #333333; opacity: 0.7; }
+
+    /* ── CLUB CREST HERO BANNER (Figma Spec Node 69:48 - 370px x 370px, radius 20px) ── */
+    .club-hero-container { padding: 0 11px; margin-bottom: 16px; }
+    .club-hero-card {
+      width: 100%; aspect-ratio: 1/1; max-height: 370px; border-radius: 20px;
+      overflow: hidden; position: relative; background: #090557; display: grid;
       place-items: center;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
     }
-    .back-btn:hover, .wishlist-btn:hover { background: rgba(255,255,255,0.2); }
-    .back-btn svg, .wishlist-btn svg { width: 20px; height: 20px; }
-    .logo-badge {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      letter-spacing: 2px;
-      color: #fff;
-    }
-    .hero-content {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 0 20px 28px;
-      z-index: 5;
-    }
-    .country-flag-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 10px;
-      animation: slide-up 0.6s ease both;
-    }
-    .flag-circle {
-      width: 48px; height: 48px;
-      border-radius: 50%;
-      border: 2.5px solid rgba(255,255,255,0.5);
-      overflow: hidden;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      transition: opacity 0.3s ease;
-    }
-    .flag-circle img { width: 100%; height: 100%; object-fit: cover; }
-    .flag-circle svg { width: 100%; height: 100%; }
-    .country-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.7);
-    }
-    .hero-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 72px;
-      line-height: 0.88;
-      color: #fff;
-      letter-spacing: 2px;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.4);
-      animation: slide-up 0.6s 0.1s ease both;
-    }
-    .hero-title span { color: var(--sky); }
-    .hero-meta {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-top: 14px;
-      animation: slide-up 0.6s 0.2s ease both;
-      flex-wrap: wrap;
-    }
-    .hero-stat-pill {
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 999px;
-      padding: 6px 14px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 0.5px;
-    }
-    .hero-stat-pill strong { color: var(--pill-accent, #ffaaaa); }
-    @keyframes slide-up {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .club-hero-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .club-hero-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.18); pointer-events: none; }
 
-    /* ========== SECTION ========== */
-    .section { padding: 20px 20px 0; }
-    .section-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--dark);
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    /* Team Title & Shop Now Action */
+    .club-title-krona {
+      font-family: 'Krona One', sans-serif; font-size: 20px; color: #090557;
+      line-height: 1.05; text-align: center; text-transform: uppercase;
+      margin: 16px 0 12px 0; letter-spacing: 0.5px;
     }
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 2px;
-      background: linear-gradient(90deg, var(--sky), transparent);
-      border-radius: 2px;
-    }
-
-    /* ========== ACHIEVEMENTS ========== */
-    .achievements-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .achievement-card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 14px 10px;
-      text-align: center;
-      box-shadow: 0 4px 16px rgba(var(--sky-rgb),0.12);
-      border: 1px solid rgba(var(--sky-rgb),0.1);
-      position: relative;
-      overflow: hidden;
-    }
-    .achievement-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--sky), var(--sky-light,#aaa));
-    }
-    .achievement-icon { font-size: 28px; margin-bottom: 6px; }
-    .achievement-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 30px;
-      color: var(--dark);
-      line-height: 1;
-      margin-bottom: 2px;
-    }
-    .achievement-num span { color: var(--sky-dark); }
-    .achievement-label {
-      font-size: 9.5px;
-      font-weight: 700;
-      color: var(--muted);
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      line-height: 1.2;
-    }
-
-    /* ========== HIGHLIGHT BANNER ========== */
-    .highlight-banner {
-      margin: 20px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, var(--dark) 0%, var(--dark2,#3a0000) 50%, var(--sky-dark) 100%);
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      box-shadow: 0 10px 30px rgba(var(--sky-rgb),0.25);
-      position: relative;
-      overflow: hidden;
-    }
-    .highlight-banner::before {
-      content: attr(data-emoji);
-      position: absolute;
-      right: -10px; top: -20px;
-      font-size: 120px;
-      opacity: 0.06;
-      line-height: 1;
-    }
-    .hl-trophy { font-size: 48px; flex-shrink: 0; }
-    .hl-text h3 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 26px;
-      color: #fff;
-      letter-spacing: 1px;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-    .hl-text p { font-size: 12px; color: rgba(255,255,255,0.75); line-height: 1.4; }
-    .hl-years { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-    .hl-year-badge {
-      background: rgba(var(--sky-rgb),0.25);
-      border: 1px solid rgba(var(--sky-rgb),0.5);
-      border-radius: 6px;
-      padding: 3px 8px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--pill-accent, #ffaaaa);
-      font-family: 'Barlow Condensed', sans-serif;
-    }
-
-    /* ========== PRODUCTS ========== */
-    .products-section { padding: 20px 20px 0; }
-    .products-scroll {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-    .product-card {
-      border-radius: 20px;
-      background: #fff;
-      box-shadow: 0 6px 20px rgba(var(--sky-rgb),0.12);
-      border: 1px solid rgba(var(--sky-rgb),0.1);
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .product-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(var(--sky-rgb),0.18); }
-    .product-card:active { transform: scale(0.97); }
-    .product-card-top {
-      height: 170px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    .product-card-top.sky-bg {
-      background: linear-gradient(135deg, var(--sky) 0%, #fff 40%, var(--sky) 100%);
-    }
-    .product-card-top img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-      cursor: zoom-in;
-    }
-    .product-card:hover .product-card-top img { transform: scale(1.04); }
-    .product-badge-new {
-      position: absolute; top: 10px; left: 10px;
-      background: var(--sky);
-      color: #fff; font-size: 9px; font-weight: 800;
-      letter-spacing: 0.5px; border-radius: 6px;
-      padding: 2px 7px;
-      font-family: 'Barlow Condensed', sans-serif;
-      text-transform: uppercase;
-      z-index: 2;
-    }
-
-    /* ========== SHARE BUTTON ========== */
-    .product-share-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 3;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(255,255,255,0.55);
-      background: rgba(0,0,0,0.32);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      color: #fff;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.18s ease, border-color 0.2s ease;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-      flex-shrink: 0;
-    }
-    .product-share-btn:hover {
-      background: rgba(0,0,0,0.55);
-      border-color: rgba(255,255,255,0.85);
-      transform: scale(1.1);
-    }
-    .product-share-btn:active {
-      transform: scale(0.9);
-    }
-    .product-share-btn svg {
-      width: 14px;
-      height: 14px;
-      pointer-events: none;
-    }
-    /* Shared / copied state */
-    .product-share-btn.copied {
-      background: rgba(74,222,128,0.75);
-      border-color: rgba(74,222,128,0.9);
-    }
-    .product-share-btn.copied svg { display: none; }
-    .product-share-btn.copied::after {
-      content: '✓';
-      font-size: 14px;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1;
-    }
-
-    .product-card-bottom { padding: 12px; }
-    .product-card-name {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 14px; font-weight: 800;
-      color: var(--dark); margin-bottom: 2px;
-      letter-spacing: 0.3px;
-    }
-    .product-card-sub { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
-    .product-card-footer {
-      display: flex; align-items: center;
-      justify-content: space-between;
-    }
-    .product-price {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 16px; font-weight: 800;
-      color: var(--dark);
-    }
-    .buy-btn {
-      border: none;
-      background: linear-gradient(135deg, var(--sky-dark), var(--dark));
-      color: #fff;
-      border-radius: 12px;
-      padding: 6px 12px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 800;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(var(--sky-rgb),0.35);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .buy-btn:hover { box-shadow: 0 6px 16px rgba(var(--sky-rgb),0.45); }
-    .buy-btn:active { transform: scale(0.88); }
-
-    /* ========== TIMELINE ========== */
-    .timeline { padding: 0 20px; position: relative; }
-    .timeline-line {
-      position: absolute;
-      left: 36px; top: 0; bottom: 0;
-      width: 2px;
-      background: linear-gradient(180deg, var(--sky), transparent);
-    }
-    .timeline-item {
-      display: flex; gap: 14px;
-      align-items: flex-start;
-      margin-bottom: 16px; position: relative;
-    }
-    .timeline-dot {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--sky), var(--sky-dark));
-      border: 2px solid #fff;
-      box-shadow: 0 3px 10px rgba(var(--sky-rgb),0.35);
-      display: grid; place-items: center;
-      flex-shrink: 0; font-size: 12px; z-index: 1;
-    }
-    .timeline-content {
-      background: #fff;
-      border-radius: 14px; padding: 12px 14px;
-      flex: 1;
-      box-shadow: 0 4px 14px rgba(var(--sky-rgb),0.08);
-      border: 1px solid rgba(var(--sky-rgb),0.08);
-    }
-    .timeline-year {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 700;
-      color: var(--sky-dark); letter-spacing: 1px;
-      margin-bottom: 2px;
-    }
-    .timeline-event { font-size: 13px; font-weight: 600; color: var(--dark); margin-bottom: 2px; }
-    .timeline-detail { font-size: 11px; color: var(--muted); line-height: 1.4; }
-
-    /* ========== IMAGE LIGHTBOX ========== */
-    .img-lightbox-overlay {
-      display: none; position: fixed; inset: 0; z-index: 9999;
-      background: rgba(0,0,0,0.92); backdrop-filter: blur(12px);
-      align-items: center; justify-content: center;
-      flex-direction: column; gap: 16px;
-    }
-    .img-lightbox-overlay.open {
-      display: flex;
-      animation: lb-fade 0.25s ease both;
-    }
-    @keyframes lb-fade { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes lb-zoom { from { transform: scale(0.75); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .img-lightbox-img {
-      max-width: min(90vw, 420px); max-height: 70vh;
-      border-radius: 20px; object-fit: contain;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.6);
-      animation: lb-zoom 0.3s cubic-bezier(.34,1.56,.64,1) both;
-    }
-    .img-lightbox-close {
-      position: absolute; top: 20px; right: 20px;
-      width: 44px; height: 44px; border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-      border: 1.5px solid rgba(255,255,255,0.3);
-      color: #fff; font-size: 22px;
-      display: grid; place-items: center;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .img-lightbox-close:hover { background: rgba(255,255,255,0.28); }
-    .img-lightbox-caption {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 15px; font-weight: 700;
-      color: rgba(255,255,255,0.85);
-      text-align: center; max-width: 320px;
-    }
-
-    /* ========== LOADING / EMPTY ========== */
-    .product-loading {
-      grid-column: 1/-1;
+    .shop-now-btn {
+      width: 131px; height: 37px; background: #000000; color: #ffffff;
+      font-family: 'Ubuntu', sans-serif; font-weight: 700; font-size: 16px;
       display: flex; align-items: center; justify-content: center;
-      gap: 8px; padding: 30px;
-      color: var(--muted); font-size: 13px;
+      margin: 0 auto 24px auto; cursor: pointer; border: none;
+      transition: transform .2s ease; text-transform: uppercase;
     }
-    .product-loading-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--sky); opacity: 0.5;
-      animation: dot-pulse 1.4s ease-in-out infinite;
-    }
-    .product-loading-dot:nth-child(2) { animation-delay: 0.2s; }
-    .product-loading-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes dot-pulse {
-      0%,80%,100% { transform: scale(0.6); opacity: 0.3; }
-      40% { transform: scale(1); opacity: 1; }
-    }
-    .no-products {
-      grid-column: 1/-1;
-      text-align: center; padding: 30px 20px;
-      color: var(--muted); font-size: 13px;
+    .shop-now-btn:active { transform: scale(0.96); }
+
+    /* ── SECTION TITLES ── */
+    .title-ubuntu-reg {
+      font-family: 'Ubuntu', sans-serif; font-weight: 400; font-size: 20px;
+      line-height: 1.05; color: #000000; margin: 24px 11px 14px 11px;
     }
 
-    /* ========== IMAGE SYNC TOAST ========== */
-    .sync-toast {
-      position: fixed;
-      bottom: 24px; left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: rgba(20,20,20,0.92);
-      backdrop-filter: blur(12px);
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 999px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px; font-weight: 700;
-      letter-spacing: 0.5px;
-      z-index: 9998;
-      border: 1px solid rgba(255,255,255,0.12);
-      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), opacity 0.35s ease;
-      opacity: 0;
-      white-space: nowrap;
-      pointer-events: none;
+    /* ── 2-COLUMN PRODUCT CARDS (Figma Specs: 182px x 278px, radius 5px) ── */
+    .product-grid-2col {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 11px;
+      margin-bottom: 24px;
     }
-    .sync-toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
+    .product-card-figma {
+      border-radius: 5px; background: #ffffff; overflow: hidden; cursor: pointer;
+      display: flex; flex-direction: column; transition: transform .2s ease;
     }
-    .sync-dot {
-      display: inline-block;
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: #4ade80;
-      margin-right: 6px;
-      vertical-align: middle;
-      animation: blink-dot 1.2s ease-in-out infinite;
+    .product-card-figma:active { transform: scale(0.98); }
+    .product-card-figma .pic-wrap {
+      width: 100%; height: 260px; border-radius: 5px; overflow: hidden;
+      background: #f7f7f7; position: relative;
     }
-    @keyframes blink-dot {
-      0%,100% { opacity: 1; } 50% { opacity: 0.3; }
+    .product-card-figma .pic-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .product-card-figma .details { padding: 8px 2px 4px 2px; }
+    .product-card-figma .title {
+      font-family: 'Varela Round', 'Varela', sans-serif; font-size: 12px;
+      color: #000000; line-height: 1.2; margin-bottom: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .product-card-figma .price {
+      font-family: 'Varela Round', 'Varela', sans-serif; font-size: 14px;
+      font-weight: 400; color: #000000;
     }
 
-    /* ── IMAGE SKELETON & FADE-IN ── */
-    @keyframes imgShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-    .product-card-top { position: relative; }
-    .product-card-top .img-skeleton {
-      position: absolute; inset: 0; z-index: 2;
-      background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%, #f0f0f0 100%);
-      background-size: 400% 100%;
-      animation: imgShimmer 1.8s ease infinite;
-      display: flex; align-items: center; justify-content: center;
+    /* ── FIXED BOTTOM NAVIGATION ── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 430px; background: #000000;
+      display: flex; justify-content: space-around; padding: 12px 0 14px 0;
+      z-index: 50; color: #ffffff;
     }
-    .product-card-top .img-skeleton .skel-icon { width: 36px; height: 36px; opacity: .15; }
-    .product-card-top img { opacity: 0; transition: opacity .4s ease; }
-    .product-card-top img.loaded { opacity: 1; }
-    .product-card-top .img-skeleton.hidden { opacity: 0; transition: opacity .3s ease; pointer-events: none; }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      font-size: 10px; color: #ffffff; font-weight: 600; min-width: 60px;
+      font-family: 'Inter', sans-serif;
+    }
+    .nav-item svg { width: 20px; height: 20px; }
 
-    .spacer { height: 20px; }
+    /* Skeleton Shimmer */
+    .skeleton-box {
+      background: linear-gradient(90deg, #eeeeee 25%, #e2e2e2 50%, #eeeeee 75%);
+      background-size: 200% 100%; animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
   </style>
 </head>
+
 <body>
 
-<!-- SYNC TOAST -->
-<div class="sync-toast" id="syncToast">
-  <span class="sync-dot"></span> Images synced from database
-</div>
+  <!-- ══ MAIN MOBILE CONTAINER ══ -->
+  <div class="page">
 
-<div id="app">
-  <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0a0a1a;color:#fff;font-family:sans-serif;">
-    <div style="text-align:center;">
-      <div style="font-size:48px;margin-bottom:16px;">⚽</div>
-      <div style="font-size:18px;font-weight:700;">Team not found</div>
-      <div style="font-size:13px;color:rgba(255,255,255,.5);margin-top:8px;">Try <code style="background:rgba(255,255,255,.1);padding:2px 6px;border-radius:6px;">?id=arsenal</code></div>
-      <a href="index.html" style="display:inline-block;margin-top:20px;padding:10px 24px;background:#e63946;color:#fff;border-radius:12px;text-decoration:none;font-weight:700;">← Back to Store</a>
-    </div>
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="logo-wrap" onclick="window.location.href='index.html'">
+        <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="Jersify" onerror="this.style.display='none';document.getElementById('logoTextFallback').style.display='block';" />
+        <div id="logoTextFallback" class="logo-text-fallback" style="display:none;">JERSIFY</div>
+      </div>
+      <div class="header-actions">
+        <button class="header-btn" aria-label="Cart" onclick="window.location.href='checkout.html'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
+          <span class="cart-badge" id="cartBadge"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- SEARCH BAR SECTION -->
+    <section class="search-section">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+        <input type="text" id="searchInput" placeholder="Search..." />
+      </div>
+      <button class="filter-btn" aria-label="Filter" onclick="window.location.href='shop.html'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>
+      </button>
+    </section>
+
+    <!-- CLUB CREST HERO BANNER -->
+    <section class="club-hero-container">
+      <div class="club-hero-card" id="clubHeroCard">
+        <img id="clubHeroImg" src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=800&auto=format&fit=crop" alt="Club Hero" />
+        <div class="club-hero-overlay"></div>
+      </div>
+    </section>
+
+    <!-- TEAM TITLE & ACTION -->
+    <h1 class="club-title-krona" id="clubTitle">FC BARCELONA</h1>
+    <button class="shop-now-btn" onclick="window.location.href='shop.html'">SHOP NOW</button>
+
+    <!-- SECTION 1: 2026-27 JERSEYS -->
+    <section>
+      <h2 class="title-ubuntu-reg">2026-27 Jerseys</h2>
+      <div class="product-grid-2col" id="teamJerseysGrid">
+        <div class="product-card-figma skeleton-box" style="height: 280px;"></div>
+        <div class="product-card-figma skeleton-box" style="height: 280px;"></div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: SPECIAL FOR YOU -->
+    <section>
+      <h2 class="title-ubuntu-reg">Special For You</h2>
+      <div class="product-grid-2col" id="specialGrid">
+        <div class="product-card-figma skeleton-box" style="height: 280px;"></div>
+        <div class="product-card-figma skeleton-box" style="height: 280px;"></div>
+      </div>
+    </section>
+
   </div>
-</div>
 
-<div class="img-lightbox-overlay" id="imgLightbox" onclick="closeLightbox(event)">
-  <button class="img-lightbox-close" onclick="closeLightbox(event)" aria-label="Close">✕</button>
-  <img class="img-lightbox-img" id="lightboxImg" src="" alt="Product Image" />
-  <div class="img-lightbox-caption" id="lightboxCaption"></div>
-</div>
+  <!-- FIXED BOTTOM NAVIGATION BAR -->
+  <nav class="bottom-nav">
+    <a href="index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+      <div>Home</div>
+    </a>
+    <a href="shop.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <div>Category</div>
+    </a>
+    <a href="checkout.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      <div>Cart</div>
+    </a>
+    <a href="profile.html" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <div>Profile</div>
+    </a>
+  </nav>
 
-<script>
-/* ================================================================
-   TEAM CONFIGS — heroBg / captainImg are now FALLBACK DEFAULTS.
-   Live values are stored in Firebase under /teamimages/{id}/
-   and override these on load + sync in real-time.
-================================================================ */
-const TEAM_CONFIGS = {
-  "arsenal": {
-    id: "arsenal", name: "Arsenal",
-    vars: {
-      "sky": "#EF0107", "sky-dark": "#c0000a", "sky-light": "#ff4a50", "sky-rgb": "239,1,7",
-      "dark": "#1a0000", "dark2": "#3a0000", "text": "#1a0000", "muted": "#7a5050",
-      "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
-    },
-    heroBg: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1774945175872_WhatsApp%20Image%202026-03-30%20at%203.50.05%20PM%20(1).jpeg?alt=media&token=c7e5de04-290b-429a-bdf6-30fae3adb926",
-    captainImg: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/arsenal_top_player-removebg-preview.png?alt=media&token=35e40177-6fd7-4318-98d6-99c1b344c99b"
-  },
-  "barcelona": {
-    id: "barcelona", name: "Barcelona",
-    vars: {
-      "sky": "#A50044", "sky-dark": "#8a003a", "sky-light": "#c44070", "sky-rgb": "165,0,68",
-      "dark": "#1a0020", "dark2": "#2a0030", "text": "#1a0020", "muted": "#7a5a6a",
-      "pill-accent": "#ffaad0", "page-bg": "#fff5fa"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "chelsea": {
-    id: "chelsea", name: "Chelsea",
-    vars: {
-      "sky": "#034694", "sky-dark": "#022f6a", "sky-light": "#3a7abf", "sky-rgb": "3,70,148",
-      "dark": "#001528", "dark2": "#00203a", "text": "#001528", "muted": "#5a7a9a",
-      "pill-accent": "#aac4ff", "page-bg": "#f5f8ff"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "liverpool": {
-    id: "liverpool", name: "Liverpool",
-    vars: {
-      "sky": "#C8102E", "sky-dark": "#9e0c24", "sky-light": "#e84060", "sky-rgb": "200,16,46",
-      "dark": "#0d0d0d", "dark2": "#1a1a1a", "text": "#0d0d0d", "muted": "#6b5a5a",
-      "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "man-city": {
-    id: "man-city", name: "Man City",
-    vars: {
-      "sky": "#6CABDD", "sky-dark": "#4a8fc2", "sky-light": "#a0d0f0", "sky-rgb": "108,171,221",
-      "dark": "#0a1a30", "dark2": "#0f2240", "text": "#0a1a30", "muted": "#5a7a9a",
-      "pill-accent": "#aaddff", "page-bg": "#f5faff"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "man-utd": {
-    id: "man-utd", name: "Man United",
-    vars: {
-      "sky": "#DA291C", "sky-dark": "#b51f14", "sky-light": "#e85a50", "sky-rgb": "218,41,28",
-      "dark": "#1a0a0a", "dark2": "#280e0e", "text": "#1a0a0a", "muted": "#7a5a5a",
-      "pill-accent": "#ffbbaa", "page-bg": "#fff5f5"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "real-madrid": {
-    id: "real-madrid", name: "Real Madrid",
-    vars: {
-      "sky": "#d4af37", "sky-dark": "#b8960e", "sky-light": "#f5e6b8", "sky-rgb": "212,175,55",
-      "dark": "#0a0a1a", "dark2": "#141428", "text": "#0a0a1a", "muted": "#6a6a7a",
-      "pill-accent": "#ffe9a0", "page-bg": "#fdfdf5"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "psg": {
-    id: "psg", name: "PSG",
-    vars: {
-      "sky": "#004170", "sky-dark": "#003058", "sky-light": "#336a90", "sky-rgb": "0,65,112",
-      "dark": "#00112a", "dark2": "#001a3a", "text": "#00112a", "muted": "#5a7a9a",
-      "pill-accent": "#aaccee", "page-bg": "#f5f8ff"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "argentina": {
-    id: "argentina", name: "Argentina",
-    vars: {
-      "sky": "#74ACDF", "sky-dark": "#4a8bc4", "sky-light": "#a8ccea", "sky-rgb": "116,172,223",
-      "dark": "#0c1a2e", "dark2": "#152338", "text": "#0c1a2e", "muted": "#5a7a9a",
-      "pill-accent": "#c8e8ff", "page-bg": "#f5f9ff"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "brazil": {
-    id: "brazil", name: "Brazil",
-    vars: {
-      "sky": "#FFDF00", "sky-dark": "#D4B700", "sky-light": "#FFF176", "sky-rgb": "255,223,0",
-      "dark": "#002776", "dark2": "#001C54", "text": "#002776", "muted": "#5a7a9a",
-      "pill-accent": "#fff5aa", "page-bg": "#fdfff0"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "france": {
-    id: "france", name: "France",
-    vars: {
-      "sky": "#002654", "sky-dark": "#001a3a", "sky-light": "#334d73", "sky-rgb": "0,38,84",
-      "dark": "#0a0a2e", "dark2": "#151540", "text": "#0a0a2e", "muted": "#6a6a9a",
-      "pill-accent": "#aabbee", "page-bg": "#f5f5ff"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "germany": {
-    id: "germany", name: "Germany",
-    vars: {
-      "sky": "#DD0000", "sky-dark": "#aa0000", "sky-light": "#ee4444", "sky-rgb": "221,0,0",
-      "dark": "#1a1a1a", "dark2": "#0d0d0d", "text": "#1a1a1a", "muted": "#777777",
-      "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "portugal": {
-    id: "portugal", name: "Portugal",
-    vars: {
-      "sky": "#006847", "sky-dark": "#00543a", "sky-light": "#2a9a6a", "sky-rgb": "0,104,71",
-      "dark": "#1a0a0a", "dark2": "#250e0e", "text": "#1a0a0a", "muted": "#6a6a6a",
-      "pill-accent": "#aaffcc", "page-bg": "#f5fff8"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "spain": {
-    id: "spain", name: "Spain",
-    vars: {
-      "sky": "#C60B1E", "sky-dark": "#a00919", "sky-light": "#e04050", "sky-rgb": "198,11,30",
-      "dark": "#1a0a0e", "dark2": "#2a0a10", "text": "#1a0a0e", "muted": "#8a5a6a",
-      "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "italy": {
-    id: "italy", name: "Italy",
-    vars: {
-      "sky": "#004F9F", "sky-dark": "#002F5F", "sky-light": "#3b7ec4", "sky-rgb": "0,79,159",
-      "dark": "#111111", "dark2": "#222222", "text": "#111111", "muted": "#6a6a7a",
-      "pill-accent": "#aaccff", "page-bg": "#f5f9ff"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "england": {
-    id: "england", name: "England",
-    vars: {
-      "sky": "#CF0820", "sky-dark": "#90000d", "sky-light": "#ef5a60", "sky-rgb": "207,8,32",
-      "dark": "#0A192F", "dark2": "#132b50", "text": "#0A192F", "muted": "#5a6a7a",
-      "pill-accent": "#ffaaaa", "page-bg": "#fff5f5"
-    },
-    heroBg: "", captainImg: ""
-  },
-  "japan": {
-    id: "japan", name: "Japan",
-    vars: {
-      "sky": "#002B7F", "sky-dark": "#001a52", "sky-light": "#3366aa", "sky-rgb": "0,43,127",
-      "dark": "#0a0a2a", "dark2": "#151540", "text": "#0a0a2a", "muted": "#6a6a8a",
-      "pill-accent": "#aabbff", "page-bg": "#f5f6ff"
-    },
-    heroBg: "", captainImg: ""
-  }
-};
-
-const PAGE_DATA = {
-  "arsenal": {
-    flagHTML: `<img src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab" style="width:100%;height:100%;object-fit:cover;" alt="Arsenal FC" />`,
-    flagImgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab",
-    label: "Club Team · Premier League",
-    titleA: "ARSE", titleB: "NAL",
-    pills: ["<strong>13×</strong> League","<strong>14×</strong> FA Cup","<strong>1886</strong>"],
-    honours: [
-      {icon:"🏆",num:"13",label:"League<br>Titles"},
-      {icon:"🏅",num:"14",label:"FA Cup<br>Wins"},
-      {icon:"🏆",num:"2",label:"League<br>Cup"},
-      {icon:"⚽",num:"49",label:"Unbeaten<br>Run"},
-      {icon:"🎯",num:"3",label:"Doubles<br>Won"},
-      {icon:"📅",num:"1886",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🔴", bannerTrophy:"🔴",
-    bannerTitle:"The Invincibles",
-    bannerDesc:"2003/04 — The only side in Premier League history to go an entire season unbeaten. 49 games, 0 defeats.",
-    bannerYears:["1998 Double","2002 Double","2004 Invincible"],
-    shopTitle:"Shop Arsenal",
-    timeline:[
-      {dot:"🏆",year:"LONDON · 2003/04",event:"The Invincibles",detail:"Arsène Wenger's masterpiece — 38 games, 26 wins, 12 draws. The only side to win a Premier League title unbeaten."},
-      {dot:"🏅",year:"LONDON · 2002",event:"The Double — Again",detail:"Second Double under Wenger. Bergkamp, Henry, Pires firing on all cylinders. Highbury was electric."},
-      {dot:"🏆",year:"LONDON · 1998",event:"First Wenger Double",detail:"The Frenchman's revolution begins. League title and FA Cup in his first full season. A new era of Arsenal."},
-      {dot:"⚽",year:"LONDON · 1971",event:"First League & FA Cup Double",detail:"Charlie George's iconic goal at Wembley. The original Gunners Double — cementing Arsenal's historic legacy."}
-    ]
-  },
-  "barcelona": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="24" height="24" fill="#A50044"/><rect x="24" width="24" height="24" fill="#004D98"/><rect y="24" width="24" height="24" fill="#004D98"/><rect x="24" y="24" width="24" height="24" fill="#A50044"/></svg>`,
-    flagImgUrl: "",
-    label:"Club Team · La Liga",
-    titleA:"BARCE",titleB:"LONA",
-    pills:["<strong>5×</strong> UCL","<strong>27×</strong> La Liga","<strong>31×</strong> Copa"],
-    honours:[
-      {icon:"🏆",num:"5",label:"Champions<br>League"},
-      {icon:"🏅",num:"27",label:"La Liga<br>Titles"},
-      {icon:"🏆",num:"31",label:"Copa del<br>Rey"},
-      {icon:"⚽",num:"3",label:"Club World<br>Cup"},
-      {icon:"🎯",num:"6",label:"Supercopa<br>Spain"},
-      {icon:"📅",num:"1899",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"Més Que Un Club",
-    bannerDesc:"Five-time Champions League winners with the greatest academy in football.",
-    bannerYears:["1992","2006","2009","2011","2015"],
-    shopTitle:"Shop Barcelona",
-    timeline:[
-      {dot:"🏆",year:"EUROPE · 2015",event:"Treble Winners",detail:"Messi, Neymar, Suárez — the MSN trinity conquers all. UCL, La Liga and Copa del Rey in one season."},
-      {dot:"🏅",year:"EUROPE · 2011",event:"UCL Champions",detail:"Guardiola's masterpiece. Barcelona dismantle Manchester United 3-1 at Wembley with breathtaking football."},
-      {dot:"🏆",year:"EUROPE · 2009",event:"Historic Treble",detail:"The birth of tiki-taka. Xavi, Iniesta and Messi orchestrate perfection. Guardiola's first UCL title."},
-      {dot:"⚽",year:"SPAIN · 1992",event:"First European Cup",detail:"Johan Cruyff's Dream Team. Ronald Koeman's iconic free kick against Sampdoria in Wembley."}
-    ]
-  },
-  "chelsea": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#034694"/><circle cx="24" cy="24" r="14" fill="none" stroke="#DBA11B" stroke-width="2"/><text x="24" y="29" text-anchor="middle" font-family="serif" font-size="14" fill="#DBA11B" font-weight="bold">CFC</text></svg>`,
-    flagImgUrl: "",
-    label:"Club Team · Premier League",
-    titleA:"CHEL",titleB:"SEA",
-    pills:["<strong>2×</strong> UCL","<strong>6×</strong> PL","<strong>8×</strong> FA Cup"],
-    honours:[
-      {icon:"🏆",num:"2",label:"Champions<br>League"},
-      {icon:"🏅",num:"6",label:"Premier<br>League"},
-      {icon:"🏆",num:"8",label:"FA Cup<br>Titles"},
-      {icon:"⚽",num:"2",label:"Europa<br>League"},
-      {icon:"🎯",num:"5",label:"League<br>Cup"},
-      {icon:"📅",num:"1905",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"Pride of London",
-    bannerDesc:"Two-time UCL champions — the Blues have conquered Europe and England.",
-    bannerYears:["2012","2021"],
-    shopTitle:"Shop Chelsea",
-    timeline:[
-      {dot:"🏆",year:"PORTO · 2021",event:"Champions League Winners",detail:"Thomas Tuchel's Chelsea defeat Man City 1-0. Havertz coolly slots home for a famous triumph."},
-      {dot:"🏅",year:"MUNICH · 2012",event:"Champions League Winners",detail:"Drogba's dramatic header then penalty in extra time — the most improbable UCL win ever."},
-      {dot:"🏆",year:"ENGLAND · 2017",event:"Premier League Title",detail:"Conte's Chelsea win the league with a record 30 wins from 38 games."},
-      {dot:"⚽",year:"ENGLAND · 2005",event:"First Abramovich Title",detail:"Mourinho's Special One arrives. Drogba, Lampard and Terry lead Chelsea's dominant double."}
-    ]
-  },
-  "liverpool": {
-    flagHTML:`⚽`, flagImgUrl:"",
-    label:"Club Team · Premier League",
-    titleA:"LIVER",titleB:"POOL",
-    pills:["<strong>6×</strong> UCL","<strong>20×</strong> League","<strong>8×</strong> FA Cup"],
-    honours:[
-      {icon:"🏆",num:"6",label:"Champions<br>League"},
-      {icon:"🏅",num:"20",label:"League<br>Titles"},
-      {icon:"🏆",num:"8",label:"FA Cup<br>Wins"},
-      {icon:"🌍",num:"1",label:"Club World<br>Cup"},
-      {icon:"🎯",num:"10",label:"League<br>Cup"},
-      {icon:"📅",num:"1892",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"⭐",bannerTrophy:"🏆",
-    bannerTitle:"You'll Never Walk Alone",
-    bannerDesc:"Six-time European champions — the most successful English club on the continent.",
-    bannerYears:["1977","1978","1981","1984","2005","2019"],
-    shopTitle:"Shop Liverpool",
-    timeline:[
-      {dot:"🏆",year:"MADRID · 2019",event:"Champions League Winners",detail:"Defeating Tottenham 2–0 in the final. Salah and Origi seal a sixth European crown."},
-      {dot:"🏅",year:"ENGLAND · 2020",event:"Premier League Champions",detail:"Klopp's men end a 30-year league title wait with a record-breaking season."},
-      {dot:"🌙",year:"ISTANBUL · 2005",event:"The Miracle of Istanbul",detail:"3–0 down at half-time, Liverpool win on penalties. The greatest comeback in football history."},
-      {dot:"🏆",year:"ROME · 1984",event:"4th European Cup",detail:"The Boot Room era peaks. Paisley's dynasty cements Liverpool as Europe's finest club."}
-    ]
-  },
-  "man-city": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#6CABDD"/><circle cx="24" cy="24" r="14" fill="#1C2C5B"/><text x="24" y="29" text-anchor="middle" font-family="serif" font-size="12" fill="#6CABDD" font-weight="bold">MCFC</text></svg>`,
-    flagImgUrl:"",
-    label:"Club Team · Premier League",
-    titleA:"MAN",titleB:"CITY",
-    pills:["<strong>1×</strong> UCL","<strong>10×</strong> PL","<strong>1×</strong> Treble"],
-    honours:[
-      {icon:"🏆",num:"1",label:"Champions<br>League"},
-      {icon:"🏅",num:"10",label:"Premier<br>League"},
-      {icon:"🏆",num:"7",label:"FA Cup<br>Titles"},
-      {icon:"⚽",num:"1",label:"Club World<br>Cup"},
-      {icon:"🎯",num:"8",label:"League<br>Cup"},
-      {icon:"📅",num:"1880",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"The Centurions",
-    bannerDesc:"Treble winners in 2023 — Guardiola's City are a modern football dynasty.",
-    bannerYears:["2023 Treble"],
-    shopTitle:"Shop Man City",
-    timeline:[
-      {dot:"🏆",year:"ISTANBUL · 2023",event:"Treble Winners",detail:"Guardiola's greatest achievement. UCL, PL and FA Cup — the first English men's club treble since 1999."},
-      {dot:"🏅",year:"ENGLAND · 2022",event:"Premier League Title",detail:"Fifth league title in six seasons. De Bruyne, Bernardo and Haaland's first season together."},
-      {dot:"🏆",year:"ENGLAND · 2019",event:"Domestic Treble",detail:"An unprecedented domestic sweep — PL, FA Cup and League Cup in a single magnificent season."},
-      {dot:"⚽",year:"ENGLAND · 2018",event:"100-Point Season",detail:"City break every Premier League record. 100 points, 106 goals — the Centurions are born."}
-    ]
-  },
-  "man-utd": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#DA291C"/><rect x="10" y="10" width="28" height="28" rx="3" fill="#1a0a0a"/><text x="24" y="30" text-anchor="middle" font-family="serif" font-size="12" fill="#FBE122" font-weight="bold">MUFC</text></svg>`,
-    flagImgUrl:"",
-    label:"Club Team · Premier League",
-    titleA:"MAN",titleB:"UTD",
-    pills:["<strong>3×</strong> UCL","<strong>20×</strong> PL","<strong>12×</strong> FA Cup"],
-    honours:[
-      {icon:"🏆",num:"3",label:"Champions<br>League"},
-      {icon:"🏅",num:"20",label:"League<br>Titles"},
-      {icon:"🏆",num:"12",label:"FA Cup<br>Titles"},
-      {icon:"⚽",num:"1",label:"Europa<br>League"},
-      {icon:"🎯",num:"6",label:"League<br>Cup"},
-      {icon:"📅",num:"1878",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"Theatre of Dreams",
-    bannerDesc:"Three-time UCL winners — England's most decorated and storied club.",
-    bannerYears:["1968","1999","2008"],
-    shopTitle:"Shop Man United",
-    timeline:[
-      {dot:"🏆",year:"MOSCOW · 2008",event:"Champions League Winners",detail:"Ronaldo's header and Tevez's contribution. Penalties decided it over Chelsea — a pulsating night."},
-      {dot:"🏅",year:"ENGLAND · 1999",event:"The Treble",detail:"Sheringham and Solskjaer in stoppage time against Bayern. The most dramatic treble in football history."},
-      {dot:"🏆",year:"ENGLAND · 1993",event:"First Premier League Title",detail:"Alex Ferguson ends United's 26-year league drought. The Premier League dynasty begins."},
-      {dot:"⚽",year:"LONDON · 1968",event:"First European Cup",detail:"George Best, Bobby Charlton and Dennis Law. The first English club to win the European Cup."}
-    ]
-  },
-  "real-madrid": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#FFFFFF"/><rect x="8" y="8" width="32" height="32" rx="4" fill="#0a0a1a"/><text x="24" y="30" text-anchor="middle" font-family="serif" font-size="16" fill="#d4af37" font-weight="bold">RM</text></svg>`,
-    flagImgUrl:"",
-    label:"Club Team · La Liga",
-    titleA:"REAL",titleB:"MADRID",
-    pills:["<strong>15×</strong> UCL","<strong>36×</strong> La Liga","<strong>8×</strong> Club WC"],
-    honours:[
-      {icon:"🏆",num:"15",label:"Champions<br>League"},
-      {icon:"🏅",num:"36",label:"La Liga<br>Titles"},
-      {icon:"🏆",num:"20",label:"Copa del<br>Rey"},
-      {icon:"⚽",num:"8",label:"Club World<br>Cup"},
-      {icon:"🎯",num:"13",label:"Supercopa<br>Spain"},
-      {icon:"📅",num:"1902",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"Hala Madrid",
-    bannerDesc:"15-time Champions League winners — the most successful club in European history.",
-    bannerYears:["2022","2024"],
-    shopTitle:"Shop Real Madrid",
-    timeline:[
-      {dot:"🏆",year:"LONDON · 2024",event:"15th Champions League",detail:"Bellingham and Vinicius fire Real to yet another European crown — defying all expectations."},
-      {dot:"🏅",year:"PARIS · 2022",event:"14th Champions League",detail:"Benzema's hat-trick vs PSG, comeback vs City. Courtois saves everything in the final."},
-      {dot:"🏆",year:"MILAN · 2016",event:"11th Champions League",detail:"The first to win back-to-back UCL titles. Ramos, Ronaldo and Bale deliver in San Siro."},
-      {dot:"⚽",year:"MADRID · 1956",event:"First European Cup",detail:"Di Stéfano and Puskás lead Madrid to the inaugural European Cup. A dynasty is born."}
-    ]
-  },
-  "psg": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#004170"/><circle cx="24" cy="24" r="14" fill="#DA291C"/><text x="24" y="29" text-anchor="middle" font-family="serif" font-size="12" fill="#fff" font-weight="bold">PSG</text></svg>`,
-    flagImgUrl:"",
-    label:"Club Team · Ligue 1",
-    titleA:"PA",titleB:"RIS",
-    pills:["<strong>12×</strong> Ligue 1","<strong>15×</strong> Coupe","<strong>10×</strong> Trophée"],
-    honours:[
-      {icon:"🏅",num:"12",label:"Ligue 1<br>Titles"},
-      {icon:"🏆",num:"15",label:"Coupe de<br>France"},
-      {icon:"🏆",num:"10",label:"Trophée des<br>Champions"},
-      {icon:"⚽",num:"1",label:"Cup Winners<br>Cup"},
-      {icon:"🎯",num:"11",label:"Coupe de<br>la Ligue"},
-      {icon:"📅",num:"1970",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"Ici C'est Paris",
-    bannerDesc:"France's most dominant club with 12 Ligue 1 titles in the modern era.",
-    bannerYears:["2020 UCL Final","2024 UCL SF"],
-    shopTitle:"Shop PSG",
-    timeline:[
-      {dot:"🏆",year:"PARIS · 2024",event:"UCL Semi-Finals",detail:"PSG reach the last four of the Champions League in the post-Mbappé era. A new chapter begins."},
-      {dot:"🏅",year:"LISBON · 2020",event:"UCL Final",detail:"PSG reach their first ever Champions League final — beaten by Bayern in a Lisbon showpiece."},
-      {dot:"🏆",year:"PARIS · 2017",event:"Neymar Signs",detail:"The most expensive transfer in history at €222m. PSG's ambition has no ceiling."},
-      {dot:"⚽",year:"PARIS · 1996",event:"Cup Winners Cup",detail:"PSG lift their only European trophy with a star-studded side at Hamden Park."}
-    ]
-  },
-  "argentina": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#74ACDF"/><rect width="48" height="16" y="16" fill="#fff"/><circle cx="24" cy="24" r="5" fill="#F6C400"/></svg>`,
-    flagImgUrl:"",
-    label:"National Team · AFA",
-    titleA:"ARGEN",titleB:"TINA",
-    pills:["FIFA #<strong>1</strong>","<strong>3×</strong> World Champs","<strong>15×</strong> Copa"],
-    honours:[
-      {icon:"🏆",num:"3",label:"World Cup<br>Titles"},
-      {icon:"🌎",num:"15",label:"Copa América<br>Titles"},
-      {icon:"🥇",num:"2",label:"Olympic<br>Gold"},
-      {icon:"⚽",num:"1#",label:"FIFA<br>Ranking"},
-      {icon:"🎯",num:"107",label:"World Cup<br>Goals"},
-      {icon:"📅",num:"1893",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"World Cup Champions",
-    bannerDesc:"Three-time champions — the greatest football nation in the modern era.",
-    bannerYears:["1978","1986","2022"],
-    shopTitle:"Shop Argentina",
-    timeline:[
-      {dot:"🏆",year:"QATAR · 2022",event:"World Cup Champions",detail:"Messi's greatest moment — a masterclass final vs France, decided on penalties. The GOAT crowns his career."},
-      {dot:"🌎",year:"BRAZIL · 2021",event:"Copa América Winners",detail:"Ending a 28-year major trophy drought. Messi's first international title after years of heartbreak."},
-      {dot:"🏆",year:"MEXICO · 1986",event:"World Cup Champions",detail:"Maradona's legendary tournament — the Hand of God & Goal of the Century define football forever."},
-      {dot:"🏆",year:"ARGENTINA · 1978",event:"World Cup Champions",detail:"Hosts and champions. Mario Kempes leading the team to glory on home soil."}
-    ]
-  },
-  "brazil": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#009C3B"/><polygon points="24,6 46,24 24,42 2,24" fill="#FFDF00"/><circle cx="24" cy="24" r="8" fill="#002776"/></svg>`,
-    flagImgUrl:"",
-    label:"National Team · CBF",
-    titleA:"BRA",titleB:"ZIL",
-    pills:["FIFA #<strong>5</strong>","<strong>5×</strong> World Champs","<strong>9×</strong> Copa"],
-    honours:[
-      {icon:"🏆",num:"5",label:"World Cup<br>Titles"},
-      {icon:"🌎",num:"9",label:"Copa América<br>Titles"},
-      {icon:"⚽",num:"5#",label:"FIFA<br>Ranking"},
-      {icon:"🎯",num:"237",label:"World Cup<br>Goals"},
-      {icon:"🥇",num:"5",label:"Confed.<br>Cups"},
-      {icon:"📅",num:"1914",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"World Cup Legends",
-    bannerDesc:"Five-time World Cup champions — the most decorated nation in football history.",
-    bannerYears:["1958","1962","1970","1994","2002"],
-    shopTitle:"Shop Brazil",
-    timeline:[
-      {dot:"🏆",year:"JAPAN/S.KOREA · 2002",event:"5th World Cup Title",detail:"Ronaldo, Ronaldinho and Rivaldo — Brazil's Seleção at its irresistible best. The last great triumph."},
-      {dot:"🌎",year:"USA · 1994",event:"4th World Cup Title",detail:"Romário and Bebeto — the iconic baby-cradling celebration. Brazil's first title in 24 years."},
-      {dot:"🏆",year:"MEXICO · 1970",event:"The Greatest Team Ever",detail:"Pelé, Jairzinho, Rivelino. Often called the greatest World Cup team ever assembled."},
-      {dot:"⚽",year:"SWEDEN · 1958",event:"First World Cup Title",detail:"17-year-old Pelé announces himself to the world. Brazil's golden era begins."}
-    ]
-  },
-  "france": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="16" height="48" fill="#002654"/><rect x="16" width="16" height="48" fill="#fff"/><rect x="32" width="16" height="48" fill="#ED2939"/></svg>`,
-    flagImgUrl:"",
-    label:"National Team · FFF",
-    titleA:"FRA",titleB:"NCE",
-    pills:["FIFA #<strong>2</strong>","<strong>2×</strong> World Champs","<strong>2×</strong> Euro"],
-    honours:[
-      {icon:"🏆",num:"2",label:"World Cup<br>Titles"},
-      {icon:"🏅",num:"2",label:"European<br>Champs"},
-      {icon:"⚽",num:"2#",label:"FIFA<br>Ranking"},
-      {icon:"🎯",num:"120",label:"World Cup<br>Goals"},
-      {icon:"🥇",num:"2",label:"Confed.<br>Cups"},
-      {icon:"📅",num:"1904",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"Les Bleus Dynasty",
-    bannerDesc:"Two-time World Cup champions with a golden generation of talent.",
-    bannerYears:["1998","2018"],
-    shopTitle:"Shop France",
-    timeline:[
-      {dot:"🏆",year:"RUSSIA · 2018",event:"World Cup Champions",detail:"Mbappé becomes only second teenager to score in a World Cup final. France dominate 4-2 vs Croatia."},
-      {dot:"🏅",year:"FRANCE · 2000",event:"European Champions",detail:"Zidane's golden generation complete their tournament double — world and European champions."},
-      {dot:"🏆",year:"FRANCE · 1998",event:"First World Cup Title",detail:"Zidane's brace in the final. France host and win for the first time — Deschamps lifts the trophy."},
-      {dot:"⚽",year:"ENGLAND · 1984",event:"European Champions",detail:"Platini's France — arguably the most entertaining national team ever to grace a tournament."}
-    ]
-  },
-  "germany": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="16" fill="#1a1a1a"/><rect y="16" width="48" height="16" fill="#DD0000"/><rect y="32" width="48" height="16" fill="#FFCC00"/></svg>`,
-    flagImgUrl:"",
-    label:"National Team · DFB",
-    titleA:"GER",titleB:"MANY",
-    pills:["FIFA #<strong>14</strong>","<strong>4×</strong> World Champs","<strong>3×</strong> Euro"],
-    honours:[
-      {icon:"🏆",num:"4",label:"World Cup<br>Titles"},
-      {icon:"🏅",num:"3",label:"European<br>Champs"},
-      {icon:"⚽",num:"14#",label:"FIFA<br>Ranking"},
-      {icon:"🎯",num:"232",label:"World Cup<br>Goals"},
-      {icon:"🥇",num:"1",label:"Confed.<br>Cup"},
-      {icon:"📅",num:"1900",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"Die Mannschaft Legacy",
-    bannerDesc:"Four-time World Cup champions — relentless precision and engineering excellence.",
-    bannerYears:["1954","1974","1990","2014"],
-    shopTitle:"Shop Germany",
-    timeline:[
-      {dot:"🏆",year:"BRAZIL · 2014",event:"4th World Cup Title",detail:"Götze's extra-time winner against Argentina. Kroos, Müller and a nation in ecstasy."},
-      {dot:"🏅",year:"GERMANY · 1990",event:"3rd World Cup Title",detail:"Reunification year — Lothar Matthäus lifts the trophy as East and West became one."},
-      {dot:"🏆",year:"GERMANY · 1974",event:"2nd World Cup Title",detail:"Beckenbauer's home triumph. Der Bomber Gerd Müller seals a host nation victory."},
-      {dot:"⚽",year:"SWITZERLAND · 1954",event:"The Miracle of Bern",detail:"Germany's first World Cup title — stunning favourites Hungary in one of football's great upsets."}
-    ]
-  },
-  "portugal": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="18" height="48" fill="#006847"/><rect x="18" width="30" height="48" fill="#FE0000"/><circle cx="18" cy="24" r="7" fill="#FFC400"/></svg>`,
-    flagImgUrl:"",
-    label:"National Team · FPF",
-    titleA:"POR",titleB:"TUGAL",
-    pills:["FIFA #<strong>6</strong>","<strong>1×</strong> Euro Champ","<strong>1×</strong> Nations League"],
-    honours:[
-      {icon:"🏅",num:"1",label:"European<br>Champ"},
-      {icon:"🌐",num:"1",label:"Nations<br>League"},
-      {icon:"⚽",num:"6#",label:"FIFA<br>Ranking"},
-      {icon:"🎯",num:"75",label:"World Cup<br>Goals"},
-      {icon:"🥇",num:"1",label:"Olympic<br>Gold (Fut.)"},
-      {icon:"📅",num:"1914",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"Portuguese Glory",
-    bannerDesc:"Euro 2016 champions — a nation of passionate football and elite talent.",
-    bannerYears:["2016 Euro"],
-    shopTitle:"Shop Portugal",
-    timeline:[
-      {dot:"🏆",year:"FRANCE · 2016",event:"Euro 2016 Champions",detail:"Eder's extra-time strike vs France in Paris. Portugal win their first major title without Ronaldo on the pitch."},
-      {dot:"🌐",year:"PORTUGAL · 2019",event:"Nations League Champions",detail:"Ronaldo hat-trick in the semis, Gonçalo Guedes seals it. First NL title on home soil."},
-      {dot:"🏅",year:"KOREA/JAPAN · 2002",event:"World Cup Semi-Finalists",detail:"Figo, Rui Costa, and a golden generation reach the last four. Portugal announce themselves globally."},
-      {dot:"⚽",year:"ENGLAND · 1966",event:"World Cup Third Place",detail:"Eusébio — arguably the greatest player of his era — fires Portugal to third in their finest-ever tournament."}
-    ]
-  },
-  "spain": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="12" fill="#C60B1E"/><rect y="12" width="48" height="24" fill="#FFC400"/><rect y="36" width="48" height="12" fill="#C60B1E"/></svg>`,
-    flagImgUrl:"",
-    label:"National Team · RFEF",
-    titleA:"SP",titleB:"AIN",
-    pills:["FIFA #<strong>8</strong>","<strong>1×</strong> World Champ","<strong>4×</strong> Euro"],
-    honours:[
-      {icon:"🏆",num:"1",label:"World Cup<br>Title"},
-      {icon:"🏅",num:"4",label:"European<br>Champs"},
-      {icon:"⚽",num:"8#",label:"FIFA<br>Ranking"},
-      {icon:"🎯",num:"104",label:"World Cup<br>Goals"},
-      {icon:"🥇",num:"1",label:"Olympic<br>Gold"},
-      {icon:"📅",num:"1920",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"Tiki-Taka Legends",
-    bannerDesc:"World Cup and four-time Euro champions — masters of possession football.",
-    bannerYears:["2010 WC","2024 Euro"],
-    shopTitle:"Shop Spain",
-    timeline:[
-      {dot:"🏆",year:"GERMANY · 2024",event:"Euro 2024 Champions",detail:"Yamal's stunning strike and Oyarzabal's winner. Spain become Europe's most successful national side."},
-      {dot:"🏅",year:"SOUTH AFRICA · 2010",event:"World Cup Champions",detail:"Iniesta's goal in extra time vs Netherlands — the only World Cup title in Spanish history."},
-      {dot:"🏆",year:"AUSTRIA/SWISS · 2008",event:"Euro 2008 Champions",detail:"Fernando Torres' iconic solo goal vs Germany. The tiki-taka revolution begins."},
-      {dot:"⚽",year:"SPAIN · 1964",event:"European Champions",detail:"Hosted and won the 1964 European Championship. Spain's first major international triumph."}
-    ]
-  },
-  "italy": {
-    flagHTML: `<img src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/e59d686481b1707367309644c190304b.jpg?alt=media&token=fb3abf9f-0122-4045-b809-9027038f4ab0" style="width:100%;height:100%;object-fit:cover;" alt="Italy" />`,
-    flagImgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/e59d686481b1707367309644c190304b.jpg?alt=media&token=fb3abf9f-0122-4045-b809-9027038f4ab0",
-    label: "National Team · FIGC",
-    titleA: "ITA", titleB: "LY",
-    pills: ["FIFA #<strong>7</strong>", "<strong>4×</strong> World Champs", "<strong>2×</strong> Euro"],
-    honours: [
-      {icon:"🏆",num:"4",label:"World Cup<br>Titles"},
-      {icon:"🏅",num:"2",label:"European<br>Champs"},
-      {icon:"⚽",num:"7#",label:"FIFA<br>Ranking"},
-      {icon:"🎯",num:"128",label:"World Cup<br>Goals"},
-      {icon:"🥇",num:"1",label:"Olympic<br>Gold"},
-      {icon:"📅",num:"1898",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🏆",bannerTrophy:"🏆",
-    bannerTitle:"Gli Azzurri Legacy",
-    bannerDesc:"Four-time World Cup champions — defensive mastery, tactical brilliance, and passionate football.",
-    bannerYears:["1934","1938","1982","2006"],
-    shopTitle:"Shop Italy",
-    timeline:[
-      {dot:"🏆",year:"EUROPE · 2020",event:"Euro 2020 Champions",detail:"Mancini's Azzurri defeat England on penalties at Wembley. Donnarumma's heroics seal a historic win."},
-      {dot:"🏅",year:"GERMANY · 2006",event:"4th World Cup Title",detail:"Grosso's penalty and Cannavaro's defensive wall in Berlin. A tournament defined by unity and grit."},
-      {dot:"🏆",year:"SPAIN · 1982",event:"3rd World Cup Title",detail:"Paolo Rossi's legendary goalscoring run. Dino Zoff lifts the trophy at 40 years old."},
-      {dot:"⚽",year:"ITALY · 1938",event:"Back-to-Back World Champions",detail:"Vittorio Pozzo guides Italy to a second consecutive World Cup victory, establishing early dominance."}
-    ]
-  },
-  "england": {
-    flagHTML: `<img src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/188de6869f16638434a37e535504c181.jpg?alt=media&token=95867157-eaa4-49d5-b9b6-27719718656f" style="width:100%;height:100%;object-fit:cover;" alt="England" />`,
-    flagImgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/188de6869f16638434a37e535504c181.jpg?alt=media&token=95867157-eaa4-49d5-b9b6-27719718656f",
-    label: "National Team · The FA",
-    titleA: "ENG", titleB: "LAND",
-    pills: ["FIFA #<strong>4</strong>", "<strong>1×</strong> World Champ", "<strong>2×</strong> Euro Runners-up"],
-    honours: [
-      {icon:"🏆",num:"1",label:"World Cup<br>Title"},
-      {icon:"🥈",num:"2",label:"Euro<br>Runners-up"},
-      {icon:"⚽",num:"4#",label:"FIFA<br>Ranking"},
-      {icon:"🎯",num:"93",label:"World Cup<br>Goals"},
-      {icon:"🥇",num:"3",label:"Olympic<br>Gold (Am.)"},
-      {icon:"📅",num:"1863",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🦁",bannerTrophy:"🏆",
-    bannerTitle:"Three Lions Pride",
-    bannerDesc:"1966 World Cup champions — the home of football with a rich and storied history.",
-    bannerYears:["1966 WC"],
-    shopTitle:"Shop England",
-    timeline:[
-      {dot:"🥈",year:"GERMANY · 2024",event:"Euro 2024 Finalists",detail:"Back-to-back European Championship finals. Southgate's men fight bravely but fall short to Spain."},
-      {dot:"🥈",year:"LONDON · 2020",event:"Euro 2020 Finalists",detail:"First European Championship final in history. A heartbreaking shootout loss to Italy at Wembley."},
-      {dot:"🏆",year:"LONDON · 1966",event:"World Cup Champions",detail:"Bobby Moore lifts the trophy at Wembley. Geoff Hurst scores a historic hat-trick in a 4-2 win over West Germany."},
-      {dot:"⚽",year:"LONDON · 1872",event:"First International Match",detail:"England play Scotland in the first official international football match in history, drawing 0-0."}
-    ]
-  },
-  "japan": {
-    flagHTML:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" fill="#fff"/><circle cx="24" cy="24" r="9" fill="#BC002D"/></svg>`,
-    flagImgUrl:"",
-    label:"National Team · JFA",
-    titleA:"JA",titleB:"PAN",
-    pills:["FIFA #<strong>18</strong>","<strong>4×</strong> Asian Cup","<strong>7×</strong> World Cup"],
-    honours:[
-      {icon:"🏆",num:"4",label:"AFC Asian<br>Cup"},
-      {icon:"🌏",num:"7",label:"World Cup<br>Appearances"},
-      {icon:"⚽",num:"18#",label:"FIFA<br>Ranking"},
-      {icon:"🎯",num:"23",label:"World Cup<br>Goals"},
-      {icon:"🥇",num:"1",label:"Olympic<br>Bronze"},
-      {icon:"📅",num:"1921",label:"Year<br>Founded"}
-    ],
-    bannerEmoji:"🇯🇵",bannerTrophy:"🏆",
-    bannerTitle:"Samurai Blue Legacy",
-    bannerDesc:"Four-time Asian Cup champions and rising force on the world stage.",
-    bannerYears:["2000","2004","2011","2022 WC R16"],
-    shopTitle:"Shop Japan",
-    timeline:[
-      {dot:"🏆",year:"QATAR · 2022",event:"World Cup Round of 16",detail:"Stunning victories over Germany and Spain in the group stage. Japan announce themselves as a genuine world power."},
-      {dot:"🌏",year:"QATAR · 2011",event:"AFC Asian Cup Champions",detail:"A 1-0 extra-time win over Australia in the final. Japan's fourth continental title."},
-      {dot:"🏆",year:"CHINA · 2004",event:"AFC Asian Cup Champions",detail:"Japan defeat China 3-1 in the final despite a hostile Beijing crowd. Back-to-back Asian Cup glory."},
-      {dot:"⚽",year:"JAPAN · 2002",event:"World Cup Co-Hosts",detail:"Japan and South Korea host the first World Cup in Asia. Japan reach the Round of 16 for the first time on home soil."}
-    ]
-  }
-};
-
-/* ================================================================
-   HELPERS
-================================================================ */
-function buildHeroBg(cfg) {
-  if (cfg.heroBg) {
-    return `<div class="hero-bg-stripes" id="heroBgEl"></div>
-            <div class="hero-overlay"></div>`;
-  }
-  return `<div class="hero-bg-stripes" id="heroBgEl"></div>
-          <div class="hero-sun"></div>
-          <div class="hero-sun2"></div>
-          <div class="hero-sun-rays">
-            <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
-              ${Array.from({length:12},(_,i)=>{
-                const r=`rotate(${i*30},160,160)`;
-                return `<rect x="155" y="0" width="10" height="80" rx="5" fill="rgba(var(--sky-rgb),0.08)" transform="${r}"/>`;
-              }).join('')}
-            </svg>
-          </div>
-          <div class="hero-overlay"></div>`;
-}
-
-/* ================================================================
-   PAGE HTML BUILDER
-================================================================ */
-function buildPageHTML(id, cfg, data) {
-
-
-  const pills = data.pills.map(p =>
-    `<div class="hero-stat-pill">${p}</div>`
-  ).join('');
-
-  const bannerYears = data.bannerYears.map(y =>
-    `<div class="hl-year-badge">${y}</div>`
-  ).join('');
-
-  const timelineHTML = data.timeline.map(t =>
-    `<div class="timeline-item">
-      <div class="timeline-dot">${t.dot}</div>
-      <div class="timeline-content">
-        <div class="timeline-year">${t.year}</div>
-        <div class="timeline-event">${t.event}</div>
-        <div class="timeline-detail">${t.detail}</div>
-      </div>
-    </div>`
-  ).join('');
-
-  return `
-    <section class="hero">
-      ${buildHeroBg(cfg)}
-      <div class="topbar">
-        <button class="back-btn" onclick="history.back()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-        </button>
-        <div class="logo-badge" style="display:flex;align-items:center;"><img src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="JERSIFY" style="height:30px; width:auto; image-rendering:-webkit-optimize-contrast;" /></div>
-        <button class="wishlist-btn" id="wishlistBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="wishlistIcon">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </button>
-      </div>
-      <div class="hero-content">
-        <div class="country-flag-row">
-          <div class="flag-circle" id="flagCircleEl">${data.flagHTML}</div>
-          <div class="country-label">${data.label}</div>
-        </div>
-        <div class="hero-title">${data.titleA}<span>${data.titleB}</span></div>
-        <div class="hero-meta">${pills}</div>
-      </div>
-    </section>
-
-
-
-    <div class="highlight-banner" data-emoji="${data.bannerEmoji}">
-      <div class="hl-trophy">${data.bannerTrophy}</div>
-      <div class="hl-text">
-        <h3>${data.bannerTitle}</h3>
-        <p>${data.bannerDesc}</p>
-        <div class="hl-years">${bannerYears}</div>
-      </div>
-    </div>
-
-    <section class="products-section" style="margin-top:20px;">
-      <div class="section-title" style="padding:0;">${data.shopTitle}</div>
-    </section>
-
-    <div style="padding:0 20px;margin-top:14px;">
-      <div class="products-scroll" id="productsGrid">
-        <div class="product-loading">
-          <div class="product-loading-dot"></div>
-          <div class="product-loading-dot"></div>
-          <div class="product-loading-dot"></div>
-        </div>
-      </div>
-    </div>
-
-    <section class="section" style="margin-top:20px;">
-      <div class="section-title">Legacy</div>
-    </section>
-
-    <div class="timeline">
-      <div class="timeline-line"></div>
-      ${timelineHTML}
-    </div>
-
-    <div class="spacer"></div>
-  `;
-}
-
-/* ================================================================
-   SHARE PRODUCT HELPER
-================================================================ */
-function shareProduct(productKey, productName, event) {
-  event.stopPropagation();
-  const btn = event.currentTarget;
-
-  const teamId = window._JERSIFY_ID;
-  const url = `${location.origin}${location.pathname}?id=${teamId}`;
-  const shareData = { title: productName, text: `Check out ${productName} on JERSIFY!`, url };
-
-  /* Try native share sheet first (mobile) */
-  if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
-    navigator.share(shareData).catch(() => {});
-    return;
-  }
-
-  /* Fallback: copy to clipboard */
-  const copyText = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-    } catch {
-      /* Legacy fallback */
-      const ta = document.createElement('textarea');
-      ta.value = url;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+  <!-- ══ SCRIPT & FIREBASE DATA BINDING ══ -->
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
     }
-  };
 
-  copyText().then(() => {
-    btn.classList.add('copied');
-    showSyncToast('Link copied to clipboard!');
-    setTimeout(() => btn.classList.remove('copied'), 2000);
-  });
-}
-
-/* ================================================================
-   BOOT
-================================================================ */
-(function () {
-  const id   = (new URLSearchParams(location.search).get('id') || '').toLowerCase().trim();
-  const cfg  = TEAM_CONFIGS[id];
-  const data = PAGE_DATA[id];
-  if (!cfg || !data) return;
-
-  window._JERSIFY_ID  = id;
-  window._JERSIFY_CFG = cfg;
-  window._JERSIFY_DATA = data;
-
-  document.title = 'JERSIFY — ' + cfg.name;
-
-  const v = cfg.vars;
-  document.getElementById('root-vars').textContent = `:root {
-    --sky:          ${v['sky']           || '#888'};
-    --sky-dark:     ${v['sky-dark']      || '#666'};
-    --sky-light:    ${v['sky-light']     || '#aaa'};
-    --sky-rgb:      ${v['sky-rgb']       || '128,128,128'};
-    --dark:         ${v['dark']          || '#111'};
-    --dark2:        ${v['dark2']         || '#222'};
-    --text:         ${v['text']          || '#111'};
-    --muted:        ${v['muted']         || '#888'};
-    --pill-accent:  ${v['pill-accent']   || '#ffddaa'};
-    --page-bg:      ${v['page-bg']       || '#fff5f5'};
-    --maxw: 100%; --radius: 24px;
-  }`;
-
-  document.getElementById('app').innerHTML =
-    '<div class="page">' + buildPageHTML(id, cfg, data) + '</div>';
-
-  /* Apply static hero bg fallback immediately */
-  if (cfg.heroBg) {
-    const el = document.getElementById('heroBgEl');
-    if (el) el.style.backgroundImage = `url('${cfg.heroBg}')`;
-  }
-
-  /* Wishlist button */
-  const wishlistBtn  = document.getElementById('wishlistBtn');
-  const wishlistIcon = document.getElementById('wishlistIcon');
-  let wishlisted = false;
-  if (wishlistBtn) {
-    wishlistBtn.addEventListener('click', () => {
-      wishlisted = !wishlisted;
-      wishlistBtn.style.background = wishlisted ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)';
-      if (wishlistIcon) wishlistIcon.setAttribute('fill', wishlisted ? '#fff' : 'none');
-      wishlistBtn.style.transform = 'scale(1.2)';
-      setTimeout(() => wishlistBtn.style.transform = 'scale(1)', 200);
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("keydown", e => {
+      if (e.key === "Enter" && searchInput.value.trim()) {
+        window.location.href = `shop.html?q=${encodeURIComponent(searchInput.value.trim())}`;
+      }
     });
-  }
+  </script>
 
-  /* Scroll-in animations */
-  requestAnimationFrame(() => {
-    const cards = document.querySelectorAll(
-      '.achievement-card, .product-card, .timeline-item'
-    );
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.style.opacity   = '1';
-          e.target.style.transform = 'translateY(0)';
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.08 });
-    cards.forEach((c, i) => {
-      c.style.opacity    = '0';
-      c.style.transform  = 'translateY(24px)';
-      c.style.transition = `opacity .4s ease ${i * .05}s, transform .4s ease ${i * .05}s`;
-      io.observe(c);
-    });
-  });
-})();
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-/* ================================================================
-   LIGHTBOX
-================================================================ */
-function openLightbox(imgUrl, name) {
-  const overlay = document.getElementById('imgLightbox');
-  const img     = document.getElementById('lightboxImg');
-  const cap     = document.getElementById('lightboxCaption');
-  img.src  = imgUrl || '';
-  img.style.display = imgUrl ? 'block' : 'none';
-  cap.textContent = name || '';
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeLightbox(e) {
-  const overlay = document.getElementById('imgLightbox');
-  const img     = document.getElementById('lightboxImg');
-  if (e && e.target === img) return;
-  if (!e || e.target === overlay || (e.target && e.target.classList.contains('img-lightbox-close'))) {
-    overlay.classList.remove('open');
-    img.src = '';
-    document.body.style.overflow = '';
-  }
-}
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
-
-/* ================================================================
-   TOAST HELPER
-================================================================ */
-function showSyncToast(msg) {
-  const t = document.getElementById('syncToast');
-  if (!t) return;
-  t.innerHTML = `<span class="sync-dot"></span> ${msg}`;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-</script>
-
-<!-- ================================================================
-  FIREBASE MODULE — Products + Team Images DB Sync
-================================================================ -->
-<script type="module">
-  import { initializeApp }           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue, get, set }
-                                      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-  (function () {
-    const id   = window._JERSIFY_ID;
-    const cfg  = window._JERSIFY_CFG;
-    const data = window._JERSIFY_DATA;
-    if (!id || !cfg || !data) return;
-
-    const app = initializeApp({
-      apiKey:            "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
-      authDomain:        "jersify-f9b5e.firebaseapp.com",
-      projectId:         "jersify-f9b5e",
-      storageBucket:     "jersify-f9b5e.firebasestorage.app",
+    const firebaseConfig = {
+      apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
+      authDomain: "jersify-f9b5e.firebaseapp.com",
+      projectId: "jersify-f9b5e",
+      storageBucket: "jersify-f9b5e.firebasestorage.app",
       messagingSenderId: "461181023878",
-      appId:             "1:461181023878:web:6ebfbae603baf4a873c307",
-      databaseURL:       "https://jersify-f9b5e-default-rtdb.firebaseio.com"
-    });
-    const rtdb = getDatabase(app);
+      appId: "1:461181023878:web:6ebfbae603baf4a873c307",
+      databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
+    };
 
-    function extractLogoUrl(flagHTML) {
-      const match = (flagHTML || '').match(/src=["']([^"']+)["']/);
-      return match ? match[1] : '';
-    }
-
-    function applyHero(url) {
-      if (!url) return;
-      const el = document.getElementById('heroBgEl');
-      if (el) {
-        el.style.backgroundImage = `url('${url}')`;
-        el.style.backgroundSize  = 'cover';
-        el.style.backgroundPosition = 'center';
-      }
-    }
-
-    function applyLogo(url) {
-      if (!url) return;
-      const el = document.getElementById('flagCircleEl');
-      if (el) {
-        el.innerHTML =
-          `<img src="${url}"
-                style="width:100%;height:100%;object-fit:cover;"
-                alt="${cfg.name} Logo" />`;
-      }
-    }
-
-    const teamImgRef = ref(rtdb, `teamimages/${id}`);
-
-    get(teamImgRef).then(snap => {
-      if (!snap.exists()) {
-        const defaults = {
-          hero:    cfg.heroBg     || '',
-          captain: cfg.captainImg || '',
-          logo:    data.flagImgUrl || extractLogoUrl(data.flagHTML) || ''
-        };
-        set(teamImgRef, defaults)
-          .then(() => console.log(`[JERSIFY] Seeded /teamimages/${id}`, defaults))
-          .catch(err => console.warn('[JERSIFY] Seed failed:', err));
-      } else {
-        console.log(`[JERSIFY] /teamimages/${id} already exists — skipping seed.`);
-      }
-    }).catch(err => console.warn('[JERSIFY] get() failed:', err));
-
-    let firstLoad = true;
-    onValue(teamImgRef, snap => {
-      if (!snap.exists()) return;
-      const imgs = snap.val();
-      if (imgs.hero)    applyHero(imgs.hero);
-      if (imgs.logo)    applyLogo(imgs.logo);
-      if (!firstLoad) showSyncToast('Images synced from database');
-      firstLoad = false;
-      console.log(`[JERSIFY] Synced /teamimages/${id}:`, imgs);
-    }, err => console.warn('[JERSIFY] onValue error:', err));
-
-  })();
-</script>
-
-<!-- Product engine -->
-<script type="module">
-  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-  (function () {
-    const id  = window._JERSIFY_ID;
-    const cfg = window._JERSIFY_CFG;
-    if (!id || !cfg) return;
-
-    const app  = getApps()[0];
+    const app  = initializeApp(firebaseConfig);
     const rtdb = getDatabase(app);
     const auth = getAuth(app);
 
-    /* Inject Floating Auth Toast CSS styles */
-    const authStyle = document.createElement("style");
-    authStyle.innerHTML = `
-      .auth-toast {
-        position: fixed;
-        bottom: 24px;
-        left: 50%;
-        transform: translateX(-50%) translateY(40px);
-        background: rgba(17, 17, 17, 0.94);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        color: #fff;
-        padding: 12px 20px;
-        border-radius: 999px;
-        font-size: 13px;
-        font-weight: 600;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        z-index: 9999;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.4s, transform 0.4s;
-        border: 1px solid rgba(255,255,255,0.08);
-        white-space: nowrap;
-      }
-      .auth-toast.show {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateX(-50%) translateY(0);
-      }
-      .auth-toast-btn {
-        background: #c61f2f;
-        color: #fff;
-        border: none;
-        padding: 6px 14px;
-        border-radius: 999px;
-        font-weight: 800;
-        cursor: pointer;
-        font-size: 12px;
-        transition: background 0.2s, transform 0.2s;
-      }
-      .auth-toast-btn:hover {
-        background: #8f0f1d;
-        transform: scale(1.05);
-      }
-      .auth-toast-close {
-        background: none;
-        border: none;
-        color: rgba(255,255,255,0.6);
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-        padding: 0 4px;
-        transition: color 0.2s;
-      }
-      .auth-toast-close:hover {
-        color: #fff;
-      }
-    `;
-    document.head.appendChild(authStyle);
+    const teamId = (getQueryParam("id") || "barcelona").toLowerCase();
 
-    let authToastTimer = null;
+    const teamMetaMap = {
+      "barcelona": { name: "FC BARCELONA", bg: "#090557", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab" },
+      "real-madrid": { name: "REAL MADRID", bg: "#0f5bd6", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b" },
+      "arsenal": { name: "ARSENAL FC", bg: "#EF0107", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee" },
+      "man-city": { name: "MANCHESTER CITY", bg: "#0f4ea2", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7" },
+      "man-utd": { name: "MANCHESTER UNITED", bg: "#c61f2f", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b" },
+      "chelsea": { name: "CHELSEA FC", bg: "#1a4da1", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a" },
+      "psg": { name: "PARIS SAINT-GERMAIN", bg: "#12284c", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6" },
+      "liverpool": { name: "LIVERPOOL FC", bg: "#c8102e", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9" }
+    };
+
+    const currentMeta = teamMetaMap[teamId] || { name: teamId.toUpperCase().replace("-", " "), bg: "#111827", img: "" };
+    document.title = `JERSIFY – ${currentMeta.name}`;
+    document.getElementById("clubTitle").textContent = currentMeta.name;
+    document.getElementById("clubTitle").style.color = currentMeta.bg;
+    if (currentMeta.img) document.getElementById("clubHeroImg").src = currentMeta.img;
+
     onAuthStateChanged(auth, user => {
-      if (user) {
-        if (authToastTimer) { clearTimeout(authToastTimer); authToastTimer = null; }
-        const existingToast = document.getElementById("unauthToast");
-        if (existingToast) existingToast.remove();
-      } else {
-        if (!authToastTimer && !sessionStorage.getItem("jersify_unauth_dismissed")) {
-          authToastTimer = setTimeout(() => {
-            const toastDiv = document.createElement("div");
-            toastDiv.id = "unauthToast";
-            toastDiv.className = "auth-toast";
-            toastDiv.innerHTML = `
-              <span>👕 Sign in to track orders & save wishlist!</span>
-              <button class="auth-toast-btn" onclick="location.href='login.html'">Login</button>
-              <button class="auth-toast-close" onclick="this.parentElement.classList.remove('show'); sessionStorage.setItem('jersify_unauth_dismissed', 'true'); setTimeout(() => this.parentElement.remove(), 400);">✕</button>
-            `;
-            document.body.appendChild(toastDiv);
-            setTimeout(() => toastDiv.classList.add("show"), 100);
-          }, 60000);
-        }
-      }
+      const cartBadge = document.getElementById("cartBadge");
+      function updateBadge(n) { if (n > 0) { cartBadge.textContent = n > 9 ? "9+" : n; cartBadge.classList.add("show"); } }
+      updateBadge(JSON.parse(localStorage.getItem("jersify_cart") || "[]").length);
     });
 
+    async function loadTeamProducts() {
+      const jerseysGrid = document.getElementById("teamJerseysGrid");
+      const specialGrid = document.getElementById("specialGrid");
 
-    const NAME_RULES = [
-      ["paris saint germain",  "psg"],
-      ["paris saint-germain",  "psg"],
-      ["manchester united",    "man-utd"],
-      ["manchester city",      "man-city"],
-      ["real madrid",          "real-madrid"],
-      ["fc barcelona",         "barcelona"],
-      ["liverpool fc",         "liverpool"],
-      ["chelsea fc",           "chelsea"],
-      ["arsenal fc",           "arsenal"],
-      ["man united",           "man-utd"],
-      ["man city",             "man-city"],
-      ["man utd",              "man-utd"],
-      ["arsenal",              "arsenal"],
-      ["barcelona",            "barcelona"],
-      ["liverpool",            "liverpool"],
-      ["chelsea",              "chelsea"],
-      ["psg",                  "psg"],
-      ["argentina",            "argentina"],
-      ["brazil",               "brazil"],
-      ["portugal",             "portugal"],
-      ["france",               "france"],
-      ["germany",              "germany"],
-      ["spain",                "spain"],
-    ];
+      try {
+        const snap = await get(ref(rtdb, "products"));
+        if (!snap.exists()) return;
+        let products = [];
+        snap.forEach(d => { const p = d.val(); p._id = d.key; products.push(p); });
 
-    function resolveTeamFromName(rawName) {
-      const n = (rawName || '').toLowerCase();
-      for (const [keyword, pageId] of NAME_RULES) {
-        if (n.includes(keyword)) return pageId;
-      }
-      return null;
-    }
+        // Filter products matching team
+        let matching = products.filter(p => {
+          const t = (p.team || "").toString().toLowerCase();
+          return t.includes(teamId) || t.includes(currentMeta.name.toLowerCase());
+        });
 
-    onValue(ref(rtdb, 'products'), snapshot => {
-      const container = document.getElementById('productsGrid');
-      if (!container) return;
+        if (!matching.length) matching = products.slice(0, 4);
 
-      let html = '';
-
-      snapshot.forEach(child => {
-        const p   = child.val();
-        const key = child.key;
-        if (p.status && p.status !== 'active') return;
-        const resolvedTeam = resolveTeamFromName(p.name);
-        if (resolvedTeam !== id) return;
-
-        const safeName    = (p.name || 'Kit').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        const safeNameJs  = (p.name || 'Kit').replace(/'/g, "\\'");
-        const imgUrl      = p.imgUrl || '';
-
-        html += `
-          <div class="product-card">
-            <div class="product-card-top${imgUrl ? '' : ' sky-bg'}"
-                 onclick="openLightbox('${imgUrl}','${safeName}')">
-              ${p.badge ? `<div class="product-badge-new">${p.badge}</div>` : ''}
-              ${imgUrl
-                ? `<div class="img-skeleton"><svg class="skel-icon" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="4"/><circle cx="8" cy="8" r="2"/><path d="M2 14l5-5 4 4 3-3 8 8"/></svg></div><img src="${imgUrl}" alt="${p.name || 'Kit'}" loading="lazy" decoding="async" onload="this.classList.add('loaded');this.previousElementSibling.classList.add('hidden')" />`
-                : `<svg viewBox="0 0 100 120" width="90" height="108" xmlns="http://www.w3.org/2000/svg" style="pointer-events:none;">
-                    <path d="M25 28 L13 42 L25 47 L25 108 L75 108 L75 47 L87 42 L75 28 C72 26 64 24 60 21 C58 19 57 17 50 17 C43 17 42 19 40 21 C36 24 28 26 25 28Z" fill="var(--sky)"/>
-                    <path d="M25 28 L13 42 L25 47Z" fill="var(--sky-dark)" opacity="0.9"/>
-                    <path d="M75 28 L87 42 L75 47Z" fill="var(--sky-dark)" opacity="0.9"/>
-                    <text x="50" y="82" text-anchor="middle" font-family="Bebas Neue,sans-serif" font-size="22" fill="rgba(255,255,255,.92)">${cfg.name.substring(0,3).toUpperCase()}</text>
-                  </svg>`
-              }
-              <button
-                class="product-share-btn"
-                title="Share product"
-                aria-label="Share ${safeName}"
-                onclick="shareProduct('${key}','${safeNameJs}',event)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="18" cy="5" r="3"/>
-                  <circle cx="6" cy="12" r="3"/>
-                  <circle cx="18" cy="19" r="3"/>
-                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                </svg>
-              </button>
-            </div>
-            <div class="product-card-bottom">
-              <div class="product-card-name">${p.name || 'Jersify Kit'}</div>
-              <div class="product-card-sub">${p.type || 'Kit'}</div>
-              <div class="product-card-footer">
-                <div class="product-price">${p.price ? '₹' + p.price : '₹1499'}</div>
-                <button class="buy-btn"
-                  onclick="event.stopPropagation();window.location.href='checkout.html?id=${key}'">
-                  BUY NOW
-                </button>
+        function createCard(p) {
+          const name  = p.name || `${currentMeta.name} Home 2026-27`;
+          const price = p.price ? `₹ ${p.price}` : "₹ 800";
+          const img   = p.imgUrl || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop";
+          return `
+            <div class="product-card-figma" onclick="window.location.href='shop.html?product=${p._id}'">
+              <div class="pic-wrap">
+                <img src="${img}" alt="${name}" loading="lazy" />
+              </div>
+              <div class="details">
+                <div class="title">${name}</div>
+                <div class="price">${price}</div>
               </div>
             </div>
-          </div>`;
-      });
+          `;
+        }
 
-      container.innerHTML = html ||
-        `<div class="no-products">No products available yet for ${cfg.name}.</div>`;
-
-      /* Animate in */
-      container.querySelectorAll('.product-card').forEach((card, i) => {
-        card.style.opacity    = '0';
-        card.style.transform  = 'translateY(24px)';
-        card.style.transition = `opacity .4s ease ${i * 0.08}s, transform .4s ease ${i * 0.08}s`;
-        setTimeout(() => {
-          card.style.opacity   = '1';
-          card.style.transform = 'translateY(0)';
-        }, 50);
-      });
-
-      const io = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            e.target.style.opacity   = '1';
-            e.target.style.transform = 'translateY(0)';
-            io.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.08 });
-      container.querySelectorAll('.product-card').forEach(c => io.observe(c));
-    });
-  })();
-</script>
-
+        jerseysGrid.innerHTML = matching.slice(0, 2).map(p => createCard(p)).join("");
+        specialGrid.innerHTML = (matching.length > 2 ? matching.slice(2, 4) : products.slice(2, 4)).map(p => createCard(p)).join("");
+      } catch (e) { console.error("Team products fetch failed", e); }
+    }
+    loadTeamProducts();
+  </script>
 </body>
 </html>
