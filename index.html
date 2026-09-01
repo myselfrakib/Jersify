@@ -4,784 +4,470 @@
   <!-- Standard favicon -->
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" href="favicon.png" type="image/png">
-  <!-- Apple devices -->
   <link rel="apple-touch-icon" href="favicon.png">
-  <!-- Preload splash + header logo — fetches before anything else so it renders instantly -->
-  <link rel="preload" as="image" fetchpriority="high" href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3">
-<meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <!-- JS preload belt-and-suspenders: starts fetch before any other script -->
-  <script>
-    (function(){
-      var img = new Image();
-      img.fetchPriority = 'high';
-      img.src = 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3';
-    })();
-  </script>
-</head>
   
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>JERSIFY</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
+  <!-- Google Fonts required by Figma Design Spec -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Krona+One&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Varela+Round&display=swap" rel="stylesheet">
+
+  <style>
     :root {
       --bg: #ffffff;
-      --card: #ffffff;
-      --text: #111111;
-      --muted: #6f6f6f;
+      --card-bg: #ffffff;
+      --text: #000000;
+      --muted: #888888;
       --accent: #c61f2f;
-      --accent2: #8f0f1d;
-      --line: #ececec;
-      --shadow: 0 12px 28px rgba(0,0,0,.08);
-      --shadow-soft: 0 8px 18px rgba(0,0,0,.06);
-      --shadow-card: 0 6px 24px rgba(0,0,0,.11), 0 1.5px 4px rgba(0,0,0,.07);
-      --radius: 22px;
-
-      /* Fluid spacing & sizing tokens */
-      --space-xs:  clamp(6px,  1vw, 10px);
-      --space-sm:  clamp(10px, 2vw, 16px);
-      --space-md:  clamp(14px, 2.5vw, 24px);
-      --space-lg:  clamp(18px, 3vw, 32px);
-      --space-xl:  clamp(22px, 4vw, 48px);
-
-      --card-w:    clamp(150px, 24vw, 220px);
-      --hero-h:    clamp(190px, 32vw, 420px);
-      --chip-w:    clamp(80px,  13vw, 120px);
-      --chip-img:  clamp(52px,  9vw,  84px);
-      --pic-h:     clamp(130px, 22vw, 240px);
-      --reel-w:    clamp(130px, 20vw, 190px);
-      --reel-h:    clamp(210px, 34vw, 320px);
-      --promo-w:   clamp(190px, 30vw, 280px);
-      --promo-h:   clamp(90px,  14vw, 140px);
-
-      --fs-logo:   clamp(36px, 6vw, 62px);
-      --fs-h3:     clamp(15px, 2.2vw, 22px);
-      --fs-card-h: clamp(11px, 1.5vw, 14px);
-      --fs-price:  clamp(12px, 1.6vw, 15px);
-      --fs-btn:    clamp(9px,  1.2vw, 12px);
-      --fs-badge:  clamp(7px,  1vw,   9px);
-      --fs-body:   clamp(10px, 1.4vw, 13px);
+      --line: #e5e5e5;
+      --radius-sm: 5px;
+      --radius-md: 10px;
+      --radius-lg: 20px;
+      --radius-pill: 17px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0 }
-    html, body { height: 100%; }
-
-    body {
-      font-family: 'Poppins', Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    a { text-decoration: none; color: inherit }
-    button, input { font: inherit }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { background: #f5f5f5; color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    button, input { font: inherit; }
 
     /* ══ SPLASH ══ */
     #initScreen {
       position: fixed; inset: 0; z-index: 9998; background: #ffffff;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px;
       transition: opacity .45s ease, visibility .45s ease;
     }
     #initScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .splash-logo-img { width: clamp(200px, 55vw, 320px); height: auto; object-fit: contain; }
+    .splash-bar-wrap { width: 180px; height: 3px; background: rgba(0,0,0,.10); border-radius: 999px; overflow: hidden; }
+    .splash-bar { height: 100%; width: 0%; background: var(--text); border-radius: 999px; transition: width .3s ease; }
+    .splash-status { font-size: 11px; color: rgba(0,0,0,.4); font-weight: 500; letter-spacing: .5px; }
 
-    .splash-logo-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .splash-logo-img {
-      width: clamp(200px, 55vw, 380px);
-      height: auto;
-      object-fit: contain;
-      display: block;
-    }
-    /* Fallback text if image fails */
-    .splash-logo-fallback { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 10vw, 80px); letter-spacing: 4px; color: #111; line-height: 1; display: none; }
-    .splash-logo-fallback span { color: var(--accent); }
-
-    .splash-bar-wrap { width: clamp(160px, 28vw, 240px); height: 3px; background: rgba(0,0,0,.10); border-radius: 999px; overflow: hidden; }
-    .splash-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #ff6b7a); border-radius: 999px; transition: width .3s ease; }
-    .splash-status { font-size: clamp(10px, 1.2vw, 12px); color: rgba(0,0,0,.38); font-weight: 500; letter-spacing: .5px; min-height: 16px; }
-
-    /* ══ PAGE ══ */
+    /* ══ MAIN CONTAINER (Center aligned max 430px for mobile frame parity) ══ */
     .page {
       width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      background: #ffffff;
       min-height: 100vh;
-      background: #fff;
       position: relative;
-      overflow: hidden;
-      padding-bottom: clamp(90px, 14vw, 120px);
+      overflow-x: hidden;
+      padding-bottom: 90px;
       opacity: 0;
       transition: opacity .4s ease;
+      box-shadow: 0 0 30px rgba(0,0,0,.05);
     }
     .page.visible { opacity: 1; }
 
-    /* ── HEADER ── */
+    /* ── HEADER (Figma Header style) ── */
     .topbar {
-      display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm);
-      padding: clamp(10px, 1.8vw, 16px) clamp(14px, 3vw, 40px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
       position: sticky; top: 0;
-      background: rgba(255,255,255,.98); backdrop-filter: blur(8px);
-      z-index: 30; border-bottom: 1px solid rgba(0,0,0,.04);
+      background: rgba(255,255,255,.98); backdrop-filter: blur(10px);
+      z-index: 40; border-bottom: 1px solid rgba(0,0,0,.05);
     }
-
-    /* ── LOGO IMAGE ── */
-    .logo-img-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      cursor: pointer;
-      flex-shrink: 0;
+    .logo-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .logo-img { height: 36px; width: auto; max-width: 150px; object-fit: contain; }
+    .logo-text-fallback { font-family: 'Krona One', sans-serif; font-size: 20px; letter-spacing: 2px; color: #000; }
+    
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .header-btn {
+      width: 36px; height: 36px; border: none; border-radius: 50%;
+      background: #f2f2f2; color: #111; display: grid; place-items: center;
+      cursor: pointer; position: relative; transition: transform .2s ease;
     }
-    .logo-img {
-      height: clamp(38px, 7vw, 64px);
-      width: auto;
-      max-width: clamp(140px, 28vw, 240px);
-      object-fit: contain;
-      object-position: left center;
-      display: block;
+    .header-btn:active { transform: scale(0.95); }
+    .header-btn svg { width: 18px; height: 18px; }
+    .cart-badge {
+      position: absolute; top: -3px; right: -3px; width: 16px; height: 16px;
+      border-radius: 50%; background: #000; color: #fff; font-size: 9px;
+      font-weight: 800; display: none; place-items: center; font-family: 'DM Sans', sans-serif;
     }
-    .logo-sub { font-size: clamp(8px, 1vw, 11px); font-weight: 600; color: var(--muted); letter-spacing: .5px; margin-top: 1px; font-family: 'Poppins', sans-serif; }
-
-    .header-actions { display: flex; align-items: center; gap: var(--space-sm); flex-shrink: 0; }
-    .shop-btn { border: none; background: #111; color: #fff; border-radius: 999px; padding: clamp(7px, 1.2vw, 11px) clamp(12px, 2vw, 18px); font-size: clamp(11px, 1.4vw, 13px); font-weight: 700; letter-spacing: .4px; cursor: pointer; box-shadow: var(--shadow-soft); }
-    .icon-btn { width: clamp(34px, 5vw, 42px); height: clamp(34px, 5vw, 42px); border: none; border-radius: 50%; background: #111; color: #fff; display: grid; place-items: center; box-shadow: var(--shadow-soft); cursor: pointer; flex: 0 0 auto; transition: transform .2s ease; position: relative; }
-    .icon-btn:hover { transform: translateY(-2px) }
-    .icon-btn svg { width: clamp(16px, 2.5vw, 20px); height: clamp(16px, 2.5vw, 20px); }
-    .profile-btn { border: 2px solid #fff; background: linear-gradient(135deg, #f4d8de, #f7f7f7); color: #111; overflow: hidden; }
-    .profile-btn svg { width: clamp(16px, 2.5vw, 20px); height: clamp(16px, 2.5vw, 20px); }
-    .profile-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-    .profile-initials { font-size: clamp(11px, 1.5vw, 14px); font-weight: 800; color: var(--accent); font-family: 'Poppins', sans-serif; }
-    .cart-badge { position: absolute; top: -4px; right: -4px; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 9px; font-weight: 900; display: none; place-items: center; border: 2px solid #fff; font-family: 'Poppins', sans-serif; }
     .cart-badge.show { display: grid; }
+    .profile-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .profile-initials { font-weight: 800; font-size: 12px; color: #111; }
 
-    /* ── SEARCH ── */
-    .search-wrap { padding: 0 clamp(14px, 3vw, 40px) var(--space-md); }
-    .search { display: flex; align-items: center; gap: var(--space-sm); width: 100%; border: 1.5px solid rgba(17,17,17,.16); background: #fff; border-radius: 999px; padding: clamp(9px, 1.5vw, 13px) clamp(12px, 2vw, 16px); box-shadow: 0 4px 18px rgba(0,0,0,.04); transition: border-color .2s; }
-    .search:focus-within { border-color: var(--accent); box-shadow: 0 4px 18px rgba(198,31,47,.1); }
-    .search svg { width: clamp(16px, 2vw, 20px); height: clamp(16px, 2vw, 20px); opacity: .65; flex: 0 0 auto }
-    .search input { border: none; outline: none; width: 100%; background: transparent; font-size: clamp(13px, 1.6vw, 15px); }
-    .mic { width: clamp(16px, 2vw, 20px); height: clamp(16px, 2vw, 20px); opacity: .7; flex: 0 0 auto; cursor: pointer; }
-
-    /* ── SECTION ── */
-    .section { padding: 0 clamp(14px, 3vw, 40px) var(--space-md); }
-    .section h3 { font-size: var(--fs-h3); font-weight: 900; margin: 0 0 var(--space-sm); letter-spacing: .2px; }
-    .section-sub { font-size: var(--fs-body); color: var(--muted); margin-top: -6px; margin-bottom: var(--space-sm); }
-
-    /* ── SECTION ROW HEADER ── */
-    .row-header { display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(14px, 3vw, 40px) var(--space-sm); }
-    .row-header h3 { font-size: var(--fs-h3); font-weight: 900; margin: 0; }
-    .row-header-flat { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm); }
-    .row-header-flat h3 { font-size: var(--fs-h3); font-weight: 900; margin: 0; }
-    .nav-controls { display: flex; gap: var(--space-xs); }
-    .nav-ctrl { border: none; background: #111; color: #fff; border-radius: 999px; width: clamp(30px, 4.5vw, 38px); height: clamp(30px, 4.5vw, 38px); display: grid; place-items: center; cursor: pointer; box-shadow: var(--shadow-soft); flex-shrink: 0; }
-    .nav-ctrl svg { width: clamp(15px, 2.2vw, 20px); height: clamp(15px, 2.2vw, 20px); }
-
-    /* ── HERO SLIDER ── */
-    .hero { padding: 0 clamp(14px, 3vw, 40px) var(--space-md); }
-    .slider { position: relative; border-radius: clamp(18px, 3vw, 30px); overflow: hidden; background: #111; box-shadow: var(--shadow); height: var(--hero-h); }
-    .slides { display: flex; height: 100%; transition: transform .5s ease; }
-    .slide { width: 100%; height: 100%; position: relative; flex: 0 0 100%; overflow: hidden; }
-    .slide-media-cover { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; display: block; }
-    .dots { position: absolute; left: 0; right: 0; bottom: clamp(8px, 1.5vw, 14px); display: flex; gap: 6px; justify-content: center; z-index: 10; }
-    .dot { width: clamp(7px, 1.2vw, 10px); height: clamp(7px, 1.2vw, 10px); border-radius: 50%; border: none; background: rgba(255,255,255,.55); cursor: pointer; transition: .2s; }
-    .dot.active { background: #fff; transform: scale(1.2) }
-
-    /* ── FEATURES ── */
-    .features { margin: 0 clamp(14px, 3vw, 40px) var(--space-md); background: #fff; border-radius: clamp(14px, 2vw, 20px); box-shadow: 0 8px 18px rgba(0,0,0,.05); overflow: hidden; border: 1px solid var(--line); }
-    .feature-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; padding: clamp(8px, 1.5vw, 14px) clamp(6px, 1vw, 12px); text-align: center; }
-    .feature { padding: clamp(4px, 1vw, 8px) 2px; }
-    .icon { width: clamp(20px, 3vw, 26px); height: clamp(20px, 3vw, 26px); margin: 0 auto 4px; display: grid; place-items: center; color: #222; }
-    .icon svg { width: 100%; height: 100%; }
-    .feature h4 { font-size: clamp(9px, 1.3vw, 12px); font-weight: 800; margin-bottom: 2px; line-height: 1.1; }
-    .feature p { font-size: clamp(8px, 1.1vw, 10px); color: var(--muted); line-height: 1.1; }
-    .feature-bar { height: 6px; background: linear-gradient(90deg, #f1f1f1 0%, #ca2534 100%); }
-
-    /* ── WOW PICKS ── */
-    .loop-section { padding: 0 0 var(--space-md); }
-    .loop-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; width: 100%; padding: 2px 0 6px; cursor: grab; user-select: none; -webkit-user-select: none; }
-    .loop-viewport::-webkit-scrollbar { display: none; }
-    .loop-viewport.is-dragging { cursor: grabbing; scroll-behavior: auto; }
-    .loop-track { display: flex; gap: clamp(10px, 1.5vw, 16px); width: max-content; padding: 0 clamp(14px, 3vw, 40px); }
-
-    .loop-card { flex: 0 0 var(--card-w); scroll-snap-align: start; border-radius: clamp(18px, 2.5vw, 26px); background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow-card); overflow: hidden; cursor: pointer; transition: box-shadow .22s ease, transform .22s ease; }
-    .loop-card:hover { box-shadow: 0 18px 42px rgba(0,0,0,.16), 0 3px 8px rgba(0,0,0,.1); transform: translateY(-3px); }
-    .loop-card .pic { height: var(--pic-h); background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%); display: grid; place-items: center; position: relative; overflow: hidden; }
-    .loop-card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; position: absolute; inset: 0; }
-    .mini-jersey { width: clamp(70px, 11vw, 96px); height: clamp(84px, 14vw, 116px); border-radius: 22px; position: relative; z-index: 1; box-shadow: 0 14px 24px rgba(0,0,0,.32); border: 1px solid rgba(255,255,255,.16); display: grid; place-items: center; color: #fff; font-weight: 900; text-align: center; overflow: hidden; }
-    .mini-jersey.red   { background: linear-gradient(135deg, #c61f2f 0%, #101010 45%, #c61f2f 100%); }
-    .mini-jersey.white { background: linear-gradient(135deg, #ffffff 0%, #f1f1f1 45%, #ffffff 100%); color: #111; }
-    .mini-jersey.blue  { background: linear-gradient(135deg, #ffffff 0%, #dff0ff 45%, #1b76d1 100%); color: #111; }
-    .mini-jersey.dark  { background: linear-gradient(135deg, #111 0%, #3b3b3b 45%, #111 100%); }
-    .mini-jersey.gold  { background: linear-gradient(135deg, #f8df8a 0%, #fff5ca 45%, #c79b16 100%); color: #111; }
-    .mini-jersey span  { font-size: clamp(20px, 3.5vw, 28px); line-height: 1; display: block; }
-    .mini-jersey small { font-size: clamp(7px, 1vw, 10px); letter-spacing: 1px; margin-top: 4px; display: block; }
-    .loop-info { padding: clamp(8px, 1.5vw, 12px) clamp(10px, 1.8vw, 14px) clamp(10px, 1.8vw, 14px); }
-    .loop-info h4 { font-size: var(--fs-card-h); font-weight: 900; margin-bottom: 4px; }
-    .loop-info p { font-size: var(--fs-body); color: var(--muted); line-height: 1.35; min-height: 26px; }
-    .loop-badge { display: inline-block; font-size: var(--fs-badge); font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 999px; background: var(--accent); color: #fff; margin-bottom: 4px; letter-spacing: .5px; }
-    .loop-info .price-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-top: var(--space-xs); }
-    .loop-info .price { font-size: var(--fs-price); font-weight: 900; }
-    .small-btn { border: none; background: linear-gradient(180deg, var(--accent), var(--accent2)); color: #fff; border-radius: 999px; padding: clamp(6px, 1vw, 9px) clamp(9px, 1.5vw, 13px); font-size: var(--fs-btn); font-weight: 800; box-shadow: 0 8px 18px rgba(198,31,47,.22); cursor: pointer; }
-
-    /* ── CHIPS ── */
-    .chip-row { display: flex; gap: clamp(8px, 1.5vw, 14px); overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
-    .chip-row::-webkit-scrollbar { display: none }
-    .card-chip { flex: 0 0 var(--chip-w); background: #fff; border: 1px solid var(--line); border-radius: clamp(14px, 2vw, 20px); box-shadow: var(--shadow-card); padding: clamp(6px, 1.2vw, 10px); text-align: center; transition: box-shadow .2s, transform .2s; cursor: pointer; }
-    .card-chip:hover { box-shadow: 0 14px 32px rgba(0,0,0,.14); transform: translateY(-2px); }
-    .card-chip .chip-img { width: var(--chip-img); height: var(--chip-img); border-radius: 50%; overflow: hidden; margin: 0 auto clamp(6px, 1vw, 10px); border: 2px solid #f1f1f1; background: #f8f8f8; display: grid; place-items: center; position: relative; }
-    .card-chip .chip-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .card-chip .chip-name { font-size: clamp(9px, 1.2vw, 12px); font-weight: 800; line-height: 1.15; }
-    .card-chip .chip-sub { font-size: clamp(7px, 1vw, 10px); color: var(--muted); margin-top: 2px; line-height: 1.1; }
-
-    /* ── MEDIA SPACE ── */
-    .media-space { width: 100%; aspect-ratio: 3/1; border-radius: clamp(14px, 2vw, 20px); overflow: hidden; border: 1px dashed rgba(17,17,17,.18); background: #fff; display: grid; place-items: center; color: #666; box-shadow: 0 8px 18px rgba(0,0,0,.04); position: relative; }
-    .media-space img, .media-space video { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .media-space .placeholder { font-size: clamp(11px, 1.5vw, 14px); font-weight: 700; text-align: center; padding: 0 14px; }
-
-    /* ── PROMOTIONS ── */
-    .promo-viewport { overflow-x: scroll; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
-    .promo-viewport::-webkit-scrollbar { display: none; }
-    .promo-track { display: flex; gap: clamp(8px, 1.5vw, 14px); width: max-content; padding: 2px clamp(14px, 3vw, 40px) 6px; }
-    .promo-card { flex: 0 0 var(--promo-w); height: var(--promo-h); border-radius: clamp(12px, 2vw, 18px); overflow: hidden; position: relative; cursor: pointer; background: #111; box-shadow: var(--shadow-card); scroll-snap-align: start; transition: box-shadow .2s, transform .2s; }
-    .promo-card:hover { box-shadow: 0 16px 36px rgba(0,0,0,.18); transform: translateY(-2px); }
-    .promo-card img, .promo-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .promo-card .promo-overlay { position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(0,0,0,.65)); }
-    .promo-card .promo-label { position: absolute; bottom: clamp(6px, 1vw, 10px); left: clamp(8px, 1.5vw, 12px); right: clamp(8px, 1.5vw, 12px); color: #fff; font-size: clamp(9px, 1.3vw, 12px); font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .promo-card-blank { flex: 0 0 var(--promo-w); height: var(--promo-h); border-radius: clamp(12px, 2vw, 18px); overflow: hidden; position: relative; background: #f2f2f2; border: 1.5px dashed rgba(17,17,17,.10); box-shadow: var(--shadow-soft); scroll-snap-align: start; display: none; }
-
-
-    /* ── GALLERY ── */
-    .gallery { padding: 0 clamp(14px, 3vw, 40px) var(--space-lg); }
-    .grid { display: flex; gap: clamp(6px, 1.2vw, 10px); align-items: stretch; }
-    .grid-item-a { flex: 2 1 0; aspect-ratio: 2/1; border-radius: clamp(14px, 2vw, 20px); overflow: hidden; background: #ddd; box-shadow: var(--shadow-card); position: relative; cursor: pointer; min-width: 0; transition: box-shadow .2s, transform .2s; }
-    .grid-item-a:hover { box-shadow: 0 16px 36px rgba(0,0,0,.18); transform: translateY(-2px); }
-    .grid-item-b { flex: 1 1 0; border-radius: clamp(14px, 2vw, 20px); overflow: hidden; background: #ddd; box-shadow: var(--shadow-card); position: relative; cursor: pointer; min-width: 0; transition: box-shadow .2s, transform .2s; }
-    .grid-item-b:hover { box-shadow: 0 16px 36px rgba(0,0,0,.18); transform: translateY(-2px); }
-    .grid-item-a img, .grid-item-a video, .grid-item-b img, .grid-item-b video { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-    /* ══ ALL PRODUCTS ══ */
-    .products { padding: 0 clamp(14px, 3vw, 40px) var(--space-lg); }
-    .all-products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(clamp(140px, 22vw, 220px), 1fr));
-      gap: clamp(10px, 2vw, 18px);
+    /* ── SEARCH BAR (Exact Figma Specs: #f2f2f2, border #d9d9d9, radius 17px) ── */
+    .search-section { padding: 12px 11px; display: flex; align-items: center; gap: 8px; }
+    .search-box {
+      flex: 1; height: 33px; background: #f2f2f2; border: 0.85px solid #d9d9d9;
+      border-radius: 17px; display: flex; align-items: center; padding: 0 11px; gap: 8px;
     }
-    .grid-product-card { border-radius: clamp(18px, 2.5vw, 26px); background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow-card); overflow: hidden; cursor: pointer; transition: box-shadow .22s ease, transform .22s ease; }
-    .grid-product-card:hover { box-shadow: 0 18px 44px rgba(0,0,0,.16), 0 3px 8px rgba(0,0,0,.09); transform: translateY(-3px); }
-    .grid-product-card .pic { height: var(--pic-h); background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%); display: grid; place-items: center; position: relative; overflow: hidden; }
-    .grid-product-card .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .grid-product-card .loop-info { padding: clamp(8px, 1.5vw, 12px) clamp(10px, 1.8vw, 14px) clamp(10px, 1.8vw, 14px); }
-    .grid-product-card .loop-info h4 { font-size: var(--fs-card-h); font-weight: 900; margin-bottom: 4px; }
-    .grid-product-card .loop-info p { font-size: var(--fs-body); color: var(--muted); line-height: 1.35; min-height: 26px; }
-    .grid-product-card .loop-badge { display: inline-block; font-size: var(--fs-badge); font-weight: 800; text-transform: uppercase; padding: 2px 6px; border-radius: 999px; background: var(--accent); color: #fff; margin-bottom: 4px; letter-spacing: .5px; }
-    .grid-product-card .price-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-top: var(--space-xs); }
-    .grid-product-card .price { font-size: var(--fs-price); font-weight: 900; }
+    .search-box svg { width: 14px; height: 14px; color: #999999; flex-shrink: 0; }
+    .search-box input {
+      border: none; outline: none; background: transparent; width: 100%;
+      font-family: 'Inter', sans-serif; font-size: 12px; color: #111;
+    }
+    .search-box input::placeholder { color: #999999; }
+    .filter-btn {
+      width: 33px; height: 33px; background: #f2f2f2; border: 0.85px solid #d9d9d9;
+      border-radius: 17px; display: grid; place-items: center; cursor: pointer; flex-shrink: 0;
+    }
+    .filter-btn svg { width: 16px; height: 16px; color: #333333; opacity: 0.7; }
 
-    .viewall-wrap { display: flex; justify-content: center; margin-top: var(--space-md); }
-    .viewall { min-width: 120px; padding: clamp(8px, 1.5vw, 12px) clamp(18px, 3vw, 28px); border: 1.5px solid #222; border-radius: 6px; background: #fff; font-weight: 700; font-size: clamp(12px, 1.5vw, 14px); cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.08); transition: box-shadow .2s, transform .2s; }
-    .viewall:hover { box-shadow: 0 10px 28px rgba(0,0,0,.14); transform: translateY(-1px); }
+    /* ── HERO BANNER (Figma Specs: height ~450px, radius 20px) ── */
+    .hero-container { padding: 0 11px; margin-bottom: 12px; }
+    .hero-slider {
+      width: 100%; height: 420px; border-radius: 20px; overflow: hidden;
+      position: relative; background: #111111;
+    }
+    .hero-slides { display: flex; height: 100%; transition: transform .5s cubic-bezier(0.25, 1, 0.5, 1); }
+    .hero-slide { width: 100%; height: 100%; flex: 0 0 100%; position: relative; cursor: pointer; }
+    .hero-slide img, .hero-slide video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.18); pointer-events: none; }
 
-    /* ── FOOTER ── */
-    .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: clamp(18px, 3vw, 32px) clamp(14px, 3vw, 40px) clamp(20px, 3.5vw, 36px); border-radius: clamp(18px, 3vw, 28px) clamp(18px, 3vw, 28px) 0 0; }
-    .footer h4 { font-size: clamp(16px, 2.5vw, 22px); margin-bottom: 8px; font-weight: 900; }
-    .footer p { font-size: clamp(11px, 1.4vw, 13px); color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: clamp(10px, 1.5vw, 16px); }
-    .footer-links { display: flex; flex-wrap: wrap; gap: clamp(8px, 1.5vw, 12px) clamp(12px, 2vw, 18px); font-size: clamp(11px, 1.4vw, 13px); color: rgba(255,255,255,.9); margin-bottom: clamp(10px, 1.5vw, 16px); }
-    .footer-links a { color: rgba(255,255,255,.9); }
-    .footer-links a:hover { color: #fff; }
-    .copy { font-size: clamp(10px, 1.2vw, 12px); color: rgba(255,255,255,.55); border-top: 1px solid rgba(255,255,255,.1); padding-top: clamp(10px, 1.5vw, 14px); }
+    /* Dots indicator under hero */
+    .dots-indicator { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 10px 0 20px 0; }
+    .dot-pill { width: 8px; height: 8px; border-radius: 50%; background: #d9d9d9; border: none; cursor: pointer; transition: all .3s ease; }
+    .dot-pill.active { width: 22px; border-radius: 10px; background: #111111; }
 
-    /* ── BOTTOM NAV ── */
+    /* ── SECTION TITLES ── */
+    .title-ubuntu-bold {
+      font-family: 'Ubuntu', sans-serif; font-weight: 700; font-size: 20px;
+      line-height: 1.05; color: #000000; text-align: center; text-transform: uppercase;
+      margin: 16px 0 16px 0; letter-spacing: 0.5px;
+    }
+    .title-ubuntu-reg {
+      font-family: 'Ubuntu', sans-serif; font-weight: 400; font-size: 20px;
+      line-height: 1.05; color: #000000; margin: 24px 11px 14px 11px;
+    }
+    .brand-krona {
+      font-family: 'Krona One', sans-serif; font-size: 18px; color: #000000;
+      letter-spacing: 3.6px; text-transform: uppercase; text-align: center;
+      margin: 28px 0 20px 0;
+    }
+
+    /* ── SHOP BY CLUBS (Circular 61px icons) ── */
+    .clubs-scroll-row {
+      display: flex; gap: 10px; overflow-x: auto; padding: 0 11px 20px 11px;
+      scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    }
+    .clubs-scroll-row::-webkit-scrollbar { display: none; }
+    .club-badge-circle {
+      flex: 0 0 61px; height: 61px; border-radius: 50%; overflow: hidden;
+      background: #ffffff; border: 1.5px solid #eeeeee; cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: transform .2s ease;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .club-badge-circle:active { transform: scale(0.95); }
+    .club-badge-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── 2-COLUMN PRODUCT CARDS (Figma Specs: 182px x 278px, radius 5px) ── */
+    .product-grid-2col {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 11px;
+      margin-bottom: 24px;
+    }
+    .product-card-figma {
+      border-radius: 5px; background: #ffffff; overflow: hidden; cursor: pointer;
+      display: flex; flex-direction: column; transition: transform .2s ease;
+    }
+    .product-card-figma:active { transform: scale(0.98); }
+    .product-card-figma .pic-wrap {
+      width: 100%; height: 260px; border-radius: 5px; overflow: hidden;
+      background: #f7f7f7; position: relative;
+    }
+    .product-card-figma .pic-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .product-card-figma .details { padding: 8px 2px 4px 2px; }
+    .product-card-figma .title {
+      font-family: 'Varela Round', 'Varela', sans-serif; font-size: 12px;
+      color: #000000; line-height: 1.2; margin-bottom: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .product-card-figma .price {
+      font-family: 'Varela Round', 'Varela', sans-serif; font-size: 14px;
+      font-weight: 400; color: #000000;
+    }
+
+    /* ── MID BANNER (Figma spec height 222px) ── */
+    .mid-banner-container { padding: 0 11px; margin-bottom: 12px; }
+    .mid-banner {
+      width: 100%; height: 220px; border-radius: 10px; overflow: hidden;
+      position: relative; background: #111;
+    }
+    .mid-banner img, .mid-banner video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* ── SHOP BY CATEGORY (2x2 Grid with Krona One dark overlay) ── */
+    .category-grid-2col {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 11px;
+      margin-bottom: 24px;
+    }
+    .category-card-figma {
+      height: 260px; border-radius: 5px; overflow: hidden; position: relative;
+      cursor: pointer; box-shadow: 0px 4px 4px rgba(0,0,0,0.25); background: #111111;
+    }
+    .category-card-figma img, .category-card-figma video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .category-overlay-bar {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 31px;
+      background: rgba(0,0,0,0.5); border-radius: 5px; display: flex;
+      align-items: center; justify-content: center;
+    }
+    .category-overlay-title {
+      font-family: 'Krona One', sans-serif; font-size: 18px; color: #ffffff;
+      letter-spacing: 3.6px; text-transform: uppercase; white-space: nowrap;
+    }
+
+    /* ── SECONDARY PROMO BANNER (Figma spec 245px height) ── */
+    .secondary-banner-container { padding: 0 11px; margin-bottom: 24px; }
+    .secondary-banner {
+      width: 100%; height: 245px; border-radius: 10px; overflow: hidden;
+      position: relative; background: #111;
+    }
+    .secondary-banner img, .secondary-banner video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* ── FOOTER ("Get in touch" & "Meet the Team" Figma node 65:22) ── */
+    .footer-figma {
+      background: #000000; color: #ffffff; padding: 28px 16px 36px 16px;
+      margin-top: 32px; border-top-left-radius: 16px; border-top-right-radius: 16px;
+    }
+    .footer-heading {
+      font-family: 'Krona One', sans-serif; font-size: 14px; color: #ffffff;
+      letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 16px;
+    }
+    .contact-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
+    .contact-row { display: flex; align-items: center; gap: 14px; }
+    .contact-row svg { width: 24px; height: 24px; color: #ffffff; flex-shrink: 0; }
+    .contact-row span {
+      font-family: 'DM Sans', sans-serif; font-size: 14px; color: #ffffff;
+      letter-spacing: 1.4px;
+    }
+
+    .team-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .team-section-header svg { width: 24px; height: 24px; color: #ffffff; }
+
+    .team-grid-4col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
+    .team-member-card { display: flex; flex-direction: column; align-items: center; }
+    .team-member-avatar {
+      width: 100%; aspect-ratio: 69/71; border-radius: 7px; overflow: hidden;
+      background: #222222; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 6px;
+    }
+    .team-member-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .team-member-role {
+      font-family: 'DM Sans', sans-serif; font-size: 10px; color: #ffffff;
+      letter-spacing: 1px; text-align: center; text-transform: capitalize;
+    }
+
+    .footer-brand-link {
+      font-family: 'DM Sans', sans-serif; font-size: 14px; color: #ffffff;
+      letter-spacing: 1.4px; text-align: center; margin-top: 24px; opacity: 0.9;
+    }
+
+    /* ── FIXED BOTTOM NAVIGATION ── */
     .bottom-nav {
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: clamp(8px, 1.5vw, 16px);
-      width: min(calc(100% - clamp(16px, 3vw, 40px)), 600px);
-      background: rgba(255,255,255,.96);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0,0,0,.06);
-      border-radius: clamp(18px, 3vw, 28px);
-      box-shadow: var(--shadow);
-      display: flex;
-      justify-content: space-around;
-      padding: clamp(8px, 1.5vw, 14px) clamp(6px, 1.2vw, 12px);
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 430px; background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(12px); border-top: 1px solid rgba(0,0,0,0.06);
+      display: flex; justify-content: space-around; padding: 10px 0 12px 0;
       z-index: 50;
     }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: clamp(9px, 1.2vw, 11px); color: #555; min-width: clamp(48px, 8vw, 72px); cursor: pointer; text-decoration: none; }
-    .nav-item svg { width: clamp(17px, 2.5vw, 22px); height: clamp(17px, 2.5vw, 22px); }
-    .nav-item.active { color: var(--accent); font-weight: 800; }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      font-size: 10px; color: #666666; font-weight: 500; min-width: 60px;
+    }
+    .nav-item svg { width: 20px; height: 20px; }
+    .nav-item.active { color: #000000; font-weight: 800; }
 
-    /* ── SKELETON ── */
-    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 12px; }
+    /* Skeleton shimmer */
+    .skeleton-box {
+      background: linear-gradient(90deg, #eeeeee 25%, #e2e2e2 50%, #eeeeee 75%);
+      background-size: 200% 100%; animation: shimmer 1.5s infinite;
+    }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-    .pic-ghost { height: var(--pic-h); position: relative; overflow: hidden; background: linear-gradient(135deg, #ececec 0%, #f5f5f5 50%, #ececec 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite; display: flex; align-items: center; justify-content: center; }
-    .pic-ghost::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.55) 50%, transparent 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
-
-    /* ══ IMAGE SKELETON SYSTEM ══ */
-    .img-wrap {
-      position: relative;
-      display: block;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-    .img-wrap::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      background: linear-gradient(90deg, #ebebeb 25%, #f5f5f5 50%, #ebebeb 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: inherit;
-      transition: opacity .3s ease;
-      pointer-events: none;
-    }
-    .img-wrap.loaded::before {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .img-wrap img,
-    .img-wrap video {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    /* Chip image skeleton (circular) */
-    .chip-img-wrap {
-      position: relative;
-      width: var(--chip-img);
-      height: var(--chip-img);
-      border-radius: 50%;
-      overflow: hidden;
-      margin: 0 auto clamp(6px, 1vw, 10px);
-      border: 2px solid #f1f1f1;
-      background: #f8f8f8;
-    }
-    .chip-img-wrap::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      border-radius: 50%;
-      background: linear-gradient(90deg, #ebebeb 25%, #f5f5f5 50%, #ebebeb 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      transition: opacity .3s ease;
-      pointer-events: none;
-    }
-    .chip-img-wrap.loaded::before { opacity: 0; }
-    .chip-img-wrap img {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      border-radius: 50%;
-    }
-
-    /* Hero slide skeleton */
-    .hero-img-wrap {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      overflow: hidden;
-    }
-    .hero-img-wrap::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      background: linear-gradient(90deg, #ebebeb 25%, #f5f5f5 50%, #ebebeb 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      transition: opacity .35s ease;
-      pointer-events: none;
-    }
-    .hero-img-wrap.loaded::before { opacity: 0; }
-    .hero-img-wrap img,
-    .hero-img-wrap video {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    /* Media space skeleton */
-    .media-img-wrap {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-    .media-img-wrap::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      background: linear-gradient(90deg, #ebebeb 25%, #f5f5f5 50%, #ebebeb 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      transition: opacity .3s ease;
-      pointer-events: none;
-    }
-    .media-img-wrap.loaded::before { opacity: 0; }
-    .media-img-wrap img,
-    .media-img-wrap video {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    /* Promo card skeleton */
-    .promo-img-wrap {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-    }
-    .promo-img-wrap::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      background: linear-gradient(90deg, #1c1c1c 25%, #2c2c2c 50%, #1c1c1c 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      transition: opacity .3s ease;
-      pointer-events: none;
-    }
-    .promo-img-wrap.loaded::before { opacity: 0; }
-    .promo-img-wrap img,
-    .promo-img-wrap video {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-
-
-    /* Gallery item skeleton */
-    .gallery-img-wrap {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-    }
-    .gallery-img-wrap::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      background: linear-gradient(90deg, #d8d8d8 25%, #ebebeb 50%, #d8d8d8 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      transition: opacity .3s ease;
-      pointer-events: none;
-    }
-    .gallery-img-wrap.loaded::before { opacity: 0; }
-    .gallery-img-wrap img,
-    .gallery-img-wrap video {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    /* ── TABLET ── */
-    @media (min-width: 600px) {
-      .all-products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(clamp(160px, 25vw, 240px), 1fr));
-      }
-    }
-
-    /* ── DESKTOP ── */
-    @media (min-width: 900px) {
-      .all-products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      }
-      :root { --hero-h: clamp(260px, 30vw, 500px); }
-    }
-
-    @media (min-width: 1200px) {
-      .all-products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      }
-    }
-
-    /* ── SMALL PHONE ── */
-    @media (max-width: 360px) {
-      :root {
-        --card-w: 145px;
-        --chip-w: 76px;
-        --chip-img: 50px;
-        --promo-w: 180px;
-        --reel-w: 120px;
-      }
-      .all-products-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
-    }
-
-    /* Floating Auth Toast */
-    .auth-toast {
-      position: fixed;
-      bottom: clamp(90px, 14vw, 110px);
-      left: 50%;
-      transform: translateX(-50%) translateY(40px);
-      background: rgba(17, 17, 17, 0.94);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 999px;
-      font-size: clamp(11px, 1.3vw, 13px);
-      font-weight: 600;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid rgba(255,255,255,0.08);
-      white-space: nowrap;
-    }
-    .auth-toast.show {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateX(-50%) translateY(0);
-    }
-    .auth-toast-btn {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-weight: 800;
-      cursor: pointer;
-      font-size: clamp(10px, 1.2vw, 12px);
-      transition: background 0.2s, transform 0.2s;
-    }
-    .auth-toast-btn:hover {
-      background: var(--accent2);
-      transform: scale(1.05);
-    }
   </style>
 </head>
 
 <body>
 
-  <!-- ══ SPLASH ══ -->
+  <!-- ══ SPLASH SCREEN ══ -->
   <div id="initScreen">
-    <div class="splash-logo-wrap">
-      <img
-        class="splash-logo-img"
-        src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3"
-        alt="Jersify"
-        loading="eager"
-        fetchpriority="high"
-        decoding="sync"
-        onerror="this.style.display='none';document.querySelector('.splash-logo-fallback').style.display='block';"
-      />
-      <div class="splash-logo-fallback">Jersi<span>fy</span></div>
-    </div>
+    <img class="splash-logo-img" src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="Jersify" />
     <div class="splash-bar-wrap">
       <div class="splash-bar" id="splashBar"></div>
     </div>
-    <div class="splash-status" id="splashStatus">Loading…</div>
+    <div class="splash-status" id="splashStatus">Loading Jersify…</div>
   </div>
 
+  <!-- ══ MAIN MOBILE FRAME CONTAINER ══ -->
   <div class="page" id="mainPage">
 
-    <!-- HEADER -->
+    <!-- TOPBAR / HEADER -->
     <header class="topbar">
-      <!-- ══ IMAGE LOGO (replaces text logo) ══ -->
-      <div class="logo-img-wrap" onclick="window.location.href='index.html'">
-        <img
-          class="logo-img"
-          src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3"
-          alt="Jersify"
-          loading="eager"
-          onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block';"
-        />
-        <!-- Fallback text if image fails -->
-        <div id="logoFallback" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:var(--fs-logo);letter-spacing:2.5px;line-height:1;color:#111;">Jersify</div>
-        <div class="logo-sub" id="productCountLabel">Loading...</div>
+      <div class="logo-wrap" onclick="window.location.href='index.html'">
+        <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="Jersify" onerror="this.style.display='none';document.getElementById('logoTextFallback').style.display='block';" />
+        <div id="logoTextFallback" class="logo-text-fallback" style="display:none;">JERSIFY</div>
       </div>
-
       <div class="header-actions">
-        <button class="shop-btn" onclick="window.location.href='shop.html'">Shop</button>
-        <button class="icon-btn" aria-label="Cart" onclick="window.location.href='checkout.html'">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
+        <button class="header-btn" aria-label="Cart" onclick="window.location.href='checkout.html'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
           <span class="cart-badge" id="cartBadge"></span>
         </button>
-        <button class="icon-btn profile-btn" id="profileBtn" aria-label="Profile" onclick="window.location.href='profile.html'">
+        <button class="header-btn" id="profileBtn" aria-label="Profile" onclick="window.location.href='profile.html'">
           <svg id="profileIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
         </button>
       </div>
     </header>
 
-    <!-- SEARCH -->
-    <div class="search-wrap">
-      <div class="search">
+    <!-- SEARCH BAR SECTION -->
+    <section class="search-section">
+      <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
-        <input type="text" id="searchInput" placeholder="Search jerseys, clubs, countries..." />
-        <svg class="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v7a3 3 0 1 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M5 11a7 7 0 0 0 14 0"></path><path d="M12 18v4"></path><path d="M8 22h8"></path></svg>
+        <input type="text" id="searchInput" placeholder="Search..." />
       </div>
-    </div>
+      <button class="filter-btn" aria-label="Filter" onclick="window.location.href='shop.html'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>
+      </button>
+    </section>
 
-    <!-- HERO SLIDER -->
-    <section class="hero">
-      <div class="slider" id="heroSlider">
-        <div class="slides" id="slides">
-          <div class="slide" id="heroSkeleton" style="flex:0 0 100%;width:100%;height:100%;position:relative;overflow:hidden;">
-            <div style="position:absolute;inset:0;background:linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
+    <!-- HERO CAROUSEL -->
+    <section class="hero-container">
+      <div class="hero-slider">
+        <div class="hero-slides" id="heroSlides">
+          <div class="hero-slide skeleton-box" id="heroSkeleton"></div>
+        </div>
+        <div class="hero-overlay"></div>
+      </div>
+      <div class="dots-indicator" id="heroDots"></div>
+    </section>
+
+    <!-- SHOP BY CLUBS SECTION -->
+    <section>
+      <h2 class="title-ubuntu-bold">SHOP BY CLUBS</h2>
+      <div class="clubs-scroll-row" id="clubsRow">
+        <!-- Dynamically rendered or static fallback club crest circles -->
+      </div>
+    </section>
+
+    <!-- FEATURED CLUB PRODUCTS GRID (2-COLUMN) -->
+    <section class="product-grid-2col" id="featuredProductsGrid">
+      <div class="product-card-figma skeleton-box" style="height: 280px;"></div>
+      <div class="product-card-figma skeleton-box" style="height: 280px;"></div>
+    </section>
+
+    <!-- MID BANNER IMAGE SECTION -->
+    <section class="mid-banner-container">
+      <div class="mid-banner" id="midBanner">
+        <div class="skeleton-box" style="width:100%;height:100%;"></div>
+      </div>
+      <div class="dots-indicator">
+        <div class="dot-pill active"></div>
+        <div class="dot-pill"></div>
+      </div>
+    </section>
+
+    <!-- BRAND HEADING -->
+    <h1 class="brand-krona">JERSIFY</h1>
+
+    <!-- SHOP BY CATEGORY (2x2 GRID WITH KRONA ONE OVERLAYS) -->
+    <section>
+      <h2 class="title-ubuntu-reg">Shop by Catagory</h2>
+      <div class="category-grid-2col" id="categoryGrid">
+        <!-- RETRO -->
+        <div class="category-card-figma" onclick="window.location.href='shop.html?category=retro'">
+          <img src="https://images.unsplash.com/photo-1577223625816-7546f13df25d?q=80&w=600&auto=format&fit=crop" alt="Retro Jerseys" loading="lazy" />
+          <div class="category-overlay-bar">
+            <span class="category-overlay-title">RETRO</span>
           </div>
         </div>
-        <div class="dots" id="dots"></div>
-      </div>
-    </section>
-
-    <!-- FEATURES -->
-    <section class="features">
-      <div class="feature-grid">
-        <div class="feature">
-          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 22h20"/><path d="M6 20V8l6-5 6 5v12"/><path d="M10 22v-7h4v7"/></svg></div>
-          <h4>Imported</h4><p>From Thailand</p>
+        <!-- COMBO -->
+        <div class="category-card-figma" onclick="window.location.href='shop.html?category=combo'">
+          <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop" alt="Combo Kits" loading="lazy" />
+          <div class="category-overlay-bar">
+            <span class="category-overlay-title">COMBO</span>
+          </div>
         </div>
-        <div class="feature">
-          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 9h16"/><path d="M9 4v16"/></svg></div>
-          <h4>Premium Fabric</h4><p>Comfort fit</p>
+        <!-- HAMPER -->
+        <div class="category-card-figma" onclick="window.location.href='shop.html?category=hamper'">
+          <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=600&auto=format&fit=crop" alt="Gift Hampers" loading="lazy" />
+          <div class="category-overlay-bar">
+            <span class="category-overlay-title">HAMPER</span>
+          </div>
         </div>
-        <div class="feature">
-          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5"/><path d="M21 3l-8 8"/><path d="M3 7h10l4 10H5a2 2 0 0 1-2-2V7z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg></div>
-          <h4>Express Delivery</h4><p>Fast dispatch</p>
-        </div>
-      </div>
-      <div class="feature-bar"></div>
-    </section>
-
-    <!-- WOW PICKS -->
-    <section class="loop-section">
-      <div class="row-header">
-        <h3>WOW Picks ✦</h3>
-        <div class="nav-controls">
-          <button class="nav-ctrl" id="prevWow" aria-label="Previous">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <button class="nav-ctrl" id="nextWow" aria-label="Next">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="loop-viewport" id="loopViewport">
-        <div class="loop-track" id="loopTrack">
-          <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
-          <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
-          <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
-          <div class="loop-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div style="display:flex;align-items:center;justify-content:space-between;"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:30px;width:68px;border-radius:999px;"></div></div></div></div>
+        <!-- EXTRAS -->
+        <div class="category-card-figma" onclick="window.location.href='shop.html?category=extras'">
+          <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=600&auto=format&fit=crop" alt="Extras" loading="lazy" />
+          <div class="category-overlay-bar">
+            <span class="category-overlay-title">EXTRAS</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SHOP BY COUNTRY -->
-    <section class="section">
-      <h3>Shop by Country</h3>
-      <p class="section-sub">Choose jerseys by nation</p>
-      <div class="chip-row" id="countryRow"></div>
-    </section>
-
-    <!-- MEDIA SPACE -->
-    <section class="section">
-      <div class="media-space" id="mediaSpace">
-        <div class="placeholder skeleton" style="width:100%;height:100%;"></div>
+    <!-- SECONDARY PROMO BANNER -->
+    <section class="secondary-banner-container">
+      <div class="secondary-banner" id="secondaryBanner">
+        <div class="skeleton-box" style="width:100%;height:100%;"></div>
       </div>
     </section>
 
-    <!-- PROMOTIONS -->
-    <section class="section" style="padding-bottom:var(--space-md);">
-      <div class="row-header-flat" style="margin:0 0 10px;padding:0;">
-        <h3 style="font-size:var(--fs-h3);font-weight:900;margin:0;">Promotions</h3>
-        <div class="nav-controls">
-          <button class="nav-ctrl" id="prevPromo" aria-label="Previous promotion">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <button class="nav-ctrl" id="nextPromo" aria-label="Next promotion">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
+    <!-- MORE PRODUCTS GRID -->
+    <section class="product-grid-2col" id="moreProductsGrid">
+      <div class="product-card-figma skeleton-box" style="height: 280px;"></div>
+      <div class="product-card-figma skeleton-box" style="height: 280px;"></div>
+    </section>
+
+    <!-- FOOTER ("Get in touch" & "Meet the Team") -->
+    <footer class="footer-figma">
+      <div class="footer-heading">Get in touch</div>
+      <div class="contact-list">
+        <div class="contact-row" onclick="window.open('https://instagram.com/jersify.online','_blank')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          <span>jersify.online</span>
+        </div>
+        <div class="contact-row" onclick="window.open('https://wa.me/916291589500','_blank')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          <span>6291589500</span>
+        </div>
+        <div class="contact-row" onclick="window.location.href='mailto:jersify.online@gmail.com'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          <span>jersify.online@gmail.com</span>
         </div>
       </div>
-      <div class="promo-viewport" id="promoViewport">
-        <div class="promo-track" id="promoTrack">
-          <div class="promo-card-blank" id="promoBlank1"></div>
-          <div class="promo-card-blank" id="promoBlank2"></div>
+
+      <div class="team-section-header">
+        <div class="footer-heading" style="margin-bottom:0;">Meet the Team</div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+
+      <div class="team-grid-4col">
+        <!-- Designer -->
+        <div class="team-member-card">
+          <div class="team-member-avatar">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" alt="Designer" />
+          </div>
+          <div class="team-member-role">Designer</div>
+        </div>
+        <!-- Developer -->
+        <div class="team-member-card">
+          <div class="team-member-avatar">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" alt="Developer" />
+          </div>
+          <div class="team-member-role">Developer</div>
+        </div>
+        <!-- Executive -->
+        <div class="team-member-card">
+          <div class="team-member-avatar">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop" alt="Executive" />
+          </div>
+          <div class="team-member-role">Executive</div>
+        </div>
+        <!-- Founder -->
+        <div class="team-member-card">
+          <div class="team-member-avatar">
+            <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=200&auto=format&fit=crop" alt="Founder" />
+          </div>
+          <div class="team-member-role">Founder</div>
         </div>
       </div>
-    </section>
 
-    <!-- SHOP BY CLUB -->
-    <section class="section">
-      <h3>Shop by Club</h3>
-      <p class="section-sub">Choose jerseys by club</p>
-      <div class="chip-row" id="clubRow"></div>
-    </section>
-
-
-
-    <!-- GALLERY -->
-    <section class="gallery" id="gallerySection" style="display:none;">
-      <h3 style="font-size:var(--fs-h3);font-weight:900;margin-bottom:var(--space-sm);">Photo Gallery</h3>
-      <div class="grid" id="galleryGrid"></div>
-    </section>
-
-    <!-- ALL PRODUCTS -->
-    <section class="products" id="productsSection">
-      <div class="row-header-flat">
-        <h3>All Products</h3>
-      </div>
-      <div class="all-products-grid" id="allProductsGrid">
-        <div class="grid-product-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div class="price-row"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:28px;width:60px;border-radius:999px;"></div></div></div></div>
-        <div class="grid-product-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div class="price-row"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:28px;width:60px;border-radius:999px;"></div></div></div></div>
-        <div class="grid-product-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div class="price-row"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:28px;width:60px;border-radius:999px;"></div></div></div></div>
-        <div class="grid-product-card" style="pointer-events:none;"><div class="pic-ghost"></div><div class="loop-info"><div class="skeleton" style="height:9px;width:40%;border-radius:999px;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:85%;border-radius:6px;margin-bottom:6px;"></div><div class="skeleton" style="height:10px;width:60%;border-radius:6px;margin-bottom:12px;"></div><div class="price-row"><div class="skeleton" style="height:15px;width:36%;border-radius:6px;"></div><div class="skeleton" style="height:28px;width:60px;border-radius:999px;"></div></div></div></div>
-      </div>
-      <div class="viewall-wrap">
-        <button class="viewall" onclick="window.location.href='shop.html'">View All in Shop →</button>
-      </div>
-    </section>
-
-    <footer class="footer">
-      <h4>JERSIFY</h4>
-      <p>Premium football jerseys, clubwear, and fan drops designed for people who want style on and off the pitch.</p>
-      <div class="footer-links">
-        <a href="index.html">Home</a><a href="shop.html">Shop</a>
-        <a href="shop.html?filter=country">Countries</a><a href="shop.html?filter=club">Clubs</a>
-        <a href="checkout.html">Cart</a><a href="profile.html">Profile</a>
-      </div>
-      <div class="copy">© 2025 Jersify. All rights reserved.</div>
+      <div class="footer-brand-link">jersify.online</div>
     </footer>
+
   </div>
 
-
-
-  <!-- BOTTOM NAV -->
+  <!-- FIXED BOTTOM NAVIGATION BAR -->
   <nav class="bottom-nav">
     <a href="index.html" class="nav-item active">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
@@ -801,50 +487,15 @@
     </a>
   </nav>
 
-  <!-- ══ SKELETON HELPER ══ -->
-  <script>
-    function imgSkeleton(el, wrapClass) {
-      if (!el) return;
-      if (el.parentElement && el.parentElement.classList.contains(wrapClass)) {
-        attachLoaded(el, el.parentElement);
-        return;
-      }
-      const wrap = document.createElement("div");
-      wrap.className = wrapClass;
-      el.parentNode.insertBefore(wrap, el);
-      wrap.appendChild(el);
-      attachLoaded(el, wrap);
-    }
-
-    function attachLoaded(el, wrap) {
-      const tag = el.tagName.toLowerCase();
-      if (tag === "img") {
-        if (el.complete && el.naturalWidth > 0) {
-          wrap.classList.add("loaded");
-        } else {
-          el.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
-          el.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
-        }
-      } else if (tag === "video") {
-        if (el.readyState >= 1) {
-          wrap.classList.add("loaded");
-        } else {
-          el.addEventListener("loadedmetadata", () => wrap.classList.add("loaded"), { once: true });
-          el.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
-        }
-      }
-    }
-  </script>
-
-  <!-- ══ NON-FIREBASE JS ══ -->
+  <!-- ══ PAGE INTERACTION & DATA BINDING SCRIPT ══ -->
   <script>
     const splashBar    = document.getElementById("splashBar");
     const splashStatus = document.getElementById("splashStatus");
     const initScreen   = document.getElementById("initScreen");
     const mainPage     = document.getElementById("mainPage");
 
-    function goToProduct(pid) { if (!pid) return; window.location.href = "shop.html?product=" + encodeURIComponent(pid); }
-    function goToTeam(teamId) { if (!teamId) return; window.location.href = "team.html?id=" + encodeURIComponent(teamId); }
+    function goToProduct(pid) { if (pid) window.location.href = "shop.html?product=" + encodeURIComponent(pid); }
+    function goToTeam(teamId) { if (teamId) window.location.href = "team.html?id=" + encodeURIComponent(teamId); }
 
     let _progress = 0;
     function setProgress(pct, label) {
@@ -854,145 +505,60 @@
     }
     function revealPage() {
       setProgress(100, "Ready!");
-      setTimeout(() => { initScreen.classList.add("hidden"); mainPage.classList.add("visible"); }, 320);
+      setTimeout(() => { initScreen.classList.add("hidden"); mainPage.classList.add("visible"); }, 300);
     }
-    const splashTimeout = setTimeout(revealPage, 6000);
+    const splashTimeout = setTimeout(revealPage, 5000);
 
-    /* HERO SLIDER */
+    /* CLUB BADGES POPULATE */
+    (() => {
+      const clubs = [
+        { name: "Barcelona",  id: "barcelona",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab" },
+        { name: "Real Madrid", id: "real-madrid", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b" },
+        { name: "Arsenal",    id: "arsenal",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee" },
+        { name: "Man City",   id: "man-city",    img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7" },
+        { name: "Man Utd",    id: "man-utd",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b" },
+        { name: "Chelsea",    id: "chelsea",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a" },
+        { name: "PSG",        id: "psg",         img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6" },
+        { name: "Liverpool",  id: "liverpool",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9" }
+      ];
+      const row = document.getElementById("clubsRow");
+      row.innerHTML = clubs.map(c => `
+        <div class="club-badge-circle" onclick="goToTeam('${c.id}')" title="${c.name}">
+          <img src="${c.img}" alt="${c.name}" loading="lazy" />
+        </div>
+      `).join("");
+    })();
+
+    /* HERO CAROUSEL INTERACTION */
     let heroIndex = 0, heroTimer, heroTotal = 0;
     function buildDots(count) {
-      const el = document.getElementById("dots"); el.innerHTML = "";
+      const dotsWrap = document.getElementById("heroDots");
+      dotsWrap.innerHTML = "";
       for (let i = 0; i < count; i++) {
-        const b = document.createElement("button");
-        b.className = "dot" + (i === 0 ? " active" : "");
-        b.addEventListener("click", () => { showHeroSlide(i); restartHero(); });
-        el.appendChild(b);
+        const btn = document.createElement("button");
+        btn.className = "dot-pill" + (i === 0 ? " active" : "");
+        btn.addEventListener("click", () => showHeroSlide(i));
+        dotsWrap.appendChild(btn);
       }
     }
     function showHeroSlide(i) {
       heroIndex = i;
-      document.getElementById("slides").style.transform = `translateX(-${i * 100}%)`;
-      document.querySelectorAll(".dot").forEach((d, idx) => d.classList.toggle("active", idx === i));
+      document.getElementById("heroSlides").style.transform = `translateX(-${i * 100}%)`;
+      document.querySelectorAll("#heroDots .dot-pill").forEach((d, idx) => d.classList.toggle("active", idx === i));
     }
-    function nextHeroSlide() { if (!heroTotal) return; heroIndex = (heroIndex + 1) % heroTotal; showHeroSlide(heroIndex); }
-    function restartHero() { clearInterval(heroTimer); if (heroTotal > 1) heroTimer = setInterval(nextHeroSlide, 3800); }
+    function nextHeroSlide() { if (heroTotal) { heroIndex = (heroIndex + 1) % heroTotal; showHeroSlide(heroIndex); } }
+    function startHeroTimer() { clearInterval(heroTimer); if (heroTotal > 1) heroTimer = setInterval(nextHeroSlide, 4000); }
 
-    (() => {
-      const el = document.getElementById("slides"); let sx = 0;
-      el.addEventListener("touchstart", e => sx = e.touches[0].clientX, { passive: true });
-      el.addEventListener("touchend", e => {
-        if (!heroTotal) return;
-        const d = sx - e.changedTouches[0].clientX;
-        if (Math.abs(d) > 40) { heroIndex = d > 0 ? (heroIndex + 1) % heroTotal : (heroIndex - 1 + heroTotal) % heroTotal; showHeroSlide(heroIndex); restartHero(); }
-      }, { passive: true });
-    })();
-
-    /* SCROLL ARROWS */
-    function bindArrows(prevId, nextId, viewportId, step) {
-      const vp = document.getElementById(viewportId);
-      document.getElementById(prevId).addEventListener("click", () => vp.scrollBy({ left: -step, behavior: "smooth" }));
-      document.getElementById(nextId).addEventListener("click", () => vp.scrollBy({ left:  step, behavior: "smooth" }));
-    }
-    bindArrows("prevWow",   "nextWow",   "loopViewport",  200);
-    bindArrows("prevPromo", "nextPromo", "promoViewport", 260);
-
-    /* WOW PICKS DRAG */
-    (() => {
-      const vp = document.getElementById("loopViewport");
-      let isDown = false, startX = 0, startScroll = 0, totalDrag = 0;
-      const DRAG_THRESHOLD = 8;
-      vp.addEventListener("mousedown", e => { if (e.button !== 0) return; isDown = true; totalDrag = 0; startX = e.pageX; startScroll = vp.scrollLeft; });
-      window.addEventListener("mousemove", e => { if (!isDown) return; const dx = e.pageX - startX; totalDrag = Math.abs(dx); vp.scrollLeft = startScroll - dx; if (totalDrag > DRAG_THRESHOLD) vp.classList.add("is-dragging"); });
-      window.addEventListener("mouseup", () => { if (!isDown) return; isDown = false; setTimeout(() => vp.classList.remove("is-dragging"), 0); });
-      vp.addEventListener("click", e => { if (totalDrag > DRAG_THRESHOLD) { e.stopPropagation(); e.preventDefault(); } totalDrag = 0; }, true);
-    })();
-
-
-
-    /* SEARCH */
+    /* SEARCH INPUT */
     const searchInput = document.getElementById("searchInput");
-    let sTimeout;
-    searchInput.addEventListener("input", () => {
-      clearTimeout(sTimeout);
-      const q = searchInput.value.trim();
-      if (q.length >= 2) sTimeout = setTimeout(() => window.location.href = `shop.html?q=${encodeURIComponent(q)}`, 600);
-    });
     searchInput.addEventListener("keydown", e => {
-      if (e.key === "Enter" && searchInput.value.trim()) window.location.href = `shop.html?q=${encodeURIComponent(searchInput.value.trim())}`;
-    });
-
-    /* COUNTRY CHIPS */
-    (() => {
-      const countries = [
-        { name: "Argentina", sub: "National team", id: "argentina", svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ca"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ca)"><rect width="120" height="120" fill="#fff"/><rect width="120" height="40" y="0" fill="#74acdf"/><rect width="120" height="40" y="80" fill="#74acdf"/><circle cx="60" cy="60" r="10" fill="#f6c400"/></g></svg>` },
-        { name: "Brazil",    sub: "National team", id: "brazil",    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cb"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cb)"><rect width="120" height="120" fill="#1f8f3a"/><polygon points="60,18 98,60 60,102 22,60" fill="#f6d44a"/><circle cx="60" cy="60" r="18" fill="#2a4c9b"/></g></svg>` },
-        { name: "England",   sub: "National team", id: "england",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/188de6869f16638434a37e535504c181.jpg?alt=media&token=95867157-eaa4-49d5-b9b6-27719718656f" },
-        { name: "France",    sub: "National team", id: "france",    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cc"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cc)"><rect width="40" height="120" x="0" fill="#244aa5"/><rect width="40" height="120" x="40" fill="#fff"/><rect width="40" height="120" x="80" fill="#d81e2e"/></g></svg>` },
-        { name: "Germany",   sub: "National team", id: "germany",   svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cd"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cd)"><rect width="120" height="40" y="0" fill="#111"/><rect width="120" height="40" y="40" fill="#d81e2e"/><rect width="120" height="40" y="80" fill="#f3c400"/></g></svg>` },
-        { name: "Italy",     sub: "National team", id: "italy",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/e59d686481b1707367309644c190304b.jpg?alt=media&token=fb3abf9f-0122-4045-b809-9027038f4ab0" },
-        { name: "Spain",     sub: "National team", id: "spain",     svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="ce"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#ce)"><rect width="120" height="120" fill="#c9152e"/><rect width="120" height="52" y="34" fill="#ffcc29"/></g></svg>` },
-        { name: "Portugal",  sub: "National team", id: "portugal",  svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cf"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cf)"><rect width="48" height="120" fill="#1d8f45"/><rect x="48" width="72" height="120" fill="#d3212c"/><circle cx="52" cy="60" r="12" fill="#f6d44a"/></g></svg>` },
-        { name: "Japan",     sub: "National team", id: "japan",     svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cj"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cj)"><rect width="120" height="120" fill="#fff"/><circle cx="60" cy="60" r="22" fill="#BC002D"/></g></svg>` }
-      ];
-      document.getElementById("countryRow").innerHTML = countries.map(c => {
-        const imgSrc = c.svg ? `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(c.svg)}` : c.img;
-        return `<div class="card-chip" onclick="goToTeam('${c.id}')">
-          <div class="chip-img"><img src="${imgSrc}" alt="${c.name}"></div>
-          <div class="chip-name">${c.name}</div>
-          <div class="chip-sub">${c.sub}</div>
-        </div>`;
-      }).join("");
-    })();
-
-    /* CLUB CHIPS */
-    (() => {
-      const clubs = [
-        { name: "Barcelona",  id: "barcelona",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab", bg: "#a51d2d", fg: "#f2c94c", l: "B" },
-        { name: "Real Madrid", id: "real-madrid", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b", bg: "#e8d7a2", fg: "#0f5bd6", l: "R" },
-        { name: "Arsenal",    id: "arsenal",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee", bg: "#EF0107", fg: "#ffffff", l: "A" },
-        { name: "Chelsea",    id: "chelsea",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a", bg: "#1a4da1", fg: "#fff", l: "C" },
-        { name: "Man City",   id: "man-city",    img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7", bg: "#9ed7ff", fg: "#0f4ea2", l: "M" },
-        { name: "Man Utd",    id: "man-utd",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b", bg: "#c61f2f", fg: "#111", l: "U" },
-        { name: "PSG",        id: "psg",         img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6", bg: "#12284c", fg: "#c61f2f", l: "P" },
-        { name: "Liverpool",  id: "liverpool",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9", bg: "#c8102e", fg: "#f6eb61", l: "L" }
-      ];
-      function fallbackBadge(c) {
-        const safeName = c.name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
-          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><clipPath id="cl${c.l}"><circle cx="60" cy="60" r="60"/></clipPath></defs><g clip-path="url(#cl${c.l})"><rect width="120" height="120" fill="${c.bg}"/><circle cx="60" cy="56" r="30" fill="rgba(255,255,255,.18)"/><path d="M28 92c10-20 54-20 64 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/><text x="60" y="66" text-anchor="middle" font-size="34" font-family="Arial,sans-serif" font-weight="900" fill="${c.fg}">${c.l}</text><text x="60" y="98" text-anchor="middle" font-size="11" font-family="Arial,sans-serif" font-weight="700" fill="rgba(255,255,255,.9)">${safeName.toUpperCase()}</text></g></svg>`
-        );
+      if (e.key === "Enter" && searchInput.value.trim()) {
+        window.location.href = `shop.html?q=${encodeURIComponent(searchInput.value.trim())}`;
       }
-
-      const clubRow = document.getElementById("clubRow");
-      clubRow.innerHTML = clubs.map(c => {
-        const imgSrc = c.img && c.img.trim() ? c.img.trim() : fallbackBadge(c);
-        return `<div class="card-chip" onclick="goToTeam('${c.id}')">
-          <div class="chip-img-wrap" id="chip-${c.id}">
-            <img src="${imgSrc}" alt="${c.name}" loading="lazy"/>
-          </div>
-          <div class="chip-name">${c.name}</div>
-          <div class="chip-sub">Club crest</div>
-        </div>`;
-      }).join("");
-
-      clubs.forEach(c => {
-        const wrap = document.getElementById(`chip-${c.id}`);
-        if (!wrap) return;
-        const img = wrap.querySelector("img");
-        if (!img) return;
-        const fb = fallbackBadge(c);
-        img.addEventListener("error", () => { img.src = fb; }, { once: true });
-        if (img.complete && img.naturalWidth > 0) {
-          wrap.classList.add("loaded");
-        } else {
-          img.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
-          img.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
-        }
-      });
-    })();
+    });
   </script>
 
-  <!-- ══ FIREBASE MODULE ══ -->
+  <!-- ══ FIREBASE RTDB MODULE BINDING ══ -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -1012,388 +578,165 @@
     const rtdb = getDatabase(app);
     const auth = getAuth(app);
 
-    function isVideo(item) {
-      if (!item) return false;
-      if (item.mediaType === "video") return true;
-      return /\.(mp4|mov|webm|ogg|avi|mkv)(\?|$)/i.test(item.mediaUrl || item.imgUrl || "");
-    }
-    function getUrl(item) { return item.mediaUrl || item.imgUrl || ""; }
-
-    function wrapMedia(el, wrapClass) {
-      if (!el) return;
-      const wrap = document.createElement("div");
-      wrap.className = wrapClass;
-      el.parentNode.insertBefore(wrap, el);
-      wrap.appendChild(el);
-      const tag = el.tagName.toLowerCase();
-      if (tag === "img") {
-        if (el.complete && el.naturalWidth > 0) {
-          wrap.classList.add("loaded");
-        } else {
-          el.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
-          el.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
-        }
-      } else if (tag === "video") {
-        if (el.readyState >= 1) {
-          wrap.classList.add("loaded");
-        } else {
-          el.addEventListener("loadedmetadata", () => wrap.classList.add("loaded"), { once: true });
-          el.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
-        }
-      }
+    function isVideoUrl(url) {
+      return /\.(mp4|mov|webm|ogg|avi|mkv)(\?|$)/i.test(url || "");
     }
 
-    /* Floating Auth Toast Close Style */
-    const authCloseStyle = document.createElement("style");
-    authCloseStyle.innerHTML = `
-      .auth-toast-close {
-        background: none;
-        border: none;
-        color: rgba(255,255,255,0.6);
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-        padding: 0 4px;
-        transition: color 0.2s;
-      }
-      .auth-toast-close:hover {
-        color: #fff;
-      }
-    `;
-    document.head.appendChild(authCloseStyle);
-
-    /* AUTH */
-    let authToastTimer = null;
+    /* AUTH LISTENER */
     onAuthStateChanged(auth, async user => {
-      const profileBtn  = document.getElementById("profileBtn");
-      const profileIcon = document.getElementById("profileIcon");
-      const cartBadge   = document.getElementById("cartBadge");
-      function showBadge(n) { if (n > 0) { cartBadge.textContent = n > 9 ? "9+" : n; cartBadge.classList.add("show"); } }
-      if (user) {
-        if (authToastTimer) { clearTimeout(authToastTimer); authToastTimer = null; }
-        const existingToast = document.getElementById("unauthToast");
-        if (existingToast) existingToast.remove();
+      const cartBadge  = document.getElementById("cartBadge");
+      const profileBtn = document.getElementById("profileBtn");
+      const profileIcon= document.getElementById("profileIcon");
+      
+      function updateBadge(n) {
+        if (n > 0) { cartBadge.textContent = n > 9 ? "9+" : n; cartBadge.classList.add("show"); }
+      }
 
+      if (user) {
         if (user.photoURL) {
           profileIcon.style.display = "none";
-          const img = document.createElement("img"); img.src = user.photoURL; img.alt = user.displayName || "Profile";
+          const img = document.createElement("img");
+          img.src = user.photoURL; img.className = "profile-avatar"; img.alt = "Profile";
           profileBtn.appendChild(img);
-          wrapMedia(img, "img-wrap");
-        } else {
-          const initials = (user.displayName || user.email || "U").split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
-          profileIcon.style.display = "none";
-          const span = document.createElement("span"); span.className = "profile-initials"; span.textContent = initials;
-          profileBtn.appendChild(span);
         }
         try {
           const snap = await get(ref(rtdb, `users/${user.uid}/cart`));
           let n = 0; if (snap.exists()) snap.forEach(() => n++);
-          showBadge(n || JSON.parse(localStorage.getItem("jersify_cart") || "[]").length);
-        } catch { showBadge(JSON.parse(localStorage.getItem("jersify_cart") || "[]").length); }
+          updateBadge(n || JSON.parse(localStorage.getItem("jersify_cart") || "[]").length);
+        } catch { updateBadge(JSON.parse(localStorage.getItem("jersify_cart") || "[]").length); }
       } else {
-        showBadge(JSON.parse(localStorage.getItem("jersify_cart") || "[]").length);
-        
-        // Start 60 second timer for unauthenticated users
-        if (!authToastTimer && !sessionStorage.getItem("jersify_unauth_dismissed")) {
-          authToastTimer = setTimeout(() => {
-            const toastDiv = document.createElement("div");
-            toastDiv.id = "unauthToast";
-            toastDiv.className = "auth-toast";
-            toastDiv.innerHTML = `
-              <span>👕 Sign in to track orders & save wishlist!</span>
-              <button class="auth-toast-btn" onclick="location.href='login.html'">Login</button>
-              <button class="auth-toast-close" onclick="this.parentElement.classList.remove('show'); sessionStorage.setItem('jersify_unauth_dismissed', 'true'); setTimeout(() => this.parentElement.remove(), 400);">✕</button>
-            `;
-            document.body.appendChild(toastDiv);
-            setTimeout(() => toastDiv.classList.add("show"), 100);
-          }, 60000);
-        }
+        updateBadge(JSON.parse(localStorage.getItem("jersify_cart") || "[]").length);
       }
     });
 
-    /* HEROES */
+    /* HEROES LOAD */
     async function loadHeroes() {
-      setProgress(15, "BEST PLACE FOR JERSEY…");
+      setProgress(20, "Loading Hero Slides…");
       try {
         const snap = await get(ref(rtdb, "indexMedia"));
         if (!snap.exists()) return;
         let heroes = [];
         snap.forEach(d => { const v = d.val(); if (v.section === "hero") heroes.push(v); });
-        heroes = heroes.filter(h => getUrl(h)).sort((a, b) => (a.order||0) - (b.order||0));
+        heroes = heroes.filter(h => (h.mediaUrl || h.imgUrl)).sort((a, b) => (a.order||0) - (b.order||0));
         if (!heroes.length) return;
-        const slidesEl = document.getElementById("slides");
-        const skeleton = document.getElementById("heroSkeleton");
-        if (skeleton) skeleton.remove();
 
+        const slidesEl = document.getElementById("heroSlides");
         slidesEl.innerHTML = heroes.map(h => {
-          const url = getUrl(h), link = h.link || "shop.html";
-          const vid = isVideo(h);
-          const media = vid
-            ? `<video class="slide-media-cover" src="${url}" autoplay muted loop playsinline preload="metadata"></video>`
-            : `<img class="slide-media-cover" src="${url}" alt="Hero" loading="eager"/>`;
-          return `<div class="slide" style="cursor:pointer" onclick="window.location.href='${link}'">${media}</div>`;
+          const url = h.mediaUrl || h.imgUrl, link = h.link || "shop.html";
+          const isVid = h.mediaType === "video" || isVideoUrl(url);
+          const media = isVid
+            ? `<video src="${url}" autoplay muted loop playsinline></video>`
+            : `<img src="${url}" alt="Hero" loading="eager" />`;
+          return `<div class="hero-slide" onclick="window.location.href='${link}'">${media}</div>`;
         }).join("");
 
-        slidesEl.querySelectorAll(".slide").forEach(slide => {
-          const media = slide.querySelector("img, video");
-          if (media) wrapMedia(media, "hero-img-wrap");
-        });
-
-        heroTotal = heroes.length; buildDots(heroTotal); showHeroSlide(0); restartHero();
-        const firstHero = heroes[0];
-        if (!isVideo(firstHero)) { const pre = new Image(); pre.src = getUrl(firstHero); }
-      } catch (e) { console.warn("Hero load failed", e); }
-      setProgress(40, "Loading products…");
+        heroTotal = heroes.length;
+        buildDots(heroTotal);
+        showHeroSlide(0);
+        startHeroTimer();
+      } catch (e) { console.warn("Hero fetch failed", e); }
     }
 
-    /* PRODUCTS */
+    /* PRODUCTS LOAD (Render into Figma 2-col grids) */
     async function loadProducts() {
-      const loopTrack       = document.getElementById("loopTrack");
-      const allProductsGrid = document.getElementById("allProductsGrid");
-      const countLabel      = document.getElementById("productCountLabel");
-      const colors = ["red","white","blue","dark","gold"];
+      setProgress(50, "Loading Jerseys…");
+      const featuredGrid = document.getElementById("featuredProductsGrid");
+      const moreGrid     = document.getElementById("moreProductsGrid");
       try {
-        const [prodSnap, wowSnap] = await Promise.all([
-          get(ref(rtdb, "products")),
-          get(ref(rtdb, "wowPicks"))
-        ]);
-        if (!prodSnap.exists()) {
-          loopTrack.innerHTML = allProductsGrid.innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">No products yet.</div>';
-          countLabel.textContent = "Coming soon"; return;
+        const snap = await get(ref(rtdb, "products"));
+        if (!snap.exists()) {
+          featuredGrid.innerHTML = moreGrid.innerHTML = `<div style="padding:20px;grid-column:span 2;text-align:center;color:#888;">No jerseys listed.</div>`;
+          return;
         }
         let products = [];
-        prodSnap.forEach(d => { const p = d.val(); p._id = d.key; if (!p.status || p.status === "active") products.push(p); });
-        countLabel.innerHTML = `<span style="color:var(--accent);font-weight:800;">${products.length}+</span> jerseys available`;
+        snap.forEach(d => { const p = d.val(); p._id = d.key; if (!p.status || p.status === "active") products.push(p); });
 
-        // Resolve WOW Picks — curated order from admin, falls back to auto
-        let wowProducts = [];
-        if (wowSnap.exists()) {
-          const picks = wowSnap.val();
-          const productMap = {};
-          products.forEach(p => productMap[p._id] = p);
-          for (let i = 1; i <= 13; i++) {
-            const pid = picks[`slot_${i}`];
-            if (pid && productMap[pid]) wowProducts.push(productMap[pid]);
-          }
-        }
-        // Fill remaining slots from products not already in wowProducts
-        if (wowProducts.length < 13) {
-          const wowIds = new Set(wowProducts.map(p => p._id));
-          const remaining = products.filter(p => !wowIds.has(p._id));
-          wowProducts = [...wowProducts, ...remaining].slice(0, 13);
-        }
-
-        function loopCard(p, i) {
-          const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
-          const picContent = p.imgUrl
-            ? `<div class="img-wrap"><img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy" style="pointer-events:none"/></div>`
-            : `<div class="mini-jersey ${colors[i%colors.length]}" style="pointer-events:none"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`;
-          const playerTag = p.playerVersion ? `<div style="position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-size:9px;font-weight:800;padding:3px 6px;border-radius:4px;z-index:2;letter-spacing:0.5px;text-transform:uppercase;box-shadow:0 2px 4px rgba(0,0,0,0.2);">Player</div>` : '';
-          return `<article class="loop-card" data-pid="${p._id}">
-            <div class="pic">${playerTag}${picContent}</div>
-            <div class="loop-info">
-              ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ""}
-              <h4>${p.name||'Jersify Kit'}</h4>
-              <p>${team||(p.type||'Premium jersey')}</p>
-              <div class="price-row">
-                <div class="price">&#8377;${p.price||'1499'}</div>
-                <button class="small-btn" data-pid="${p._id}">Shop Now</button>
+        function createCard(p) {
+          const name  = p.name || "FC Barcelona Home 2026-27";
+          const price = p.price ? `₹ ${p.price}` : "₹ 800";
+          const img   = p.imgUrl || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop";
+          return `
+            <div class="product-card-figma" onclick="goToProduct('${p._id}')">
+              <div class="pic-wrap">
+                <img src="${img}" alt="${name}" loading="lazy" />
+              </div>
+              <div class="details">
+                <div class="title">${name}</div>
+                <div class="price">${price}</div>
               </div>
             </div>
-          </article>`;
+          `;
         }
 
-        function gridCard(p, i) {
-          const team = p.team ? (Array.isArray(p.team) ? p.team.join(" • ") : p.team) : "";
-          const picContent = p.imgUrl
-            ? `<div class="img-wrap"><img src="${p.imgUrl}" alt="${p.name||'Jersey'}" loading="lazy"/></div>`
-            : `<div class="mini-jersey ${colors[i%colors.length]}" style="width:72px;height:88px;"><div><span>${10-(i%4)}</span><small>${p.type||'KIT'}</small></div></div>`;
-          const playerTag = p.playerVersion ? `<div style="position:absolute;top:6px;left:6px;background:var(--accent);color:#fff;font-size:8px;font-weight:800;padding:2px 5px;border-radius:3px;z-index:2;letter-spacing:0.5px;text-transform:uppercase;box-shadow:0 2px 4px rgba(0,0,0,0.2);">Player</div>` : '';
-          return `<article class="grid-product-card" data-pid="${p._id}">
-            <div class="pic">${playerTag}${picContent}</div>
-            <div class="loop-info">
-              ${p.badge ? `<div class="loop-badge">${p.badge}</div>` : ""}
-              <h4>${p.name||'Jersify Kit'}</h4>
-              <p>${team||(p.type||'Premium jersey')}</p>
-              <div class="price-row">
-                <div class="price">&#8377;${p.price||'1499'}</div>
-                <button class="small-btn" data-pid="${p._id}">View</button>
-              </div>
-            </div>
-          </article>`;
+        const featuredItems = products.slice(0, 4);
+        const remainingItems= products.slice(4, 10);
+
+        if (featuredItems.length) {
+          featuredGrid.innerHTML = featuredItems.map(p => createCard(p)).join("");
+        } else {
+          featuredGrid.innerHTML = `<div style="padding:20px;grid-column:span 2;text-align:center;color:#888;">No featured jerseys available.</div>`;
         }
 
-        loopTrack.innerHTML       = wowProducts.map((p,i) => loopCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;">No products yet.</div>';
-        allProductsGrid.innerHTML = products.slice(0,10).map((p,i) => gridCard(p,i)).join("") || '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">No products available.</div>';
-
-        [loopTrack, allProductsGrid].forEach(container => {
-          container.querySelectorAll(".img-wrap img").forEach(img => {
-            const wrap = img.closest(".img-wrap");
-            if (!wrap) return;
-            if (img.complete && img.naturalWidth > 0) {
-              wrap.classList.add("loaded");
-            } else {
-              img.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
-              img.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
-            }
-          });
-        });
-
-        function attachCardNav(container) {
-          container.addEventListener("click", function(e) {
-            const vp = document.getElementById("loopViewport");
-            if (vp && vp.classList.contains("is-dragging")) return;
-            const btn = e.target.closest(".small-btn[data-pid]");
-            if (btn) { e.stopPropagation(); goToProduct(btn.dataset.pid); return; }
-            const article = e.target.closest("article[data-pid]");
-            if (article) goToProduct(article.dataset.pid);
-          });
+        if (remainingItems.length) {
+          moreGrid.innerHTML = remainingItems.map(p => createCard(p)).join("");
+        } else if (products.length <= 4) {
+          moreGrid.style.display = "none";
         }
-        attachCardNav(loopTrack);
-        attachCardNav(allProductsGrid);
       } catch (e) {
         console.error("Products load failed", e);
-        document.getElementById("loopTrack").innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;">Could not load products.</div>';
-        document.getElementById("allProductsGrid").innerHTML = '<div style="color:var(--muted);padding:20px;font-size:13px;grid-column:span 2;">Could not load products.</div>';
       }
-      setProgress(70, "Loading media…");
     }
 
-    /* INDEX MEDIA */
+    /* INDEX MEDIA LOAD (Mid Banner & Secondary Banner) */
     async function loadIndexMedia() {
+      setProgress(80, "Loading Featured Media…");
+      const midBanner       = document.getElementById("midBanner");
+      const secondaryBanner = document.getElementById("secondaryBanner");
       try {
         const snap = await get(ref(rtdb, "indexMedia"));
-        if (!snap.exists()) { document.getElementById("mediaSpace").innerHTML = `<div class="placeholder" style="font-size:13px;font-weight:700;color:#999;">No featured media</div>`; return; }
+        if (!snap.exists()) return;
         let items = [];
-        snap.forEach(d => { const v = d.val(); v._key = d.key; items.push(v); });
-        items.sort((a,b) => (a.order||0) - (b.order||0));
-        const featured = items.filter(m => m.section === "featured" && getUrl(m));
-        const reels    = items.filter(m => m.section === "reels"    && getUrl(m));
-        const gallery  = items.filter(m => m.section === "gallery"  && getUrl(m));
+        snap.forEach(d => { const v = d.val(); items.push(v); });
+        const featured = items.filter(m => m.section === "featured" && (m.mediaUrl || m.imgUrl));
 
-        /* ── MEDIA SPACE ── */
-        const ms = document.getElementById("mediaSpace");
-        const f0 = featured[0];
-        if (f0) {
-          const url = getUrl(f0), link = f0.link || "shop.html", vid = isVideo(f0);
-          if (vid) {
-            const video = document.createElement("video");
-            video.src = url; video.autoplay = true; video.muted = true; video.loop = true; video.setAttribute("playsinline","");
-            video.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;";
-            video.onclick = () => window.location.href = link;
-            ms.innerHTML = "";
-            const wrap = document.createElement("div"); wrap.className = "media-img-wrap";
-            wrap.appendChild(video); ms.appendChild(wrap);
-            video.addEventListener("loadedmetadata", () => wrap.classList.add("loaded"), { once: true });
-            video.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
-          } else {
-            const img = document.createElement("img");
-            img.src = url; img.alt = "Featured"; img.loading = "lazy";
-            img.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;";
-            img.onclick = () => window.location.href = link;
-            ms.innerHTML = "";
-            const wrap = document.createElement("div"); wrap.className = "media-img-wrap";
-            wrap.appendChild(img); ms.appendChild(wrap);
-            if (img.complete && img.naturalWidth > 0) { wrap.classList.add("loaded"); }
-            else {
-              img.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
-              img.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
-            }
-          }
+        if (featured[0]) {
+          const url = featured[0].mediaUrl || featured[0].imgUrl;
+          const link= featured[0].link || "shop.html";
+          const isVid = featured[0].mediaType === "video" || isVideoUrl(url);
+          midBanner.innerHTML = isVid
+            ? `<video src="${url}" autoplay muted loop playsinline onclick="window.location.href='${link}'" style="cursor:pointer;"></video>`
+            : `<img src="${url}" alt="Mid Banner" onclick="window.location.href='${link}'" style="cursor:pointer;" />`;
         } else {
-          ms.innerHTML = `<div class="placeholder" style="font-size:13px;font-weight:700;color:#999;">No featured media</div>`;
+          midBanner.innerHTML = `<img src="https://images.unsplash.com/photo-1577223625816-7546f13df25d?q=80&w=800&auto=format&fit=crop" alt="Mid Banner" />`;
         }
 
-        /* ── PROMOS ── */
-        const promoTrack = document.getElementById("promoTrack");
-        const blank1     = document.getElementById("promoBlank1");
-        if (featured.length > 1) {
-          featured.slice(1).forEach(m => {
-            const url = getUrl(m), link = m.link || "shop.html", vid = isVideo(m);
-            const div = document.createElement("div"); div.className = "promo-card";
-            div.onclick = () => window.location.href = link;
-
-            if (vid) {
-              const video = document.createElement("video");
-              video.src = url; video.autoplay = true; video.muted = true; video.loop = true; video.setAttribute("playsinline","");
-              const wrap = document.createElement("div"); wrap.className = "promo-img-wrap";
-              wrap.appendChild(video); div.appendChild(wrap);
-              video.addEventListener("loadedmetadata", () => wrap.classList.add("loaded"), { once: true });
-              video.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
-            } else {
-              const img = document.createElement("img"); img.src = url; img.alt = "Promo"; img.loading = "lazy";
-              const overlay = document.createElement("div"); overlay.className = "promo-overlay";
-              const wrap = document.createElement("div"); wrap.className = "promo-img-wrap";
-              wrap.appendChild(img); div.appendChild(wrap); div.appendChild(overlay);
-              if (img.complete && img.naturalWidth > 0) { wrap.classList.add("loaded"); }
-              else {
-                img.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
-                img.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
-              }
-            }
-            promoTrack.insertBefore(div, blank1);
-          });
+        if (featured[1]) {
+          const url = featured[1].mediaUrl || featured[1].imgUrl;
+          const link= featured[1].link || "shop.html";
+          const isVid = featured[1].mediaType === "video" || isVideoUrl(url);
+          secondaryBanner.innerHTML = isVid
+            ? `<video src="${url}" autoplay muted loop playsinline onclick="window.location.href='${link}'" style="cursor:pointer;"></video>`
+            : `<img src="${url}" alt="Secondary Banner" onclick="window.location.href='${link}'" style="cursor:pointer;" />`;
         } else {
-          document.getElementById("promoBlank1").style.display = "flex";
-          document.getElementById("promoBlank2").style.display = "flex";
+          secondaryBanner.innerHTML = `<img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=800&auto=format&fit=crop" alt="Secondary Banner" />`;
         }
-
-
-
-        /* ── GALLERY ── */
-        const galleryGrid    = document.getElementById("galleryGrid");
-        const gallerySection = document.getElementById("gallerySection");
-        if (gallery.length > 0) {
-          const [gA, gB] = gallery;
-          let html = "";
-
-          if (gA) {
-            const url = getUrl(gA), link = gA.link || "#", vid = isVideo(gA);
-            const mediaEl = vid
-              ? `<div class="gallery-img-wrap"><video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>`
-              : `<div class="gallery-img-wrap"><img src="${url}" alt="Gallery" loading="lazy" onerror="this.parentElement.classList.add('loaded');this.parentElement.parentElement.style.background='#eee'"/></div>`;
-            html += `<div class="grid-item-a" onclick="window.location.href='${link}'">${mediaEl}</div>`;
-          }
-          if (gB) {
-            const url = getUrl(gB), link = gB.link || "#", vid = isVideo(gB);
-            const mediaEl = vid
-              ? `<div class="gallery-img-wrap"><video src="${url}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>`
-              : `<div class="gallery-img-wrap"><img src="${url}" alt="Gallery" loading="lazy" onerror="this.parentElement.classList.add('loaded');this.parentElement.parentElement.style.background='#eee'"/></div>`;
-            html += `<div class="grid-item-b" onclick="window.location.href='${link}'">${mediaEl}</div>`;
-          }
-
-          galleryGrid.innerHTML = html;
-          gallerySection.style.display = "block";
-
-          galleryGrid.querySelectorAll(".gallery-img-wrap").forEach(wrap => {
-            const img = wrap.querySelector("img");
-            const vid = wrap.querySelector("video");
-            if (img) {
-              if (img.complete && img.naturalWidth > 0) { wrap.classList.add("loaded"); }
-              else {
-                img.addEventListener("load",  () => wrap.classList.add("loaded"), { once: true });
-                img.addEventListener("error", () => wrap.classList.add("loaded"), { once: true });
-              }
-            } else if (vid) {
-              if (vid.readyState >= 1) { wrap.classList.add("loaded"); }
-              else {
-                vid.addEventListener("loadedmetadata", () => wrap.classList.add("loaded"), { once: true });
-                vid.addEventListener("error",          () => wrap.classList.add("loaded"), { once: true });
-              }
-            }
-          });
-        }
-      } catch (e) { console.error("Index media load failed", e); }
-      setProgress(95, "Almost ready…");
+      } catch (e) {
+        console.error("Index media load failed", e);
+      }
     }
 
     async function init() {
-      setProgress(5, "Connecting…");
+      setProgress(10, "Connecting to Firebase…");
       await Promise.allSettled([loadHeroes(), loadProducts(), loadIndexMedia()]);
       clearTimeout(splashTimeout);
       revealPage();
     }
-    document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", init) : init();
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
   </script>
 </body>
 </html>
