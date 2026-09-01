@@ -2,3542 +2,681 @@
 <html lang="en">
 
 <head>
-  <link rel="icon" type="image/png" sizes="32x32"
-    href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260510-WA0000%20(1).jpg?alt=media&token=f4429d90-710f-4ef2-8587-ef383e89e622">
-  <link rel="apple-touch-icon" sizes="180x180"
-    href="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260510-WA0000%20(1).jpg?alt=media&token=f4429d90-710f-4ef2-8587-ef383e89e622">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JERSIFY – Profile</title>
+
+  <!-- Google Fonts required by Figma Design Spec (Node 70:159) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Krona+One&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Varela+Round&display=swap" rel="stylesheet">
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
-
-    @keyframes pulse {
-      0% { transform: scale(0.95); opacity: 0.5; }
-      50% { transform: scale(1.1); opacity: 1; }
-      100% { transform: scale(0.95); opacity: 0.5; }
-    }
-
     :root {
       --bg: #ffffff;
-      --text: #111111;
-      --muted: #6f6f6f;
+      --card-bg: #ffffff;
+      --text: #111827;
+      --muted: #4b4b4b;
       --accent: #c61f2f;
-      --accent2: #8f0f1d;
-      --line: #ececec;
-      --shadow: 0 12px 28px rgba(0, 0, 0, .08);
-      --shadow-soft: 0 8px 18px rgba(0, 0, 0, .06);
-      --radius: 22px;
-      --maxw: 100%;
+      --line: #d9d9d9;
+      --radius-card: 12px;
+      --radius-sm: 5px;
+      --radius-pill: 17px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { background: #f5f5f5; color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    button, input { font: inherit; }
 
-    html,
-    body {
-      height: 100%;
-    }
-
-    body {
-      font-family: 'Poppins', Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
+    /* ══ MAIN CONTAINER (Center aligned max 430px for mobile frame parity) ══ */
     .page {
-      width: min(100%, var(--maxw));
+      width: 100%;
+      max-width: 430px;
       margin: 0 auto;
+      background: #ffffff;
       min-height: 100vh;
-      background: #fff;
       position: relative;
-      overflow: hidden;
-      border-left: 1px solid rgba(0, 0, 0, .04);
-      border-right: 1px solid rgba(0, 0, 0, .04);
-      padding-bottom: 110px;
+      overflow-x: hidden;
+      padding-bottom: 90px;
+      box-shadow: 0 0 30px rgba(0,0,0,.05);
     }
 
-    /* ── TOPBAR ── */
+    /* ── HEADER ── */
     .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 16px 16px 10px;
-      position: sticky;
-      top: 0;
-      background: rgba(255, 255, 255, .98);
-      backdrop-filter: blur(8px);
-      z-index: 30;
-      border-bottom: 1px solid rgba(0, 0, 0, .04);
-    }
-
-    .logo {
-      font-family: 'italics', 'Bebas Neue', sans-serif;
-      font-size: 44px;
-      letter-spacing: 2.5px;
-      line-height: 1;
-      color: #111;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .logo-sub {
-      font-size: 9px;
-      font-weight: 600;
-      color: var(--muted);
-      letter-spacing: .5px;
-      margin-top: -2px;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    .icon-btn {
-      width: 38px;
-      height: 38px;
-      border: none;
-      border-radius: 50%;
-      background: #111;
-      color: #fff;
-      display: grid;
-      place-items: center;
-      box-shadow: var(--shadow-soft);
-      cursor: pointer;
-      flex: 0 0 auto;
-      transition: transform .2s ease;
-      position: relative;
-    }
-
-    .icon-btn:hover {
-      transform: translateY(-2px);
-    }
-
-    .icon-btn svg {
-      width: 19px;
-      height: 19px;
-    }
-
-    .cart-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-size: 9px;
-      font-weight: 900;
-      display: none;
-      place-items: center;
-      border: 2px solid #fff;
-    }
-
-    .cart-badge.show {
-      display: grid;
-    }
-
-    /* ── PROFILE HERO ── */
-    .profile-hero {
-      position: relative;
-      padding: 0 16px 20px;
-      overflow: hidden;
-    }
-
-    .profile-hero-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 130px;
-      background: linear-gradient(135deg, #111 0%, #1c1c1c 40%, #2a0009 100%);
-      border-radius: 0 0 28px 28px;
-      z-index: 0;
-    }
-
-    .profile-hero-bg::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(-45deg,
-          transparent,
-          transparent 18px,
-          rgba(198, 31, 47, .06) 18px,
-          rgba(198, 31, 47, .06) 20px);
-    }
-
-    .profile-avatar-wrap {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 50px;
-    }
-
-    .avatar-ring {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      border: 3px solid #fff;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
-      background: linear-gradient(135deg, #f4d8de, #f7f7f7);
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .avatar-ring img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-
-    .avatar-initials {
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--accent);
-    }
-
-    .avatar-edit-overlay {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background .2s;
-      z-index: 2;
-    }
-
-    .avatar-edit-overlay:hover {
-      background: rgba(0, 0, 0, .50);
-    }
-
-    .avatar-edit-overlay svg {
-      width: 22px;
-      height: 22px;
-      color: #fff;
-      opacity: 0;
-      transition: opacity .2s;
-      pointer-events: none;
-    }
-
-    .avatar-edit-overlay:hover svg {
-      opacity: 1;
-    }
-
-    .avatar-upload-ring {
-      position: absolute;
-      inset: -3px;
-      border-radius: 50%;
-      border: 3px solid transparent;
-      border-top-color: var(--accent);
-      animation: spin .8s linear infinite;
-      display: none;
-      z-index: 3;
-      pointer-events: none;
-    }
-
-    .avatar-ring.uploading .avatar-upload-ring {
-      display: block;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    #avatarFileInput {
-      display: none;
-    }
-
-    .profile-name {
-      font-size: 20px;
-      font-weight: 900;
-      margin: 12px 0 2px;
-      letter-spacing: .2px;
-    }
-
-    .profile-email {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .profile-badges {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 10px;
-    }
-
-    .p-badge {
-      font-size: 9px;
-      font-weight: 800;
-      text-transform: uppercase;
-      padding: 3px 9px;
-      border-radius: 999px;
-      letter-spacing: .5px;
-    }
-
-    .p-badge.red {
-      background: rgba(198, 31, 47, .1);
-      color: var(--accent);
-      border: 1px solid rgba(198, 31, 47, .2);
-    }
-
-    .p-badge.dark {
-      background: #111;
-      color: #fff;
-    }
-
-    .p-badge.line {
-      background: #f5f5f5;
-      color: #555;
-      border: 1px solid var(--line);
-    }
-
-    /* ── STATS ROW ── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0;
-      margin: 20px 16px 0;
-      background: #fff;
-      border-radius: 20px;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
-    }
-
-    .stat {
-      padding: 14px 8px;
-      text-align: center;
-      position: relative;
-    }
-
-    .stat+.stat::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 20%;
-      bottom: 20%;
-      width: 1px;
-      background: var(--line);
-    }
-
-    .stat-num {
-      font-size: 22px;
-      font-weight: 900;
-      color: var(--accent);
-      line-height: 1;
-    }
-
-    .stat-label {
-      font-size: 9px;
-      color: var(--muted);
-      font-weight: 600;
-      margin-top: 3px;
-      letter-spacing: .3px;
-      text-transform: uppercase;
-    }
-
-    /* ── SECTIONS ── */
-    .section {
-      padding: 20px 16px 0;
-    }
-
-    .section-title {
-      font-size: 14px;
-      font-weight: 900;
-      margin-bottom: 12px;
-      letter-spacing: .2px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .section-title svg {
-      width: 16px;
-      height: 16px;
-      color: var(--accent);
-    }
-
-    /* ── INFO CARD ── */
-    .info-card {
-      background: #fff;
-      border-radius: 20px;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
-
-    .info-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 13px 16px;
-      border-bottom: 1px solid var(--line);
-      cursor: pointer;
-      transition: background .15s;
-    }
-
-    .info-row:last-child {
-      border-bottom: none;
-    }
-
-    .info-row:hover {
-      background: #fafafa;
-    }
-
-    .info-row:active {
-      background: #f5f5f5;
-    }
-
-    .info-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 12px;
-      background: #f5f5f5;
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-    }
-
-    .info-icon svg {
-      width: 17px;
-      height: 17px;
-      color: #222;
-    }
-
-    .info-icon.red {
-      background: rgba(198, 31, 47, .08);
-    }
-
-    .info-icon.red svg {
-      color: var(--accent);
-    }
-
-    .info-body {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .info-label {
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .info-val {
-      font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .info-chevron {
-      flex-shrink: 0;
-      opacity: .4;
-    }
-
-    .info-chevron svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .info-toggle {
-      width: 40px;
-      height: 22px;
-      border-radius: 999px;
-      background: #ddd;
-      position: relative;
-      cursor: pointer;
-      transition: background .25s;
-      flex-shrink: 0;
-      border: none;
-      appearance: none;
-      outline: none;
-    }
-
-    .info-toggle.on {
-      background: var(--accent);
-    }
-
-    .info-toggle::after {
-      content: "";
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #fff;
-      transition: transform .25s;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
-    }
-
-    .info-toggle.on::after {
-      transform: translateX(18px);
-    }
-
-    /* ── ORDER CARD ── */
-    .order-card {
-      background: #fff;
-      border-radius: 20px;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
-      margin-bottom: 12px;
-      cursor: pointer;
-      transition: transform .15s, box-shadow .15s;
-    }
-
-    .order-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(0, 0, 0, .1);
-    }
-
-    .order-card:active {
-      transform: scale(.99);
-    }
-
-    .order-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .order-id {
-      font-size: 11px;
-      font-weight: 800;
-      color: #111;
-    }
-
-    .order-date {
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .order-status {
-      font-size: 9px;
-      font-weight: 800;
-      padding: 3px 9px;
-      border-radius: 999px;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-    }
-
-    .order-status.delivered {
-      background: rgba(34, 197, 94, .12);
-      color: #15803d;
-    }
-
-    .order-status.processing {
-      background: rgba(234, 179, 8, .12);
-      color: #a16207;
-    }
-
-    .order-status.pending {
-      background: rgba(234, 179, 8, .12);
-      color: #a16207;
-    }
-
-    .order-status.confirmed, .order-status.confirmed_partial_cod {
-      background: rgba(59, 130, 246, .12);
-      color: #1d4ed8;
-    }
-
-    .order-status.shipped {
-      background: rgba(59, 130, 246, .12);
-      color: #1d4ed8;
-    }
-
-    .order-status.cancelled {
-      background: rgba(239, 68, 68, .12);
-      color: #b91c1c;
-    }
-
-    .order-body {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 14px;
-    }
-
-    .order-thumb {
-      width: 56px;
-      height: 64px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #111 0%, #c61f2f 100%);
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-      overflow: hidden;
-    }
-
-    .order-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .order-thumb-placeholder {
-      color: #fff;
-      font-size: 20px;
-      font-weight: 900;
-    }
-
-    .order-info {
-      flex: 1;
-    }
-
-    .order-name {
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .order-meta {
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .order-price {
-      font-size: 14px;
-      font-weight: 900;
-      color: var(--accent);
-      margin-top: 4px;
-    }
-
-    .order-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 14px 12px;
-    }
-
-    .order-tap-hint {
-      font-size: 10px;
-      color: var(--muted);
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .order-tap-hint svg {
-      width: 12px;
-      height: 12px;
-    }
-
-    /* ── ADDRESSES ── */
-    .address-card {
-      background: #fff;
-      border-radius: 20px;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow-soft);
-      padding: 14px;
-      margin-bottom: 12px;
-    }
-
-    .address-tag {
-      display: inline-block;
-      font-size: 8px;
-      font-weight: 900;
-      text-transform: uppercase;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: #111;
-      color: #fff;
-      margin-bottom: 6px;
-      letter-spacing: .5px;
-    }
-
-    .address-tag.default {
-      background: var(--accent);
-    }
-
-    .address-name {
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 2px;
-    }
-
-    .address-text {
-      font-size: 12px;
-      line-height: 1.6;
-      color: #333;
-    }
-
-    .address-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .address-btn {
-      flex: 1;
-      border: 1.5px solid var(--line);
-      border-radius: 10px;
-      background: #fff;
-      padding: 7px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-      transition: background .15s;
-    }
-
-    .address-btn:hover {
-      background: #f5f5f5;
-    }
-
-    .address-btn.red {
-      border-color: rgba(198, 31, 47, .2);
-      color: var(--accent);
-    }
-
-    .add-address-btn {
-      width: 100%;
-      padding: 13px;
-      border: 1.5px dashed rgba(17, 17, 17, .2);
-      border-radius: 20px;
-      background: transparent;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: border-color .2s, color .2s;
-    }
-
-    .add-address-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .add-address-btn svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    /* ── LOGOUT / DANGER ── */
-    .logout-btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 20px;
-      background: linear-gradient(180deg, #111, #1a1a1a);
-      color: #fff;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: var(--shadow-soft);
-      transition: opacity .2s;
-      margin-bottom: 12px;
-    }
-
-    .logout-btn:hover {
-      opacity: .85;
-    }
-
-    .danger-btn {
-      width: 100%;
-      padding: 14px;
-      border: 1.5px solid rgba(198, 31, 47, .3);
-      border-radius: 20px;
-      background: rgba(198, 31, 47, .04);
-      color: var(--accent);
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background .2s;
-    }
-
-    .danger-btn:hover {
-      background: rgba(198, 31, 47, .1);
-    }
-
-    /* ── FOOTER LINKS ── */
-    .page-footer {
-      padding: 16px 16px 24px;
-      text-align: center;
-    }
-
-    .footer-links {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-
-    .footer-link {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color .2s;
-      padding: 2px 0;
-    }
-
-    .footer-link:hover {
-      color: var(--accent);
-    }
-
-    .footer-dot {
-      font-size: 10px;
-      color: #d0d0d0;
-      user-select: none;
-    }
-
-    .footer-copy {
-      font-size: 10px;
-      color: #c0c0c0;
-      letter-spacing: .3px;
-    }
-
-    /* ── MODALS ── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      background: rgba(0, 0, 0, .45);
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .25s;
-    }
-
-    .modal-overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .modal-sheet {
-      width: min(100%, var(--maxw));
-      background: #fff;
-      border-radius: 28px 28px 0 0;
-      padding: 20px 20px 36px;
-      transform: translateY(40px);
-      transition: transform .3s cubic-bezier(.34, 1.4, .64, 1);
-      max-height: 92vh;
-      overflow-y: auto;
-    }
-
-    .modal-overlay.open .modal-sheet {
-      transform: translateY(0);
-    }
-
-    .modal-handle {
-      width: 36px;
-      height: 4px;
-      border-radius: 999px;
-      background: #ddd;
-      margin: 0 auto 20px;
-    }
-
-    .modal-title {
-      font-size: 18px;
-      font-weight: 900;
-      margin-bottom: 16px;
-    }
-
-    .form-field {
-      margin-bottom: 14px;
-    }
-
-    .form-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--muted);
-      margin-bottom: 5px;
-      display: block;
-      letter-spacing: .3px;
-    }
-
-    .form-input {
-      width: 100%;
-      border: 1.5px solid rgba(17, 17, 17, .16);
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 14px;
-      background: #fff;
-      outline: none;
-      transition: border-color .2s;
-    }
-
-    .form-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(198, 31, 47, .08);
-    }
-
-    .save-btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 14px;
-      background: linear-gradient(180deg, var(--accent), var(--accent2));
-      color: #fff;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 8px 18px rgba(198, 31, 47, .25);
-      margin-top: 4px;
-    }
-
-    /* ── ORDER DETAIL MODAL ── */
-    #orderDetailModal .modal-sheet {
-      padding-bottom: 40px;
-    }
-
-    .od-status-banner {
-      border-radius: 16px;
+      display: flex; align-items: center; justify-content: space-between;
       padding: 14px 16px;
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      position: sticky; top: 0;
+      background: rgba(255,255,255,.98); backdrop-filter: blur(10px);
+      z-index: 40; border-bottom: 1px solid rgba(0,0,0,.05);
+    }
+    .logo-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .logo-img { height: 36px; width: auto; max-width: 150px; object-fit: contain; }
+    .logo-text-fallback { font-family: 'Krona One', sans-serif; font-size: 20px; letter-spacing: 2px; color: #000; }
+    
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .header-btn {
+      width: 36px; height: 36px; border: none; border-radius: 50%;
+      background: #f2f2f2; color: #111; display: grid; place-items: center;
+      cursor: pointer; position: relative; transition: transform .2s ease;
+    }
+    .header-btn:active { transform: scale(0.95); }
+    .header-btn svg { width: 18px; height: 18px; }
+    .cart-badge {
+      position: absolute; top: -3px; right: -3px; width: 16px; height: 16px;
+      border-radius: 50%; background: #000; color: #fff; font-size: 9px;
+      font-weight: 800; display: none; place-items: center; font-family: 'DM Sans', sans-serif;
+    }
+    .cart-badge.show { display: grid; }
+
+    /* ── SEARCH BAR (Exact Figma Specs: #f2f2f2, border #d9d9d9, radius 17px) ── */
+    .search-section { padding: 12px 11px; display: flex; align-items: center; gap: 8px; }
+    .search-box {
+      flex: 1; height: 33px; background: #f2f2f2; border: 0.85px solid #d9d9d9;
+      border-radius: 17px; display: flex; align-items: center; padding: 0 11px; gap: 8px;
+    }
+    .search-box svg { width: 14px; height: 14px; color: #999999; flex-shrink: 0; }
+    .search-box input {
+      border: none; outline: none; background: transparent; width: 100%;
+      font-family: 'Inter', sans-serif; font-size: 12px; color: #111;
+    }
+    .search-box input::placeholder { color: #999999; }
+    .filter-btn {
+      width: 33px; height: 33px; background: #f2f2f2; border: 0.85px solid #d9d9d9;
+      border-radius: 17px; display: grid; place-items: center; cursor: pointer; flex-shrink: 0;
+    }
+    .filter-btn svg { width: 16px; height: 16px; color: #333333; opacity: 0.7; }
+
+    /* ── PROFILE AVATAR CARD (Figma Spec Node 74:12) ── */
+    .profile-card-container { padding: 0 11px; margin-bottom: 16px; }
+    .profile-avatar-card {
+      background: #ffffff; border: 1px solid #d9d9d9; border-radius: 12px;
+      padding: 16px; min-height: 120px; display: flex; align-items: center;
+      gap: 16px; position: relative;
+    }
+    .avatar-box {
+      width: 72px; height: 72px; border-radius: 36px; background: #111827;
+      display: flex; align-items: center; justify-content: center;
+      color: #ffffff; font-family: 'Ubuntu', sans-serif; font-weight: 700;
+      font-size: 24px; flex-shrink: 0; position: relative; overflow: hidden;
+    }
+    .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+    .edit-badge-icon {
+      position: absolute; left: 64px; top: 72px; width: 24px; height: 24px;
+      cursor: pointer; z-index: 5; transition: transform .2s ease;
+    }
+    .edit-badge-icon:active { transform: scale(0.9); }
+    .profile-meta { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .profile-name { font-family: 'Ubuntu', sans-serif; font-weight: 700; font-size: 20px; color: #111827; line-height: 1.05; }
+    .profile-email { font-family: 'Ubuntu', sans-serif; font-weight: 300; font-size: 13px; color: #4b4b4b; line-height: 1.2; word-break: break-all; }
+    .profile-join { font-family: 'Ubuntu', sans-serif; font-weight: 300; font-size: 12px; color: #999999; line-height: 1.2; }
+
+    /* ── ACCOUNT DETAILS CARD (Figma Spec Node 74:19) ── */
+    .account-details-card {
+      background: #ffffff; border: 1px solid #d9d9d9; border-radius: 12px;
+      padding: 16px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .card-section-label { font-family: 'Ubuntu', sans-serif; font-weight: 500; font-size: 12.68px; color: #4b4b4b; line-height: 1.05; }
+    .details-row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+    .details-row-label { font-family: 'Ubuntu', sans-serif; font-weight: 300; color: #4b4b4b; }
+    .details-row-value { font-family: 'Ubuntu', sans-serif; font-weight: 700; color: #111827; cursor: pointer; }
+
+    /* ── QUICK ACTIONS BAR (Figma Spec Node 74:27: Settings, Help, Logout) ── */
+    .quick-actions-bar {
+      background: #ffffff; border: 1px solid #d9d9d9; border-radius: 12px;
+      padding: 12px; height: 96px; margin-bottom: 16px; display: flex; gap: 12px;
+    }
+    .action-tile {
+      flex: 1; background: #f2f2f2; border-radius: 10px; display: flex;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; cursor: pointer; transition: background .2s ease;
+    }
+    .action-tile:active { background: #e5e5e5; }
+    .action-tile svg { width: 20px; height: 20px; color: #111827; }
+    .action-tile span { font-family: 'Ubuntu', sans-serif; font-weight: 700; font-size: 12px; color: #111827; }
+
+    /* ── ORDER HISTORY (Figma Spec Node 74:37) ── */
+    .order-history-card {
+      background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+      padding: 16px; margin-bottom: 24px; box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .order-history-header { font-family: 'Varela Round', sans-serif; font-size: 16px; color: #111827; line-height: 1.2; }
+    .order-list { display: flex; flex-direction: column; gap: 12px; }
+    .order-item-figma {
+      display: flex; align-items: center; gap: 12px; padding: 8px 0;
+      cursor: pointer; border-bottom: 1px solid #e5e7eb;
+    }
+    .order-item-figma:last-child { border-bottom: none; }
+    .order-thumb { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; flex-shrink: 0; background: #f7f7f7; }
+    .order-meta { flex: 1; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+    .order-title { font-family: 'Varela Round', sans-serif; font-size: 14px; color: #111827; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .order-num { font-family: 'Ubuntu', sans-serif; font-weight: 300; font-size: 12px; color: #6b7280; line-height: 1.3; }
+    .order-price { font-family: 'Ubuntu', sans-serif; font-weight: 700; font-size: 13px; color: #111827; line-height: 1.2; }
+    .order-status-badge {
+      background: #111827; border-radius: 999px; padding: 6px 10px;
+      font-family: 'Krona One', sans-serif; font-size: 11px; color: #ffffff;
+      letter-spacing: 0.66px; text-transform: uppercase; flex-shrink: 0;
     }
 
-    .od-status-banner.delivered {
-      background: rgba(34, 197, 94, .08);
-      border: 1px solid rgba(34, 197, 94, .2);
+    /* ── YOU MAY ALSO LIKE (2-COLUMN GRID) ── */
+    .title-ubuntu-reg {
+      font-family: 'Ubuntu', sans-serif; font-weight: 400; font-size: 20px;
+      line-height: 1.05; color: #000000; margin: 24px 11px 14px 11px;
+    }
+    .product-grid-2col {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 11px;
+      margin-bottom: 24px;
+    }
+    .product-card-figma {
+      border-radius: 5px; background: #ffffff; overflow: hidden; cursor: pointer;
+      display: flex; flex-direction: column; transition: transform .2s ease;
+    }
+    .product-card-figma:active { transform: scale(0.98); }
+    .product-card-figma .pic-wrap {
+      width: 100%; height: 260px; border-radius: 5px; overflow: hidden;
+      background: #f7f7f7; position: relative;
+    }
+    .product-card-figma .pic-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .product-card-figma .details { padding: 8px 2px 4px 2px; }
+    .product-card-figma .title {
+      font-family: 'Varela Round', 'Varela', sans-serif; font-size: 12px;
+      color: #000000; line-height: 1.2; margin-bottom: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .product-card-figma .price {
+      font-family: 'Varela Round', 'Varela', sans-serif; font-size: 14px;
+      font-weight: 400; color: #000000;
     }
 
-    .od-status-banner.processing {
-      background: rgba(234, 179, 8, .08);
-      border: 1px solid rgba(234, 179, 8, .2);
+    /* ── FOOTER ── */
+    .footer-figma {
+      background: #000000; color: #ffffff; padding: 28px 16px 36px 16px;
+      margin-top: 32px; border-top-left-radius: 16px; border-top-right-radius: 16px;
     }
-
-    .od-status-banner.pending {
-      background: rgba(234, 179, 8, .08);
-      border: 1px solid rgba(234, 179, 8, .2);
+    .footer-heading {
+      font-family: 'Krona One', sans-serif; font-size: 14px; color: #ffffff;
+      letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 16px;
     }
+    .contact-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+    .contact-row { display: flex; align-items: center; gap: 14px; cursor: pointer; }
+    .contact-row svg { width: 24px; height: 24px; color: #ffffff; flex-shrink: 0; }
+    .contact-row span { font-family: 'DM Sans', sans-serif; font-size: 14px; color: #ffffff; letter-spacing: 1.4px; }
+    .exhibition-title { font-family: 'Krona One', sans-serif; font-size: 14px; color: #ffffff; letter-spacing: 1.4px; text-transform: uppercase; margin-top: 16px; }
 
-    .od-status-banner.confirmed {
-      background: rgba(59, 130, 246, .08);
-      border: 1px solid rgba(59, 130, 246, .2);
-    }
-
-    .od-status-banner.shipped {
-      background: rgba(59, 130, 246, .08);
-      border: 1px solid rgba(59, 130, 246, .2);
-    }
-
-    .od-status-banner.cancelled {
-      background: rgba(239, 68, 68, .08);
-      border: 1px solid rgba(239, 68, 68, .2);
-    }
-
-    .od-status-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-    }
-
-    .od-status-banner.delivered .od-status-icon {
-      background: rgba(34, 197, 94, .15);
-    }
-
-    .od-status-banner.processing .od-status-icon,
-    .od-status-banner.pending .od-status-icon {
-      background: rgba(234, 179, 8, .15);
-    }
-
-    .od-status-banner.confirmed .od-status-icon,
-    .od-status-banner.shipped .od-status-icon {
-      background: rgba(59, 130, 246, .15);
-    }
-
-    .od-status-banner.cancelled .od-status-icon {
-      background: rgba(239, 68, 68, .15);
-    }
-
-    .od-status-icon svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    .od-status-banner.delivered .od-status-icon svg {
-      color: #15803d;
-    }
-
-    .od-status-banner.processing .od-status-icon svg,
-    .od-status-banner.pending .od-status-icon svg {
-      color: #a16207;
-    }
-
-    .od-status-banner.confirmed .od-status-icon svg,
-    .od-status-banner.shipped .od-status-icon svg {
-      color: #1d4ed8;
-    }
-
-    .od-status-banner.cancelled .od-status-icon svg {
-      color: #b91c1c;
-    }
-
-    .od-status-text {
-      flex: 1;
-    }
-
-    .od-status-label {
-      font-size: 13px;
-      font-weight: 900;
-      text-transform: capitalize;
-    }
-
-    .od-status-sub {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 1px;
-    }
-
-    .od-section-title {
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      margin: 18px 0 8px;
-    }
-
-    /* Items list */
-    .od-items {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .od-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      border-radius: 16px;
-      background: #fafafa;
-      border: 1px solid var(--line);
-    }
-
-    .od-item-thumb {
-      width: 52px;
-      height: 60px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #111 0%, #c61f2f 100%);
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-      overflow: hidden;
-    }
-
-    .od-item-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 12px;
-    }
-
-    .od-item-thumb-ph {
-      color: #fff;
-      font-size: 18px;
-      font-weight: 900;
-    }
-
-    .od-item-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .od-item-name {
-      font-size: 13px;
-      font-weight: 800;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .od-item-meta {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .od-item-team {
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 1px;
-    }
-
-    .od-item-price {
-      font-size: 14px;
-      font-weight: 900;
-      color: var(--accent);
-      white-space: nowrap;
-    }
-
-    /* Info rows inside order detail */
-    .od-info-rows {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .od-info-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      padding: 11px 14px;
-      border-bottom: 1px solid var(--line);
-      gap: 12px;
-    }
-
-    .od-info-row:last-child {
-      border-bottom: none;
-    }
-
-    .od-info-key {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .od-info-val {
-      font-size: 12px;
-      font-weight: 700;
-      text-align: right;
-      max-width: 60%;
-      word-break: break-word;
-    }
-
-    /* Price breakdown */
-    .od-price-rows {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .od-price-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--line);
-      font-size: 13px;
-    }
-
-    .od-price-row:last-child {
-      border-bottom: none;
-      font-weight: 900;
-      background: linear-gradient(135deg, rgba(198, 31, 47, .04), rgba(143, 15, 29, .04));
-    }
-
-    .od-price-row .key {
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .od-price-row.total-row .key,
-    .od-price-row.total-row .val {
-      color: var(--accent);
-      font-size: 15px;
-    }
-
-    /* Tracking pill */
-    .od-tracking-pill {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: linear-gradient(135deg, #111, #1c1c1c);
-      border-radius: 14px;
-      padding: 12px 16px;
-      margin-top: 4px;
-    }
-
-    .od-tracking-pill svg {
-      width: 18px;
-      height: 18px;
-      color: #fff;
-      flex-shrink: 0;
-    }
-
-    .od-tracking-text {
-      flex: 1;
-    }
-
-    .od-tracking-label {
-      font-size: 10px;
-      color: rgba(255, 255, 255, .5);
-      font-weight: 600;
-    }
-
-    .od-tracking-num {
-      font-size: 14px;
-      font-weight: 900;
-      color: #fff;
-      letter-spacing: .5px;
-    }
-
-    /* Payment badge */
-    .od-payment-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #f5f5f5;
-      border-radius: 8px;
-      padding: 4px 10px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .od-payment-badge svg {
-      width: 14px;
-      height: 14px;
-      color: #555;
-    }
-
-    /* ── TOAST ── */
-    .toast {
-      position: fixed;
-      bottom: 90px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: #111;
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-      opacity: 0;
-      transition: opacity .3s, transform .3s;
-      z-index: 200;
-      white-space: nowrap;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* ── AUTH GATE ── */
-    .auth-gate {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 60vh;
-      padding: 24px;
-      text-align: center;
-      gap: 12px;
-    }
-
-    .auth-gate-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #f4d8de, #f7f7f7);
-      display: grid;
-      place-items: center;
-      margin-bottom: 8px;
-    }
-
-    .auth-gate-icon svg {
-      width: 36px;
-      height: 36px;
-      color: var(--accent);
-    }
-
-    .auth-gate h2 {
-      font-size: 22px;
-      font-weight: 900;
-    }
-
-    .auth-gate p {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.6;
-      max-width: 280px;
-    }
-
-    .auth-gate-btns {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-      max-width: 300px;
-      margin-top: 8px;
-    }
-
-    .auth-primary-btn {
-      padding: 14px;
-      border: none;
-      border-radius: 14px;
-      background: linear-gradient(180deg, var(--accent), var(--accent2));
-      color: #fff;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 8px 18px rgba(198, 31, 47, .25);
-    }
-
-    .auth-secondary-btn {
-      padding: 13px;
-      border: 1.5px solid #222;
-      border-radius: 14px;
-      background: #fff;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    /* ── SKELETON LOADER ── */
-    .skeleton {
-      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.2s infinite;
-      border-radius: 8px;
-    }
-
-    @keyframes shimmer {
-      0% {
-        background-position: 200% 0;
-      }
-
-      100% {
-        background-position: -200% 0;
-      }
-    }
-
-    /* ── BOTTOM NAV ── */
+    /* ── FIXED BOTTOM NAVIGATION ── */
     .bottom-nav {
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 12px;
-      width: min(100%, calc(var(--maxw) - 16px));
-      background: rgba(255, 255, 255, .96);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 0, 0, .06);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 8px;
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 430px; background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(12px); border-top: 1px solid rgba(0,0,0,0.06);
+      display: flex; justify-content: space-around; padding: 10px 0 12px 0;
       z-index: 50;
     }
-
     .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      font-size: 10px;
-      color: #555;
-      min-width: 56px;
-      cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      font-size: 10px; color: #666666; font-weight: 500; min-width: 60px;
     }
+    .nav-item svg { width: 20px; height: 20px; }
+    .nav-item.active { color: #000000; font-weight: 800; }
 
-    .nav-item svg {
-      width: 19px;
-      height: 19px;
+    /* ── MODALS (Edit Profile, Address, Chatbot) ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+      z-index: 100; display: none; place-items: center; padding: 16px; opacity: 0;
+      transition: opacity .3s ease;
     }
+    .modal-overlay.show { display: grid; opacity: 1; }
+    .modal-card {
+      background: #ffffff; border-radius: 16px; width: 100%; max-width: 380px;
+      padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .modal-title { font-family: 'Ubuntu', sans-serif; font-weight: 700; font-size: 18px; color: #111827; }
+    .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #666; }
+    .form-group { margin-bottom: 12px; }
+    .form-label { display: block; font-size: 12px; color: #4b4b4b; margin-bottom: 4px; font-weight: 500; }
+    .form-input { width: 100%; padding: 10px 12px; border: 1px solid #d9d9d9; border-radius: 8px; font-size: 14px; outline: none; }
+    .form-input:focus { border-color: #111827; }
+    .modal-submit-btn { width: 100%; padding: 12px; background: #111827; color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 8px; }
 
-    .nav-item.active {
-      color: var(--accent);
-      font-weight: 800;
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #111827; color: #ffffff; padding: 10px 18px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; opacity: 0; pointer-events: none;
+      transition: all .3s ease; z-index: 1000; white-space: nowrap;
     }
-
-    /* ── REVIEW SECTION (inside order detail modal) ── */
-    .review-section {
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid var(--line);
-    }
-
-    .review-section-title {
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      margin-bottom: 12px;
-    }
-
-    .existing-review {
-      background: linear-gradient(135deg, rgba(198, 31, 47, .04), rgba(143, 15, 29, .04));
-      border: 1px solid rgba(198, 31, 47, .12);
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 4px;
-    }
-
-    .existing-review-stars {
-      display: flex;
-      gap: 3px;
-      margin-bottom: 6px;
-    }
-
-    .existing-review-stars svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .existing-review-text {
-      font-size: 13px;
-      line-height: 1.6;
-      color: #222;
-      margin-bottom: 8px;
-    }
-
-    .existing-review-media {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .existing-review-media img,
-    .existing-review-media video {
-      width: 72px;
-      height: 72px;
-      border-radius: 10px;
-      object-fit: cover;
-      border: 1px solid var(--line);
-    }
-
-    .review-edit-btn {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--accent);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .review-edit-btn svg {
-      width: 13px;
-      height: 13px;
-    }
-
-    .write-review-cta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: linear-gradient(135deg, #111 0%, #1c1c1c 100%);
-      border-radius: 16px;
-      padding: 14px 16px;
-      cursor: pointer;
-      transition: opacity .2s;
-      border: none;
-      width: 100%;
-      text-align: left;
-    }
-
-    .write-review-cta:hover {
-      opacity: .88;
-    }
-
-    .write-review-cta-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      background: rgba(198, 31, 47, .3);
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-    }
-
-    .write-review-cta-icon svg {
-      width: 20px;
-      height: 20px;
-      color: #fff;
-    }
-
-    .write-review-cta-text {
-      flex: 1;
-    }
-
-    .write-review-cta-label {
-      font-size: 13px;
-      font-weight: 800;
-      color: #fff;
-    }
-
-    .write-review-cta-sub {
-      font-size: 11px;
-      color: rgba(255, 255, 255, .5);
-      margin-top: 2px;
-    }
-
-    .write-review-cta-arrow svg {
-      width: 16px;
-      height: 16px;
-      color: rgba(255, 255, 255, .35);
-    }
-
-    /* ── REVIEW MODAL ── */
-    #reviewModal .modal-sheet {
-      padding-bottom: 44px;
-    }
-
-    .star-picker {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      margin: 16px 0 8px;
-    }
-
-    .star-picker-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-      transition: transform .15s;
-    }
-
-    .star-picker-btn:hover {
-      transform: scale(1.25);
-    }
-
-    .star-picker-btn svg {
-      width: 36px;
-      height: 36px;
-      display: block;
-    }
-
-    .star-label {
-      text-align: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--muted);
-      margin-bottom: 16px;
-      min-height: 20px;
-      transition: color .2s;
-    }
-
-    .review-textarea {
-      width: 100%;
-      border: 1.5px solid rgba(17, 17, 17, .16);
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 14px;
-      background: #fff;
-      outline: none;
-      resize: none;
-      min-height: 100px;
-      transition: border-color .2s;
-      font-family: inherit;
-      line-height: 1.6;
-    }
-
-    .review-textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(198, 31, 47, .08);
-    }
-
-    .media-upload-zone {
-      border: 2px dashed rgba(17, 17, 17, .14);
-      border-radius: 14px;
-      padding: 18px 16px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color .2s, background .2s;
-      margin-top: 12px;
-    }
-
-    .media-upload-zone:hover {
-      border-color: var(--accent);
-      background: rgba(198, 31, 47, .02);
-    }
-
-    .media-upload-zone-icon {
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .media-upload-zone-icon svg {
-      width: 26px;
-      height: 26px;
-    }
-
-    .media-upload-zone-label {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    .media-upload-zone-sub {
-      font-size: 10px;
-      color: #bbb;
-      margin-top: 3px;
-    }
-
-    #reviewMediaInput {
-      display: none;
-    }
-
-    .media-preview-grid {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .media-preview-item {
-      position: relative;
-      width: 72px;
-      height: 72px;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1.5px solid var(--line);
-    }
-
-    .media-preview-item img,
-    .media-preview-item video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .media-preview-remove {
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, .65);
-      border: none;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-    }
-
-    .media-preview-remove svg {
-      width: 10px;
-      height: 10px;
-      color: #fff;
-    }
-
-    .review-char-count {
-      font-size: 10px;
-      color: var(--muted);
-      text-align: right;
-      margin-top: 4px;
-    }
-
-    .submit-review-btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 14px;
-      background: linear-gradient(180deg, var(--accent), var(--accent2));
-      color: #fff;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 8px 18px rgba(198, 31, 47, .25);
-      margin-top: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: opacity .2s;
-    }
-
-    .submit-review-btn:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
-    .review-upload-progress {
-      width: 100%;
-      height: 4px;
-      background: #f0f0f0;
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 8px;
-      display: none;
-    }
-
-    .review-upload-progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      border-radius: 999px;
-      width: 0%;
-      transition: width .3s;
-    }
-
-    /* ── CHATBOT MODAL ── */
-    .chat-msg {
-      display: flex;
-      flex-direction: column;
-      max-width: 85%;
-      margin-bottom: 4px;
-    }
-
-    .chat-msg.user {
-      align-self: flex-end;
-      align-items: flex-end;
-    }
-
-    .chat-msg.bot {
-      align-self: flex-start;
-      align-items: flex-start;
-    }
-
-    .chat-msg .msg-bubble {
-      padding: 10px 14px;
-      border-radius: 18px;
-      font-size: 13px;
-      line-height: 1.5;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .chat-msg.user .msg-bubble {
-      background: var(--accent);
-      color: #fff;
-      border-bottom-right-radius: 4px;
-    }
-
-    .chat-msg.bot .msg-bubble {
-      background: #f0f0f0;
-      color: #111;
-      border-bottom-left-radius: 4px;
-    }
-
-    .bot-typing {
-      font-size: 11px;
-      color: var(--muted);
-      padding-left: 8px;
-      font-style: italic;
-    }
-
-    .bot-product-card {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px;
-      margin-top: 8px;
-      width: 260px;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .bot-product-img {
-      width: 50px;
-      height: 50px;
-      border-radius: 8px;
-      object-fit: cover;
-      background: #f5f5f5;
-      flex-shrink: 0;
-    }
-
-    .bot-product-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .bot-product-name {
-      font-size: 11px;
-      font-weight: 800;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .bot-product-price {
-      font-size: 12px;
-      font-weight: 900;
-      color: var(--accent);
-      margin-top: 2px;
-    }
-
-    .bot-product-buy {
-      background: #111;
-      color: #fff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 10px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .hidden {
-      display: none !important;
-    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 
 <body>
+
+  <!-- ══ MAIN MOBILE CONTAINER ══ -->
   <div class="page">
 
     <!-- TOPBAR -->
     <header class="topbar">
-      <div>
-        <div class="logo" style="display:flex;align-items:center;"><img src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="JERSIFY" style="height:30px; width:auto; image-rendering:-webkit-optimize-contrast;" /></div>
-        <div class="logo-sub">My Profile</div>
+      <div class="logo-wrap" onclick="window.location.href='index.html'">
+        <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="Jersify" onerror="this.style.display='none';document.getElementById('logoTextFallback').style.display='block';" />
+        <div id="logoTextFallback" class="logo-text-fallback" style="display:none;">JERSIFY</div>
       </div>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <button class="icon-btn" aria-label="Cart" onclick="window.location.href='checkout.html'">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <circle cx="9" cy="20" r="1" />
-            <circle cx="17" cy="20" r="1" />
-            <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6" />
-          </svg>
+      <div class="header-actions">
+        <button class="header-btn" aria-label="Cart" onclick="window.location.href='checkout.html'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
           <span class="cart-badge" id="cartBadge"></span>
         </button>
       </div>
     </header>
 
-    <!-- AUTH GATE -->
-    <div id="authGate" class="auth-gate hidden">
-      <div class="auth-gate-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="8" r="4" />
-          <path d="M4 21a8 8 0 0 1 16 0" />
+    <!-- SEARCH BAR SECTION -->
+    <section class="search-section">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+        <input type="text" id="searchInput" placeholder="Search..." />
+      </div>
+      <button class="filter-btn" aria-label="Filter" onclick="window.location.href='shop.html'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>
+      </button>
+    </section>
+
+    <!-- PROFILE AVATAR CARD (Figma Spec Node 74:12) -->
+    <section class="profile-card-container">
+      <div class="profile-avatar-card">
+        <div class="avatar-box" id="avatarBox">
+          <span id="avatarInitials">JD</span>
+        </div>
+        <!-- Edit badge icon -->
+        <svg class="edit-badge-icon" onclick="openEditModal('name')" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="12" fill="#3B82F6"/>
+          <path d="M15.2 8.8a1.5 1.5 0 0 1 2.1 2.1l-6.8 6.8H8.4v-2.1l6.8-6.8z" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-      </div>
-      <h2>Welcome to Jersify</h2>
-      <p>Sign in to view your orders, manage your profile, and track deliveries.</p>
-      <div class="auth-gate-btns">
-        <button class="auth-primary-btn" onclick="window.location.href='login.html?redirect=profile.html'">Sign
-          In</button>
-        <button class="auth-secondary-btn"
-          onclick="window.location.href='login.html?tab=signup&redirect=profile.html'">Create Account</button>
-      </div>
-    </div>
 
-    <!-- PROFILE CONTENT -->
-    <div id="profileContent" class="hidden">
-
-      <!-- HERO -->
-      <div class="profile-hero">
-        <div class="profile-hero-bg"></div>
-        <div class="profile-avatar-wrap">
-
-          <div class="avatar-ring" id="avatarRing">
-            <span class="avatar-initials" id="avatarInitials">??</span>
-            <div class="avatar-edit-overlay" id="avatarEditOverlay" title="Change photo">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
-            </div>
-            <div class="avatar-upload-ring" id="avatarUploadRing"></div>
-          </div>
-          <input type="file" id="avatarFileInput" accept="image/*" />
-
-          <div class="profile-name" id="profileName">Loading…</div>
-          <div class="profile-email" id="profileEmail"></div>
-          <div class="profile-badges">
-            <span class="p-badge red">Fan Member</span>
-            <span class="p-badge dark" id="memberSince">Member</span>
-            <span class="p-badge line" id="loyaltyBadge">0 Orders</span>
-          </div>
+        <div class="profile-meta">
+          <div class="profile-name" id="profileName">Jordan Doe</div>
+          <div class="profile-email" id="profileEmail">jordan.doe@email.com</div>
+          <div class="profile-join" id="profileJoin">Member since Jan 2026</div>
         </div>
       </div>
 
-      <!-- STATS -->
-      <div class="stats-row">
-        <div class="stat">
-          <div class="stat-num" id="statOrders">–</div>
-          <div class="stat-label">Orders</div>
+      <!-- ACCOUNT DETAILS CARD (Figma Spec Node 74:19) -->
+      <div class="account-details-card">
+        <div class="card-section-label">Account details</div>
+        <div class="details-row">
+          <span class="details-row-label">Phone</span>
+          <span class="details-row-value" id="infoPhone" onclick="openEditModal('phone')">+91 98765 43210</span>
         </div>
-        <div class="stat">
-          <div class="stat-num" id="statWishlist">–</div>
-          <div class="stat-label">Wishlist</div>
+        <div class="details-row">
+          <span class="details-row-label">Address</span>
+          <span class="details-row-value" id="infoAddress" onclick="openAddressModal()">Mumbai, India</span>
         </div>
       </div>
 
-      <!-- PERSONAL INFO -->
-      <div class="section">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 21a8 8 0 0 1 16 0" />
-          </svg>
-          Personal Info
+      <!-- QUICK ACTIONS BAR (Figma Spec Node 74:27: Settings, Help, Logout) -->
+      <div class="quick-actions-bar">
+        <div class="action-tile" onclick="openEditModal('name')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Settings</span>
         </div>
-        <div class="info-card">
-          <div class="info-row" onclick="openEditModal('name')">
-            <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-              </svg></div>
-            <div class="info-body">
-              <div class="info-label">Full Name</div>
-              <div class="info-val" id="infoName">–</div>
+        <div class="action-tile" onclick="openChatbotModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <span>Help</span>
+        </div>
+        <div class="action-tile" id="logoutBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          <span>Logout</span>
+        </div>
+      </div>
+
+      <!-- ORDER HISTORY SECTION (Figma Spec Node 74:37) -->
+      <div class="order-history-card">
+        <div class="order-history-header">Order history</div>
+        <div class="order-list" id="orderList">
+          <!-- Fallback or dynamic orders from RTDB -->
+          <div class="order-item-figma">
+            <img src="https://images.unsplash.com/photo-1577223625816-7546f13df25d?q=80&w=200&auto=format&fit=crop" class="order-thumb" alt="Order" />
+            <div class="order-meta">
+              <div class="order-title">FC Barcelona Home 2026-27</div>
+              <div class="order-num">Order #JRS-1042</div>
+              <div class="order-price">₹ 800</div>
             </div>
-            <div class="info-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6" />
-              </svg></div>
+            <div class="order-status-badge">DELIVERED</div>
           </div>
-          <div class="info-row" onclick="openEditModal('email')">
-            <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
-              </svg></div>
-            <div class="info-body">
-              <div class="info-label">Email</div>
-              <div class="info-val" id="infoEmail">–</div>
+          <div class="order-item-figma">
+            <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=200&auto=format&fit=crop" class="order-thumb" alt="Order" />
+            <div class="order-meta">
+              <div class="order-title">Real Madrid Away 2026-27</div>
+              <div class="order-num">Order #JRS-0987</div>
+              <div class="order-price">₹ 850</div>
             </div>
-            <div class="info-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6" />
-              </svg></div>
+            <div class="order-status-badge">SHIPPED</div>
           </div>
-          <div class="info-row" onclick="openEditModal('phone')">
-            <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path
-                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.08 6.08l1.95-1.95a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg></div>
-            <div class="info-body">
-              <div class="info-label">Phone</div>
-              <div class="info-val" id="infoPhone">Add phone number</div>
+          <div class="order-item-figma">
+            <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=200&auto=format&fit=crop" class="order-thumb" alt="Order" />
+            <div class="order-meta">
+              <div class="order-title">Manchester City Home 2026-27</div>
+              <div class="order-num">Order #JRS-0921</div>
+              <div class="order-price">₹ 790</div>
             </div>
-            <div class="info-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6" />
-              </svg></div>
-          </div>
-          <div class="info-row" onclick="openEditModal('dob')">
-            <div class="info-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg></div>
-            <div class="info-body">
-              <div class="info-label">Date of Birth</div>
-              <div class="info-val" id="infoDob">Not set</div>
-            </div>
-            <div class="info-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6" />
-              </svg></div>
+            <div class="order-status-badge">PROCESSING</div>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- SUPPORT & CHAT -->
-      <div class="section">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path
-              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-          </svg>
-          Support & Chat
+    <!-- YOU MAY ALSO LIKE (2-COLUMN PRODUCT GRID) -->
+    <section>
+      <h2 class="title-ubuntu-reg">You may also like</h2>
+      <div class="product-grid-2col" id="recommendedProductsGrid">
+        <div class="product-card-figma" onclick="window.location.href='shop.html'">
+          <div class="pic-wrap">
+            <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop" alt="Jersey" />
+          </div>
+          <div class="details">
+            <div class="title">FC Barcelona Home 2026-27</div>
+            <div class="price">₹ 800</div>
+          </div>
         </div>
-        <div class="info-card">
-          <div class="info-row" onclick="window.open('https://wa.me/1234567890', '_blank')">
-            <div class="info-icon" style="background: rgba(37,211,102,.12); color: #25D366;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path
-                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.08 6.08l1.95-1.95a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-            </div>
-            <div class="info-body">
-              <div class="info-label">WhatsApp</div>
-              <div class="info-val">Chat with us directly</div>
-            </div>
-            <div class="info-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6" />
-              </svg></div>
+        <div class="product-card-figma" onclick="window.location.href='shop.html'">
+          <div class="pic-wrap">
+            <img src="https://images.unsplash.com/photo-1577223625816-7546f13df25d?q=80&w=600&auto=format&fit=crop" alt="Jersey" />
           </div>
-          <div class="info-row"
-            onclick="window.open('https://www.instagram.com/jersify.online?igsh=MTJuNGJhaDgxN2hlNg==', '_blank')">
-            <div class="info-icon" style="background: rgba(225,48,108,.12); color: #E1306C;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-              </svg>
-            </div>
-            <div class="info-body">
-              <div class="info-label">Instagram</div>
-              <div class="info-val">DM us on Instagram</div>
-            </div>
-            <div class="info-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6" />
-              </svg></div>
-          </div>
-          <div class="info-row" onclick="openChatbotModal()">
-            <div class="info-icon" style="background: rgba(198,31,47,.12); color: var(--accent);">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="10" rx="2" />
-                <circle cx="12" cy="5" r="2" />
-                <path d="M12 7v4" />
-                <line x1="8" y1="16" x2="8" y2="16" />
-                <line x1="16" y1="16" x2="16" y2="16" />
-              </svg>
-            </div>
-            <div class="info-body">
-              <div class="info-label">JERSIFY AI CHAT BOT</div>
-              <div class="info-val">Instant product enquiries</div>
-            </div>
-            <div class="info-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6" />
-              </svg></div>
+          <div class="details">
+            <div class="title">FC Barcelona Home 2026-27</div>
+            <div class="price">₹ 800</div>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- ORDERS -->
-      <div class="section">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <path d="M16 10a4 4 0 0 1-8 0" />
-          </svg>
-          My Orders
+    <!-- FOOTER -->
+    <footer class="footer-figma">
+      <div class="footer-heading">GET IN TOUCH</div>
+      <div class="contact-list">
+        <div class="contact-row" onclick="window.open('https://instagram.com/jersify.online','_blank')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          <span>jersify.online</span>
         </div>
-        <div id="ordersContainer">
-          <div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">Loading orders…</div>
+        <div class="contact-row" onclick="window.open('https://wa.me/916291589500','_blank')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          <span>6291589500</span>
         </div>
-        <div style="display:flex;justify-content:center;margin-top:4px;margin-bottom:16px;">
-          <button onclick="window.location.href='shop.html'"
-            style="min-width:140px;padding:10px 20px;border:1.5px solid #222;border-radius:4px;background:#fff;font-weight:700;cursor:pointer;">Shop
-            Now</button>
+        <div class="contact-row" onclick="window.location.href='mailto:jersify.online@gmail.com'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          <span>jersify.online@gmail.com</span>
         </div>
       </div>
-
-      <!-- SAVED ADDRESSES -->
-      <div class="section">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-          Saved Addresses
-        </div>
-        <div id="addressesContainer"></div>
-        <button class="add-address-btn" onclick="openAddressModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Add New Address
-        </button>
-      </div>
-
-      <!-- ACCOUNT ACTIONS -->
-      <div class="section" style="margin-top:20px;">
-        <div class="section-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3" />
-            <path
-              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-          </svg>
-          Account
-        </div>
-        <button class="logout-btn" id="logoutBtn">Sign Out</button>
-        <button class="danger-btn" id="deleteBtn">Delete Account</button>
-        <div style="height:8px;"></div>
-      </div>
-
-    </div><!-- /profileContent -->
-
-    <!-- PAGE FOOTER -->
-    <footer class="page-footer">
-      <div class="footer-links">
-        <a href="term.html" class="footer-link">Terms of Service</a>
-        <span class="footer-dot">•</span>
-        <a href="privacy.html" class="footer-link">Privacy Policy</a>
-        <span class="footer-dot">•</span>
-        <a href="refund.html" class="footer-link">Refund Policy</a>
-      </div>
-      <div class="footer-copy">© 2025 Jersify. All rights reserved.</div>
+      <div class="exhibition-title">UPCOMING EXIBITION</div>
     </footer>
 
-  </div><!-- /page -->
+  </div>
 
-  <!-- BOTTOM NAV -->
+  <!-- FIXED BOTTOM NAVIGATION BAR -->
   <nav class="bottom-nav">
     <a href="index.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 12l9-9 9 9" />
-        <path d="M5 10v10h14V10" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
       <div>Home</div>
     </a>
     <a href="shop.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M4 10h16" />
-        <path d="M5 10l1-5h12l1 5" />
-        <path d="M4 10v8h16v-8" />
-        <path d="M9 18v-4h6v4" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16"/><path d="M5 10l1-5h12l1 5"/><path d="M4 10v8h16v-8"/><path d="M9 18v-4h6v4"/></svg>
       <div>Shop</div>
     </a>
     <a href="checkout.html" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M6 6h15l-1.5 9h-12z" />
-        <circle cx="9" cy="20" r="1" />
-        <circle cx="18" cy="20" r="1" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
       <div>Cart</div>
     </a>
     <a href="profile.html" class="nav-item active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <div>Profile</div>
     </a>
   </nav>
 
-  <!-- EDIT MODAL -->
+  <!-- ══ EDIT PROFILE MODAL ══ -->
   <div class="modal-overlay" id="editModal">
-    <div class="modal-sheet">
-      <div class="modal-handle"></div>
-      <div class="modal-title" id="editModalTitle">Edit</div>
-      <div id="editModalBody"></div>
-      <button class="save-btn" id="saveEditBtn">Save Changes</button>
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title" id="editModalTitle">Edit Profile</div>
+        <button class="modal-close" onclick="closeModal('editModal')">✕</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="editInputLabel">Full Name</label>
+        <input type="text" class="form-input" id="editInputValue" placeholder="Enter value..." />
+      </div>
+      <button class="modal-submit-btn" id="saveEditBtn">Save Changes</button>
     </div>
   </div>
 
-  <!-- AUTH MODAL -->
-  <div class="modal-overlay" id="authModal">
-    <div class="modal-sheet">
-      <div class="modal-handle"></div>
-      <div class="modal-title" id="authModalTitle">Sign In</div>
-      <div class="form-field">
-        <label class="form-label">Email</label>
-        <input type="email" class="form-input" id="authEmail" placeholder="you@example.com" />
-      </div>
-      <div class="form-field" id="authNameField" style="display:none;">
-        <label class="form-label">Full Name</label>
-        <input type="text" class="form-input" id="authName" placeholder="Your full name" />
-      </div>
-      <div class="form-field">
-        <label class="form-label">Password</label>
-        <input type="password" class="form-input" id="authPassword" placeholder="••••••••" />
-      </div>
-      <div id="authError" style="color:var(--accent);font-size:12px;margin-bottom:8px;display:none;"></div>
-      <button class="save-btn" id="authSubmitBtn">Sign In</button>
-      <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--muted);">
-        <span id="authToggleText">Don't have an account?</span>
-        <button id="authToggleBtn"
-          style="background:none;border:none;color:var(--accent);font-weight:800;cursor:pointer;font-size:12px;padding:0 0 0 4px;">Sign
-          Up</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADDRESS MODAL -->
+  <!-- ══ ADDRESS MODAL ══ -->
   <div class="modal-overlay" id="addressModal">
-    <div class="modal-sheet">
-      <div class="modal-handle"></div>
-      <div class="modal-title">Add Address</div>
-      <div class="form-field"><label class="form-label">Full Name</label><input type="text" class="form-input"
-          id="addrName" placeholder="Recipient's name" /></div>
-      <div class="form-field"><label class="form-label">Phone</label><input type="tel" class="form-input" id="addrPhone"
-          placeholder="+91 XXXXX XXXXX" /></div>
-      <div class="form-field"><label class="form-label">Street Address</label><input type="text" class="form-input"
-          id="addrStreet" placeholder="House/Flat, Street, Area" /></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div class="form-field"><label class="form-label">City</label><input type="text" class="form-input"
-            id="addrCity" placeholder="City" /></div>
-        <div class="form-field"><label class="form-label">PIN Code</label><input type="text" class="form-input"
-            id="addrPin" placeholder="700001" /></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">Add Delivery Address</div>
+        <button class="modal-close" onclick="closeModal('addressModal')">✕</button>
       </div>
-      <div class="form-field"><label class="form-label">State</label><input type="text" class="form-input"
-          id="addrState" placeholder="West Bengal" /></div>
-      <button class="save-btn" id="saveAddressBtn">Save Address</button>
+      <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" id="addrName" placeholder="Recipient name" /></div>
+      <div class="form-group"><label class="form-label">Phone Number</label><input type="text" class="form-input" id="addrPhone" placeholder="Mobile number" /></div>
+      <div class="form-group"><label class="form-label">Street / House No.</label><input type="text" class="form-input" id="addrStreet" placeholder="Address street" /></div>
+      <div class="form-group"><label class="form-label">City</label><input type="text" class="form-input" id="addrCity" placeholder="City" /></div>
+      <div class="form-group"><label class="form-label">PIN Code</label><input type="text" class="form-input" id="addrPin" placeholder="6-digit PIN" /></div>
+      <button class="modal-submit-btn" id="saveAddressBtn">Save Address</button>
     </div>
   </div>
 
-  <!-- ORDER DETAIL MODAL -->
-  <div class="modal-overlay" id="orderDetailModal">
-    <div class="modal-sheet">
-      <div class="modal-handle"></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <div class="modal-title" style="margin-bottom:0;" id="odTitle">Order Details</div>
-        <button id="odCloseBtn" onclick="closeModal('orderDetailModal')"
-          style="width:32px;height:32px;border-radius:50%;border:none;background:#f5f5f5;display:grid;place-items:center;cursor:pointer;flex-shrink:0;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div id="orderDetailContent"></div>
-    </div>
-  </div>
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">Message</div>
 
-  <!-- REVIEW MODAL -->
-  <div class="modal-overlay" id="reviewModal">
-    <div class="modal-sheet">
-      <div class="modal-handle"></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <div class="modal-title" style="margin-bottom:0;">Rate Your Order</div>
-        <button onclick="closeModal('reviewModal')"
-          style="width:32px;height:32px;border-radius:50%;border:none;background:#f5f5f5;display:grid;place-items:center;cursor:pointer;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:4px;" id="reviewProductLabel">How was your experience?
-      </p>
+  <!-- ══ JAVASCRIPT & FIREBASE SCRIPT ══ -->
+  <script>
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg; t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3000);
+    }
+    function openModal(id) { document.getElementById(id)?.classList.add("show"); }
+    function closeModal(id) { document.getElementById(id)?.classList.remove("show"); }
 
-      <!-- Star picker -->
-      <div class="star-picker" id="starPicker">
-        <button class="star-picker-btn" data-star="1" onclick="setReviewStar(1)" aria-label="1 star">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#e0e0e0" stroke-width="1.5">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-        </button>
-        <button class="star-picker-btn" data-star="2" onclick="setReviewStar(2)" aria-label="2 stars">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#e0e0e0" stroke-width="1.5">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-        </button>
-        <button class="star-picker-btn" data-star="3" onclick="setReviewStar(3)" aria-label="3 stars">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#e0e0e0" stroke-width="1.5">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-        </button>
-        <button class="star-picker-btn" data-star="4" onclick="setReviewStar(4)" aria-label="4 stars">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#e0e0e0" stroke-width="1.5">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-        </button>
-        <button class="star-picker-btn" data-star="5" onclick="setReviewStar(5)" aria-label="5 stars">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#e0e0e0" stroke-width="1.5">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-        </button>
-      </div>
-      <div class="star-label" id="starLabel">Tap to rate</div>
+    /* SEARCH INPUT */
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("keydown", e => {
+      if (e.key === "Enter" && searchInput.value.trim()) {
+        window.location.href = `shop.html?q=${encodeURIComponent(searchInput.value.trim())}`;
+      }
+    });
+  </script>
 
-      <!-- Review text -->
-      <div class="form-field">
-        <label class="form-label">Your Review</label>
-        <textarea class="review-textarea" id="reviewText"
-          placeholder="Tell others about the quality, fit, and your overall experience&#8230;" maxlength="500"
-          oninput="updateReviewCharCount()"></textarea>
-        <div class="review-char-count"><span id="reviewCharCount">0</span>/500</div>
-      </div>
-
-      <!-- Media upload -->
-      <div class="media-upload-zone" onclick="document.getElementById('reviewMediaInput').click()">
-        <div class="media-upload-zone-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <rect x="3" y="3" width="18" height="18" rx="3" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <polyline points="21 15 16 10 5 21" />
-          </svg>
-        </div>
-        <div class="media-upload-zone-label">Add Photos or Videos</div>
-        <div class="media-upload-zone-sub">Up to 5 files &middot; JPG, PNG, MP4 &middot; Max 20MB each</div>
-      </div>
-      <input type="file" id="reviewMediaInput" accept="image/*,video/*" multiple />
-      <div class="media-preview-grid" id="reviewMediaPreview"></div>
-
-      <div class="review-upload-progress" id="reviewUploadProgress">
-        <div class="review-upload-progress-bar" id="reviewUploadProgressBar"></div>
-      </div>
-
-      <button class="submit-review-btn" id="submitReviewBtn" onclick="submitReview()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-          <polyline points="22 4 12 14.01 9 11.01" />
-        </svg>
-        Submit Review
-      </button>
-    </div>
-  </div>
-
-  <!-- JERSIFY AI CHATBOT MODAL -->
-  <div class="modal-overlay" id="chatbotModal">
-    <div class="modal-sheet" style="height:100vh; width: 100vw; max-width: none; border-radius: 0; display:flex; flex-direction:column; padding: 20px; box-sizing: border-box;">
-      <div class="modal-handle" style="display: none;"></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div class="modal-title" style="margin-bottom:0;display:flex;align-items:center;gap:8px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            style="width:24px;color:var(--accent);">
-            <rect x="3" y="11" width="18" height="10" rx="2" />
-            <circle cx="12" cy="5" r="2" />
-            <path d="M12 7v4" />
-            <line x1="8" y1="16" x2="8" y2="16" />
-            <line x1="16" y1="16" x2="16" y2="16" />
-          </svg>
-          JERSIFY AI CHATBOT
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div id="chatbotTalkHumanContainer"></div>
-          <button onclick="closeModal('chatbotModal')"
-            style="width:32px;height:32px;border-radius:50%;border:none;background:#f5f5f5;display:grid;place-items:center;cursor:pointer;outline:none;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Chat History -->
-      <div id="chatbotHistory"
-        style="flex:1; overflow-y:auto; padding: 10px 0; display:flex; flex-direction:column; gap: 12px; margin-bottom: 12px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
-        <div class="chat-msg bot">
-          <div class="msg-bubble">Hi! I'm Jersify AI, your Jersify AI assistant. What kind of jersey are you looking for today?
-          </div>
-        </div>
-      </div>
-
-      <!-- Input Area -->
-      <div style="display:flex; gap: 8px;">
-        <input type="text" id="chatbotInput" class="form-input" placeholder="Ask me anything..."
-          onkeydown="if(event.key==='Enter') window.sendChatMsg()"
-          style="flex:1; border-radius: 999px; padding: 12px 18px;" />
-        <button onclick="window.sendChatMsg()" id="chatbotSendBtn"
-          style="width:48px;height:48px;border-radius:50%;border:none;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer;flex-shrink:0;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            style="width:20px;height:20px;margin-left:-2px;">
-            <line x1="22" y1="2" x2="11" y2="13" />
-            <polygon points="22 2 15 22 11 13 2 9 22 2" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
-
-  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref as dbRef, get, set, update, push, remove, query, orderByChild, equalTo, onValue }
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-    import { getStorage, ref as stRef, uploadBytesResumable, getDownloadURL }
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-    import {
-      getAuth, onAuthStateChanged, signInWithEmailAndPassword,
-      createUserWithEmailAndPassword, signOut, updateProfile, deleteUser
-    }
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+    import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA4O7ROp8srleiFAZSmiyd6ml7Ruv8eN74",
       authDomain: "jersify-f9b5e.firebaseapp.com",
-      databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com",
       projectId: "jersify-f9b5e",
       storageBucket: "jersify-f9b5e.firebasestorage.app",
       messagingSenderId: "461181023878",
       appId: "1:461181023878:web:6ebfbae603baf4a873c307",
-      measurementId: "G-V5E7D09PJ0"
+      databaseURL: "https://jersify-f9b5e-default-rtdb.firebaseio.com"
     };
 
-    const app = initializeApp(firebaseConfig);
+    const app  = initializeApp(firebaseConfig);
     const rtdb = getDatabase(app);
     const auth = getAuth(app);
-    const storage = getStorage(app);
-    try { getAnalytics(app); } catch (e) { }
 
-    /* ── HELPERS ── */
-    const showToast = (msg) => {
-      const el = document.getElementById("toast");
-      el.textContent = msg; el.classList.add("show");
-      setTimeout(() => el.classList.remove("show"), 2600);
-    };
-    const openModal = id => document.getElementById(id).classList.add("open");
-    window.closeModal = id => document.getElementById(id).classList.remove("open");
+    let currentUser = null;
+    let currentEditField = "name";
 
-    ["editModal", "authModal", "addressModal", "orderDetailModal", "reviewModal"].forEach(id =>
-      document.getElementById(id).addEventListener("click", e => {
-        if (e.target === document.getElementById(id)) window.closeModal(id);
-      })
-    );
-
-    /* ── NOTIFICATION TOGGLES ── */
-    window.toggleSwitch = async (btn, key) => {
-      btn.classList.toggle("on");
-      if (currentUser && key) {
-        try {
-          await update(dbRef(rtdb, `users/${currentUser.uid}/notifications`), { [key]: btn.classList.contains("on") });
-        } catch (e) { }
-      }
-    };
-
-    /* ── CART BADGE ── */
-    function updateCartBadge() {
-      const badge = document.getElementById("cartBadge");
-      const count = JSON.parse(localStorage.getItem("jersify_cart") || "[]").length;
-      if (count > 0) { badge.textContent = count > 9 ? "9+" : count; badge.classList.add("show"); }
-    }
-
-    /* ── AUTH STATE ── */
-    let currentUser = null, userData = {};
-
+    /* AUTH STATE */
     onAuthStateChanged(auth, async user => {
       currentUser = user;
+      const cartBadge = document.getElementById("cartBadge");
+      function updateBadge(n) { if (n > 0) { cartBadge.textContent = n > 9 ? "9+" : n; cartBadge.classList.add("show"); } }
+      updateBadge(JSON.parse(localStorage.getItem("jersify_cart") || "[]").length);
+
       if (user) {
-        document.getElementById("authGate").classList.add("hidden");
-        document.getElementById("profileContent").classList.remove("hidden");
-        await loadUserProfile(user);
-        checkSupportChatStatus();
-      } else {
-        window.location.href = 'login.html?redirect=profile.html';
-        return;
-      }
-      updateCartBadge();
-    });
-
-    /* ── AVATAR DISPLAY ── */
-    function setAvatarDisplay(photoURL, initials) {
-      const ring = document.getElementById("avatarRing");
-      const overlay = document.getElementById("avatarEditOverlay");
-      ring.querySelectorAll("img, .avatar-initials").forEach(n => n.remove());
-      if (photoURL) {
-        const img = Object.assign(document.createElement("img"), { src: photoURL, alt: "Avatar" });
-        ring.insertBefore(img, overlay);
-      } else {
-        const span = Object.assign(document.createElement("span"), {
-          className: "avatar-initials", id: "avatarInitials", textContent: initials || "??"
-        });
-        ring.insertBefore(span, overlay);
-      }
-    }
-
-    /* ── LOAD PROFILE ── */
-    async function loadUserProfile(user) {
-      const email = user.email || "";
-
-      let name = user.displayName || "";
-      document.getElementById("profileName").textContent = name || "User";
-      document.getElementById("profileEmail").textContent = email;
-      document.getElementById("infoEmail").textContent = email || "–";
-      document.getElementById("infoName").textContent = name || "–";
-      if (user.phoneNumber) {
-        document.getElementById("infoPhone").textContent = user.phoneNumber;
-      }
-
-      const initials = name.split(" ").filter(Boolean).map(w => w[0]).join("").toUpperCase().slice(0, 2) || "??";
-      setAvatarDisplay(user.photoURL, initials);
-
-      const created = user.metadata?.creationTime;
-      if (created) {
-        document.getElementById("memberSince").textContent =
-          "Since " + new Date(created).toLocaleString("en", { month: "short", year: "numeric" });
-      }
-
-      try {
-        const snap = await get(dbRef(rtdb, `users/${user.uid}`));
-        if (snap.exists()) {
-          userData = snap.val();
-
-          const dbName = userData.displayName || (userData.firstName ? `${userData.firstName} ${userData.lastName || ''}`.trim() : "") || userData.profile?.name || "";
-          if (dbName) {
-            name = dbName;
-            document.getElementById("profileName").textContent = dbName;
-            document.getElementById("infoName").textContent = dbName;
-          }
-
-          const dbPhone = userData.phone || user.phoneNumber || "";
-          if (dbPhone) document.getElementById("infoPhone").textContent = dbPhone;
-          if (userData.dob) document.getElementById("infoDob").textContent = userData.dob;
-
-          const photo = user.photoURL || userData.photoURL;
-          const finalInitials = name.split(" ").filter(Boolean).map(w => w[0]).join("").toUpperCase().slice(0, 2) || "??";
-          setAvatarDisplay(photo || null, finalInitials);
-
-          const notif = userData.notifications || {};
-          if (notif.emailNotif === false) document.getElementById("toggleEmail").classList.remove("on");
-          if (notif.smsNotif === true) document.getElementById("toggleSms").classList.add("on");
-          if (notif.pushNotif === false) document.getElementById("togglePush").classList.remove("on");
-        }
-      } catch (e) { console.warn("Could not load extra user data:", e); }
-
-      await loadOrders(user.uid, email);
-
-      try {
-        const snap = await get(dbRef(rtdb, `users/${user.uid}/wishlist`));
-        let wc = 0;
-        if (snap.exists()) snap.forEach(() => wc++);
-        document.getElementById("statWishlist").textContent = wc;
-      } catch (e) { document.getElementById("statWishlist").textContent = "0"; }
-
-      loadAddresses(user.uid);
-    }
-
-    /* ── LOAD ORDERS ── */
-    async function loadOrders(uid, email) {
-      const container = document.getElementById("ordersContainer");
-      container.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">Loading orders…</div>`;
-
-      try {
-        let orders = [];
-        const seen = new Set();
-
-        const flagSnap = await get(dbRef(rtdb, `users/${uid}/orders`));
-        if (flagSnap.exists()) {
-          const flags = flagSnap.val();
-          const orderIds = Object.keys(flags).filter(k => flags[k] === true || flags[k]);
-          const fetches = orderIds.map(id => get(dbRef(rtdb, `orders/${id}`)));
-          const results = await Promise.allSettled(fetches);
-          results.forEach((r, i) => {
-            if (r.status === "fulfilled" && r.value.exists()) {
-              const o = r.value.val(); o._id = orderIds[i];
-              if (!seen.has(o._id)) { seen.add(o._id); orders.push(o); }
-            }
-          });
+        document.getElementById("profileName").textContent = user.displayName || "Jordan Doe";
+        document.getElementById("profileEmail").textContent = user.email || "jordan.doe@email.com";
+        
+        if (user.photoURL) {
+          const avatarBox = document.getElementById("avatarBox");
+          avatarBox.innerHTML = `<img src="${user.photoURL}" alt="Avatar" />`;
+        } else {
+          const initials = (user.displayName || user.email || "JD").split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
+          document.getElementById("avatarInitials").textContent = initials;
         }
 
+        // Fetch User details & Order history from RTDB
         try {
-          const q = query(dbRef(rtdb, "orders"), orderByChild("userId"), equalTo(uid));
-          const snap = await get(q);
-          if (snap.exists()) {
-            snap.forEach(d => {
-              if (!seen.has(d.key)) {
-                const o = d.val(); o._id = d.key;
-                seen.add(d.key); orders.push(o);
-                update(dbRef(rtdb, `users/${uid}/orders`), { [d.key]: true }).catch(() => { });
-              }
-            });
+          const userSnap = await get(ref(rtdb, `users/${user.uid}`));
+          if (userSnap.exists()) {
+            const data = userSnap.val();
+            if (data.phone) document.getElementById("infoPhone").textContent = data.phone;
+            if (data.address) document.getElementById("infoAddress").textContent = data.address;
+            if (data.createdAt) {
+              const d = new Date(data.createdAt);
+              document.getElementById("profileJoin").textContent = `Member since ${d.toLocaleString('default', { month: 'short' })} ${d.getFullYear()}`;
+            }
           }
-        } catch (e) { }
 
-        orders = orders.filter(o => o.status !== 'pending');
+          loadUserOrders(user.uid);
+        } catch (e) { console.warn("User data fetch error", e); }
+      } else {
+        // Redirect or show login state prompt
+        document.getElementById("profileName").textContent = "Guest User";
+        document.getElementById("profileEmail").textContent = "Sign in to view orders";
+      }
+    });
 
-        orders.sort((a, b) => {
-          const tA = a.createdAt ? (typeof a.createdAt === 'number' ? a.createdAt : Date.parse(a.createdAt)) : 0;
-          const tB = b.createdAt ? (typeof b.createdAt === 'number' ? b.createdAt : Date.parse(b.createdAt)) : 0;
-          return (tB || 0) - (tA || 0);
+    /* LOAD USER ORDERS FROM RTDB */
+    async function loadUserOrders(uid) {
+      try {
+        const snap = await get(ref(rtdb, "orders"));
+        if (!snap.exists()) return;
+        let orders = [];
+        snap.forEach(d => {
+          const val = d.val();
+          if (val.userId === uid || val.email === currentUser?.email) {
+            val._id = d.key;
+            orders.push(val);
+          }
         });
 
-        renderOrders(orders);
-        document.getElementById("statOrders").textContent = orders.length;
-        document.getElementById("loyaltyBadge").textContent = `${orders.length} Order${orders.length !== 1 ? "s" : ""}`;
+        if (!orders.length) return;
+        orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const newOrderId = urlParams.get("newOrder");
-        if (newOrderId && orders.length > 0) {
-          window.history.replaceState({}, "", window.location.pathname);
-          setTimeout(() => showToast("🎉 Order placed successfully!"), 400);
-          setTimeout(() => {
-            const ordersSection = document.querySelector("#ordersContainer")?.closest(".section");
-            if (ordersSection) ordersSection.scrollIntoView({ behavior: "smooth", block: "start" });
-          }, 600);
-          const matchIdx = orders.findIndex(o => (o.orderId || o._id) === newOrderId);
-          const targetIdx = matchIdx >= 0 ? matchIdx : 0;
-          setTimeout(() => { if (window.openOrderDetail) window.openOrderDetail(targetIdx); }, 1200);
-        }
+        const orderListEl = document.getElementById("orderList");
+        orderListEl.innerHTML = orders.slice(0, 5).map(o => {
+          const orderId = (o.orderId || o._id || "1042").replace("JRS-", "").slice(-4);
+          const itemsArr = Array.isArray(o.items) ? o.items : (o.items ? Object.values(o.items) : []);
+          const firstItem = itemsArr[0] || {};
+          const title = firstItem.name || "Jersify Football Kit";
+          const thumb = firstItem.imgUrl || firstItem.image || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=200&auto=format&fit=crop";
+          const price = o.total ? `₹ ${o.total}` : "₹ 800";
+          const status = (o.status || "DELIVERED").toUpperCase();
 
-      } catch (e) {
-        console.error("loadOrders failed:", e);
-        container.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">Could not load orders</div>`;
-        document.getElementById("statOrders").textContent = "–";
-      }
+          return `
+            <div class="order-item-figma" onclick="window.location.href='checkout.html?order=${o._id}'">
+              <img src="${thumb}" class="order-thumb" alt="${title}" />
+              <div class="order-meta">
+                <div class="order-title">${title}</div>
+                <div class="order-num">Order #JRS-${orderId}</div>
+                <div class="order-price">${price}</div>
+              </div>
+              <div class="order-status-badge">${status}</div>
+            </div>
+          `;
+        }).join("");
+      } catch (e) { console.error("Order load error", e); }
     }
 
-    /* ── RENDER ORDERS ── */
-    function renderOrders(orders) {
-      const container = document.getElementById("ordersContainer");
-      if (!orders.length) {
-        container.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:24px 0;">No orders yet</div>`;
-        return;
-      }
+    /* LOAD RECOMMENDED PRODUCTS */
+    async function loadRecommendedProducts() {
+      try {
+        const snap = await get(ref(rtdb, "products"));
+        if (!snap.exists()) return;
+        let products = [];
+        snap.forEach(d => { const p = d.val(); p._id = d.key; products.push(p); });
+        if (!products.length) return;
 
-      const labels = { delivered: "Delivered", processing: "Processing", shipped: "Shipped", cancelled: "Cancelled", pending: "Processing", confirmed: "Confirmed", confirmed_partial_cod: "Confirmed (PCOD)" };
-      window._jersifyOrders = orders;
-
-      container.innerHTML = orders.slice(0, 5).map((o, idx) => {
-        const sk = (o.status || "processing").toLowerCase();
-        const date = o.createdAt
-          ? new Date(o.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
-          : "—";
-
-        const itemsArr = Array.isArray(o.items) ? o.items : (o.items ? Object.values(o.items) : []);
-        const item = itemsArr[0] || {};
-        const imgSrc = item.imgUrl || item.imageUrl || "";
-        const displayId = (o.orderId || o._id || "JRF000").replace("JRS-", "").slice(-6).toUpperCase();
-        const extraCount = itemsArr.length > 1 ? `+${itemsArr.length - 1} more` : "";
-
-        // Show review badge for delivered orders that have been reviewed
-        const reviewBadge = sk === "delivered" && o.reviewSubmitted
-          ? `<span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:999px;background:rgba(245,158,11,.1);color:#d97706;border:1px solid rgba(245,158,11,.2);display:inline-flex;align-items:center;gap:3px;">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="#d97706" stroke="#d97706" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              Reviewed
-            </span>`
-          : sk === "delivered"
-            ? `<span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:999px;background:rgba(198,31,47,.08);color:var(--accent);border:1px solid rgba(198,31,47,.15);">Rate it</span>`
-            : "";
-
-        return `<div class="order-card" onclick="openOrderDetail(${idx})">
-          <div class="order-header">
-            <div>
-              <div class="order-id">#${displayId}</div>
-              <div class="order-date">${date}</div>
+        const recGrid = document.getElementById("recommendedProductsGrid");
+        recGrid.innerHTML = products.slice(0, 2).map(p => `
+          <div class="product-card-figma" onclick="window.location.href='shop.html?product=${p._id}'">
+            <div class="pic-wrap">
+              <img src="${p.imgUrl || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop'}" alt="${p.name}" />
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-              <div class="order-status ${sk}">${labels[sk] || sk}</div>
-              ${reviewBadge}
+            <div class="details">
+              <div class="title">${p.name || 'FC Barcelona Home 2026-27'}</div>
+              <div class="price">₹ ${p.price || 800}</div>
             </div>
           </div>
-          <div class="order-body">
-            <div class="order-thumb">
-              ${imgSrc
-            ? `<img src="${imgSrc}" alt="${item.name || ""}" />`
-            : `<div class="order-thumb-placeholder">${(item.name || "J")[0]}</div>`}
-            </div>
-            <div class="order-info">
-              <div class="order-name">${item.name || "Jersify Jersey"}</div>
-              <div class="order-meta">${itemsArr.length} item${itemsArr.length !== 1 ? "s" : ""} · Size ${(item.size || "M").toUpperCase()}${extraCount ? " · " + extraCount : ""}</div>
-              ${o.addon && o.addon.playerName ? `<div style="display:inline-flex;align-items:center;gap:5px;background:rgba(198,31,47,.08);border:1px solid rgba(198,31,47,.18);border-radius:999px;padding:2px 9px;font-size:10px;font-weight:700;color:var(--accent);margin-top:4px;">✦ ${o.addon.playerName}${o.addon.playerNumber ? ' ' + o.addon.playerNumber : ''}</div>` : ""}
-              <div class="order-price">₹${o.total || item.price || "–"}</div>
-            </div>
-          </div>
-          <div class="order-footer">
-            <span class="order-tap-hint">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              Tap to view full details
-            </span>
-          </div>
-        </div>`;
-      }).join("");
+        `).join("");
+      } catch (e) { }
     }
+    loadRecommendedProducts();
 
-    /* ── OPEN ORDER DETAIL ── */
-    window.openOrderDetail = async (idx) => {
-      const o = window._jersifyOrders?.[idx];
-      if (!o) return;
+    /* EDIT MODAL LOGIC */
+    window.openEditModal = (field) => {
+      currentEditField = field;
+      const titleEl = document.getElementById("editModalTitle");
+      const labelEl = document.getElementById("editInputLabel");
+      const valEl = document.getElementById("editInputValue");
 
-      const sk = (o.status || "processing").toLowerCase();
-      const labels = { delivered: "Delivered", processing: "Processing", shipped: "Shipped", cancelled: "Cancelled", pending: "Processing", confirmed: "Confirmed", confirmed_partial_cod: "Confirmed (PCOD)" };
-      const statusLabel = labels[sk] || sk;
-
-      const date = o.createdAt
-        ? new Date(o.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
-        : "—";
-
-      const itemsArr = Array.isArray(o.items) ? o.items : (o.items ? Object.values(o.items) : []);
-      const displayId = (o.orderId || o._id || "JRF000");
-
-      const statusIcons = {
-        delivered: `<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`,
-        processing: `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
-        pending: `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
-        confirmed: `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>`,
-        confirmed_partial_cod: `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>`,
-        shipped: `<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`,
-        cancelled: `<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>`,
-      };
-      const statusSubtexts = {
-        delivered: "Your order has been delivered",
-        processing: "We're preparing your order",
-        pending: "Awaiting confirmation",
-        confirmed: "Order confirmed — packing soon",
-        confirmed_partial_cod: "Order confirmed — packing soon",
-        shipped: "Your order is on the way!",
-        cancelled: "This order was cancelled",
-      };
-
-      const itemsHtml = itemsArr.map(item => {
-        const imgSrc = item.imgUrl || item.imageUrl || "";
-        return `<div class="od-item">
-          <div class="od-item-thumb">
-            ${imgSrc
-            ? `<img src="${imgSrc}" alt="${item.name || ''}" />`
-            : `<div class="od-item-thumb-ph">${(item.name || "J")[0]}</div>`}
-          </div>
-          <div class="od-item-info">
-            <div class="od-item-name">${item.name || "Jersify Jersey"}</div>
-            <div class="od-item-meta">Size: ${(item.size || "M").toUpperCase()} · Qty: ${item.qty || 1}</div>
-            ${item.team ? `<div class="od-item-team">${item.team}</div>` : ""}
-          </div>
-          <div class="od-item-price">₹${item.price || "–"}</div>
-        </div>`;
-      }).join("");
-
-      const pmLabels = { cod: "Cash on Delivery", online: "Online Payment", razorpay: "Razorpay", "partial_cod": "Partial COD", "partial cod": "Partial COD" };
-      const pmLabel = pmLabels[(o.paymentMethod || "").toLowerCase()] || (o.paymentMethod || "–");
-
-      const subtotal = o.subtotal || 0;
-      const tax = o.tax || 0;
-      const discount = o.discount || 0;
-      const shipping = o.shipping || 0;
-      const pcodCharge = o.pcodCharge || 0;
-      const pcodPayNow = o.pcodPayNow || 0;
-      const pcodPayOnDelivery = o.pcodPayOnDelivery || 0;
-      const total = o.total || 0;
-
-      let priceRowsHtml = `<div class="od-price-row"><span class="key">Subtotal</span><span>₹${subtotal}</span></div>`;
-      if (tax > 0) priceRowsHtml += `<div class="od-price-row"><span class="key">Tax</span><span>₹${tax.toFixed ? tax.toFixed(2) : tax}</span></div>`;
-      if (discount > 0) priceRowsHtml += `<div class="od-price-row"><span class="key">Discount</span><span style="color:#15803d;">−₹${discount}</span></div>`;
-      if (shipping > 0) priceRowsHtml += `<div class="od-price-row"><span class="key">Shipping</span><span>₹${shipping}</span></div>`;
-      if (pcodCharge > 0) priceRowsHtml += `<div class="od-price-row"><span class="key">PCOD Charge</span><span>+₹${pcodCharge}</span></div>`;
-      priceRowsHtml += `<div class="od-price-row total-row"><span class="key">Total</span><span class="val">₹${total}</span></div>`;
-
-      if (pcodPayNow > 0 || pcodPayOnDelivery > 0) {
-        priceRowsHtml += `<div style="margin-top:8px; border-top:1px dashed var(--line); padding-top:8px;"></div>`;
-        if (pcodPayNow > 0) priceRowsHtml += `<div class="od-price-row"><span class="key" style="font-weight:700;color:var(--text);">Paid Online</span><span style="font-weight:800;color:var(--accent);">₹${pcodPayNow}</span></div>`;
-        if (pcodPayOnDelivery > 0) priceRowsHtml += `<div class="od-price-row"><span class="key" style="font-weight:700;color:var(--text);">Pay on Delivery</span><span style="font-weight:800;color:#15803d;">₹${pcodPayOnDelivery}</span></div>`;
+      if (field === "name") {
+        titleEl.textContent = "Edit Name";
+        labelEl.textContent = "Full Name";
+        valEl.value = currentUser?.displayName || "";
+      } else if (field === "phone") {
+        titleEl.textContent = "Edit Phone";
+        labelEl.textContent = "Phone Number";
+        valEl.value = document.getElementById("infoPhone").textContent || "";
       }
-
-      const trackingHtml = o.trackingNumber
-        ? `<div class="od-section-title">Tracking</div>
-           <div class="od-tracking-pill" style="display:flex; justify-content:space-between; align-items:center;">
-             <div style="display:flex; align-items:center; gap:12px;">
-               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;color:var(--accent);"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-               <div class="od-tracking-text">
-                 <div class="od-tracking-label" style="font-size:11px;color:var(--muted);">Tracking Number</div>
-                 <div class="od-tracking-num" style="font-weight:700;font-size:14px;letter-spacing:0.5px;">${o.trackingNumber}</div>
-               </div>
-             </div>
-             <a href="https://shiprocket.co/tracking/${o.trackingNumber}" target="_blank" style="background:var(--accent);color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 4px 10px rgba(198,31,47,0.2);">
-               Track Now
-             </a>
-           </div>` : "";
-
-      document.getElementById("odTitle").textContent = `#${displayId.replace("JRS-", "").slice(-6).toUpperCase()}`;
-
-      document.getElementById("orderDetailContent").innerHTML = `
-        <div class="od-status-banner ${sk}">
-          <div class="od-status-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${statusIcons[sk] || statusIcons.processing}</svg>
-          </div>
-          <div class="od-status-text">
-            <div class="od-status-label">${statusLabel}</div>
-            <div class="od-status-sub">${statusSubtexts[sk] || ""}</div>
-          </div>
-        </div>
-
-        <div class="od-section-title">Items Ordered</div>
-        <div class="od-items">${itemsHtml}</div>
-
-        ${o.addon && o.addon.playerName ? `
-        <div class="od-section-title">✦ Player Customization</div>
-        <div class="od-info-rows" style="background:linear-gradient(135deg,rgba(198,31,47,.06),rgba(198,31,47,.02));border:1px solid rgba(198,31,47,.18);border-radius:14px;padding:12px 14px;">
-          <div class="od-info-row">
-            <span class="od-info-key">Player Name</span>
-            <span class="od-info-val" style="font-weight:800;color:var(--accent);">${o.addon.playerName}</span>
-          </div>
-          ${o.addon.playerNumber ? `<div class="od-info-row"><span class="od-info-key">Number</span><span class="od-info-val" style="font-weight:800;color:var(--accent);">${o.addon.playerNumber}</span></div>` : ""}
-          ${o.addon.price ? `<div class="od-info-row"><span class="od-info-key">Addon Fee</span><span class="od-info-val">+₹${o.addon.price}</span></div>` : ""}
-        </div>` : ""}
-
-        <div class="od-section-title">Order Info</div>
-        <div class="od-info-rows">
-          <div class="od-info-row">
-            <span class="od-info-key">Order ID</span>
-            <span class="od-info-val" style="font-family:monospace;font-size:11px;">${displayId}</span>
-          </div>
-          <div class="od-info-row">
-            <span class="od-info-key">Date</span>
-            <span class="od-info-val">${date}</span>
-          </div>
-          <div class="od-info-row">
-            <span class="od-info-key">Payment</span>
-            <span class="od-info-val">
-              <span class="od-payment-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                ${pmLabel}
-              </span>
-            </span>
-          </div>
-          ${o.paymentId ? `<div class="od-info-row">
-            <span class="od-info-key">Payment ID</span>
-            <span class="od-info-val" style="font-family:monospace;font-size:11px;">${o.paymentId}</span>
-          </div>` : ""}
-        </div>
-
-        <div class="od-section-title">Delivery Address</div>
-        <div class="od-info-rows">
-          ${o.customerName ? `<div class="od-info-row"><span class="od-info-key">Name</span><span class="od-info-val">${o.customerName}</span></div>` : ""}
-          ${o.phone ? `<div class="od-info-row"><span class="od-info-key">Phone</span><span class="od-info-val">${o.phone}</span></div>` : ""}
-          ${o.address ? `<div class="od-info-row"><span class="od-info-key">Address</span><span class="od-info-val">${[o.address, o.city, o.state, o.pincode, o.country].filter(Boolean).join(', ')}</span></div>` : ""}
-        </div>
-
-        ${trackingHtml}
-
-        <div class="od-section-title">Price Breakdown</div>
-        <div class="od-price-rows">${priceRowsHtml}</div>
-
-        ${o.adminNotes ? `
-        <div class="od-section-title">Note from Jersify</div>
-        <div style="background:#fafafa;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13px;color:#333;line-height:1.6;">${o.adminNotes}</div>` : ""}
-      `;
-
-      openModal("orderDetailModal");
-
-      /* ── Append review section for delivered orders ── */
-      if (sk === "delivered") {
-        const orderId = o.orderId || o._id;
-        if (!o._review) await loadOrderReview(orderId, idx);
-        renderReviewSection(idx);
-      }
-    };
-
-    /* ── ADDRESSES ── */
-    async function loadAddresses(uid) {
-      const container = document.getElementById("addressesContainer");
-      try {
-        const snap = await get(dbRef(rtdb, `users/${uid}/addresses`));
-        if (!snap.exists()) { container.innerHTML = ""; return; }
-        let addrs = [];
-        snap.forEach(d => { const a = d.val(); a._key = d.key; addrs.push(a); });
-        container.innerHTML = addrs.map((a, i) => `
-          <div class="address-card">
-            <div class="address-tag ${i === 0 ? "default" : ""}">${i === 0 ? "Default" : "Other"}</div>
-            <div class="address-name">${a.name || ""}</div>
-            <div class="address-text">${[a.street, a.city, a.state].filter(Boolean).join(", ")}${a.pin ? " – " + a.pin : ""}</div>
-            ${a.phone ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;">${a.phone}</div>` : ""}
-            <div class="address-actions">
-              <button class="address-btn red" onclick="deleteAddress('${uid}','${a._key}')">Remove</button>
-            </div>
-          </div>`).join("");
-      } catch (e) { container.innerHTML = ""; }
-    }
-
-    window.deleteAddress = async (uid, key) => {
-      try {
-        await remove(dbRef(rtdb, `users/${uid}/addresses/${key}`));
-        showToast("Address removed");
-        loadAddresses(uid);
-      } catch (e) { showToast("Could not remove address"); }
-    };
-
-    /* ── AVATAR UPLOAD ── */
-    const fileInput = document.getElementById("avatarFileInput");
-    document.getElementById("avatarEditOverlay").addEventListener("click", () => {
-      if (currentUser) fileInput.click();
-    });
-
-    fileInput.addEventListener("change", async e => {
-      const file = e.target.files[0];
-      if (!file || !currentUser) return;
-      if (!file.type.startsWith("image/")) { showToast("Please select an image file"); return; }
-      if (file.size > 5 * 1024 * 1024) { showToast("Image must be under 5MB"); return; }
-
-      const ring = document.getElementById("avatarRing");
-      ring.classList.add("uploading");
-
-      try {
-        const ext = file.name.split(".").pop() || "jpg";
-        const sRef = stRef(storage, `users/${currentUser.uid}/profile.${ext}`);
-        const task = uploadBytesResumable(sRef, file);
-
-        await new Promise((res, rej) => task.on("state_changed", null, rej, res));
-        const url = await getDownloadURL(task.snapshot.ref);
-
-        await updateProfile(currentUser, { photoURL: url });
-        await update(dbRef(rtdb, `users/${currentUser.uid}`), { photoURL: url });
-
-        const name = currentUser.displayName || "";
-        const initials = name.split(" ").filter(Boolean).map(w => w[0]).join("").toUpperCase().slice(0, 2) || "??";
-        setAvatarDisplay(url, initials);
-        showToast("Profile photo updated ✓");
-      } catch (err) {
-        console.error(err);
-        showToast("Upload failed – " + (err.message || "try again"));
-      } finally {
-        ring.classList.remove("uploading");
-        fileInput.value = "";
-      }
-    });
-
-    /* ── EDIT MODAL ── */
-    const editCfg = {
-      name: { title: "Edit Name", fields: [{ id: "editName", label: "Full Name", type: "text", ph: "Your name" }] },
-      email: { title: "Edit Email", fields: [{ id: "editEmail", label: "Email Address", type: "email", ph: "you@example.com" }] },
-      phone: { title: "Edit Phone", fields: [{ id: "editPhone", label: "Phone Number", type: "tel", ph: "+91 XXXXX XXXXX" }] },
-      dob: { title: "Date of Birth", fields: [{ id: "editDob", label: "Date of Birth", type: "date", ph: "" }] },
-    };
-    let currentEditKey = "";
-
-    window.openEditModal = key => {
-      if (!currentUser) return;
-      currentEditKey = key;
-      const cfg = editCfg[key];
-      document.getElementById("editModalTitle").textContent = cfg.title;
-      document.getElementById("editModalBody").innerHTML = cfg.fields.map(f =>
-        `<div class="form-field"><label class="form-label">${f.label}</label>
-         <input type="${f.type}" class="form-input" id="${f.id}" placeholder="${f.ph}"/></div>`
-      ).join("");
-
-      if (key === "name") document.getElementById("editName").value = currentUser.displayName || userData.displayName || "";
-      if (key === "email") document.getElementById("editEmail").value = currentUser.email || "";
-      if (key === "phone") document.getElementById("editPhone").value = userData.phone || "";
-      if (key === "dob") document.getElementById("editDob").value = userData.dob || "";
       openModal("editModal");
     };
 
     document.getElementById("saveEditBtn").addEventListener("click", async () => {
-      if (!currentUser) return;
+      const val = document.getElementById("editInputValue").value.trim();
+      if (!val || !currentUser) return;
       try {
-        if (currentEditKey === "name") {
-          const val = document.getElementById("editName").value.trim();
-          if (!val) return;
+        if (currentEditField === "name") {
           await updateProfile(currentUser, { displayName: val });
-          await update(dbRef(rtdb, `users/${currentUser.uid}`), { displayName: val });
-          userData.displayName = val;
+          await update(ref(rtdb, `users/${currentUser.uid}`), { displayName: val });
           document.getElementById("profileName").textContent = val;
-          document.getElementById("infoName").textContent = val;
-          if (!currentUser.photoURL) {
-            const initials = val.split(" ").filter(Boolean).map(w => w[0]).join("").toUpperCase().slice(0, 2);
-            const el = document.getElementById("avatarInitials");
-            if (el) el.textContent = initials;
-          }
-        }
-        if (currentEditKey === "phone") {
-          const val = document.getElementById("editPhone").value.trim();
-          await update(dbRef(rtdb, `users/${currentUser.uid}`), { phone: val });
-          userData.phone = val;
-          document.getElementById("infoPhone").textContent = val || "Add phone number";
-        }
-        if (currentEditKey === "dob") {
-          const val = document.getElementById("editDob").value;
-          await update(dbRef(rtdb, `users/${currentUser.uid}`), { dob: val });
-          userData.dob = val;
-          document.getElementById("infoDob").textContent = val || "Not set";
+        } else if (currentEditField === "phone") {
+          await update(ref(rtdb, `users/${currentUser.uid}`), { phone: val });
+          document.getElementById("infoPhone").textContent = val;
         }
         closeModal("editModal");
-        showToast("Saved successfully ✓");
-      } catch (e) { showToast("Could not save: " + (e.message || "error")); }
+        showToast("Updated successfully ✓");
+      } catch (e) { showToast("Error saving updates"); }
     });
 
-    /* ── ADDRESS MODAL ── */
-    window.openAddressModal = () => currentUser ? openModal("addressModal") : openModal("authModal");
+    /* ADDRESS SAVE LOGIC */
+    window.openAddressModal = () => openModal("addressModal");
 
     document.getElementById("saveAddressBtn").addEventListener("click", async () => {
       if (!currentUser) return;
-      const addr = {
-        name: document.getElementById("addrName").value.trim(),
-        phone: document.getElementById("addrPhone").value.trim(),
-        street: document.getElementById("addrStreet").value.trim(),
-        city: document.getElementById("addrCity").value.trim(),
-        pin: document.getElementById("addrPin").value.trim(),
-        state: document.getElementById("addrState").value.trim(),
-      };
-      if (!addr.street || !addr.city) { showToast("Please fill required fields"); return; }
+      const street = document.getElementById("addrStreet").value.trim();
+      const city   = document.getElementById("addrCity").value.trim();
+      if (!street || !city) { showToast("Please fill address details"); return; }
+      const fullAddr = `${street}, ${city}`;
       try {
-        await push(dbRef(rtdb, `users/${currentUser.uid}/addresses`), addr);
+        await update(ref(rtdb, `users/${currentUser.uid}`), { address: fullAddr });
+        document.getElementById("infoAddress").textContent = fullAddr;
         closeModal("addressModal");
         showToast("Address saved ✓");
-        loadAddresses(currentUser.uid);
-        ["addrName", "addrPhone", "addrStreet", "addrCity", "addrPin", "addrState"].forEach(id => {
-          document.getElementById(id).value = "";
-        });
       } catch (e) { showToast("Could not save address"); }
     });
 
-    /* ── LOGOUT ── */
+    /* LOGOUT HANDLER */
     document.getElementById("logoutBtn").addEventListener("click", async () => {
-      try { await signOut(auth); showToast("Signed out"); } catch (e) { }
+      try {
+        await signOut(auth);
+        showToast("Logged out");
+        setTimeout(() => window.location.href = "login.html", 600);
+      } catch (e) { showToast("Logout failed"); }
     });
-
-    /* ── DELETE ACCOUNT ── */
-    document.getElementById("deleteBtn").addEventListener("click", async () => {
-      if (!currentUser) return;
-      if (!confirm("Delete your account? This cannot be undone.")) return;
-      try {
-        await remove(dbRef(rtdb, `users/${currentUser.uid}`));
-        await deleteUser(currentUser);
-        showToast("Account deleted");
-      } catch (e) { showToast("Please sign out and sign back in before deleting"); }
-    });
-
-    /* ═══════════════════════════════════════════════════
-       REVIEW SYSTEM
-    ════════════════════════════════════════════════════ */
-    let _reviewOrderId = null;
-    let _reviewOrderIdx = null;
-    let _reviewStarVal = 0;
-    let _reviewMediaFiles = [];
-
-    const STAR_LABELS = ["", "Terrible 😞", "Not Great 😐", "It's OK 🙂", "Really Good 😊", "Excellent! 🌟"];
-
-    window.setReviewStar = (n) => {
-      _reviewStarVal = n;
-      document.querySelectorAll(".star-picker-btn").forEach((btn, i) => {
-        const path = btn.querySelector("svg path");
-        if (i < n) { path.setAttribute("fill", "#f59e0b"); path.setAttribute("stroke", "#f59e0b"); }
-        else { path.setAttribute("fill", "none"); path.setAttribute("stroke", "#e0e0e0"); }
-      });
-      const label = document.getElementById("starLabel");
-      label.textContent = STAR_LABELS[n] || "";
-      label.style.color = n >= 4 ? "#15803d" : n >= 3 ? "#a16207" : n > 0 ? "#b91c1c" : "var(--muted)";
-    };
-
-    window.updateReviewCharCount = () => {
-      document.getElementById("reviewCharCount").textContent =
-        document.getElementById("reviewText").value.length;
-    };
-
-    window.openReviewModal = (orderIdx, editMode = false) => {
-      const o = window._jersifyOrders?.[orderIdx];
-      if (!o) return;
-      _reviewOrderId = o.orderId || o._id;
-      _reviewOrderIdx = orderIdx;
-      _reviewMediaFiles = [];
-
-      setReviewStar(0);
-      document.getElementById("reviewText").value = "";
-      updateReviewCharCount();
-      document.getElementById("reviewMediaPreview").innerHTML = "";
-      document.getElementById("reviewMediaInput").value = "";
-      document.getElementById("reviewUploadProgress").style.display = "none";
-
-      const itemsArr = Array.isArray(o.items) ? o.items : (o.items ? Object.values(o.items) : []);
-      const firstName = (itemsArr[0]?.name || "this order").split(" ").slice(0, 3).join(" ");
-      document.getElementById("reviewProductLabel").textContent = `How was your ${firstName}?`;
-
-      if (editMode && o._review) {
-        setReviewStar(o._review.rating || 0);
-        document.getElementById("reviewText").value = o._review.text || "";
-        updateReviewCharCount();
-      }
-
-      closeModal("orderDetailModal");
-      setTimeout(() => openModal("reviewModal"), 200);
-    };
-
-    /* Media picker */
-    document.getElementById("reviewMediaInput").addEventListener("change", e => {
-      const files = Array.from(e.target.files || []);
-      if (_reviewMediaFiles.length + files.length > 5) {
-        showToast("Max 5 media files allowed"); return;
-      }
-      files.forEach(file => {
-        if (file.size > 20 * 1024 * 1024) { showToast(file.name + " exceeds 20MB"); return; }
-        const reader = new FileReader();
-        reader.onload = ev => {
-          _reviewMediaFiles.push({
-            file,
-            dataURL: ev.target.result,
-            type: file.type.startsWith("video") ? "video" : "image"
-          });
-          renderMediaPreview();
-        };
-        reader.readAsDataURL(file);
-      });
-      e.target.value = "";
-    });
-
-    function renderMediaPreview() {
-      document.getElementById("reviewMediaPreview").innerHTML =
-        _reviewMediaFiles.map((m, i) => `
-          <div class="media-preview-item">
-            ${m.type === "video"
-            ? `<video src="${m.dataURL}" muted></video>`
-            : `<img src="${m.dataURL}" alt="preview" />`}
-            <button class="media-preview-remove" onclick="removeReviewMedia(${i})">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <path d="M18 6L6 18M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>`).join("");
-    }
-
-    window.removeReviewMedia = (idx) => {
-      _reviewMediaFiles.splice(idx, 1);
-      renderMediaPreview();
-    };
-
-    /* Submit review */
-    window.submitReview = async () => {
-      if (!currentUser || !_reviewOrderId) return;
-      if (_reviewStarVal === 0) { showToast("Please select a star rating ⭐"); return; }
-
-      const btn = document.getElementById("submitReviewBtn");
-      const prog = document.getElementById("reviewUploadProgress");
-      const bar = document.getElementById("reviewUploadProgressBar");
-      btn.disabled = true;
-      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" opacity=".25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg> Uploading…`;
-
-      try {
-        let mediaUrls = [];
-
-        if (_reviewMediaFiles.length > 0) {
-          prog.style.display = "block";
-          for (let i = 0; i < _reviewMediaFiles.length; i++) {
-            const { file } = _reviewMediaFiles[i];
-            const ext = file.name.split(".").pop() || "jpg";
-            const sRef = stRef(storage, `reviews/${_reviewOrderId}/${Date.now()}_${i}.${ext}`);
-            const task = uploadBytesResumable(sRef, file);
-            await new Promise((res, rej) => {
-              task.on("state_changed", snap => {
-                const pct = ((i + snap.bytesTransferred / snap.totalBytes) / _reviewMediaFiles.length) * 100;
-                bar.style.width = pct + "%";
-              }, rej, res);
-            });
-            const url = await getDownloadURL(task.snapshot.ref);
-            mediaUrls.push({ url, type: _reviewMediaFiles[i].type });
-          }
-          bar.style.width = "100%";
-        }
-
-        const reviewData = {
-          rating: _reviewStarVal,
-          text: document.getElementById("reviewText").value.trim(),
-          media: mediaUrls,
-          userId: currentUser.uid,
-          userName: currentUser.displayName || userData.displayName || "Customer",
-          createdAt: Date.now(),
-          orderId: _reviewOrderId,
-        };
-
-        await set(dbRef(rtdb, `reviews/${_reviewOrderId}`), reviewData);
-        await update(dbRef(rtdb, `orders/${_reviewOrderId}`), { reviewSubmitted: true, reviewRating: _reviewStarVal });
-
-        if (window._jersifyOrders?.[_reviewOrderIdx]) {
-          window._jersifyOrders[_reviewOrderIdx]._review = reviewData;
-          window._jersifyOrders[_reviewOrderIdx].reviewSubmitted = true;
-        }
-
-        closeModal("reviewModal");
-        showToast("Review submitted — thank you! 🌟");
-        // Re-render order cards to update review badge
-        renderOrders(window._jersifyOrders);
-        setTimeout(() => openOrderDetail(_reviewOrderIdx), 400);
-
-      } catch (err) {
-        console.error(err);
-        showToast("Could not submit: " + (err.message || "please try again"));
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Submit Review`;
-        prog.style.display = "none";
-        bar.style.width = "0%";
-      }
-    };
-
-    /* Load review from Firebase */
-    async function loadOrderReview(orderId, orderIdx) {
-      try {
-        const snap = await get(dbRef(rtdb, `reviews/${orderId}`));
-        if (snap.exists() && window._jersifyOrders?.[orderIdx]) {
-          window._jersifyOrders[orderIdx]._review = snap.val();
-          window._jersifyOrders[orderIdx].reviewSubmitted = true;
-        }
-      } catch (e) { }
-    }
-
-    /* Render review section inside order detail modal */
-    function renderReviewSection(idx) {
-      const o = window._jersifyOrders?.[idx];
-      if (!o) return;
-      const r = o._review;
-
-      let html = `<div class="review-section"><div class="review-section-title">Your Review</div>`;
-
-      if (r) {
-        /* Existing review */
-        const starsHtml = Array.from({ length: 5 }, (_, i) =>
-          `<svg viewBox="0 0 24 24" fill="${i < r.rating ? '#f59e0b' : 'none'}" stroke="${i < r.rating ? '#f59e0b' : '#ddd'}" stroke-width="1.5">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          </svg>`
-        ).join("");
-
-        const mediaHtml = (r.media || []).map(m =>
-          m.type === "video"
-            ? `<video src="${m.url}" controls style="width:72px;height:72px;border-radius:10px;object-fit:cover;border:1px solid var(--line);"></video>`
-            : `<img src="${m.url}" alt="review" />`
-        ).join("");
-
-        html += `<div class="existing-review">
-          <div class="existing-review-stars">${starsHtml}</div>
-          ${r.text ? `<div class="existing-review-text">${r.text}</div>` : ""}
-          ${mediaHtml ? `<div class="existing-review-media">${mediaHtml}</div>` : ""}
-          <button class="review-edit-btn" onclick="openReviewModal(${idx}, true)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-            Edit Review
-          </button>
-        </div>`;
-      } else {
-        /* CTA to write review */
-        html += `<button class="write-review-cta" onclick="openReviewModal(${idx})">
-          <div class="write-review-cta-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-            </svg>
-          </div>
-          <div class="write-review-cta-text">
-            <div class="write-review-cta-label">Write a Review</div>
-            <div class="write-review-cta-sub">Share your experience with this order</div>
-          </div>
-          <div class="write-review-cta-arrow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </div>
-        </button>`;
-      }
-
-      html += `</div>`;
-      const el = document.getElementById("orderDetailContent");
-      if (el) el.insertAdjacentHTML("beforeend", html);
-    }
-    /* =========================================================
-       JERSIFY AI CHATBOT LOGIC
-    ========================================================= */
-    const BACKEND_URL = "https://us-central1-jersify-f9b5e.cloudfunctions.net/chat";
-    let _botProducts = [];
-    let _chatMessages = [];
-    let _talkingToHuman = false;
-    let _supportChatListener = null;
-
-    async function loadBotProducts() {
-      try {
-        const snap = await get(dbRef(rtdb, 'products'));
-        if (snap.exists()) {
-          const data = snap.val();
-          _botProducts = Object.keys(data).map(k => ({ id: k, ...data[k] }));
-        }
-      } catch (err) { console.error("Failed to load products for bot", err); }
-    }
-
-    function setupSupportChatListener() {
-      if (_supportChatListener) return;
-      
-      const chatRef = dbRef(rtdb, `support_chats/${currentUser.uid}`);
-      _supportChatListener = onValue(chatRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          if (data.status === 'resolved') {
-            _talkingToHuman = false;
-            if (_supportChatListener) {
-              _supportChatListener();
-              _supportChatListener = null;
-            }
-            _chatMessages.push({
-              role: "bot",
-              text: "Our support agent marked this ticket as resolved. Feel free to ask me any other questions, or request human support again!",
-              time: Date.now()
-            });
-            renderChatHistory();
-            updateTalkHumanButtonUI();
-            return;
-          }
-          
-          _talkingToHuman = true;
-          if (data.messages) {
-            _chatMessages = data.messages;
-            renderChatHistory();
-          }
-          updateTalkHumanButtonUI();
-        }
-      });
-    }
-
-    async function checkSupportChatStatus() {
-      if (!currentUser) return;
-      try {
-        const snap = await get(dbRef(rtdb, `support_chats/${currentUser.uid}`));
-        if (snap.exists()) {
-          const data = snap.val();
-          if (data.status !== 'resolved') {
-            _talkingToHuman = true;
-            if (data.messages) {
-              _chatMessages = data.messages;
-            }
-            setupSupportChatListener();
-          } else {
-            initDefaultAIChat();
-          }
-        } else {
-          initDefaultAIChat();
-        }
-        renderChatHistory();
-        updateTalkHumanButtonUI();
-      } catch (err) {
-        console.error("Error checking support chat status:", err);
-        initDefaultAIChat();
-      }
-    }
-
-    function initDefaultAIChat() {
-      _talkingToHuman = false;
-      _chatMessages = [{
-        role: "bot",
-        text: "Hi! I'm JERSIFY AI, your Jersify AI assistant. What kind of jersey are you looking for today?",
-        time: Date.now()
-      }];
-    }
-
-    window.openChatbotModal = () => {
-      openModal("chatbotModal");
-      if (_botProducts.length === 0) loadBotProducts();
-      checkSupportChatStatus();
-    };
-
-    window.botBuyNow = (id, name, price, img) => {
-      const cart = JSON.parse(localStorage.getItem('jersify_cart') || '[]');
-      cart.push({ id, name, price, imgUrl: img, qty: 1, size: 'M' });
-      localStorage.setItem('jersify_cart', JSON.stringify(cart));
-      window.location.href = 'checkout.html';
-    };
-
-    function renderChatHistory() {
-      const historyEl = document.getElementById("chatbotHistory");
-      if (!historyEl) return;
-      
-      let html = "";
-      _chatMessages.forEach(msg => {
-        const isUser = msg.role === "user";
-        const isAdmin = msg.role === "admin";
-        
-        let bubbleClass = "bot";
-        let displayName = "JERSIFY AI";
-        if (isUser) {
-          bubbleClass = "user";
-          displayName = "You";
-        } else if (isAdmin) {
-          bubbleClass = "bot";
-          displayName = "Support Agent (Human)";
-        }
-        
-        html += `
-          <div class="chat-msg ${bubbleClass}">
-            <div style="font-size:10px;color:var(--muted);margin-bottom:2px;padding:0 4px;align-self:${isUser ? 'flex-end' : 'flex-start'}">${displayName}</div>
-            <div class="msg-bubble">${msg.text}</div>
-          </div>
-        `;
-        
-        if (msg.products && msg.products.length > 0) {
-          msg.products.forEach(p => {
-            html += `
-              <div class="bot-product-card" style="margin-left: 4px;">
-                <img src="${p.imgUrl}" class="bot-product-img" />
-                <div class="bot-product-info">
-                  <div class="bot-product-name">${p.name}</div>
-                  <div class="bot-product-price">₹${p.price}</div>
-                </div>
-                <button class="bot-product-buy" data-name="${p.name}" onclick="botBuyNow('${p.id}', this.dataset.name, ${p.price}, '${p.imgUrl}')">Buy Now</button>
-              </div>
-            `;
-          });
-        }
-      });
-      
-      historyEl.innerHTML = html;
-      historyEl.scrollTop = historyEl.scrollHeight;
-    }
-
-    function updateTalkHumanButtonUI() {
-      const container = document.getElementById("chatbotTalkHumanContainer");
-      if (!container) return;
-      
-      if (_talkingToHuman) {
-        container.innerHTML = `
-          <span style="background: rgba(37,211,102,.12); color: #25D366; padding: 6px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid rgba(37,211,102,.3); display: inline-flex; align-items: center; gap: 4px;">
-            <span style="width: 6px; height: 6px; background: #25D366; border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span>
-            Human Representative
-          </span>
-        `;
-      } else {
-        container.innerHTML = `
-          <button id="chatbotTalkHumanBtn" onclick="window.escalateToHuman()"
-            style="padding: 6px 12px; border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; outline: none;">
-            Talk to Human 👤
-          </button>
-        `;
-      }
-    }
-
-    window.escalateToHuman = async () => {
-      if (!currentUser) {
-        showToast("Please log in first.");
-        return;
-      }
-      
-      const btn = document.getElementById("chatbotTalkHumanBtn");
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = `<span>Connecting...</span>`;
-      }
-      
-      _chatMessages.push({
-        role: "bot",
-        text: "Connecting you to a support agent... Your query has been forwarded.",
-        time: Date.now()
-      });
-      renderChatHistory();
-      
-      const name = currentUser.displayName || userData.fullName || "Jersify User";
-      const email = currentUser.email || "";
-      
-      try {
-        await set(dbRef(rtdb, `support_chats/${currentUser.uid}`), {
-          name: name,
-          email: email,
-          timestamp: Date.now(),
-          status: "new",
-          messages: _chatMessages
-        });
-        
-        _talkingToHuman = true;
-        setupSupportChatListener();
-      } catch (err) {
-        console.error("Escalation failed:", err);
-        showToast("Could not contact support agent. Try again.");
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = `<span>Talk to Human 👤</span>`;
-        }
-      }
-    };
-
-    window.sendChatMsg = async () => {
-      const inputEl = document.getElementById("chatbotInput");
-      const text = inputEl.value.trim();
-      if (!text) return;
-      inputEl.value = "";
-
-      _chatMessages.push({
-        role: "user",
-        text: text,
-        time: Date.now()
-      });
-      renderChatHistory();
-
-      if (_talkingToHuman) {
-        try {
-          await set(dbRef(rtdb, `support_chats/${currentUser.uid}/messages`), _chatMessages);
-          await update(dbRef(rtdb, `support_chats/${currentUser.uid}`), {
-            status: "new",
-            timestamp: Date.now()
-          });
-        } catch (err) {
-          console.error("Failed to sync support chat message to Firebase:", err);
-        }
-        return;
-      }
-
-      const historyEl = document.getElementById("chatbotHistory");
-      const typingId = "typing-" + Date.now();
-      historyEl.insertAdjacentHTML("beforeend", `
-        <div class="chat-msg bot" id="${typingId}">
-          <div class="bot-typing">JERSIFY AI is typing...</div>
-        </div>
-      `);
-      historyEl.scrollTop = historyEl.scrollHeight;
-
-      try {
-        const productListStr = _botProducts.map(p =>
-          "ID: " + p.id + " | Name: " + p.name + " | Team: " + (p.team || '') + " | Price: Rs." + p.price
-        ).join("\n");
-
-        let ordersStr = "No orders found.";
-        if (window._jersifyOrders && window._jersifyOrders.length > 0) {
-          ordersStr = window._jersifyOrders.map(o => {
-            const displayId = (o.orderId || o._id || "JRF000").replace("JRS-", "").slice(-6).toUpperCase();
-            const itemsArr = Array.isArray(o.items) ? o.items : (o.items ? Object.values(o.items) : []);
-            const itemNames = itemsArr.map(item => `${item.name} (${item.size || "M"})`).join(", ");
-            return `Order ID: #${displayId} (Full ID: ${o.orderId || o._id}) | Status: ${o.status || "processing"} | Total: ₹${o.total || "–"} | Items: ${itemNames}`;
-          }).join("\n");
-        }
-
-        const prompt = "You are JERSIFY AI, the helpful AI assistant for Jersify, an online football jersey store.\n" +
-          "If the user asks for our WhatsApp number or contact number, tell them: 'Contact us on WhatsApp at https://wa.me/1234567890'.\n" +
-          "If the user asks for our Instagram handle, tell them: 'Follow/DM us at @jersify.online on Instagram (https://www.instagram.com/jersify.online?igsh=MTJuNGJhaDgxN2hlNg==)'.\n" +
-          "Here is the user's order history:\n" +
-          ordersStr + "\n" +
-          "If they ask about their order status, check their order history above and provide the current status. Mention the order ID they asked about if found, or show their recent orders.\n" +
-          "The user asks: \"" + text + "\"\n" +
-          "Here is the catalog of available products:\n" +
-          productListStr + "\n" +
-          "Respond with valid JSON only, using this exact format:\n" +
-          "{\n  \"response_text\": \"Your friendly text response here\",\n  \"product_ids\": [\"ID_1\", \"ID_2\"]\n}\n" +
-          "Do not include markdown blocks like ```json, just the raw JSON object. If you don't recommend any products, leave product_ids empty.";
-
-        const res = await fetch(BACKEND_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt: prompt })
-        });
-
-        if (!res.ok) {
-          throw new Error("Backend responded with " + res.status);
-        }
-
-        const parsed = await res.json();
-        document.getElementById(typingId)?.remove();
-
-        const recommendedProducts = [];
-        if (parsed.product_ids && parsed.product_ids.length > 0) {
-          parsed.product_ids.forEach(id => {
-            const p = _botProducts.find(x => x.id === id);
-            if (p) {
-              const imgUrl = (p.images && p.images.length > 0) ? p.images[0] : (p.imgUrl || p.imageUrl || (p.media && p.media.length > 0 ? p.media[0] : '') || 'https://placehold.co/80x80?text=Jersey');
-              recommendedProducts.push({
-                id: p.id,
-                name: p.name,
-                price: p.price,
-                imgUrl: imgUrl
-              });
-            }
-          });
-        }
-
-        _chatMessages.push({
-          role: "bot",
-          text: parsed.response_text,
-          time: Date.now(),
-          products: recommendedProducts
-        });
-        
-        renderChatHistory();
-
-      } catch (err) {
-        console.error(err);
-        document.getElementById(typingId)?.remove();
-        
-        _chatMessages.push({
-          role: "bot",
-          text: "Oops, I'm having trouble connecting to my brain right now. Try again!",
-          time: Date.now()
-        });
-        renderChatHistory();
-      }
-    };
-
   </script>
 </body>
-
 </html>
