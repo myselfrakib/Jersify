@@ -71,7 +71,7 @@
     }
     .cart-badge.show { display: grid; }
 
-    /* ── SEARCH BAR (Exact Figma Specs: #f2f2f2, border #d9d9d9, radius 17px) ── */
+    /* ── SEARCH BAR ── */
     .search-section { padding: 12px 11px; display: flex; align-items: center; gap: 8px; }
     .search-box {
       flex: 1; height: 33px; background: #f2f2f2; border: 0.85px solid #d9d9d9;
@@ -89,7 +89,28 @@
     }
     .filter-btn svg { width: 16px; height: 16px; color: #333333; opacity: 0.7; }
 
-    /* ── PROFILE AVATAR CARD (Figma Spec Node 74:12) ── */
+    /* ── UNAUTHENTICATED STATE CARD ── */
+    .unauth-card {
+      margin: 16px 11px; padding: 32px 20px; background: #ffffff;
+      border: 1px solid #d9d9d9; border-radius: 16px; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+    }
+    .unauth-icon {
+      width: 60px; height: 60px; border-radius: 50%; background: #f2f2f2;
+      display: grid; place-items: center; color: #111827; margin-bottom: 4px;
+    }
+    .unauth-icon svg { width: 28px; height: 28px; }
+    .unauth-title { font-family: 'Ubuntu', sans-serif; font-weight: 700; font-size: 20px; color: #111827; }
+    .unauth-sub { font-size: 13px; color: #6b7280; line-height: 1.4; max-width: 280px; }
+    .login-cta-btn {
+      margin-top: 8px; padding: 12px 28px; background: #111827; color: #ffffff;
+      border: none; border-radius: 999px; font-family: 'Ubuntu', sans-serif;
+      font-weight: 700; font-size: 14px; cursor: pointer; transition: transform .2s ease;
+    }
+    .login-cta-btn:active { transform: scale(0.96); }
+
+    /* ── PROFILE AVATAR CARD ── */
     .profile-card-container { padding: 0 11px; margin-bottom: 16px; }
     .profile-avatar-card {
       background: #ffffff; border: 1px solid #d9d9d9; border-radius: 12px;
@@ -113,7 +134,7 @@
     .profile-email { font-family: 'Ubuntu', sans-serif; font-weight: 300; font-size: 13px; color: #4b4b4b; line-height: 1.2; word-break: break-all; }
     .profile-join { font-family: 'Ubuntu', sans-serif; font-weight: 300; font-size: 12px; color: #999999; line-height: 1.2; }
 
-    /* ── ACCOUNT DETAILS CARD (Figma Spec Node 74:19) ── */
+    /* ── ACCOUNT DETAILS CARD ── */
     .account-details-card {
       background: #ffffff; border: 1px solid #d9d9d9; border-radius: 12px;
       padding: 16px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px;
@@ -122,8 +143,9 @@
     .details-row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
     .details-row-label { font-family: 'Ubuntu', sans-serif; font-weight: 300; color: #4b4b4b; }
     .details-row-value { font-family: 'Ubuntu', sans-serif; font-weight: 700; color: #111827; cursor: pointer; }
+    .details-row-value.empty { color: #999999; font-weight: 400; font-style: italic; }
 
-    /* ── QUICK ACTIONS BAR (Figma Spec Node 74:27: Settings, Help, Logout) ── */
+    /* ── QUICK ACTIONS BAR (Settings, Help, Logout) ── */
     .quick-actions-bar {
       background: #ffffff; border: 1px solid #d9d9d9; border-radius: 12px;
       padding: 12px; height: 96px; margin-bottom: 16px; display: flex; gap: 12px;
@@ -137,7 +159,7 @@
     .action-tile svg { width: 20px; height: 20px; color: #111827; }
     .action-tile span { font-family: 'Ubuntu', sans-serif; font-weight: 700; font-size: 12px; color: #111827; }
 
-    /* ── ORDER HISTORY (Figma Spec Node 74:37) ── */
+    /* ── ORDER HISTORY ── */
     .order-history-card {
       background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
       padding: 16px; margin-bottom: 24px; box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
@@ -221,7 +243,7 @@
     .nav-item svg { width: 20px; height: 20px; }
     .nav-item.active { color: #000000; font-weight: 800; }
 
-    /* ── MODALS (Edit Profile, Address, Chatbot) ── */
+    /* ── MODALS (Edit Profile, Address) ── */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
       z-index: 100; display: none; place-items: center; padding: 16px; opacity: 0;
@@ -282,89 +304,75 @@
       </button>
     </section>
 
-    <!-- PROFILE AVATAR CARD (Figma Spec Node 74:12) -->
-    <section class="profile-card-container">
-      <div class="profile-avatar-card">
-        <div class="avatar-box" id="avatarBox">
-          <span id="avatarInitials">JD</span>
-        </div>
-        <!-- Edit badge icon -->
-        <svg class="edit-badge-icon" onclick="openEditModal('name')" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="12" fill="#3B82F6"/>
-          <path d="M15.2 8.8a1.5 1.5 0 0 1 2.1 2.1l-6.8 6.8H8.4v-2.1l6.8-6.8z" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-
-        <div class="profile-meta">
-          <div class="profile-name" id="profileName">Jordan Doe</div>
-          <div class="profile-email" id="profileEmail">jordan.doe@email.com</div>
-          <div class="profile-join" id="profileJoin">Member since Jan 2026</div>
-        </div>
+    <!-- UNAUTHENTICATED STATE VIEW (Visible when user is NOT logged in) -->
+    <div id="unauthView" class="unauth-card">
+      <div class="unauth-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </div>
+      <div class="unauth-title">Welcome to Jersify</div>
+      <div class="unauth-sub">Sign in to manage your account, track orders, and save your delivery details.</div>
+      <button class="login-cta-btn" onclick="window.location.href='login.html'">Login / Sign Up</button>
+    </div>
 
-      <!-- ACCOUNT DETAILS CARD (Figma Spec Node 74:19) -->
-      <div class="account-details-card">
-        <div class="card-section-label">Account details</div>
-        <div class="details-row">
-          <span class="details-row-label">Phone</span>
-          <span class="details-row-value" id="infoPhone" onclick="openEditModal('phone')">+91 98765 43210</span>
-        </div>
-        <div class="details-row">
-          <span class="details-row-label">Address</span>
-          <span class="details-row-value" id="infoAddress" onclick="openAddressModal()">Mumbai, India</span>
-        </div>
-      </div>
-
-      <!-- QUICK ACTIONS BAR (Figma Spec Node 74:27: Settings, Help, Logout) -->
-      <div class="quick-actions-bar">
-        <div class="action-tile" onclick="openEditModal('name')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          <span>Settings</span>
-        </div>
-        <div class="action-tile" onclick="openChatbotModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-          <span>Help</span>
-        </div>
-        <div class="action-tile" id="logoutBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          <span>Logout</span>
-        </div>
-      </div>
-
-      <!-- ORDER HISTORY SECTION (Figma Spec Node 74:37) -->
-      <div class="order-history-card">
-        <div class="order-history-header">Order history</div>
-        <div class="order-list" id="orderList">
-          <!-- Fallback or dynamic orders from RTDB -->
-          <div class="order-item-figma">
-            <img src="https://images.unsplash.com/photo-1577223625816-7546f13df25d?q=80&w=200&auto=format&fit=crop" class="order-thumb" alt="Order" />
-            <div class="order-meta">
-              <div class="order-title">FC Barcelona Home 2026-27</div>
-              <div class="order-num">Order #JRS-1042</div>
-              <div class="order-price">₹ 800</div>
-            </div>
-            <div class="order-status-badge">DELIVERED</div>
+    <!-- AUTHENTICATED PROFILE CONTENT (Only displayed when user logs in) -->
+    <div id="authProfileView" style="display: none;">
+      <!-- PROFILE AVATAR CARD -->
+      <section class="profile-card-container">
+        <div class="profile-avatar-card">
+          <div class="avatar-box" id="avatarBox">
+            <span id="avatarInitials">--</span>
           </div>
-          <div class="order-item-figma">
-            <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=200&auto=format&fit=crop" class="order-thumb" alt="Order" />
-            <div class="order-meta">
-              <div class="order-title">Real Madrid Away 2026-27</div>
-              <div class="order-num">Order #JRS-0987</div>
-              <div class="order-price">₹ 850</div>
-            </div>
-            <div class="order-status-badge">SHIPPED</div>
-          </div>
-          <div class="order-item-figma">
-            <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=200&auto=format&fit=crop" class="order-thumb" alt="Order" />
-            <div class="order-meta">
-              <div class="order-title">Manchester City Home 2026-27</div>
-              <div class="order-num">Order #JRS-0921</div>
-              <div class="order-price">₹ 790</div>
-            </div>
-            <div class="order-status-badge">PROCESSING</div>
+          <!-- Edit badge icon -->
+          <svg class="edit-badge-icon" onclick="openEditModal('name')" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="12" fill="#3B82F6"/>
+            <path d="M15.2 8.8a1.5 1.5 0 0 1 2.1 2.1l-6.8 6.8H8.4v-2.1l6.8-6.8z" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+
+          <div class="profile-meta">
+            <div class="profile-name" id="profileName">Loading...</div>
+            <div class="profile-email" id="profileEmail">...</div>
+            <div class="profile-join" id="profileJoin">Member</div>
           </div>
         </div>
-      </div>
-    </section>
+
+        <!-- ACCOUNT DETAILS CARD -->
+        <div class="account-details-card">
+          <div class="card-section-label">Account details</div>
+          <div class="details-row">
+            <span class="details-row-label">Phone</span>
+            <span class="details-row-value empty" id="infoPhone" onclick="openEditModal('phone')">Not added (Click to add)</span>
+          </div>
+          <div class="details-row">
+            <span class="details-row-label">Address</span>
+            <span class="details-row-value empty" id="infoAddress" onclick="openAddressModal()">Not added (Click to add)</span>
+          </div>
+        </div>
+
+        <!-- QUICK ACTIONS BAR (Settings, Help, Logout) -->
+        <div class="quick-actions-bar">
+          <div class="action-tile" onclick="openEditModal('name')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Settings</span>
+          </div>
+          <div class="action-tile" onclick="window.location.href='mailto:jersify.online@gmail.com'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <span>Help</span>
+          </div>
+          <div class="action-tile" id="logoutBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <span>Logout</span>
+          </div>
+        </div>
+
+        <!-- ORDER HISTORY SECTION -->
+        <div class="order-history-card">
+          <div class="order-history-header">Order history</div>
+          <div class="order-list" id="orderList">
+            <div style="padding:16px; text-align:center; color:#888; font-size:13px;">No orders found yet.</div>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <!-- YOU MAY ALSO LIKE (2-COLUMN PRODUCT GRID) -->
     <section>
@@ -511,19 +519,31 @@
     /* AUTH STATE */
     onAuthStateChanged(auth, async user => {
       currentUser = user;
+      const unauthView = document.getElementById("unauthView");
+      const authProfileView = document.getElementById("authProfileView");
       const cartBadge = document.getElementById("cartBadge");
+
       function updateBadge(n) { if (n > 0) { cartBadge.textContent = n > 9 ? "9+" : n; cartBadge.classList.add("show"); } }
       updateBadge(JSON.parse(localStorage.getItem("jersify_cart") || "[]").length);
 
       if (user) {
-        document.getElementById("profileName").textContent = user.displayName || "Jordan Doe";
-        document.getElementById("profileEmail").textContent = user.email || "jordan.doe@email.com";
+        // Show authenticated profile, hide unauth CTA
+        if (unauthView) unauthView.style.display = "none";
+        if (authProfileView) authProfileView.style.display = "block";
+
+        document.getElementById("profileName").textContent = user.displayName || "Jersify User";
+        document.getElementById("profileEmail").textContent = user.email || "";
+
+        if (user.metadata && user.metadata.creationTime) {
+          const d = new Date(user.metadata.creationTime);
+          document.getElementById("profileJoin").textContent = `Member since ${d.toLocaleString('default', { month: 'short' })} ${d.getFullYear()}`;
+        }
         
         if (user.photoURL) {
           const avatarBox = document.getElementById("avatarBox");
           avatarBox.innerHTML = `<img src="${user.photoURL}" alt="Avatar" />`;
         } else {
-          const initials = (user.displayName || user.email || "JD").split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
+          const initials = (user.displayName || user.email || "U").split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
           document.getElementById("avatarInitials").textContent = initials;
         }
 
@@ -532,8 +552,17 @@
           const userSnap = await get(ref(rtdb, `users/${user.uid}`));
           if (userSnap.exists()) {
             const data = userSnap.val();
-            if (data.phone) document.getElementById("infoPhone").textContent = data.phone;
-            if (data.address) document.getElementById("infoAddress").textContent = data.address;
+            const phoneEl = document.getElementById("infoPhone");
+            const addrEl  = document.getElementById("infoAddress");
+            
+            if (data.phone) {
+              phoneEl.textContent = data.phone;
+              phoneEl.classList.remove("empty");
+            }
+            if (data.address) {
+              addrEl.textContent = data.address;
+              addrEl.classList.remove("empty");
+            }
             if (data.createdAt) {
               const d = new Date(data.createdAt);
               document.getElementById("profileJoin").textContent = `Member since ${d.toLocaleString('default', { month: 'short' })} ${d.getFullYear()}`;
@@ -543,17 +572,21 @@
           loadUserOrders(user.uid);
         } catch (e) { console.warn("User data fetch error", e); }
       } else {
-        // Redirect or show login state prompt
-        document.getElementById("profileName").textContent = "Guest User";
-        document.getElementById("profileEmail").textContent = "Sign in to view orders";
+        // User NOT logged in: Show login card, hide profile content
+        if (unauthView) unauthView.style.display = "flex";
+        if (authProfileView) authProfileView.style.display = "none";
       }
     });
 
-    /* LOAD USER ORDERS FROM RTDB */
+    /* LOAD REAL USER ORDERS FROM RTDB */
     async function loadUserOrders(uid) {
+      const orderListEl = document.getElementById("orderList");
       try {
         const snap = await get(ref(rtdb, "orders"));
-        if (!snap.exists()) return;
+        if (!snap.exists()) {
+          orderListEl.innerHTML = `<div style="padding:16px; text-align:center; color:#888; font-size:13px;">No orders placed yet.</div>`;
+          return;
+        }
         let orders = [];
         snap.forEach(d => {
           const val = d.val();
@@ -563,10 +596,12 @@
           }
         });
 
-        if (!orders.length) return;
+        if (!orders.length) {
+          orderListEl.innerHTML = `<div style="padding:16px; text-align:center; color:#888; font-size:13px;">No orders placed yet.</div>`;
+          return;
+        }
         orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-        const orderListEl = document.getElementById("orderList");
         orderListEl.innerHTML = orders.slice(0, 5).map(o => {
           const orderId = (o.orderId || o._id || "1042").replace("JRS-", "").slice(-4);
           const itemsArr = Array.isArray(o.items) ? o.items : (o.items ? Object.values(o.items) : []);
@@ -574,7 +609,7 @@
           const title = firstItem.name || "Jersify Football Kit";
           const thumb = firstItem.imgUrl || firstItem.image || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=200&auto=format&fit=crop";
           const price = o.total ? `₹ ${o.total}` : "₹ 800";
-          const status = (o.status || "DELIVERED").toUpperCase();
+          const status = (o.status || "PROCESSING").toUpperCase();
 
           return `
             <div class="order-item-figma" onclick="window.location.href='checkout.html?order=${o._id}'">
@@ -588,7 +623,10 @@
             </div>
           `;
         }).join("");
-      } catch (e) { console.error("Order load error", e); }
+      } catch (e) {
+        console.error("Order load error", e);
+        orderListEl.innerHTML = `<div style="padding:16px; text-align:center; color:#888; font-size:13px;">Could not load orders.</div>`;
+      }
     }
 
     /* LOAD RECOMMENDED PRODUCTS */
@@ -630,7 +668,8 @@
       } else if (field === "phone") {
         titleEl.textContent = "Edit Phone";
         labelEl.textContent = "Phone Number";
-        valEl.value = document.getElementById("infoPhone").textContent || "";
+        const currentPhone = document.getElementById("infoPhone").textContent;
+        valEl.value = currentPhone.includes("Not added") ? "" : currentPhone;
       }
       openModal("editModal");
     };
@@ -645,7 +684,9 @@
           document.getElementById("profileName").textContent = val;
         } else if (currentEditField === "phone") {
           await update(ref(rtdb, `users/${currentUser.uid}`), { phone: val });
-          document.getElementById("infoPhone").textContent = val;
+          const phoneEl = document.getElementById("infoPhone");
+          phoneEl.textContent = val;
+          phoneEl.classList.remove("empty");
         }
         closeModal("editModal");
         showToast("Updated successfully ✓");
@@ -663,7 +704,9 @@
       const fullAddr = `${street}, ${city}`;
       try {
         await update(ref(rtdb, `users/${currentUser.uid}`), { address: fullAddr });
-        document.getElementById("infoAddress").textContent = fullAddr;
+        const addrEl = document.getElementById("infoAddress");
+        addrEl.textContent = fullAddr;
+        addrEl.classList.remove("empty");
         closeModal("addressModal");
         showToast("Address saved ✓");
       } catch (e) { showToast("Could not save address"); }
