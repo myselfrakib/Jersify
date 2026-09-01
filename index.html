@@ -65,20 +65,20 @@
     /* ── HEADER (Figma Header style) ── */
     .topbar {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 22px 16px 14px 16px;
+      padding: 16px 16px; min-height: 64px;
       position: sticky; top: 0;
       background: rgba(255,255,255,.98); backdrop-filter: blur(10px);
       z-index: 40; border-bottom: 1px solid rgba(0,0,0,.05);
     }
-    .logo-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-    .logo-img { height: 50px; width: auto; max-width: 210px; object-fit: contain; }
-    .logo-text-fallback { font-family: 'Krona One', sans-serif; font-size: 28px; letter-spacing: 3px; color: #000; font-weight: 700; }
+    .logo-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; line-height: 1; }
+    .logo-img { height: 44px; width: auto; max-width: 210px; object-fit: contain; display: block; }
+    .logo-text-fallback { font-family: 'Krona One', sans-serif; font-size: 24px; letter-spacing: 3px; color: #000; font-weight: 700; line-height: 1; }
     
-    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .header-actions { display: flex; align-items: center; gap: 10px; height: 44px; }
     .header-btn {
-      width: 36px; height: 36px; border: none; border-radius: 50%;
-      background: #f2f2f2; color: #111; display: grid; place-items: center;
-      cursor: pointer; position: relative; transition: transform .2s ease;
+      width: 38px; height: 38px; border: none; border-radius: 50%;
+      background: #f2f2f2; color: #111; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; position: relative; transition: transform .2s ease; flex-shrink: 0;
     }
     .header-btn:active { transform: scale(0.95); }
     .header-btn svg { width: 18px; height: 18px; }
