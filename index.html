@@ -672,8 +672,8 @@
           `;
         }
 
-        const featuredItems = products.slice(0, 4);
-        const remainingItems= products.slice(4, 10);
+        const featuredItems = products.slice(0, 2);
+        const remainingItems= products.slice(2, 8);
 
         if (featuredItems.length) {
           featuredGrid.innerHTML = featuredItems.map(p => createCard(p)).join("");
