@@ -120,10 +120,14 @@
     .hero-slide img, .hero-slide video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .hero-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.18); pointer-events: none; }
 
-    /* Dots indicator under hero */
-    .dots-indicator { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 10px 0 20px 0; }
-    .dot-pill { width: 8px; height: 8px; border-radius: 50%; background: #d9d9d9; border: none; cursor: pointer; transition: all .3s ease; }
-    .dot-pill.active { width: 22px; border-radius: 10px; background: #111111; }
+    /* Dots indicator overlay on hero images */
+    .dots-indicator {
+      position: absolute; bottom: 14px; left: 0; right: 0;
+      display: flex; justify-content: center; align-items: center; gap: 6px;
+      z-index: 10; padding: 0; pointer-events: auto;
+    }
+    .dot-pill { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.55); border: none; cursor: pointer; transition: all .3s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+    .dot-pill.active { width: 22px; border-radius: 10px; background: #ffffff; }
 
     /* ── SECTION TITLES ── */
     .title-ubuntu-bold {
@@ -328,8 +332,8 @@
           <div class="hero-slide skeleton-box" id="heroSkeleton"></div>
         </div>
         <div class="hero-overlay"></div>
+        <div class="dots-indicator" id="heroDots"></div>
       </div>
-      <div class="dots-indicator" id="heroDots"></div>
     </section>
 
     <!-- SHOP BY CLUBS SECTION -->
@@ -350,10 +354,10 @@
     <section class="mid-banner-container">
       <div class="mid-banner" id="midBanner">
         <div class="skeleton-box" style="width:100%;height:100%;"></div>
-      </div>
-      <div class="dots-indicator">
-        <div class="dot-pill active"></div>
-        <div class="dot-pill"></div>
+        <div class="dots-indicator">
+          <div class="dot-pill active"></div>
+          <div class="dot-pill"></div>
+        </div>
       </div>
     </section>
 
