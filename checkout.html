@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JERSIFY — Checkout</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700;800;900&family=Varela+Round&family=Ubuntu:wght@300;400;500;700&family=Ubuntu+Mono:wght@400;500;700&family=Krona+One&family=Kameron:wght@400;500&family=Lato:wght@300;400;700&display=swap');
 
     :root {
       --bg: #ffffff;
@@ -84,11 +84,12 @@
 
     .card {
       background: #fff;
-      border-radius: 22px;
-      border: 1px solid var(--line);
-      padding: 18px;
-      margin-bottom: 14px;
-      box-shadow: var(--shadow);
+      border-radius: 5px;
+      border: none;
+      padding: 16px 14px;
+      margin-bottom: 10px;
+      box-shadow: none;
+      border-bottom: 1px solid #ececec;
       animation: fadeInUp .35s ease both;
     }
 
@@ -106,12 +107,14 @@
     .card:nth-child(7) { animation-delay: .30s }
 
     .card-header {
-      font-size: 11px; font-weight: 800;
-      text-transform: uppercase; letter-spacing: 1.2px;
-      color: var(--accent); margin-bottom: 14px;
+      font-family: 'Ubuntu Mono', monospace;
+      font-size: 12.68px;
+      font-weight: 500;
+      color: #000;
+      margin-bottom: 14px;
       display: flex; align-items: center; gap: 7px;
     }
-    .card-header svg { width: 14px; height: 14px; opacity: .8 }
+    .card-header svg { width: 14px; height: 14px; opacity: .5; }
 
     #loading {
       display: flex; flex-direction: column;
@@ -138,46 +141,47 @@
     .cart-item:last-child { border-bottom: none; padding-bottom: 0; }
 
     .ci-img {
-      width: 72px; height: 88px; border-radius: 14px;
-      background: radial-gradient(circle at top left,rgba(198,31,47,.18),transparent 30%),linear-gradient(180deg,#131313,#262626);
+      width: 68px; height: 88px; border-radius: 5px;
+      background: #e8e8e8;
       display: grid; place-items: center; flex-shrink: 0; overflow: hidden;
     }
-    .ci-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+    .ci-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; }
 
     .ci-info { flex: 1; min-width: 0; }
-    .ci-name { font-size: 14px; font-weight: 800; margin-bottom: 3px; line-height: 1.3; }
-    .ci-meta { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
-    .ci-price { font-family: 'Bebas Neue',sans-serif; font-size: 22px; color: var(--accent); letter-spacing: .8px; }
+    .ci-name { font-family: 'Varela Round', sans-serif; font-size: 12px; font-weight: 400; margin-bottom: 2px; line-height: 1.3; color: #000; }
+    .ci-meta { font-family: 'Ubuntu', sans-serif; font-size: 11px; font-weight: 300; color: var(--muted); margin-bottom: 4px; }
+    .ci-price { font-family: 'Varela Round', sans-serif; font-size: 14px; color: #000; font-weight: 400; }
 
     .ci-controls {
       display: flex; align-items: center; gap: 8px; margin-top: 7px;
     }
 
     .qty-btn {
-      width: 28px; height: 28px;
-      border: 1.5px solid var(--line);
-      border-radius: 8px;
-      background: #f8f8f8; color: var(--text);
-      font-size: 15px; font-weight: 700;
+      width: 26px; height: 26px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      background: #f2f2f2; color: #111;
+      font-size: 14px; font-weight: 500;
       cursor: pointer;
       display: grid; place-items: center;
       transition: all .18s;
       flex-shrink: 0;
     }
-    .qty-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(198,31,47,.04); }
+    .qty-btn:hover { border-color: #111; background: #e0e0e0; }
 
     .qty-display {
-      font-size: 14px; font-weight: 800;
-      min-width: 22px; text-align: center;
+      font-family: 'Varela Round', sans-serif;
+      font-size: 13px; font-weight: 400;
+      min-width: 22px; text-align: center; color: #000;
     }
 
     .remove-btn {
-      width: 28px; height: 28px;
-      border: 1.5px solid rgba(198,31,47,.2);
-      border-radius: 8px;
-      background: rgba(198,31,47,.04);
-      color: var(--accent);
-      font-size: 14px; font-weight: 700;
+      width: 26px; height: 26px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+      background: #f2f2f2;
+      color: #999;
+      font-size: 14px; font-weight: 400;
       cursor: pointer;
       display: grid; place-items: center;
       transition: all .2s;
@@ -185,11 +189,10 @@
       margin-left: 4px;
     }
     .remove-btn:hover {
-      background: var(--accent); color: #fff;
-      border-color: var(--accent);
-      box-shadow: 0 4px 12px rgba(198,31,47,.25);
+      background: #111; color: #fff;
+      border-color: #111;
     }
-    .remove-btn svg { width: 13px; height: 13px; }
+    .remove-btn svg { width: 12px; height: 12px; }
 
     .product-row {
       display: flex; gap: 14px; align-items: flex-start;
@@ -224,18 +227,19 @@
     }
     .browse-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-    .size-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+    .size-grid { display: flex; gap: 6.06px; flex-wrap: wrap; }
 
     .size-btn {
-      width: 46px; height: 40px; border-radius: 10px;
-      border: 1.5px solid var(--line); background: #fff;
-      font-size: 12px; font-weight: 700; cursor: pointer;
-      display: grid; place-items: center; color: var(--text);
-      transition: all .2s;
+      width: 33.35px; height: 27.29px; border-radius: 4.55px;
+      border: 1.137px solid #d1d1d1; background: #fff;
+      font-size: 10.61px; font-family: 'Inter', sans-serif; font-weight: 500;
+      cursor: pointer;
+      display: grid; place-items: center; color: #333;
+      transition: all .18s;
     }
-    .size-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .size-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(198,31,47,.25); }
-    .size-btn.oos { opacity: .35; cursor: not-allowed; text-decoration: line-through; }
+    .size-btn:hover { border-color: #999; color: #000; }
+    .size-btn.active { border-color: #1a1a1a; background: #1a1a1a; color: #fff; }
+    .size-btn.oos { opacity: .3; cursor: not-allowed; text-decoration: line-through; }
 
     .saved-addr {
       border: 1.5px solid var(--line); border-radius: 14px;
@@ -270,16 +274,17 @@
     .new-addr-toggle svg { width: 15px; height: 15px; }
 
     .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 10px; font-weight: 700; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1.2px; }
+    .form-group label { display: block; font-family: 'Ubuntu', sans-serif; font-size: 10px; font-weight: 500; color: #555; margin-bottom: 5px; letter-spacing: 0.5px; }
 
     .form-input {
-      width: 100%; border: 1.5px solid rgba(0,0,0,.12);
-      border-radius: 12px; padding: 11px 13px;
-      font-size: 13px; font-weight: 500; background: #fafafa; color: var(--text);
-      outline: none; transition: all .22s;
+      width: 100%; border: 0.846px solid #d9d9d9;
+      border-radius: 5px; padding: 10px 12px;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 12px; font-weight: 400; background: #f2f2f2; color: #111;
+      outline: none; transition: all .18s;
     }
-    .form-input::placeholder { color: #bbb; }
-    .form-input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(198,31,47,.08); }
+    .form-input::placeholder { color: #999; }
+    .form-input:focus { border-color: #111; background: #fff; box-shadow: none; }
 
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     textarea.form-input { resize: none; min-height: 68px; line-height: 1.5; }
@@ -325,17 +330,17 @@
     /* ── Payment options ── */
     .pay-opt {
       display: flex; align-items: center; gap: 13px;
-      border: 1.5px solid var(--line); border-radius: 14px;
-      padding: 13px 15px; margin-bottom: 10px;
-      cursor: pointer; transition: all .22s; background: #fff;
+      border: 1px solid #d9d9d9; border-radius: 5px;
+      padding: 12px 14px; margin-bottom: 8px;
+      cursor: pointer; transition: all .18s; background: #fff;
     }
-    .pay-opt:hover { border-color: rgba(198,31,47,.3); background: rgba(198,31,47,.02); }
-    .pay-opt.active { border-color: var(--accent); background: rgba(198,31,47,.04); box-shadow: 0 0 0 3px rgba(198,31,47,.08); }
-    .pay-opt input[type="radio"] { accent-color: var(--accent); transform: scale(1.2); cursor: pointer; }
+    .pay-opt:hover { border-color: #999; }
+    .pay-opt.active { border-color: #1a1a1a; background: #fafafa; }
+    .pay-opt input[type="radio"] { accent-color: #1a1a1a; transform: scale(1.15); cursor: pointer; }
     .pay-opt-content { flex: 1; }
-    .pay-opt-text { font-size: 14px; font-weight: 800; }
-    .pay-opt-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .pay-opt-icon { width: 38px; height: 38px; border-radius: 10px; background: #f4f4f4; display: grid; place-items: center; font-size: 18px; }
+    .pay-opt-text { font-family: 'Ubuntu', sans-serif; font-size: 13px; font-weight: 500; color: #000; }
+    .pay-opt-sub { font-family: 'Ubuntu', sans-serif; font-size: 11px; font-weight: 300; color: var(--muted); margin-top: 2px; }
+    .pay-opt-icon { width: 34px; height: 34px; border-radius: 5px; background: #f2f2f2; display: grid; place-items: center; font-size: 16px; }
 
     /* ── Partial COD info box ── */
     #partialCodInfo {
@@ -368,31 +373,33 @@
       background: rgba(0,0,0,.03); border-radius: 8px; padding: 8px 10px;
     }
 
-    .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 13px; font-weight: 500; color: var(--muted); }
-    .summary-row span:last-child { color: var(--text); font-weight: 700; }
+    .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 12px; font-weight: 400; font-family: 'Ubuntu', sans-serif; color: #555; }
+    .summary-row span:last-child { color: #000; font-weight: 400; font-family: 'Varela Round', sans-serif; }
     .discount-row span { color: var(--success) !important; }
-    .summary-divider { height: 1px; background: var(--line); margin: 8px 0; }
+    .summary-divider { height: 1px; background: #ececec; margin: 8px 0; }
 
-    .summary-total { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 2px; border-top: 2px solid #111; margin-top: 6px; }
-    .summary-total-label { font-size: 16px; font-weight: 900; }
-    .summary-total-val { font-family: 'Bebas Neue',sans-serif; font-size: 30px; color: var(--accent); letter-spacing: 1px; }
+    .summary-total { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 2px; border-top: 1.5px solid #111; margin-top: 6px; }
+    .summary-total-label { font-family: 'Ubuntu', sans-serif; font-size: 16px; font-weight: 500; color: #000; }
+    .summary-total-val { font-family: 'Varela Round', sans-serif; font-size: 22px; color: #000; font-weight: 400; }
 
     /* ── Pay now row (shows for partial COD) ── */
     #payNowRow { display: none; }
     #payNowRow.show { display: flex; }
 
     .confirm-btn {
-      width: 100%; border: none; border-radius: 14px; padding: 16px;
-      font-size: 14px; font-weight: 800; letter-spacing: .5px; color: #fff; cursor: pointer;
-      background: linear-gradient(180deg,var(--accent),var(--accent2));
-      box-shadow: 0 10px 28px rgba(198,31,47,.28);
-      transition: transform .2s ease, box-shadow .2s ease;
+      width: 100%; border: none; border-radius: 0; padding: 16px;
+      font-size: 20px; font-weight: 400; letter-spacing: 4px;
+      font-family: 'Lato', sans-serif;
+      color: #000; cursor: pointer;
+      background: #d9d9d9;
+      transition: background .2s ease;
       display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-top: 14px;
     }
-    .confirm-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(198,31,47,.38); }
-    .confirm-btn:active { transform: translateY(0); }
+    .confirm-btn:hover { background: #c8c8c8; }
+    .confirm-btn:active { background: #b8b8b8; }
     .confirm-btn:disabled { opacity: .55; pointer-events: none; }
-    .confirm-btn .btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: none; }
+    .confirm-btn .btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(0,0,0,.2); border-top-color: #000; border-radius: 50%; animation: spin .6s linear infinite; display: none; }
     .confirm-btn.loading .btn-spinner { display: block; }
 
     .secure-badge {
@@ -403,14 +410,18 @@
     .secure-badge svg { width: 13px; height: 13px; opacity: .5; }
 
     .footer {
-      margin-top: 6px; background: linear-gradient(180deg,#111,#1a1a1a);
-      color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0;
+      margin-top: 6px; background: #000;
+      color: #fff; padding: 28px 12px 24px; border-radius: 0;
     }
-    .footer h4 { font-size: 18px; margin-bottom: 8px; font-weight: 900; }
-    .footer p { font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: 12px; }
-    .footer-links { display: flex; flex-wrap: wrap; gap: 10px 14px; font-size: 12px; margin-bottom: 14px; }
-    .footer-links a { color: rgba(255,255,255,.9); }
-    .copy { font-size: 11px; color: rgba(255,255,255,.55); border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; }
+    .footer-brand { font-family: 'Krona One', sans-serif; font-size: 18.37px; font-weight: 400; letter-spacing: 1.837px; color: #fff; margin-bottom: 10px; }
+    .footer-desc { font-family: 'Kameron', serif; font-size: 10px; font-weight: 400; letter-spacing: 1px; color: rgba(255,255,255,.85); line-height: 1.65; margin-bottom: 18px; padding-left: 19px; max-width: 299px; }
+    .footer-git-row { display: flex; align-items: center; padding-left: 54px; }
+    .footer-git-text { font-family: 'Krona One', sans-serif; font-size: 14.17px; font-weight: 400; letter-spacing: 1.417px; color: #fff; text-transform: uppercase; margin-right: 18px; }
+    .footer-social-icons { display: flex; align-items: center; gap: 9px; }
+    .footer-social-icons a { display: flex; align-items: center; justify-content: center; width: 26px; height: 31px; }
+    .footer-social-icons img { width: 26px; height: 26px; object-fit: contain; filter: brightness(0) invert(1); opacity: .9; }
+    .footer-links { display: none; }
+    .copy { display: none; }
 
     .bottom-nav {
       position: fixed; left: 50%; transform: translateX(-50%);
@@ -833,7 +844,7 @@
 
         <button class="confirm-btn" id="confirmBtn" onclick="processOrder()">
           <div class="btn-spinner"></div>
-          <span id="confirmBtnText">Proceed to Payment →</span>
+          <span id="confirmBtnText" style="font-family: 'Lato', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Proceed to Payment</span>
         </button>
 
         <div class="secure-badge">
@@ -843,11 +854,21 @@
       </div>
 
       <footer class="footer">
-        <h4>JERSIFY</h4>
-        <p>Premium football jerseys, clubwear, and fan drops designed for people who want style on and off the pitch.</p>
-        <div class="footer-links">
-          <a href="index.html">Home</a><a href="shop.html">Shop</a>
-          <a href="checkout.html">Cart</a><a href="profile.html">Profile</a>
+        <div class="footer-brand">JERSIFY</div>
+        <div class="footer-desc">From iconic clubs and national teams to the latest-season kits, Jersify brings football jerseys closer to every fan. Our focus is on quality, comfort and authentic-looking designs at fan-friendly prices.</div>
+        <div class="footer-git-row">
+          <span class="footer-git-text">GET IN TOUCH</span>
+          <div class="footer-social-icons">
+            <a href="https://www.instagram.com/jersify.online" target="_blank" rel="noopener" aria-label="Instagram">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" />
+            </a>
+            <a href="https://wa.me/+918100760050" target="_blank" rel="noopener" aria-label="WhatsApp">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
+            </a>
+            <a href="mailto:jersify.online@gmail.com" aria-label="Email">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="26" height="26" style="filter:brightness(0) invert(1);opacity:.9"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+            </a>
+          </div>
         </div>
         <div class="copy">© 2025 Jersify. All rights reserved.</div>
       </footer>
