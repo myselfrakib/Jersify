@@ -2538,6 +2538,20 @@
         </svg>
         Page Settings
       </button>
+      <button class="nav-link" onclick="switchTab('teams',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+          <path d="M2 12h20" />
+        </svg>
+        Team Pages &amp; Logos
+      </button>
+      <button class="nav-link" onclick="switchTab('siteconfig',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+        Icons &amp; Site Assets
+      </button>
       <button class="nav-link" onclick="switchTab('shiprocket',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="1" y="3" width="15" height="13" rx="1" />
@@ -3385,6 +3399,76 @@
           </div>
         </div>
 
+        <!-- ══ TEAM PAGES & IMAGES TAB ══ -->
+        <div class="tab-pane" id="tab-teams">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-title">⚽ Team Page Images &amp; Media</div>
+                <div class="card-subtitle">Configure hero banners, logos, and kit showcase images for each team page</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="saveCurrentTeamConfig()">💾 Save Team Config</button>
+            </div>
+            <div class="card-body">
+              <div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:8px;" id="teamTabsRow">
+                <!-- Team buttons dynamically built by JS -->
+              </div>
+              <div id="teamEditorBody" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;">
+                <!-- Dynamically built by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ ICONS & SITE ASSETS TAB ══ -->
+        <div class="tab-pane" id="tab-siteconfig">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-title">🎨 Icons, Logos &amp; Site Configuration</div>
+                <div class="card-subtitle">Change site logos, favicons, social media links, and footer info</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="saveSiteConfig()">💾 Save Site Config</button>
+            </div>
+            <div class="card-body">
+              <div class="form-grid" style="gap:14px;">
+                <div class="form-group span-2">
+                  <label>Header Logo URL</label>
+                  <input type="url" id="sc_logo_url" class="form-input" placeholder="https://firebasestorage.googleapis.com/.../logo.webp" />
+                </div>
+                <div class="form-group">
+                  <label>Favicon PNG URL</label>
+                  <input type="url" id="sc_favicon_url" class="form-input" placeholder="https://.../favicon.png" />
+                </div>
+                <div class="form-group">
+                  <label>Apple Touch Icon URL</label>
+                  <input type="url" id="sc_apple_icon_url" class="form-input" placeholder="https://.../apple-icon.png" />
+                </div>
+                <div class="form-group">
+                  <label>Instagram Page Link</label>
+                  <input type="text" id="sc_instagram" class="form-input" placeholder="https://www.instagram.com/jersify.online" />
+                </div>
+                <div class="form-group">
+                  <label>WhatsApp Phone Number</label>
+                  <input type="text" id="sc_whatsapp" class="form-input" placeholder="+918100760050" />
+                </div>
+                <div class="form-group span-2">
+                  <label>Support Email Address</label>
+                  <input type="email" id="sc_email" class="form-input" placeholder="jersify.online@gmail.com" />
+                </div>
+                <div class="form-group span-2">
+                  <label>Footer Brand Name</label>
+                  <input type="text" id="sc_footer_brand" class="form-input" placeholder="JERSIFY" />
+                </div>
+                <div class="form-group span-2">
+                  <label>Footer Description Text</label>
+                  <textarea id="sc_footer_desc" class="form-input" style="min-height:64px;" placeholder="From iconic clubs and national teams to the latest-season kits..."></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- ══ SHIPROCKET TAB ══ -->
         <div class="tab-pane" id="tab-shiprocket">
 
@@ -3570,21 +3654,38 @@
               <option>Special Edition</option>
               <option>Fan Kit</option>
             </select>
-            <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;margin-top:8px;">
+          <div class="form-group">
+            <label>Fan Version Price (₹) *</label>
+            <input type="text" id="p_price" placeholder="1499" />
+          </div>
+          <div class="form-group">
+            <label>Player Version Price (₹)</label>
+            <input type="text" id="p_player_price" placeholder="1999" />
+          </div>
+          <div class="form-group span-2">
+            <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;">
               <span class="toggle">
                 <input type="checkbox" id="p_player_version" />
                 <span class="toggle-track"></span>
               </span>
-              <span style="font-size:11px;font-weight:600;color:var(--text);">Player Version</span>
+              <span style="font-size:12px;font-weight:600;color:var(--text);">Player Version Available</span>
             </label>
           </div>
-          <div class="form-group"><label>Price (₹) *</label><input type="text" id="p_price" placeholder="1499" /></div>
-          <div class="form-group"><label>Badge Label</label><input type="text" id="p_badge" placeholder="NEW 2025" />
+          <div class="form-group span-2">
+            <label>Badge Label</label>
+            <input type="text" id="p_badge" placeholder="NEW 2025" />
           </div>
-          <div class="form-group span-2"><label>Status</label><select id="p_status">
+          <div class="form-group span-2">
+            <label>Product Description</label>
+            <textarea id="p_desc" placeholder="Describe material, fit, technology, details…" style="min-height:56px;"></textarea>
+          </div>
+          <div class="form-group span-2">
+            <label>Status</label>
+            <select id="p_status">
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
-            </select></div>
+            </select>
+          </div>
         </div>
         <div style="margin-top:14px">
           <label style="display:block;margin-bottom:6px">Stock by Size</label>
@@ -4220,7 +4321,7 @@
     }
 
     /* ─── TAB SWITCH ─── */
-    const TAB_TITLES = { products: 'Products / Kits', media: 'Index Media', orders: 'Orders', users: 'Users', coupons: 'Coupon Codes', reviews: 'Customer Reviews', credentials: 'Credentials Manager', pages: 'Page Settings', shiprocket: 'Shiprocket Shipping', support: 'Customer Support Chats', radar: 'Riaj Radar' };
+    const TAB_TITLES = { products: 'Products / Kits', media: 'Index Media', orders: 'Orders', users: 'Users', coupons: 'Coupon Codes', reviews: 'Customer Reviews', credentials: 'Credentials Manager', pages: 'Page Settings', teams: 'Team Pages & Images', siteconfig: 'Icons & Site Assets', shiprocket: 'Shiprocket Shipping', support: 'Customer Support Chats', radar: 'Riaj Radar' };
     function switchTab(name, el) {
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
       document.getElementById('tab-' + name).classList.add('active');
@@ -4231,6 +4332,8 @@
       if (name === 'shiprocket') { srLoadConfig(); refreshShiprocketOverview(); }
       if (name === 'credentials') { loadCredentials(); }
       if (name === 'media') { buildWowPicksUI(); }
+      if (name === 'teams') { initTeamsTab(); }
+      if (name === 'siteconfig') { loadSiteConfig(); }
       if (name === 'radar' && window.initRadarMap) { window.initRadarMap(); }
       localStorage.setItem('jersify_admin_tab', name);
     }
@@ -4850,6 +4953,9 @@
           return `<span class="stock-pill ${cls}" onclick="openStockQuickEdit('${p.id}')" title="Quick edit stock">${lbl}:${qty}</span>`;
         }).join('');
         const imgs = Array.isArray(p.images) && p.images.length ? p.images : (p.imgUrl ? [p.imgUrl] : []);
+        const fanP = p.price ? `₹${p.price}` : '—';
+        const playP = p.playerPrice ? `₹${p.playerPrice}` : (p.playerVersion ? '₹1999' : '');
+        const priceDisplay = playP ? `<div style="font-weight:700">Fan: ${fanP}</div><div style="font-size:11px;color:var(--muted)">Player: ${playP}</div>` : `<strong>${fanP}</strong>`;
         return `<tr>
       <td data-label="Product"><div style="display:flex;align-items:center;gap:10px">
         ${imgs[0] ? `<img src="${imgs[0]}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display='none'"/>` : `<div style="width:40px;height:40px;border-radius:8px;background:var(--surface3);display:grid;place-items:center;font-size:18px">👕</div>`}
@@ -4857,7 +4963,7 @@
       </div></td>
       <td data-label="Team">${esc(p.team || '—')}</td>
       <td data-label="Type"><span class="badge badge-gray">${esc(p.type || 'Kit')}</span>${p.playerVersion ? ' <span class="badge badge-red" style="font-size:9px;margin-left:4px">Player</span>' : ''}</td>
-      <td data-label="Price"><strong>₹${esc(String(p.price || '—'))}</strong></td>
+      <td data-label="Price">${priceDisplay}</td>
       <td data-label="Stock by Size"><div class="inline-stock-edit">${sizePills}${totalStock === 0 ? '<span class="badge badge-red" style="font-size:10px">Out of Stock</span>' : totalStock <= 5 ? `<span class="badge badge-orange" style="font-size:10px">Low</span>` : ''}</div></td>
       <td data-label="Images"><div style="display:flex;gap:3px">${imgs.slice(0, 5).map(u => `<div style="width:22px;height:22px;border-radius:4px;overflow:hidden;border:1px solid var(--border)"><img src="${u}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.style.background='var(--surface3)'"/></div>`).join('')}${imgs.length === 0 ? '<span style="font-size:11px;color:var(--muted)">—</span>' : ''}</div></td>
       <td data-label="Status"><span class="badge ${p.status === 'active' ? 'badge-green' : 'badge-red'}">${p.status || 'active'}</span></td>
@@ -4874,7 +4980,10 @@
       document.getElementById('productModalTitle').textContent = data ? 'Edit Product' : 'Add Product';
       setV('p_name', data?.name || ''); setV('p_team', data?.team || 'Argentina'); setV('p_type', data?.type || 'Home Kit');
       document.getElementById('p_player_version').checked = !!data?.playerVersion;
-      setV('p_price', data?.price || ''); setV('p_badge', data?.badge || ''); setV('p_status', data?.status || 'active');
+      setV('p_price', data?.price || '');
+      setV('p_player_price', data?.playerPrice || data?.playerVersionPrice || '');
+      setV('p_desc', data?.description || data?.desc || '');
+      setV('p_badge', data?.badge || ''); setV('p_status', data?.status || 'active');
       const sz = data?.sizes || {};
       setV('p_xs', sz.xs || 0); setV('p_s', sz.s || 0); setV('p_m', sz.m || 0); setV('p_l', sz.l || 0); setV('p_xl', sz.xl || 0); setV('p_xxl', sz.xxl || 0);
       loadProductSlotsFromImages(data?.images || (data?.imgUrl ? [data.imgUrl] : []));
@@ -4896,7 +5005,10 @@
           else if (slot.url) { imageUrls.push(slot.url); }
         }
         const data = {
-          name, team: getV('p_team'), type: getV('p_type'), price: getV('p_price'), badge: getV('p_badge'), status: getV('p_status'),
+          name, team: getV('p_team'), type: getV('p_type'), price: getV('p_price'),
+          playerPrice: getV('p_player_price'),
+          description: getV('p_desc'),
+          badge: getV('p_badge'), status: getV('p_status'),
           playerVersion: document.getElementById('p_player_version').checked,
           imgUrl: imageUrls[0] || '', images: imageUrls,
           sizes: { xs: parseInt(getV('p_xs')) || 0, s: parseInt(getV('p_s')) || 0, m: parseInt(getV('p_m')) || 0, l: parseInt(getV('p_l')) || 0, xl: parseInt(getV('p_xl')) || 0, xxl: parseInt(getV('p_xxl')) || 0 },
@@ -4931,6 +5043,143 @@
       closeModal('stockModal');
       toast('Stock updated!', 'success');
       _stockEditId = null;
+    }
+
+    /* ═══════════════════════════════════════════════
+       TEAM PAGES & SITE CONFIG MANAGEMENT
+    ═══════════════════════════════════════════════ */
+    const TEAMS_LIST = [
+      { key: 'liverpool', name: 'Liverpool FC' },
+      { key: 'barcelona', name: 'FC Barcelona' },
+      { key: 'real-madrid', name: 'Real Madrid' },
+      { key: 'chelsea', name: 'Chelsea FC' },
+      { key: 'man-city', name: 'Manchester City' },
+      { key: 'man-utd', name: 'Manchester United' },
+      { key: 'psg', name: 'PSG' },
+      { key: 'argentina', name: 'Argentina' },
+      { key: 'brazil', name: 'Brazil' },
+      { key: 'france', name: 'France' },
+      { key: 'germany', name: 'Germany' },
+      { key: 'portugal', name: 'Portugal' },
+      { key: 'spain', name: 'Spain' },
+      { key: 'all-teams', name: 'All Teams Hub' }
+    ];
+
+    let _selectedTeamKey = 'liverpool';
+    let _teamConfigCache = {};
+
+    async function initTeamsTab() {
+      const row = document.getElementById('teamTabsRow');
+      if (!row) return;
+      row.innerHTML = TEAMS_LIST.map(t => `
+        <button class="btn btn-sm ${t.key === _selectedTeamKey ? 'btn-primary' : 'btn-ghost'}" id="team_tab_${t.key}" onclick="selectTeamConfigTab('${t.key}')" style="white-space:nowrap;">
+          ${t.name}
+        </button>
+      `).join('');
+
+      try {
+        const { db, dbRef, get } = await waitFb();
+        const snap = await get(dbRef(db, 'settings/teams'));
+        if (snap.exists()) _teamConfigCache = snap.val();
+      } catch (e) { console.warn('Could not load team settings:', e); }
+
+      renderSelectedTeamConfig();
+    }
+
+    function selectTeamConfigTab(key) {
+      _selectedTeamKey = key;
+      document.querySelectorAll('#teamTabsRow button').forEach(b => {
+        b.className = 'btn btn-sm btn-ghost';
+      });
+      const activeBtn = document.getElementById('team_tab_' + key);
+      if (activeBtn) activeBtn.className = 'btn btn-sm btn-primary';
+      renderSelectedTeamConfig();
+    }
+
+    function renderSelectedTeamConfig() {
+      const body = document.getElementById('teamEditorBody');
+      if (!body) return;
+      const team = TEAMS_LIST.find(t => t.key === _selectedTeamKey) || TEAMS_LIST[0];
+      const conf = _teamConfigCache[_selectedTeamKey] || {};
+
+      body.innerHTML = `
+        <div style="font-weight:700;font-size:16px;margin-bottom:14px;color:var(--text);">${team.name} Media &amp; Configuration</div>
+        <div class="form-grid" style="gap:14px;">
+          <div class="form-group span-2">
+            <label>Hero Banner Image / Video URL</label>
+            <input type="url" id="tc_hero_url" class="form-input" value="${esc(conf.heroUrl || '')}" placeholder="https://firebasestorage.googleapis.com/.../hero.webp" />
+          </div>
+          <div class="form-group">
+            <label>Team Logo URL</label>
+            <input type="url" id="tc_logo_url" class="form-input" value="${esc(conf.logoUrl || '')}" placeholder="https://.../logo.png" />
+          </div>
+          <div class="form-group">
+            <label>Featured Kit Image URL</label>
+            <input type="url" id="tc_kit_url" class="form-input" value="${esc(conf.kitUrl || '')}" placeholder="https://.../kit.png" />
+          </div>
+          <div class="form-group span-2">
+            <label>Team Tagline / Intro Description</label>
+            <textarea id="tc_tagline" class="form-input" style="min-height:56px;" placeholder="Enter description for ${team.name} page...">${esc(conf.tagline || '')}</textarea>
+          </div>
+        </div>
+      `;
+    }
+
+    async function saveCurrentTeamConfig() {
+      const heroUrl = (document.getElementById('tc_hero_url')?.value || '').trim();
+      const logoUrl = (document.getElementById('tc_logo_url')?.value || '').trim();
+      const kitUrl = (document.getElementById('tc_kit_url')?.value || '').trim();
+      const tagline = (document.getElementById('tc_tagline')?.value || '').trim();
+
+      const conf = { heroUrl, logoUrl, kitUrl, tagline, updatedAt: Date.now() };
+      _teamConfigCache[_selectedTeamKey] = conf;
+
+      try {
+        const { db, dbRef, update } = await waitFb();
+        await update(dbRef(db, `settings/teams/${_selectedTeamKey}`), conf);
+        toast(`Settings saved for ${_selectedTeamKey}! ⚽`, 'success');
+      } catch (e) {
+        toast('Save failed: ' + e.message, 'error');
+      }
+    }
+
+    async function loadSiteConfig() {
+      try {
+        const { db, dbRef, get } = await waitFb();
+        const snap = await get(dbRef(db, 'settings/siteConfig'));
+        if (snap.exists()) {
+          const cfg = snap.val();
+          setV('sc_logo_url', cfg.logoUrl || '');
+          setV('sc_favicon_url', cfg.faviconUrl || '');
+          setV('sc_apple_icon_url', cfg.appleIconUrl || '');
+          setV('sc_instagram', cfg.instagram || '');
+          setV('sc_whatsapp', cfg.whatsapp || '');
+          setV('sc_email', cfg.email || '');
+          setV('sc_footer_brand', cfg.footerBrand || '');
+          setV('sc_footer_desc', cfg.footerDesc || '');
+        }
+      } catch (e) { console.warn('Load site config error:', e); }
+    }
+
+    async function saveSiteConfig() {
+      const cfg = {
+        logoUrl: getV('sc_logo_url'),
+        faviconUrl: getV('sc_favicon_url'),
+        appleIconUrl: getV('sc_apple_icon_url'),
+        instagram: getV('sc_instagram'),
+        whatsapp: getV('sc_whatsapp'),
+        email: getV('sc_email'),
+        footerBrand: getV('sc_footer_brand'),
+        footerDesc: getV('sc_footer_desc'),
+        updatedAt: Date.now()
+      };
+      try {
+        const { db, dbRef, update } = await waitFb();
+        await update(dbRef(db, 'settings/siteConfig'), cfg);
+        toast('Site assets & config saved! 🎨', 'success');
+      } catch (e) {
+        toast('Save failed: ' + e.message, 'error');
+      }
     }
 
     /* ═══════════════════════════════════════════════
