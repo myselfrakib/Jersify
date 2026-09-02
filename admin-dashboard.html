@@ -4367,11 +4367,52 @@
 
 
     /* ─── LOGOUT ─── */
+    /* ─── LOGOUT ─── */
     async function doLogout() {
       const { auth, signOut } = await waitFb();
       try { await signOut(auth); } catch (e) { }
       window.location.href = 'admin-login.html';
     }
+
+    /* ═══════════════════════════════════════════════
+       CONFIRM MODAL & DELETE / SAVE UTILITIES
+    ═══════════════════════════════════════════════ */
+    let _confirmCallback = null;
+
+    window.confirmAction = function(msg, onOk) {
+      const modal = document.getElementById('confirmModal');
+      const msgEl = document.getElementById('confirmMsg');
+      if (!modal) {
+        if (confirm(msg)) { onOk(); }
+        return;
+      }
+      if (msgEl) msgEl.textContent = msg;
+      _confirmCallback = onOk;
+      openModal('confirmModal');
+    };
+
+    window.deleteItem = function(col, id) {
+      if (!col || !id) return;
+      confirmAction(`Are you sure you want to delete this item? This action cannot be undone.`, async () => {
+        try {
+          const { db, dbRef, remove } = await waitFb();
+          await remove(dbRef(db, `${col}/${id}`));
+          toast(`Item deleted from ${col}! 🗑️`, 'info');
+        } catch (err) {
+          toast('Delete failed: ' + err.message, 'error');
+        }
+      });
+    };
+
+    window.saveDoc = async function(col, data, id = null) {
+      const { db, dbRef, set, push, update } = await waitFb();
+      if (id) {
+        await update(dbRef(db, `${col}/${id}`), data);
+      } else {
+        const newRef = push(dbRef(db, col));
+        await set(newRef, data);
+      }
+    };
 
     /* ─── INIT ─── */
     let _initCalled = false;
@@ -4398,6 +4439,22 @@
       updateThemeUI(document.documentElement.classList.contains('dark-theme'));
       const mkInput = document.getElementById('masterKeyInput');
       if (mkInput) mkInput.addEventListener('keydown', e => { if (e.key === 'Enter') unlockCredentials(); });
+
+      const confirmOk = document.getElementById('confirmOkBtn');
+      if (confirmOk) {
+        confirmOk.addEventListener('click', async () => {
+          closeModal('confirmModal');
+          if (typeof _confirmCallback === 'function') {
+            const cb = _confirmCallback;
+            _confirmCallback = null;
+            try {
+              await cb();
+            } catch (err) {
+              toast('Action failed: ' + err.message, 'error');
+            }
+          }
+        });
+      }
 
       const savedTab = localStorage.getItem('jersify_admin_tab');
       if (savedTab) {
