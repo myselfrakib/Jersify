@@ -445,14 +445,7 @@
     .user-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .user-name { font-size: 11px; font-weight: 700; color: var(--accent); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    #authSignedInBanner { display: none; align-items: center; gap: 12px; background: rgba(30,140,74,.06); border: 1.5px solid rgba(30,140,74,.2); border-radius: 16px; padding: 12px 16px; margin-bottom: 14px; animation: fadeInUp .3s ease both; }
-    #authSignedInBanner.show { display: flex; }
-    .signed-in-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
-    .signed-in-info { flex: 1; }
-    .signed-in-info strong { font-size: 13px; font-weight: 800; color: var(--success); display: block; }
-    .signed-in-info span { font-size: 11px; color: var(--muted); }
-    .sign-out-btn { border: 1px solid rgba(0,0,0,.12); border-radius: 8px; padding: 5px 12px; background: #fff; color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer; transition: all .2s; flex-shrink: 0; }
-    .sign-out-btn:hover { border-color: var(--accent); color: var(--accent); }
+
 
     #authPromptCard { display: none; border: 1.5px dashed rgba(198,31,47,.3); border-radius: 18px; padding: 16px; margin-bottom: 14px; background: rgba(198,31,47,.02); animation: fadeInUp .3s ease both; }
     #authPromptCard.show { display: block; }
@@ -610,14 +603,7 @@
     <div id="checkoutContent" style="display:none">
       <div class="content">
 
-        <div id="authSignedInBanner">
-          <span class="signed-in-icon">✅</span>
-          <div class="signed-in-info">
-            <strong id="signedInName">Signed in</strong>
-            <span id="signedInEmail"></span>
-          </div>
-          <button class="sign-out-btn" onclick="handleSignOut()">Sign Out</button>
-        </div>
+
 
         <div id="authPromptCard">
           <div class="auth-prompt-inner">
