@@ -1266,19 +1266,58 @@
       pushProductURL(null);
     };
 
+    let currentPPVersion = 'fan';
+
+    function ppSelectVersion(ver, imgIndex = null) {
+      const found = allProducts.find(p => p.id === currentProductId);
+      if (!found) return;
+      currentPPVersion = ver;
+      const { data: p } = found;
+      const rawName = p.name || 'Jersify Kit';
+      const isPlayer = ver === 'player';
+      
+      const displayName = isPlayer
+        ? (rawName.includes('Player Version') ? rawName : `${rawName} (Player Version)`)
+        : (rawName.includes('Fan Version') ? rawName : `${rawName} (Fan Version)`);
+        
+      const displayPrice = isPlayer
+        ? (p.playerPrice ? Number(p.playerPrice) : Number(p.price || 1999))
+        : Number(p.price || 1499);
+
+      document.getElementById('ppTopbarTitle').textContent = displayName;
+      document.getElementById('ppName').textContent        = displayName;
+      document.getElementById('ppPrice').textContent       = '₹' + displayPrice.toLocaleString('en-IN');
+
+      const badgeOverlay = document.getElementById('ppBadgeOverlay');
+      if (badgeOverlay) {
+        badgeOverlay.textContent = isPlayer ? 'PLAYER VERSION' : (p.badge || 'FAN VERSION');
+        badgeOverlay.style.display = 'block';
+      }
+
+      document.querySelectorAll('.pp-version-thumb').forEach((t, i) => {
+        const isTarget = isPlayer ? i === 1 : i === 0;
+        t.classList.toggle('active', isTarget);
+      });
+
+      if (imgIndex !== null) ppGoTo(imgIndex);
+    }
+
     function populateProductPage(found) {
       currentProductId = found.id;
       ppReviewsShown   = 5;
       const { id, data: p } = found;
       const tl = teamLabel(p);
+      currentPPVersion = 'fan';
 
-      document.getElementById('ppTopbarTitle').textContent = p.name || 'Jersey';
-      document.getElementById('ppName').textContent  = p.name || 'Jersify Kit';
-      document.getElementById('ppPrice').textContent = '₹' + Number(p.price || 1499).toLocaleString('en-IN');
+      const rawName = p.name || 'Jersify Kit';
+      const initialName = rawName.includes('Fan Version') ? rawName : `${rawName} (Fan Version)`;
+      document.getElementById('ppTopbarTitle').textContent = initialName;
+      document.getElementById('ppName').textContent        = initialName;
+      document.getElementById('ppPrice').textContent       = '₹' + Number(p.price || 1499).toLocaleString('en-IN');
 
       /* Badge overlay — dark left-clipped Figma style */
       const badgeOverlay = document.getElementById('ppBadgeOverlay');
-      const badgeText = p.playerVersion ? 'PLAYER VERSION' : (p.badge || p.type || '');
+      const badgeText = p.playerVersion ? 'PLAYER VERSION' : (p.badge || 'FAN VERSION');
       if (badgeText) { badgeOverlay.textContent = badgeText; badgeOverlay.style.display = 'block'; }
       else { badgeOverlay.style.display = 'none'; }
 
@@ -1304,15 +1343,18 @@
       /* Version thumbnails */
       const imgs = getProductImages(p);
       const thumbsEl = document.getElementById('ppVersionThumbs');
+      const hasPlayerVer = p.playerVersion || p.playerPrice || imgs.length > 1;
+
       if (imgs.length > 0) {
         const mainImg = imgs[0];
+        const playerImg = imgs.length > 1 ? imgs[1] : mainImg;
         thumbsEl.innerHTML = `
-          <div class="pp-version-thumb active" onclick="ppGoTo(0);document.querySelectorAll('.pp-version-thumb').forEach(t=>t.classList.remove('active'));this.classList.add('active')">
+          <div class="pp-version-thumb active" onclick="ppSelectVersion('fan', 0)">
             <div class="pp-version-thumb-img"><img src="${mainImg}" alt="Fan Version" loading="lazy" style="opacity:0" onload="this.style.opacity=1"/></div>
             <span class="pp-version-thumb-label">Fan Version</span>
           </div>
-          ${imgs.length > 1 ? `<div class="pp-version-thumb" onclick="ppGoTo(1);document.querySelectorAll('.pp-version-thumb').forEach(t=>t.classList.remove('active'));this.classList.add('active')">
-            <div class="pp-version-thumb-img"><img src="${imgs[1]}" alt="Player Version" loading="lazy" style="opacity:0" onload="this.style.opacity=1"/></div>
+          ${hasPlayerVer ? `<div class="pp-version-thumb" onclick="ppSelectVersion('player', ${imgs.length > 1 ? 1 : 0})">
+            <div class="pp-version-thumb-img"><img src="${playerImg}" alt="Player Version" loading="lazy" style="opacity:0" onload="this.style.opacity=1"/></div>
             <span class="pp-version-thumb-label">Player Version</span>
           </div>` : ''}
         `;
@@ -1326,7 +1368,7 @@
           document.getElementById('ppSizeGrid').scrollIntoView({ behavior: 'smooth', block: 'center' });
           return;
         }
-        window.location.href = `checkout.html?id=${id}&size=${sel.dataset.size}`;
+        window.location.href = `checkout.html?id=${id}&size=${sel.dataset.size}&version=${currentPPVersion}`;
       };
       document.getElementById('ppBuyBtn').onclick       = buyHandler;
       const inlineBuy = document.getElementById('ppInlineBuyBtn');
@@ -1369,7 +1411,15 @@
       }
       const { id, data: p } = found;
       const imgs = getProductImages(p);
-      addToCart(id, p.name || 'Jersify Kit', p.price || 1499, imgs[0] || '', teamLabel(p), sel.dataset.size, p.playerVersion);
+      const isPlayer = currentPPVersion === 'player';
+      const rawName = p.name || 'Jersify Kit';
+      const finalName = isPlayer
+        ? (rawName.includes('Player Version') ? rawName : `${rawName} (Player Version)`)
+        : (rawName.includes('Fan Version') ? rawName : `${rawName} (Fan Version)`);
+      const finalPrice = isPlayer
+        ? (p.playerPrice ? Number(p.playerPrice) : Number(p.price || 1999))
+        : Number(p.price || 1499);
+      addToCart(id, finalName, finalPrice, imgs[0] || '', teamLabel(p), sel.dataset.size, isPlayer);
     };
 
     /* Share */

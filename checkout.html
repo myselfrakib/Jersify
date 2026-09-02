@@ -1728,16 +1728,26 @@
         try {
           const snap = await get(ref(db, `products/${pid}`));
           if (snap.exists()) {
-            const p = snap.val(), name = p.name || 'Jersify Kit';
-            singleBasePrice = p.price ? parseInt(p.price) : 1499;
+            const p = snap.val();
+            const paramVersion = (params.get('version') || (p.playerVersion ? 'player' : 'fan')).toLowerCase();
+            const isPlayer = paramVersion === 'player';
+            const rawName = p.name || 'Jersify Kit';
+            const name = isPlayer 
+              ? (rawName.includes('Player Version') ? rawName : `${rawName} (Player Version)`)
+              : (rawName.includes('Fan Version') ? rawName : `${rawName} (Fan Version)`);
+
+            singleBasePrice = isPlayer 
+              ? (p.playerPrice ? parseInt(p.playerPrice) : parseInt(p.price || 1999))
+              : (p.price ? parseInt(p.price) : 1499);
+
             singleQty = 1;
             orderPrice = singleBasePrice;
-            orderItems = [{ id: pid, name, price: singleBasePrice, size: paramSize || 'M', team: p.team || '', imgUrl: p.imgUrl || '', qty: 1 }];
+            orderItems = [{ id: pid, name, price: singleBasePrice, size: paramSize || 'M', team: p.team || '', imgUrl: p.imgUrl || '', qty: 1, playerVersion: isPlayer }];
 
             orderBody.innerHTML = `
             <div class="product-row">
               <div class="product-img" style="position:relative;">
-                ${p.playerVersion ? `<span style="position:absolute;top:4px;left:4px;background:var(--accent);color:#fff;font-size:7px;font-weight:800;padding:2px 4px;border-radius:3px;z-index:2;letter-spacing:0.5px;text-transform:uppercase;box-shadow:0 1px 3px rgba(0,0,0,0.2);">Player</span>` : ''}
+                ${isPlayer ? `<span style="position:absolute;top:4px;left:4px;background:#111;color:#fff;font-size:7px;font-weight:800;padding:2px 4px;border-radius:3px;z-index:2;letter-spacing:0.5px;text-transform:uppercase;box-shadow:0 1px 3px rgba(0,0,0,0.2);">Player</span>` : ''}
                 ${p.imgUrl ? `<img src="${p.imgUrl}" alt="${name}">` : '<span style="font-family:Bebas Neue,sans-serif;font-size:28px;color:rgba(255,255,255,.55)">10</span>'}
               </div>
               <div class="product-info">
