@@ -1268,7 +1268,7 @@
 
     let currentPPVersion = 'fan';
 
-    function ppSelectVersion(ver, imgIndex = null) {
+    window.ppSelectVersion = function(ver, imgIndex = null) {
       const found = allProducts.find(p => p.id === currentProductId);
       if (!found) return;
       currentPPVersion = ver;
