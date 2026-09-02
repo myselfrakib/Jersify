@@ -3434,15 +3434,36 @@
               <div class="form-grid" style="gap:14px;">
                 <div class="form-group span-2">
                   <label>Header Logo URL</label>
-                  <input type="url" id="sc_logo_url" class="form-input" placeholder="https://firebasestorage.googleapis.com/.../logo.webp" />
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="url" id="sc_logo_url" class="form-input" placeholder="https://firebasestorage.googleapis.com/.../logo.webp" style="flex:1;" />
+                    <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
+                      📁 Upload Logo
+                      <input type="file" accept="image/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'siteConfig', 'sc_logo_url', 'sc_logo_preview')" />
+                    </label>
+                  </div>
+                  <div style="margin-top:6px;"><img id="sc_logo_preview" style="max-height:40px;border-radius:4px;display:none;background:#111;padding:4px;" /></div>
                 </div>
                 <div class="form-group">
                   <label>Favicon PNG URL</label>
-                  <input type="url" id="sc_favicon_url" class="form-input" placeholder="https://.../favicon.png" />
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="url" id="sc_favicon_url" class="form-input" placeholder="https://.../favicon.png" style="flex:1;" />
+                    <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
+                      📁 Upload
+                      <input type="file" accept="image/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'siteConfig', 'sc_favicon_url', 'sc_favicon_preview')" />
+                    </label>
+                  </div>
+                  <div style="margin-top:6px;"><img id="sc_favicon_preview" style="width:24px;height:24px;display:none;" /></div>
                 </div>
                 <div class="form-group">
                   <label>Apple Touch Icon URL</label>
-                  <input type="url" id="sc_apple_icon_url" class="form-input" placeholder="https://.../apple-icon.png" />
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="url" id="sc_apple_icon_url" class="form-input" placeholder="https://.../apple-icon.png" style="flex:1;" />
+                    <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
+                      📁 Upload
+                      <input type="file" accept="image/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'siteConfig', 'sc_apple_icon_url', 'sc_apple_icon_preview')" />
+                    </label>
+                  </div>
+                  <div style="margin-top:6px;"><img id="sc_apple_icon_preview" style="width:32px;height:32px;border-radius:6px;display:none;" /></div>
                 </div>
                 <div class="form-group">
                   <label>Instagram Page Link</label>
@@ -5107,16 +5128,46 @@
         <div class="form-grid" style="gap:14px;">
           <div class="form-group span-2">
             <label>Hero Banner Image / Video URL</label>
-            <input type="url" id="tc_hero_url" class="form-input" value="${esc(conf.heroUrl || '')}" placeholder="https://firebasestorage.googleapis.com/.../hero.webp" />
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="url" id="tc_hero_url" class="form-input" value="${esc(conf.heroUrl || '')}" placeholder="https://firebasestorage.googleapis.com/.../hero.webp" style="flex:1;" />
+              <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
+                📁 Upload Hero
+                <input type="file" accept="image/*,video/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'teamMedia', 'tc_hero_url', 'tc_hero_preview')" />
+              </label>
+            </div>
+            <div style="margin-top:6px;">
+              ${conf.heroUrl ? `<img id="tc_hero_preview" src="${conf.heroUrl}" style="max-height:80px;border-radius:6px;border:1px solid var(--border);" onerror="this.style.display='none'" />` : '<img id="tc_hero_preview" style="max-height:80px;border-radius:6px;border:1px solid var(--border);display:none;" />'}
+            </div>
           </div>
+
           <div class="form-group">
             <label>Team Logo URL</label>
-            <input type="url" id="tc_logo_url" class="form-input" value="${esc(conf.logoUrl || '')}" placeholder="https://.../logo.png" />
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="url" id="tc_logo_url" class="form-input" value="${esc(conf.logoUrl || '')}" placeholder="https://.../logo.png" style="flex:1;" />
+              <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
+                📁 Upload Logo
+                <input type="file" accept="image/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'teamLogos', 'tc_logo_url', 'tc_logo_preview')" />
+              </label>
+            </div>
+            <div style="margin-top:6px;">
+              ${conf.logoUrl ? `<img id="tc_logo_preview" src="${conf.logoUrl}" style="height:36px;object-fit:contain;" onerror="this.style.display='none'" />` : '<img id="tc_logo_preview" style="height:36px;object-fit:contain;display:none;" />'}
+            </div>
           </div>
+
           <div class="form-group">
             <label>Featured Kit Image URL</label>
-            <input type="url" id="tc_kit_url" class="form-input" value="${esc(conf.kitUrl || '')}" placeholder="https://.../kit.png" />
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="url" id="tc_kit_url" class="form-input" value="${esc(conf.kitUrl || '')}" placeholder="https://.../kit.png" style="flex:1;" />
+              <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
+                📁 Upload Kit
+                <input type="file" accept="image/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'teamKits', 'tc_kit_url', 'tc_kit_preview')" />
+              </label>
+            </div>
+            <div style="margin-top:6px;">
+              ${conf.kitUrl ? `<img id="tc_kit_preview" src="${conf.kitUrl}" style="height:60px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'" />` : '<img id="tc_kit_preview" style="height:60px;object-fit:cover;border-radius:6px;display:none;" />'}
+            </div>
           </div>
+
           <div class="form-group span-2">
             <label>Team Tagline / Intro Description</label>
             <textarea id="tc_tagline" class="form-input" style="min-height:56px;" placeholder="Enter description for ${team.name} page...">${esc(conf.tagline || '')}</textarea>
@@ -5150,8 +5201,11 @@
         if (snap.exists()) {
           const cfg = snap.val();
           setV('sc_logo_url', cfg.logoUrl || '');
+          if (cfg.logoUrl) { const img = document.getElementById('sc_logo_preview'); if (img) { img.src = cfg.logoUrl; img.style.display = 'block'; } }
           setV('sc_favicon_url', cfg.faviconUrl || '');
+          if (cfg.faviconUrl) { const img = document.getElementById('sc_favicon_preview'); if (img) { img.src = cfg.faviconUrl; img.style.display = 'block'; } }
           setV('sc_apple_icon_url', cfg.appleIconUrl || '');
+          if (cfg.appleIconUrl) { const img = document.getElementById('sc_apple_icon_preview'); if (img) { img.src = cfg.appleIconUrl; img.style.display = 'block'; } }
           setV('sc_instagram', cfg.instagram || '');
           setV('sc_whatsapp', cfg.whatsapp || '');
           setV('sc_email', cfg.email || '');
@@ -5159,6 +5213,39 @@
           setV('sc_footer_desc', cfg.footerDesc || '');
         }
       } catch (e) { console.warn('Load site config error:', e); }
+    }
+
+    async function uploadAssetToFirebase(file, storageFolder, targetInputId, previewImgId = null) {
+      if (!file) return;
+      toast(`Uploading ${file.name}…`, 'info');
+      try {
+        const { storage, sRef, uploadBytesResumable, getDownloadURL } = await waitFb();
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const fileRef = sRef(storage, `${storageFolder}/${Date.now()}_${safeName}`);
+        const task = uploadBytesResumable(fileRef, file, { contentType: file.type });
+
+        return new Promise((resolve, reject) => {
+          task.on('state_changed', 
+            snap => {}, 
+            err => { toast('Upload failed: ' + err.message, 'error'); reject(err); },
+            async () => {
+              const url = await getDownloadURL(task.snapshot.ref);
+              if (targetInputId) {
+                const input = document.getElementById(targetInputId);
+                if (input) input.value = url;
+              }
+              if (previewImgId) {
+                const img = document.getElementById(previewImgId);
+                if (img) { img.src = url; img.style.display = 'block'; }
+              }
+              toast('File uploaded to Firebase! 📁', 'success');
+              resolve(url);
+            }
+          );
+        });
+      } catch (e) {
+        toast('Upload error: ' + e.message, 'error');
+      }
     }
 
     async function saveSiteConfig() {
