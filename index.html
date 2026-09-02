@@ -235,31 +235,40 @@
       letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 16px;
     }
     .contact-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
-    .contact-row { display: flex; align-items: center; gap: 14px; }
-    .contact-row svg { width: 24px; height: 24px; color: #ffffff; flex-shrink: 0; }
+    .contact-row { display: flex; align-items: center; gap: 14px; cursor: pointer; }
+    .contact-row svg { width: 22px; height: 22px; color: #ffffff; flex-shrink: 0; }
     .contact-row span {
-      font-family: 'DM Sans', sans-serif; font-size: 14px; color: #ffffff;
-      letter-spacing: 1.4px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; color: #ffffff;
+      letter-spacing: 1px;
     }
 
-    .team-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .team-section-header svg { width: 24px; height: 24px; color: #ffffff; }
+    .team-section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px; cursor: pointer; user-select: none;
+    }
+    .team-section-header svg { width: 20px; height: 20px; color: #ffffff; transition: transform .3s ease; }
+    .team-section-header.open svg { transform: rotate(180deg); }
 
     .team-grid-4col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
     .team-member-card { display: flex; flex-direction: column; align-items: center; }
     .team-member-avatar {
       width: 100%; aspect-ratio: 69/71; border-radius: 7px; overflow: hidden;
-      background: #222222; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 6px;
+      background: #222222; border: 1px solid rgba(255,255,255,0.12); margin-bottom: 6px;
     }
     .team-member-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .team-member-role {
-      font-family: 'DM Sans', sans-serif; font-size: 10px; color: #ffffff;
-      letter-spacing: 1px; text-align: center; text-transform: capitalize;
+      font-family: 'DM Sans', sans-serif; font-size: 9px; color: #ffffff;
+      letter-spacing: 0.5px; text-align: center; line-height: 1.2;
     }
+    .team-member-name { font-size: 8px; color: #888888; text-align: center; }
 
     .footer-brand-link {
-      font-family: 'DM Sans', sans-serif; font-size: 14px; color: #ffffff;
-      letter-spacing: 1.4px; text-align: center; margin-top: 24px; opacity: 0.9;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; color: #ffffff;
+      letter-spacing: 1.4px; text-align: center; margin-top: 24px; opacity: 0.85;
+    }
+
+    .grey-banner-strip {
+      height: 24px; background: #e0e0e0; border-radius: 4px; margin: 10px 11px 24px 11px;
     }
 
     /* ── FIXED BOTTOM NAVIGATION ── */
@@ -290,7 +299,7 @@
 
   <!-- ══ SPLASH SCREEN ══ -->
   <div id="initScreen">
-    <img class="splash-logo-img" src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="Jersify" />
+    <img class="splash-logo-img" id="splashLogo" src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="Jersify" />
     <div class="splash-bar-wrap">
       <div class="splash-bar" id="splashBar"></div>
     </div>
@@ -303,7 +312,7 @@
     <!-- TOPBAR / HEADER -->
     <header class="topbar">
       <div class="logo-wrap" onclick="window.location.href='index.html'">
-        <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="Jersify" onerror="this.style.display='none';document.getElementById('logoTextFallback').style.display='block';" />
+        <img class="logo-img" id="headerLogoImg" src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="Jersify" onerror="this.style.display='none';document.getElementById('logoTextFallback').style.display='block';" />
         <div id="logoTextFallback" class="logo-text-fallback" style="display:none;">JERSIFY</div>
       </div>
       <div class="header-actions">
@@ -343,7 +352,7 @@
     <section>
       <h2 class="title-ubuntu-bold">SHOP BY CLUBS</h2>
       <div class="clubs-scroll-row" id="clubsRow">
-        <!-- Dynamically rendered or static fallback club crest circles -->
+        <!-- Dynamically rendered club crest circles -->
       </div>
     </section>
 
@@ -357,11 +366,8 @@
     <section class="mid-banner-container">
       <div class="mid-banner" id="midBanner">
         <div class="skeleton-box" style="width:100%;height:100%;"></div>
-        <div class="dots-indicator">
-          <div class="dot-pill active"></div>
-          <div class="dot-pill"></div>
-        </div>
       </div>
+      <div class="grey-banner-strip"></div>
     </section>
 
     <!-- BRAND HEADING -->
@@ -419,32 +425,33 @@
     <footer class="footer-figma">
       <div class="footer-heading">Get in touch</div>
       <div class="contact-list">
-        <div class="contact-row" onclick="window.open('https://instagram.com/jersify.online','_blank')">
+        <div class="contact-row" id="contactInstaRow" onclick="window.open('https://instagram.com/jersify.online','_blank')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-          <span>jersify.online</span>
+          <span id="contactInstaText">jersify.online</span>
         </div>
-        <div class="contact-row" onclick="window.open('https://wa.me/916291589500','_blank')">
+        <div class="contact-row" id="contactWaRow" onclick="window.open('https://wa.me/918291189500','_blank')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-          <span>6291589500</span>
+          <span id="contactWaText">8291189500</span>
         </div>
-        <div class="contact-row" onclick="window.location.href='mailto:jersify.online@gmail.com'">
+        <div class="contact-row" id="contactEmailRow" onclick="window.location.href='mailto:jersify.online@gmail.com'">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          <span>jersify.online@gmail.com</span>
+          <span id="contactEmailText">jersify.online@gmail.com</span>
         </div>
       </div>
 
-      <div class="team-section-header">
+      <div class="team-section-header" onclick="document.querySelector('.team-grid-4col').style.display = document.querySelector('.team-grid-4col').style.display === 'none' ? 'grid' : 'none'; this.classList.toggle('open');">
         <div class="footer-heading" style="margin-bottom:0;">Meet the Team</div>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </div>
 
-      <div class="team-grid-4col">
+      <div class="team-grid-4col" id="teamGrid">
         <!-- Designer -->
         <div class="team-member-card">
           <div class="team-member-avatar">
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" alt="Designer" />
           </div>
           <div class="team-member-role">Designer</div>
+          <div class="team-member-name">fuy msk</div>
         </div>
         <!-- Developer -->
         <div class="team-member-card">
@@ -452,6 +459,7 @@
             <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" alt="Developer" />
           </div>
           <div class="team-member-role">Developer</div>
+          <div class="team-member-name">rakib sk</div>
         </div>
         <!-- Executive -->
         <div class="team-member-card">
@@ -459,6 +467,7 @@
             <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop" alt="Executive" />
           </div>
           <div class="team-member-role">Executive</div>
+          <div class="team-member-name">momin sk</div>
         </div>
         <!-- Founder -->
         <div class="team-member-card">
@@ -466,10 +475,11 @@
             <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=200&auto=format&fit=crop" alt="Founder" />
           </div>
           <div class="team-member-role">Founder</div>
+          <div class="team-member-name">asgar molla</div>
         </div>
       </div>
 
-      <div class="footer-brand-link">jersify.online</div>
+      <div class="footer-brand-link" id="footerBrandText">jersify.online</div>
     </footer>
 
   </div>
@@ -502,7 +512,6 @@
     const mainPage     = document.getElementById("mainPage");
 
     function goToProduct(pid) { if (pid) window.location.href = "shop.html?product=" + encodeURIComponent(pid); }
-    function goToTeam(teamId) { if (teamId) window.location.href = "team.html?id=" + encodeURIComponent(teamId); }
 
     let _progress = 0;
     function setProgress(pct, label) {
@@ -530,7 +539,7 @@
       ];
       const row = document.getElementById("clubsRow");
       row.innerHTML = clubs.map(c => `
-        <div class="club-badge-circle" onclick="goToTeam('${c.id}')" title="${c.name}">
+        <div class="club-badge-circle" onclick="window.location.href='team.html?id=${c.id}'" title="${c.name}">
           <img src="${c.img}" alt="${c.name}" loading="lazy" />
         </div>
       `).join("");
@@ -661,7 +670,7 @@
         function createCard(p) {
           const name  = p.name || "FC Barcelona Home 2026-27";
           const price = p.price ? `₹ ${p.price}` : "₹ 800";
-          const img   = p.imgUrl || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop";
+          const img   = p.imgUrl || (p.images && p.images[0]) || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop";
           return `
             <div class="product-card-figma" onclick="goToProduct('${p._id}')">
               <div class="pic-wrap">
@@ -692,6 +701,44 @@
       } catch (e) {
         console.error("Products load failed", e);
       }
+    }
+
+    /* SITE CONFIG & FOOTER LOAD */
+    async function loadSiteConfig() {
+      try {
+        const snap = await get(ref(rtdb, "settings/siteConfig"));
+        if (snap.exists()) {
+          const cfg = snap.val();
+          if (cfg.logoUrl) {
+            const hLogo = document.getElementById("headerLogoImg");
+            const sLogo = document.getElementById("splashLogo");
+            if (hLogo) hLogo.src = cfg.logoUrl;
+            if (sLogo) sLogo.src = cfg.logoUrl;
+          }
+          if (cfg.instagram) {
+            const instaText = document.getElementById("contactInstaText");
+            const instaRow = document.getElementById("contactInstaRow");
+            if (instaText) instaText.textContent = cfg.instagram.replace(/https?:\/\/(www\.)?instagram\.com\/?/i, '@');
+            if (instaRow) instaRow.onclick = () => window.open(cfg.instagram.startsWith('http') ? cfg.instagram : `https://instagram.com/${cfg.instagram}`, '_blank');
+          }
+          if (cfg.whatsapp) {
+            const waText = document.getElementById("contactWaText");
+            const waRow = document.getElementById("contactWaRow");
+            if (waText) waText.textContent = cfg.whatsapp;
+            if (waRow) waRow.onclick = () => window.open(`https://wa.me/${cfg.whatsapp.replace(/\D/g,'')}`, '_blank');
+          }
+          if (cfg.email) {
+            const emailText = document.getElementById("contactEmailText");
+            const emailRow = document.getElementById("contactEmailRow");
+            if (emailText) emailText.textContent = cfg.email;
+            if (emailRow) emailRow.onclick = () => window.location.href = `mailto:${cfg.email}`;
+          }
+          if (cfg.footerBrand) {
+            const fbText = document.getElementById("footerBrandText");
+            if (fbText) fbText.textContent = cfg.footerBrand;
+          }
+        }
+      } catch (e) { console.warn("Site config load failed", e); }
     }
 
     /* INDEX MEDIA LOAD (Mid Banner & Secondary Banner) */
@@ -734,7 +781,7 @@
 
     async function init() {
       setProgress(10, "Connecting to Firebase…");
-      await Promise.allSettled([loadHeroes(), loadProducts(), loadIndexMedia()]);
+      await Promise.allSettled([loadHeroes(), loadProducts(), loadIndexMedia(), loadSiteConfig()]);
       clearTimeout(splashTimeout);
       revealPage();
     }
