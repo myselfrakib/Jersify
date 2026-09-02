@@ -249,7 +249,8 @@
     .team-section-header svg { width: 20px; height: 20px; color: #ffffff; transition: transform .3s ease; }
     .team-section-header.open svg { transform: rotate(180deg); }
 
-    .team-grid-4col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
+    .team-grid-4col { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; margin-top: 14px; }
+    .team-grid-4col.show { display: grid; }
     .team-member-card { display: flex; flex-direction: column; align-items: center; }
     .team-member-avatar {
       width: 100%; aspect-ratio: 69/71; border-radius: 7px; overflow: hidden;
@@ -270,6 +271,20 @@
     .grey-banner-strip {
       height: 24px; background: #e0e0e0; border-radius: 4px; margin: 10px 11px 24px 11px;
     }
+
+    /* ── SLIDER TOUCH & NAV ARROWS ── */
+    .hero-nav-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(0,0,0,0.45); backdrop-filter: blur(4px);
+      color: #ffffff; border: 1px solid rgba(255,255,255,0.2);
+      font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 15; transition: background .2s ease, transform .2s ease;
+      user-select: none;
+    }
+    .hero-nav-btn:active { transform: translateY(-50%) scale(0.9); }
+    .hero-nav-btn.prev { left: 10px; }
+    .hero-nav-btn.next { right: 10px; }
 
     /* ── FIXED BOTTOM NAVIGATION ── */
     .bottom-nav {
@@ -339,12 +354,14 @@
 
     <!-- HERO CAROUSEL -->
     <section class="hero-container">
-      <div class="hero-slider">
+      <div class="hero-slider" id="heroSlider">
+        <button class="hero-nav-btn prev" onclick="prevHeroSlide(); startHeroTimer();" aria-label="Previous Slide">‹</button>
         <div class="hero-slides" id="heroSlides">
           <div class="hero-slide skeleton-box" id="heroSkeleton"></div>
         </div>
         <div class="hero-overlay"></div>
         <div class="dots-indicator" id="heroDots"></div>
+        <button class="hero-nav-btn next" onclick="nextHeroSlide(); startHeroTimer();" aria-label="Next Slide">›</button>
       </div>
     </section>
 
@@ -439,7 +456,7 @@
         </div>
       </div>
 
-      <div class="team-section-header" onclick="document.querySelector('.team-grid-4col').style.display = document.querySelector('.team-grid-4col').style.display === 'none' ? 'grid' : 'none'; this.classList.toggle('open');">
+      <div class="team-section-header" onclick="const g=document.getElementById('teamGrid'); g.classList.toggle('show'); this.classList.toggle('open');">
         <div class="footer-heading" style="margin-bottom:0;">Meet the Team</div>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </div>
@@ -545,25 +562,66 @@
       `).join("");
     })();
 
-    /* HERO CAROUSEL INTERACTION */
+    /* HERO CAROUSEL INTERACTION & SWIPE */
     let heroIndex = 0, heroTimer, heroTotal = 0;
+    let touchStartX = 0, touchEndX = 0;
+
     function buildDots(count) {
       const dotsWrap = document.getElementById("heroDots");
       dotsWrap.innerHTML = "";
       for (let i = 0; i < count; i++) {
         const btn = document.createElement("button");
         btn.className = "dot-pill" + (i === 0 ? " active" : "");
-        btn.addEventListener("click", () => showHeroSlide(i));
+        btn.addEventListener("click", () => { showHeroSlide(i); startHeroTimer(); });
         dotsWrap.appendChild(btn);
       }
     }
     function showHeroSlide(i) {
       heroIndex = i;
-      document.getElementById("heroSlides").style.transform = `translateX(-${i * 100}%)`;
+      const slides = document.getElementById("heroSlides");
+      if (slides) slides.style.transform = `translateX(-${i * 100}%)`;
       document.querySelectorAll("#heroDots .dot-pill").forEach((d, idx) => d.classList.toggle("active", idx === i));
     }
     function nextHeroSlide() { if (heroTotal) { heroIndex = (heroIndex + 1) % heroTotal; showHeroSlide(heroIndex); } }
+    function prevHeroSlide() { if (heroTotal) { heroIndex = (heroIndex - 1 + heroTotal) % heroTotal; showHeroSlide(heroIndex); } }
     function startHeroTimer() { clearInterval(heroTimer); if (heroTotal > 1) heroTimer = setInterval(nextHeroSlide, 4000); }
+
+    /* TOUCH & SWIPE GESTURES */
+    document.addEventListener("DOMContentLoaded", () => {
+      const slider = document.getElementById("heroSlider");
+      if (!slider) return;
+
+      slider.addEventListener("touchstart", e => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      slider.addEventListener("touchend", e => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchEndX - touchStartX;
+        if (Math.abs(diff) > 35) {
+          if (diff < 0) nextHeroSlide();
+          else prevHeroSlide();
+          startHeroTimer();
+        }
+      }, { passive: true });
+
+      let isMouseDown = false, mouseStartX = 0;
+      slider.addEventListener("mousedown", e => {
+        isMouseDown = true;
+        mouseStartX = e.clientX;
+      });
+      slider.addEventListener("mouseup", e => {
+        if (!isMouseDown) return;
+        isMouseDown = false;
+        const diff = e.clientX - mouseStartX;
+        if (Math.abs(diff) > 35) {
+          if (diff < 0) nextHeroSlide();
+          else prevHeroSlide();
+          startHeroTimer();
+        }
+      });
+      slider.addEventListener("mouseleave", () => { isMouseDown = false; });
+    });
 
     /* SEARCH INPUT */
     const searchInput = document.getElementById("searchInput");
