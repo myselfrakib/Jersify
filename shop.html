@@ -322,8 +322,53 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* Inline action buttons — hidden (action bar at bottom handles CTA) */
-    .pp-inline-actions { display: none; }
+    /* Inline action buttons below size selection */
+    .pp-inline-actions {
+      display: flex;
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+    .pp-inline-cart-btn {
+      flex: 1;
+      border: 1px solid #d9d9d9;
+      border-radius: 5px;
+      background: #f2f2f2;
+      color: #111;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 12px 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .2s ease, border-color .2s ease;
+    }
+    .pp-inline-cart-btn:hover { background: #e5e5e5; border-color: #c0c0c0; }
+    .pp-inline-cart-btn:active { background: #d8d8d8; }
+    .pp-inline-cart-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .pp-inline-buy-btn {
+      flex: 1;
+      border: none;
+      border-radius: 0;
+      background: #d9d9d9;
+      color: #000;
+      font-family: 'Lato', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 12px 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s ease;
+    }
+    .pp-inline-buy-btn:hover { background: #c8c8c8; }
+    .pp-inline-buy-btn:active { background: #b8b8b8; }
 
     /* Description / Details section — Figma style */
     .pp-details-label { font-family: 'Ubuntu Mono', monospace; font-size: 12.68px; font-weight: 500; color: #000; margin-bottom: 6px; padding: 0 12px; }
@@ -676,9 +721,12 @@
         <div class="pp-version-thumbs" id="ppVersionThumbs"></div>
       </div>
 
-      <!-- Inline action buttons (hidden per Figma) -->
+      <!-- Inline action buttons (below size chart) -->
       <div class="pp-inline-actions">
-        <button class="pp-inline-cart-btn" onclick="ppAddToCart()">Add to Cart</button>
+        <button class="pp-inline-cart-btn" onclick="ppAddToCart()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Add to Cart
+        </button>
         <button class="pp-inline-buy-btn" id="ppInlineBuyBtn">Buy Now</button>
       </div>
 
@@ -1280,7 +1328,9 @@
         }
         window.location.href = `checkout.html?id=${id}&size=${sel.dataset.size}`;
       };
-      document.getElementById('ppBuyBtn').onclick = buyHandler;
+      document.getElementById('ppBuyBtn').onclick       = buyHandler;
+      const inlineBuy = document.getElementById('ppInlineBuyBtn');
+      if (inlineBuy) inlineBuy.onclick = buyHandler;
 
       renderBrowse(id);
       loadAndRenderReviews(id);
