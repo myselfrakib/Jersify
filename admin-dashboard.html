@@ -3726,10 +3726,16 @@
           </div>
         </div>
         <div style="margin-top:18px">
-          <label style="display:block;margin-bottom:4px">Product Images <span
-              style="color:var(--muted);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">(up to 5 ·
-              first = primary)</span></label>
-          <div class="product-img-slots" id="productImgSlots"></div>
+          <label style="display:block;margin-bottom:6px;font-weight:700;font-size:12px;color:var(--text)">
+            👕 Fan Version Images <span style="color:var(--muted);font-size:10px;font-weight:400;">(up to 5 · slot 1 = primary)</span>
+          </label>
+          <div class="product-img-slots" id="productFanImgSlots"></div>
+        </div>
+        <div style="margin-top:18px">
+          <label style="display:block;margin-bottom:6px;font-weight:700;font-size:12px;color:var(--text)">
+            ⚡ Player Version Images <span style="color:var(--muted);font-size:10px;font-weight:400;">(up to 5 · upload specific player version photos)</span>
+          </label>
+          <div class="product-img-slots" id="productPlayerImgSlots"></div>
         </div>
       </div>
       <div class="modal-footer">
@@ -4603,93 +4609,122 @@
     /* ═══════════════════════════════════════════════
        PRODUCT IMAGE SLOTS
     ═══════════════════════════════════════════════ */
+    /* ═══════════════════════════════════════════════
+       PRODUCT IMAGE SLOTS (FAN VERSION & PLAYER VERSION)
+    ═══════════════════════════════════════════════ */
+    let _pFanImgSlots = [{}, {}, {}, {}, {}];
+    let _pPlayerImgSlots = [{}, {}, {}, {}, {}];
+
     function buildProductImgSlots() {
-      const container = document.getElementById('productImgSlots');
+      buildImgSlotsForType('productFanImgSlots', 'pfan', _pFanImgSlots, 'Fan');
+      buildImgSlotsForType('productPlayerImgSlots', 'pplayer', _pPlayerImgSlots, 'Player');
+    }
+
+    function buildImgSlotsForType(containerId, prefix, slotsArr, labelPrefix) {
+      const container = document.getElementById(containerId);
       if (!container || container.children.length > 0) return;
-      _pImgSlots = [{}, {}, {}, {}, {}];
       for (let i = 0; i < 5; i++) {
         const wrap = document.createElement('div');
         wrap.className = 'p-img-slot' + (i === 0 ? ' primary-slot' : '');
-        wrap.id = `pslot_${i}`;
-        if (i === 0) { const pb = document.createElement('div'); pb.className = 'primary-badge'; pb.textContent = 'PRIMARY'; wrap.appendChild(pb); }
-        const fileInp = document.createElement('input'); fileInp.type = 'file'; fileInp.accept = 'image/*'; fileInp.id = `pslot_file_${i}`;
-        fileInp.addEventListener('change', (e) => handleProductSlotUpload(e, i));
+        wrap.id = `${prefix}_pslot_${i}`;
+        if (i === 0) { const pb = document.createElement('div'); pb.className = 'primary-badge'; pb.textContent = `${labelPrefix.toUpperCase()} MAIN`; wrap.appendChild(pb); }
+        const fileInp = document.createElement('input'); fileInp.type = 'file'; fileInp.accept = 'image/*'; fileInp.id = `${prefix}_pslot_file_${i}`;
+        fileInp.addEventListener('change', (e) => handleSlotUpload(e, prefix, slotsArr, i));
         wrap.appendChild(fileInp);
         const icon = document.createElement('div'); icon.className = 'p-img-slot-icon'; icon.textContent = i === 0 ? '🖼️' : '📷'; wrap.appendChild(icon);
-        const lbl = document.createElement('div'); lbl.className = 'p-img-slot-label'; lbl.textContent = i === 0 ? 'Primary' : `Image ${i + 1}`; wrap.appendChild(lbl);
+        const lbl = document.createElement('div'); lbl.className = 'p-img-slot-label'; lbl.textContent = i === 0 ? `${labelPrefix} Main` : `${labelPrefix} ${i + 1}`; wrap.appendChild(lbl);
         const overlay = document.createElement('div'); overlay.className = 'p-img-slot-overlay';
         const replBtn = document.createElement('button'); replBtn.className = 'slot-replace-btn'; replBtn.title = 'Replace'; replBtn.textContent = '✎';
-        replBtn.addEventListener('click', (e) => { e.stopPropagation(); document.getElementById(`pslot_file_${i}`).click(); });
+        replBtn.addEventListener('click', (e) => { e.stopPropagation(); document.getElementById(`${prefix}_pslot_file_${i}`).click(); });
         const delBtn = document.createElement('button'); delBtn.className = 'slot-delete-btn'; delBtn.title = 'Remove'; delBtn.textContent = '✕';
-        delBtn.addEventListener('click', (e) => { e.stopPropagation(); clearProductSlot(i); });
+        delBtn.addEventListener('click', (e) => { e.stopPropagation(); clearSlot(prefix, slotsArr, i); });
         overlay.appendChild(replBtn); overlay.appendChild(delBtn); wrap.appendChild(overlay);
         const prog = document.createElement('div'); prog.className = 'slot-prog-bar';
-        const pf = document.createElement('div'); pf.className = 'slot-prog-fill'; pf.id = `pslot_prog_${i}`;
+        const pf = document.createElement('div'); pf.className = 'slot-prog-fill'; pf.id = `${prefix}_pslot_prog_${i}`;
         prog.appendChild(pf); wrap.appendChild(prog);
         container.appendChild(wrap);
       }
     }
 
-    function handleProductSlotUpload(event, idx) {
+    function handleSlotUpload(event, prefix, slotsArr, idx) {
       const file = event.target.files[0];
       if (!file) return;
       if (!file.type.startsWith('image/')) { toast('Please select an image file', 'error'); return; }
       if (file.size > 15 * 1024 * 1024) { toast('Image too large (max 15MB)', 'error'); return; }
-      _pImgSlots[idx] = { file, url: null };
+      slotsArr[idx] = { file, url: null };
       const reader = new FileReader();
-      reader.onload = e => setProductSlotPreview(idx, e.target.result);
+      reader.onload = e => setSlotPreview(prefix, slotsArr, idx, e.target.result);
       reader.readAsDataURL(file);
     }
 
-    function setProductSlotPreview(idx, url) {
-      const slot = document.getElementById(`pslot_${idx}`);
+    function setSlotPreview(prefix, slotsArr, idx, url) {
+      const slot = document.getElementById(`${prefix}_pslot_${idx}`);
+      if (!slot) return;
       slot.querySelector('img.slot-preview')?.remove();
       const img = document.createElement('img'); img.src = url; img.className = 'slot-preview'; img.onerror = () => img.remove();
       slot.insertBefore(img, slot.querySelector('.p-img-slot-overlay'));
       slot.classList.add('has-img');
       slot.querySelector('.p-img-slot-icon').style.display = 'none';
       slot.querySelector('.p-img-slot-label').style.display = 'none';
-      if (!url.startsWith('data:') && !url.startsWith('blob:')) { if (!_pImgSlots[idx]) _pImgSlots[idx] = {}; _pImgSlots[idx].url = url; }
+      if (!url.startsWith('data:') && !url.startsWith('blob:')) { if (!slotsArr[idx]) slotsArr[idx] = {}; slotsArr[idx].url = url; }
     }
 
-    function clearProductSlot(idx) {
-      _pImgSlots[idx] = {};
-      const slot = document.getElementById(`pslot_${idx}`);
+    function clearSlot(prefix, slotsArr, idx) {
+      slotsArr[idx] = {};
+      const slot = document.getElementById(`${prefix}_pslot_${idx}`);
+      if (!slot) return;
       slot.querySelector('img.slot-preview')?.remove();
       slot.classList.remove('has-img');
       slot.querySelector('.p-img-slot-icon').style.display = '';
       slot.querySelector('.p-img-slot-label').style.display = '';
-      document.getElementById(`pslot_file_${idx}`).value = '';
+      const inp = document.getElementById(`${prefix}_pslot_file_${idx}`);
+      if (inp) inp.value = '';
     }
 
-    function resetAllProductSlots() { for (let i = 0; i < 5; i++) clearProductSlot(i); }
+    function resetAllProductSlots() {
+      for (let i = 0; i < 5; i++) {
+        clearSlot('pfan', _pFanImgSlots, i);
+        clearSlot('pplayer', _pPlayerImgSlots, i);
+      }
+    }
 
-    function loadProductSlotsFromImages(images) {
+    function loadProductSlotsFromImages(fanImages, playerImages) {
       resetAllProductSlots();
-      (images || []).slice(0, 5).forEach((url, i) => { if (!url) return; _pImgSlots[i] = { url, file: null }; setProductSlotPreview(i, url); });
+      (fanImages || []).slice(0, 5).forEach((url, i) => { if (!url) return; _pFanImgSlots[i] = { url, file: null }; setSlotPreview('pfan', _pFanImgSlots, i, url); });
+      (playerImages || []).slice(0, 5).forEach((url, i) => { if (!url) return; _pPlayerImgSlots[i] = { url, file: null }; setSlotPreview('pplayer', _pPlayerImgSlots, i, url); });
     }
 
-    async function uploadProductSlotFile(idx) {
-      const slot = _pImgSlots[idx];
-      if (!slot || !slot.file) return slot?.url || null;
-      const pf = document.getElementById(`pslot_prog_${idx}`);
-      const pb = pf?.parentElement;
-      if (pb) pb.classList.add('active');
-      const { storage, sRef, uploadBytesResumable, getDownloadURL } = await waitFb();
-      const safeName = slot.file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const fileRef = sRef(storage, `products/${Date.now()}_${idx}_${safeName}`);
-      const task = uploadBytesResumable(fileRef, slot.file, { contentType: slot.file.type });
-      return new Promise((resolve, reject) => {
-        task.on('state_changed', snap => { if (pf) pf.style.width = Math.round(snap.bytesTransferred / snap.totalBytes * 100) + '%'; },
-          err => { if (pb) pb.classList.remove('active'); reject(err); },
-          async () => {
-            const url = await getDownloadURL(task.snapshot.ref);
-            _pImgSlots[idx].url = url; _pImgSlots[idx].file = null;
-            if (pf) pf.style.width = '100%';
-            setTimeout(() => { if (pb) pb.classList.remove('active'); if (pf) pf.style.width = '0%'; }, 800);
-            resolve(url);
+    async function uploadSlotArray(prefix, slotsArr, folderName) {
+      const urls = [];
+      for (let i = 0; i < 5; i++) {
+        const slot = slotsArr[i];
+        if (!slot) continue;
+        if (slot.file) {
+          toast(`Uploading ${folderName} image ${i + 1}…`, 'info');
+          const pf = document.getElementById(`${prefix}_pslot_prog_${i}`);
+          const pb = pf?.parentElement;
+          if (pb) pb.classList.add('active');
+          const { storage, sRef, uploadBytesResumable, getDownloadURL } = await waitFb();
+          const safeName = slot.file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+          const fileRef = sRef(storage, `products/${Date.now()}_${prefix}_${i}_${safeName}`);
+          const task = uploadBytesResumable(fileRef, slot.file, { contentType: slot.file.type });
+          const url = await new Promise((resolve, reject) => {
+            task.on('state_changed', snap => { if (pf) pf.style.width = Math.round(snap.bytesTransferred / snap.totalBytes * 100) + '%'; },
+              err => { if (pb) pb.classList.remove('active'); reject(err); },
+              async () => {
+                const downloadUrl = await getDownloadURL(task.snapshot.ref);
+                slotsArr[i].url = downloadUrl; slotsArr[i].file = null;
+                if (pf) pf.style.width = '100%';
+                setTimeout(() => { if (pb) pb.classList.remove('active'); if (pf) pf.style.width = '0%'; }, 800);
+                resolve(downloadUrl);
+              });
           });
-      });
+          if (url) urls.push(url);
+        } else if (slot.url) {
+          urls.push(slot.url);
+        }
+      }
+      return urls;
     }
 
     /* ═══════════════════════════════════════════════
@@ -5007,7 +5042,8 @@
       setV('p_badge', data?.badge || ''); setV('p_status', data?.status || 'active');
       const sz = data?.sizes || {};
       setV('p_xs', sz.xs || 0); setV('p_s', sz.s || 0); setV('p_m', sz.m || 0); setV('p_l', sz.l || 0); setV('p_xl', sz.xl || 0); setV('p_xxl', sz.xxl || 0);
-      loadProductSlotsFromImages(data?.images || (data?.imgUrl ? [data.imgUrl] : []));
+      buildProductImgSlots();
+      loadProductSlotsFromImages(data?.images || (data?.imgUrl ? [data.imgUrl] : []), data?.playerImages || []);
       openModal('productModal');
     }
 
@@ -5019,25 +5055,24 @@
       const btn = document.getElementById('saveProductBtn');
       btn.disabled = true; btn.textContent = 'Uploading…';
       try {
-        const imageUrls = [];
-        for (let i = 0; i < 5; i++) {
-          const slot = _pImgSlots[i];
-          if (slot.file) { toast(`Uploading image ${i + 1}…`, 'info'); const url = await uploadProductSlotFile(i); if (url) imageUrls.push(url); }
-          else if (slot.url) { imageUrls.push(slot.url); }
-        }
+        const fanUrls = await uploadSlotArray('pfan', _pFanImgSlots, 'Fan');
+        const playerUrls = await uploadSlotArray('pplayer', _pPlayerImgSlots, 'Player');
+
         const data = {
           name, team: getV('p_team'), type: getV('p_type'), price: getV('p_price'),
           playerPrice: getV('p_player_price'),
           description: getV('p_desc'),
           badge: getV('p_badge'), status: getV('p_status'),
           playerVersion: document.getElementById('p_player_version').checked,
-          imgUrl: imageUrls[0] || '', images: imageUrls,
+          imgUrl: fanUrls[0] || playerUrls[0] || '',
+          images: fanUrls,
+          playerImages: playerUrls,
           sizes: { xs: parseInt(getV('p_xs')) || 0, s: parseInt(getV('p_s')) || 0, m: parseInt(getV('p_m')) || 0, l: parseInt(getV('p_l')) || 0, xl: parseInt(getV('p_xl')) || 0, xxl: parseInt(getV('p_xxl')) || 0 },
           updatedAt: Date.now()
         };
         await saveDoc('products', data, _editId);
         closeModal('productModal');
-        toast('Product saved! 👕', 'success');
+        toast('Product saved & synced! 👕⚡', 'success');
         _editId = null;
       } catch (err) { toast('Save failed: ' + err.message, 'error'); }
       finally { btn.disabled = false; btn.textContent = 'Save Product'; }

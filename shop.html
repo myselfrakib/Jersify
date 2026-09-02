@@ -1276,6 +1276,12 @@
       const rawName = p.name || 'Jersify Kit';
       const isPlayer = ver === 'player';
       
+      const fanImgs = getProductImages(p);
+      const playerImgs = (p.playerImages && Array.isArray(p.playerImages) && p.playerImages.length) ? p.playerImages : fanImgs;
+      const activeImgs = isPlayer ? playerImgs : fanImgs;
+
+      buildPPGallery(activeImgs);
+
       const displayName = isPlayer
         ? (rawName.includes('Player Version') ? rawName : `${rawName} (Player Version)`)
         : (rawName.includes('Fan Version') ? rawName : `${rawName} (Fan Version)`);
@@ -1300,6 +1306,7 @@
       });
 
       if (imgIndex !== null) ppGoTo(imgIndex);
+      else ppGoTo(0);
     }
 
     function populateProductPage(found) {
