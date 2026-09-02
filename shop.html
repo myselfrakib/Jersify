@@ -16,7 +16,7 @@
   <link rel="prefetch" href="index.html" as="document" />
   <link rel="prefetch" href="checkout.html" as="document" />
   <link rel="prefetch" href="profile.html" as="document" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600;700;800;900&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600;700;800;900&family=Ubuntu:wght@400;500;700&family=Varela+Round&family=Krona+One&family=Kameron:wght@400;500&display=swap" />
   <style>
     :root {
       --bg: #ffffff;
@@ -68,12 +68,15 @@
     .profile-btn { width: 32px; height: 32px; border: 2px solid #fff; background: linear-gradient(135deg, #f4d8de, #f7f7f7); color: #111; }
     .profile-btn svg { width: 16px; height: 16px }
 
-    /* ── SEARCH ── */
-    .search-wrap { padding: 12px 16px 10px; }
-    .search { display: flex; align-items: center; gap: 10px; border: 1.5px solid rgba(17,17,17,.16); background: #fff; border-radius: 999px; padding: 11px 14px; box-shadow: 0 4px 18px rgba(0,0,0,.04); }
-    .search svg { width: 18px; height: 18px; opacity: .65; flex: 0 0 auto }
-    .search input { border: none; outline: none; width: 100%; background: transparent; font-size: 14px; }
-    .mic { width: 18px; height: 18px; opacity: .7; flex: 0 0 auto }
+    /* ── SEARCH (Figma spec: 22px left inset, 33px height, 17px radius, 0.85px border) ── */
+    .search-wrap { padding: 12px 11px 10px 22px; display: flex; align-items: center; gap: 6px; }
+    .search { flex: 1; height: 33px; display: flex; align-items: center; gap: 6.77px; background: #f2f2f2; border: 0.85px solid #d9d9d9; border-radius: 17px; padding: 0 11px; }
+    .search svg { width: 13.54px; height: 13.54px; color: #999; flex: 0 0 auto }
+    .search input { border: none; outline: none; width: 100%; background: transparent; font-family: 'Inter', sans-serif; font-size: 11.85px; color: #111; }
+    .search input::placeholder { color: #999999; }
+    .filter-btn-figma { flex-shrink: 0; width: 33px; height: 33px; background: #f2f2f2; border: 0.85px solid #d9d9d9; border-radius: 17px; display: grid; place-items: center; cursor: pointer; }
+    .filter-btn-figma svg { width: 16px; height: 16px; color: #333; opacity: 0.6; }
+    .mic { display: none; }
 
     /* ── FILTERS ── */
     .filters { padding: 10px 16px 14px; display: flex; gap: 8px; flex-wrap: wrap; }
@@ -101,33 +104,35 @@
 
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ── PRODUCTS ── */
-    .products { padding: 4px 16px 18px; }
+    /* ── PRODUCTS (Figma spec: 12px padding, 6px gap, Ubuntu section title 20px) ── */
+    .products { padding: 4px 12px 18px; }
     .products-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .products-header h3 { font-size: 18px; font-weight: 900; letter-spacing: .2px; }
+    .products-header h3 { font-family: 'Ubuntu', sans-serif; font-weight: 400; font-size: 20px; line-height: 1.05; color: #000000; letter-spacing: 0; }
     #productCount { font-size: 11px; color: var(--muted); font-weight: 600; }
-    .product-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding-bottom: 8px; }
+    .product-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; padding-bottom: 8px; }
 
-    .product { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); cursor: pointer; transition: transform .22s ease, box-shadow .22s ease; animation: fadeInUp .4s ease both; }
-    .product:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,.13); }
-    .product .img { height: 180px; background: radial-gradient(circle at top left, rgba(198,31,47,.18), transparent 25%), linear-gradient(180deg, #131313 0%, #262626 100%); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    /* ── PRODUCT CARDS (Figma spec: 278px img, 5px radius, Varela Round font) ── */
+    .product { background: #fff; border-radius: 5px; overflow: hidden; cursor: pointer; transition: transform .22s ease, box-shadow .22s ease; animation: fadeInUp .4s ease both; }
+    .product:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,.10); }
+    .product .img { height: 278px; background: #f7f7f7; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 5px; }
     .product .img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
-    .product:hover .img img { transform: scale(1.05); }
+    .product:hover .img img { transform: scale(1.04); }
     .jersey-card { width: 120px; height: 150px; border-radius: 24px; position: relative; z-index: 1; box-shadow: 0 16px 30px rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.18); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 14px; text-align: center; background: linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,0)), linear-gradient(135deg, #9a1f2b 0%, #191919 35%, #9a1f2b 70%, #191919 100%); }
     .jersey-card strong { font-size: 28px; line-height: 1; display: block; color: #fff; }
     .jersey-card small { font-size: 9px; font-weight: 700; letter-spacing: 1px; opacity: .9; color: #fff; }
     .badge { position: absolute; top: 10px; left: 10px; background: var(--accent); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: .5px; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; z-index: 2; }
-    .product-info { padding: 12px 12px 10px; }
-    .title { font-size: 13px; font-weight: 800; margin-bottom: 3px; line-height: 1.3; }
-    .desc { color: var(--muted); font-size: 11px; line-height: 1.4; margin-bottom: 10px; min-height: 30px; }
+    /* Figma: product name Varela Round 12px, price Varela Round 14px, details padding 8px 2px 4px */
+    .product-info { padding: 7px 2px 4px 2px; }
+    .title { font-family: 'Varela Round', sans-serif; font-size: 12px; font-weight: 400; margin-bottom: 1px; line-height: 1.05; color: #000000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .desc { color: var(--muted); font-size: 11px; line-height: 1.4; margin-bottom: 8px; min-height: 0; display: none; }
     .bottom { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-    .price { font-size: 15px; font-weight: 900; color: var(--text); }
+    .price { font-family: 'Varela Round', sans-serif; font-size: 14px; font-weight: 400; color: #000000; }
     .action-btns { display: flex; align-items: center; gap: 6px; }
-    .cart-btn { width: 32px; height: 32px; border: 1.5px solid var(--accent); border-radius: 50%; background: transparent; color: var(--accent); display: grid; place-items: center; cursor: pointer; transition: all .2s ease; flex-shrink: 0; }
-    .cart-btn svg { width: 14px; height: 14px; }
+    .cart-btn { width: 28px; height: 28px; border: 1.5px solid var(--accent); border-radius: 50%; background: transparent; color: var(--accent); display: grid; place-items: center; cursor: pointer; transition: all .2s ease; flex-shrink: 0; }
+    .cart-btn svg { width: 13px; height: 13px; }
     .cart-btn:hover { background: var(--accent); color: #fff; transform: scale(1.1); }
     .cart-btn.added { background: var(--accent); color: #fff; }
-    .buy-btn { border: none; background: linear-gradient(180deg, var(--accent), var(--accent2)); color: #fff; border-radius: 999px; padding: 8px 12px; font-size: 11px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 16px rgba(198,31,47,.25); transition: transform .2s ease, box-shadow .2s ease; white-space: nowrap; }
+    .buy-btn { border: none; background: linear-gradient(180deg, var(--accent), var(--accent2)); color: #fff; border-radius: 999px; padding: 7px 10px; font-size: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 16px rgba(198,31,47,.25); transition: transform .2s ease, box-shadow .2s ease; white-space: nowrap; }
     .buy-btn:hover { transform: scale(1.04); box-shadow: 0 8px 20px rgba(198,31,47,.35); }
     .loading-state, .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 20px; gap: 14px; grid-column: 1 / -1; text-align: center; }
     .empty-state svg { width: 48px; height: 48px; opacity: .25; }
@@ -502,10 +507,14 @@
     .retry-banner button { background: #856404; color: #fff; border: none; border-radius: 99px; padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
     .retry-banner.hidden { display: none; }
 
-    /* ── FOOTER ── */
-    .footer { margin-top: 6px; background: linear-gradient(180deg, #111, #1a1a1a); color: #fff; padding: 22px 16px 24px; border-radius: 24px 24px 0 0; }
-    .footer h4 { font-size: 18px; margin-bottom: 8px; font-weight: 900; }
-    .footer p { font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: 12px; }
+    /* ── FOOTER (Figma spec: flat #000, Krona One brand, Kameron desc, 184px height) ── */
+    .footer { margin-top: 6px; background: #000000; color: #fff; padding: 11px 12px 20px; }
+    .footer-brand { font-family: 'Krona One', sans-serif; font-size: 18.37px; color: #ffffff; letter-spacing: 1.84px; margin-bottom: 8px; padding-top: 0; }
+    .footer p { font-family: 'Kameron', serif; font-size: 10px; font-weight: 400; color: #ffffff; line-height: 1.6; margin-bottom: 16px; letter-spacing: 1px; padding-left: 19px; width: 299px; max-width: 100%; }
+    .footer-get-in-touch { font-family: 'Krona One', sans-serif; font-size: 14.17px; color: #ffffff; letter-spacing: 1.42px; margin-bottom: 10px; }
+    .footer-social { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+    .footer-social a { display: flex; align-items: center; justify-content: center; width: 26px; height: 31px; color: #fff; }
+    .footer-social a svg { width: 22px; height: 22px; }
     .footer-links { display: flex; flex-wrap: wrap; gap: 10px 14px; font-size: 12px; color: rgba(255,255,255,.9); margin-bottom: 14px; }
     .footer-links a { color: rgba(255,255,255,.9); }
     .copy { font-size: 11px; color: rgba(255,255,255,.55); border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; }
@@ -549,13 +558,15 @@
       ⚠️ Could not reach database. <button onclick="retryFetch()">Retry</button>
     </div>
 
-    <!-- SEARCH -->
+    <!-- SEARCH (Figma: 22px left, 33px height, 17px radius, 0.85px border, 6px gap to filter) -->
     <div class="search-wrap">
       <div class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
-        <input type="text" id="searchInput" placeholder="Search jerseys, clubs, countries…" />
-        <svg class="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v7a3 3 0 1 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M5 11a7 7 0 0 0 14 0"></path><path d="M12 18v4"></path><path d="M8 22h8"></path></svg>
+        <input type="text" id="searchInput" placeholder="Search..." />
       </div>
+      <button class="filter-btn-figma" aria-label="Filter" onclick="document.getElementById('filterTeam').focus()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg>
+      </button>
     </div>
 
     <!-- FILTERS -->
@@ -583,10 +594,22 @@
       </div>
     </section>
 
-    <!-- FOOTER -->
+    <!-- FOOTER (Figma spec: flat black, Krona One brand, Kameron desc, GET IN TOUCH + social icons) -->
     <footer class="footer">
-      <h4>JERSIFY</h4>
-      <p>Premium football jerseys, clubwear, and fan drops designed for people who want style on and off the pitch.</p>
+      <div class="footer-brand">JERSIFY</div>
+      <p>From iconic clubs and national teams to the latest-season kits, Jersify brings football jerseys closer to every fan. Our focus is on quality, comfort and authentic-looking designs at fan-friendly prices.</p>
+      <div class="footer-get-in-touch">GET IN TOUCH</div>
+      <div class="footer-social">
+        <a href="https://instagram.com" aria-label="Instagram" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="https://wa.me/" aria-label="WhatsApp" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </a>
+        <a href="mailto:jersify@gmail.com" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+        </a>
+      </div>
       <div class="footer-links">
         <a href="index.html">Home</a><a href="shop.html">Shop</a>
         <a href="checkout.html">Cart</a><a href="profile.html">Profile</a>
