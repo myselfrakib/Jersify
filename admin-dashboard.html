@@ -2546,6 +2546,15 @@
         </svg>
         Team Pages &amp; Logos
       </button>
+      <button class="nav-link" onclick="switchTab('meetteam',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+        Meet the Team
+      </button>
       <button class="nav-link" onclick="switchTab('siteconfig',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
@@ -2882,6 +2891,7 @@
                     <th>Product</th>
                     <th>Team</th>
                     <th>Type</th>
+                    <th>Category</th>
                     <th>Price</th>
                     <th>Stock by Size</th>
                     <th>Images</th>
@@ -2891,7 +2901,7 @@
                 </thead>
                 <tbody id="productsTable">
                   <tr>
-                    <td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td>
+                    <td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td>
                   </tr>
                 </tbody>
               </table>
@@ -2959,6 +2969,64 @@
                     <button class="btn btn-ghost" onclick="clearWowPicks()">Clear All</button>
                     <span style="font-size:11px;color:var(--muted);" id="wowPicksStatus"></span>
                   </div>
+                </div>
+              </div>
+
+              <!-- SHOP BY CATEGORY CARDS MEDIA -->
+              <div class="media-page-section">
+                <div class="media-section-title">🏷️ Shop By Category Card Images <span
+                    style="font-size:10px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(change images for RETRO, COMBO, HAMPER & EXTRAS on homepage)</span></div>
+                <div class="form-grid" style="gap:14px;">
+                  <div class="form-group">
+                    <label>RETRO Card Image</label>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                      <input type="url" id="cat_url_retro" class="form-input" placeholder="https://.../retro.jpg" style="flex:1;" />
+                      <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
+                        📁 Upload
+                        <input type="file" accept="image/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'categoryMedia', 'cat_url_retro', 'cat_preview_retro')" />
+                      </label>
+                    </div>
+                    <div style="margin-top:6px;"><img id="cat_preview_retro" style="height:60px;border-radius:6px;display:none;object-fit:cover;" /></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label>COMBO Card Image</label>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                      <input type="url" id="cat_url_combo" class="form-input" placeholder="https://.../combo.jpg" style="flex:1;" />
+                      <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
+                        📁 Upload
+                        <input type="file" accept="image/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'categoryMedia', 'cat_url_combo', 'cat_preview_combo')" />
+                      </label>
+                    </div>
+                    <div style="margin-top:6px;"><img id="cat_preview_combo" style="height:60px;border-radius:6px;display:none;object-fit:cover;" /></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label>HAMPER Card Image</label>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                      <input type="url" id="cat_url_hamper" class="form-input" placeholder="https://.../hamper.jpg" style="flex:1;" />
+                      <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
+                        📁 Upload
+                        <input type="file" accept="image/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'categoryMedia', 'cat_url_hamper', 'cat_preview_hamper')" />
+                      </label>
+                    </div>
+                    <div style="margin-top:6px;"><img id="cat_preview_hamper" style="height:60px;border-radius:6px;display:none;object-fit:cover;" /></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label>EXTRAS Card Image</label>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                      <input type="url" id="cat_url_extras" class="form-input" placeholder="https://.../extras.jpg" style="flex:1;" />
+                      <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
+                        📁 Upload
+                        <input type="file" accept="image/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'categoryMedia', 'cat_url_extras', 'cat_preview_extras')" />
+                      </label>
+                    </div>
+                    <div style="margin-top:6px;"><img id="cat_preview_extras" style="height:60px;border-radius:6px;display:none;object-fit:cover;" /></div>
+                  </div>
+                </div>
+                <div style="margin-top:14px;">
+                  <button class="btn btn-primary btn-sm" onclick="saveCategoryImages()">💾 Save Category Images</button>
                 </div>
               </div>
             </div>
@@ -3420,6 +3488,42 @@
           </div>
         </div>
 
+        <!-- ══ MEET THE TEAM TAB ══ -->
+        <div class="tab-pane" id="tab-meetteam">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <div class="card-title">👥 Meet the Team</div>
+                <div class="card-subtitle">Manage team members displayed in homepage footer ("Meet the Team")</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="openTeamMemberModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;margin-right:4px;">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Add Team Member
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Photo</th>
+                    <th>Name</th>
+                    <th>Designation / Role</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="teamMembersTable">
+                  <tr>
+                    <td colspan="4" style="text-align:center;padding:32px;color:var(--muted)">Loading…</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <!-- ══ ICONS & SITE ASSETS TAB ══ -->
         <div class="tab-pane" id="tab-siteconfig">
           <div class="card">
@@ -3675,6 +3779,17 @@
               <option>Special Edition</option>
               <option>Fan Kit</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="p_category">
+              <option value="Retro">Retro</option>
+              <option value="Combo">Combo</option>
+              <option value="Hamper">Hamper</option>
+              <option value="Extras">Extras</option>
+              <option value="Kit">Kit / Jersey</option>
+            </select>
+          </div>
           <div class="form-group">
             <label>Fan Version Price (₹) *</label>
             <input type="text" id="p_price" placeholder="1499" />
@@ -4313,6 +4428,45 @@
     </div>
   </div>
 
+  <!-- ══ TEAM MEMBER MODAL ══ -->
+  <div class="modal-overlay" id="teamMemberModal">
+    <div class="modal" style="width:min(480px,95vw)">
+      <div class="modal-header">
+        <div class="modal-title" id="teamMemberModalTitle">Add Team Member</div>
+        <button class="modal-close" onclick="closeModal('teamMemberModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid" style="gap:12px;">
+          <div class="form-group span-2">
+            <label>Member Name *</label>
+            <input type="text" id="tm_name" placeholder="e.g. Rakib Sk" />
+          </div>
+          <div class="form-group span-2">
+            <label>Designation / Role *</label>
+            <input type="text" id="tm_role" placeholder="e.g. Lead Developer / Designer / Founder" />
+          </div>
+          <div class="form-group span-2">
+            <label>Member Photo</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="url" id="tm_photo_url" class="form-input" placeholder="https://.../photo.jpg" style="flex:1;" />
+              <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
+                📁 Upload Photo
+                <input type="file" accept="image/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'teamMembers', 'tm_photo_url', 'tm_photo_preview')" />
+              </label>
+            </div>
+            <div style="margin-top:8px;">
+              <img id="tm_photo_preview" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--border);display:none;" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('teamMemberModal')">Cancel</button>
+        <button class="btn btn-primary" id="saveTeamMemberBtn" onclick="saveTeamMember()">Save Team Member</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast-wrap" id="toastWrap"></div>
 
   <script>
@@ -4348,7 +4502,7 @@
     }
 
     /* ─── TAB SWITCH ─── */
-    const TAB_TITLES = { products: 'Products / Kits', media: 'Index Media', orders: 'Orders', users: 'Users', coupons: 'Coupon Codes', reviews: 'Customer Reviews', credentials: 'Credentials Manager', pages: 'Page Settings', teams: 'Team Pages & Images', siteconfig: 'Icons & Site Assets', shiprocket: 'Shiprocket Shipping', support: 'Customer Support Chats', radar: 'Riaj Radar' };
+    const TAB_TITLES = { products: 'Products / Kits', media: 'Index Media', orders: 'Orders', users: 'Users', coupons: 'Coupon Codes', reviews: 'Customer Reviews', credentials: 'Credentials Manager', pages: 'Page Settings', teams: 'Team Pages & Images', meetteam: 'Meet the Team', siteconfig: 'Icons & Site Assets', shiprocket: 'Shiprocket Shipping', support: 'Customer Support Chats', radar: 'Riaj Radar' };
     function switchTab(name, el) {
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
       document.getElementById('tab-' + name).classList.add('active');
@@ -4358,7 +4512,7 @@
       closeSidebar();
       if (name === 'shiprocket') { srLoadConfig(); refreshShiprocketOverview(); }
       if (name === 'credentials') { loadCredentials(); }
-      if (name === 'media') { buildWowPicksUI(); }
+      if (name === 'media') { buildWowPicksUI(); loadCategoryImages(); }
       if (name === 'teams') { initTeamsTab(); }
       if (name === 'siteconfig') { loadSiteConfig(); }
       if (name === 'radar' && window.initRadarMap) { window.initRadarMap(); }
@@ -4429,6 +4583,8 @@
       listenCoupons();
       listenCol('reviews', renderReviews);
       listenSupport();
+      listenCol('meetTheTeam', renderTeamMembers);
+      loadCategoryImages();
       initPageSettings();
       if (typeof updateThemeUI === 'function') updateThemeUI(document.documentElement.classList.contains('dark-theme'));
     }
@@ -5056,7 +5212,7 @@
     function renderProducts(data) {
       _allProducts = data;
       const tbody = document.getElementById('productsTable');
-      if (!data.length) { tbody.innerHTML = emptyRow(8, 'No products yet'); return; }
+      if (!data.length) { tbody.innerHTML = emptyRow(9, 'No products yet'); return; }
       tbody.innerHTML = data.map(p => {
         const sz = p.sizes || {};
         const sizes = [['XS', sz.xs || 0], ['S', sz.s || 0], ['M', sz.m || 0], ['L', sz.l || 0], ['XL', sz.xl || 0], ['XXL', sz.xxl || 0]];
@@ -5069,6 +5225,7 @@
         const fanP = p.price ? `₹${p.price}` : '—';
         const playP = p.playerPrice ? `₹${p.playerPrice}` : (p.playerVersion ? '₹1999' : '');
         const priceDisplay = playP ? `<div style="font-weight:700">Fan: ${fanP}</div><div style="font-size:11px;color:var(--muted)">Player: ${playP}</div>` : `<strong>${fanP}</strong>`;
+        const catLabel = esc(p.category || 'Kit');
         return `<tr>
       <td data-label="Product"><div style="display:flex;align-items:center;gap:10px">
         ${imgs[0] ? `<img src="${imgs[0]}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid var(--border)" onerror="this.style.display='none'"/>` : `<div style="width:40px;height:40px;border-radius:8px;background:var(--surface3);display:grid;place-items:center;font-size:18px">👕</div>`}
@@ -5076,6 +5233,7 @@
       </div></td>
       <td data-label="Team">${esc(p.team || '—')}</td>
       <td data-label="Type"><span class="badge badge-gray">${esc(p.type || 'Kit')}</span>${p.playerVersion ? ' <span class="badge badge-red" style="font-size:9px;margin-left:4px">Player</span>' : ''}</td>
+      <td data-label="Category"><span class="badge badge-purple" style="font-size:10px">${catLabel}</span></td>
       <td data-label="Price">${priceDisplay}</td>
       <td data-label="Stock by Size"><div class="inline-stock-edit">${sizePills}${totalStock === 0 ? '<span class="badge badge-red" style="font-size:10px">Out of Stock</span>' : totalStock <= 5 ? `<span class="badge badge-orange" style="font-size:10px">Low</span>` : ''}</div></td>
       <td data-label="Images"><div style="display:flex;gap:3px">${imgs.slice(0, 5).map(u => `<div style="width:22px;height:22px;border-radius:4px;overflow:hidden;border:1px solid var(--border)"><img src="${u}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.style.background='var(--surface3)'"/></div>`).join('')}${imgs.length === 0 ? '<span style="font-size:11px;color:var(--muted)">—</span>' : ''}</div></td>
@@ -5092,6 +5250,7 @@
       _editId = data ? data.id : null;
       document.getElementById('productModalTitle').textContent = data ? 'Edit Product' : 'Add Product';
       setV('p_name', data?.name || ''); setV('p_team', data?.team || 'Argentina'); setV('p_type', data?.type || 'Home Kit');
+      setV('p_category', data?.category || 'Kit');
       document.getElementById('p_player_version').checked = !!data?.playerVersion;
       setV('p_price', data?.price || '');
       setV('p_player_price', data?.playerPrice || data?.playerVersionPrice || '');
@@ -5116,7 +5275,7 @@
         const playerUrls = await uploadSlotArray('pplayer', _pPlayerImgSlots, 'Player');
 
         const data = {
-          name, team: getV('p_team'), type: getV('p_type'), price: getV('p_price'),
+          name, team: getV('p_team'), type: getV('p_type'), category: getV('p_category') || 'Kit', price: getV('p_price'),
           playerPrice: getV('p_player_price'),
           description: getV('p_desc'),
           badge: getV('p_badge'), status: getV('p_status'),
@@ -5305,6 +5464,112 @@
           setV('sc_footer_desc', cfg.footerDesc || '');
         }
       } catch (e) { console.warn('Load site config error:', e); }
+    }
+
+    async function loadCategoryImages() {
+      try {
+        const { db, dbRef, get } = await waitFb();
+        const snap = await get(dbRef(db, 'settings/categoryImages'));
+        if (snap.exists()) {
+          const cfg = snap.val();
+          setV('cat_url_retro', cfg.retro || '');
+          if (cfg.retro) { const img = document.getElementById('cat_preview_retro'); if (img) { img.src = cfg.retro; img.style.display = 'block'; } }
+          setV('cat_url_combo', cfg.combo || '');
+          if (cfg.combo) { const img = document.getElementById('cat_preview_combo'); if (img) { img.src = cfg.combo; img.style.display = 'block'; } }
+          setV('cat_url_hamper', cfg.hamper || '');
+          if (cfg.hamper) { const img = document.getElementById('cat_preview_hamper'); if (img) { img.src = cfg.hamper; img.style.display = 'block'; } }
+          setV('cat_url_extras', cfg.extras || '');
+          if (cfg.extras) { const img = document.getElementById('cat_preview_extras'); if (img) { img.src = cfg.extras; img.style.display = 'block'; } }
+        }
+      } catch (e) { console.warn('Load category images error:', e); }
+    }
+
+    async function saveCategoryImages() {
+      const cfg = {
+        retro: getV('cat_url_retro'),
+        combo: getV('cat_url_combo'),
+        hamper: getV('cat_url_hamper'),
+        extras: getV('cat_url_extras'),
+        updatedAt: Date.now()
+      };
+      try {
+        const { db, dbRef, update } = await waitFb();
+        await update(dbRef(db, 'settings/categoryImages'), cfg);
+        toast('Category card images saved! 🏷️', 'success');
+      } catch (e) {
+        toast('Save failed: ' + e.message, 'error');
+      }
+    }
+
+    /* ═══════════════════════════════════════════════
+       MEET THE TEAM MANAGEMENT
+    ═══════════════════════════════════════════════ */
+    let _allTeamMembers = [];
+    let _editTeamMemberId = null;
+
+    function renderTeamMembers(data) {
+      _allTeamMembers = data;
+      const tbody = document.getElementById('teamMembersTable');
+      if (!tbody) return;
+      if (!data.length) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted)">No custom team members added. Homepage displays default team members.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = data.map(m => `
+        <tr>
+          <td data-label="Photo">
+            <img src="${m.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid var(--border)" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'" />
+          </td>
+          <td data-label="Name"><strong>${esc(m.name || '—')}</strong></td>
+          <td data-label="Designation"><span class="badge badge-blue">${esc(m.role || '—')}</span></td>
+          <td data-label="Actions">
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-ghost btn-sm" onclick="editTeamMember('${m.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteItem('meetTheTeam','${m.id}')">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openTeamMemberModal(data = null) {
+      _editTeamMemberId = data ? data.id : null;
+      document.getElementById('teamMemberModalTitle').textContent = data ? 'Edit Team Member' : 'Add Team Member';
+      setV('tm_name', data?.name || '');
+      setV('tm_role', data?.role || '');
+      setV('tm_photo_url', data?.photoUrl || '');
+      const img = document.getElementById('tm_photo_preview');
+      if (img) {
+        if (data?.photoUrl) { img.src = data.photoUrl; img.style.display = 'block'; }
+        else { img.style.display = 'none'; }
+      }
+      openModal('teamMemberModal');
+    }
+
+    function editTeamMember(id) {
+      const m = _allTeamMembers.find(x => x.id === id);
+      if (m) openTeamMemberModal(m);
+    }
+
+    async function saveTeamMember() {
+      const name = getV('tm_name');
+      const role = getV('tm_role');
+      if (!name || !role) { toast('Name and Designation are required', 'error'); return; }
+      const btn = document.getElementById('saveTeamMemberBtn');
+      btn.disabled = true; btn.textContent = 'Saving…';
+      try {
+        const data = {
+          name,
+          role,
+          photoUrl: getV('tm_photo_url'),
+          updatedAt: Date.now()
+        };
+        await saveDoc('meetTheTeam', data, _editTeamMemberId);
+        closeModal('teamMemberModal');
+        toast('Team member saved! 👥', 'success');
+        _editTeamMemberId = null;
+      } catch (err) { toast('Save failed: ' + err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = 'Save Team Member'; }
     }
 
     async function uploadAssetToFirebase(file, storageFolder, targetInputId, previewImgId = null) {

@@ -396,28 +396,28 @@
       <div class="category-grid-2col" id="categoryGrid">
         <!-- RETRO -->
         <div class="category-card-figma" onclick="window.location.href='shop.html?category=retro'">
-          <img src="https://images.unsplash.com/photo-1577223625816-7546f13df25d?q=80&w=600&auto=format&fit=crop" alt="Retro Jerseys" loading="lazy" />
+          <img id="cat_img_retro" src="https://images.unsplash.com/photo-1577223625816-7546f13df25d?q=80&w=600&auto=format&fit=crop" alt="Retro Jerseys" loading="lazy" />
           <div class="category-overlay-bar">
             <span class="category-overlay-title">RETRO</span>
           </div>
         </div>
         <!-- COMBO -->
         <div class="category-card-figma" onclick="window.location.href='shop.html?category=combo'">
-          <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop" alt="Combo Kits" loading="lazy" />
+          <img id="cat_img_combo" src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop" alt="Combo Kits" loading="lazy" />
           <div class="category-overlay-bar">
             <span class="category-overlay-title">COMBO</span>
           </div>
         </div>
         <!-- HAMPER -->
         <div class="category-card-figma" onclick="window.location.href='shop.html?category=hamper'">
-          <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=600&auto=format&fit=crop" alt="Gift Hampers" loading="lazy" />
+          <img id="cat_img_hamper" src="https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=600&auto=format&fit=crop" alt="Gift Hampers" loading="lazy" />
           <div class="category-overlay-bar">
             <span class="category-overlay-title">HAMPER</span>
           </div>
         </div>
         <!-- EXTRAS -->
         <div class="category-card-figma" onclick="window.location.href='shop.html?category=extras'">
-          <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=600&auto=format&fit=crop" alt="Extras" loading="lazy" />
+          <img id="cat_img_extras" src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=600&auto=format&fit=crop" alt="Extras" loading="lazy" />
           <div class="category-overlay-bar">
             <span class="category-overlay-title">EXTRAS</span>
           </div>
@@ -837,9 +837,46 @@
       }
     }
 
+    async function loadCategoryCardImages() {
+      try {
+        const snap = await get(ref(rtdb, "settings/categoryImages"));
+        if (snap.exists()) {
+          const cfg = snap.val();
+          if (cfg.retro) { const img = document.getElementById("cat_img_retro"); if (img) img.src = cfg.retro; }
+          if (cfg.combo) { const img = document.getElementById("cat_img_combo"); if (img) img.src = cfg.combo; }
+          if (cfg.hamper) { const img = document.getElementById("cat_img_hamper"); if (img) img.src = cfg.hamper; }
+          if (cfg.extras) { const img = document.getElementById("cat_img_extras"); if (img) img.src = cfg.extras; }
+        }
+      } catch (e) { console.warn("Category images load failed", e); }
+    }
+
+    async function loadMeetTheTeam() {
+      try {
+        const snap = await get(ref(rtdb, "meetTheTeam"));
+        if (snap.exists()) {
+          let members = [];
+          snap.forEach(d => { members.push({ id: d.key, ...d.val() }); });
+          if (members.length) {
+            const grid = document.getElementById("teamGrid");
+            if (grid) {
+              grid.innerHTML = members.map(m => `
+                <div class="team-member-card">
+                  <div class="team-member-avatar">
+                    <img src="${m.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'}" alt="${m.role || 'Member'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'" />
+                  </div>
+                  <div class="team-member-role">${m.role || 'Team Member'}</div>
+                  <div class="team-member-name">${m.name || 'Member'}</div>
+                </div>
+              `).join('');
+            }
+          }
+        }
+      } catch (e) { console.warn("Meet the team load failed", e); }
+    }
+
     async function init() {
       setProgress(10, "Connecting to Firebase…");
-      await Promise.allSettled([loadHeroes(), loadProducts(), loadIndexMedia(), loadSiteConfig()]);
+      await Promise.allSettled([loadHeroes(), loadProducts(), loadIndexMedia(), loadSiteConfig(), loadCategoryCardImages(), loadMeetTheTeam()]);
       clearTimeout(splashTimeout);
       revealPage();
     }

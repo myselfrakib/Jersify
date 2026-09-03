@@ -594,6 +594,13 @@
 
     <!-- FILTERS -->
     <section class="filters">
+      <select id="filterCategory">
+        <option value="">All Categories</option>
+        <option value="retro">Retro</option>
+        <option value="combo">Combo</option>
+        <option value="hamper">Hamper</option>
+        <option value="extras">Extras</option>
+      </select>
       <select id="filterTeam"><option value="">All Teams & Clubs</option></select>
       <select id="filterSize"><option value="">All Sizes</option><option value="xs">XS</option><option value="s">S</option><option value="m">M</option><option value="l">L</option><option value="xl">XL</option></select>
       <select id="filterPrice"><option value="">Any Price</option><option value="under1000">Under ₹1000</option><option value="1000to1500">₹1000 – ₹1500</option><option value="above1500">Above ₹1500</option></select>
@@ -1037,6 +1044,11 @@
       applyProducts(fetched);
       if (!isBackground) {
         const params = new URLSearchParams(window.location.search);
+        const catParam = params.get('category');
+        if (catParam) {
+          const catSel = document.getElementById('filterCategory');
+          if (catSel) catSel.value = catParam.toLowerCase();
+        }
         const pid    = params.get('product');
         if (pid) { const found = allProducts.find(p => p.id === pid); if (found) openProductPage(pid); }
       }
@@ -1089,6 +1101,7 @@
     function isActive(p) { return !p.status || p.status === 'active'; }
 
     function applyFiltersAndSort() {
+      const categoryFilter = (document.getElementById('filterCategory')?.value || '').toLowerCase();
       const teamFilter  = document.getElementById('filterTeam').value.toLowerCase();
       const sizeFilter  = document.getElementById('filterSize').value.toLowerCase();
       const priceFilter = document.getElementById('filterPrice').value;
@@ -1097,6 +1110,16 @@
 
       let filtered = allProducts.filter(({ data: p }) => {
         if (!isActive(p)) return false;
+        if (categoryFilter) {
+          const pCat = (p.category || '').toLowerCase();
+          const matchesExplicit = pCat === categoryFilter;
+          const matchesFallback = !pCat && (
+            (p.name || '').toLowerCase().includes(categoryFilter) ||
+            (p.type || '').toLowerCase().includes(categoryFilter) ||
+            (p.badge || '').toLowerCase().includes(categoryFilter)
+          );
+          if (!matchesExplicit && !matchesFallback) return false;
+        }
         if (teamFilter) {
           const pt = (Array.isArray(p.team) ? p.team.join(' ') : (p.team || '')).toLowerCase();
           if (!pt.includes(teamFilter)) return false;
@@ -1129,6 +1152,16 @@
       const viewAllWrap = document.getElementById('viewAllWrap');
       const countEl     = document.getElementById('productCount');
       if (!container) return;
+
+      const headingEl = document.querySelector('.products-header h3');
+      if (headingEl) {
+        const categoryFilter = (document.getElementById('filterCategory')?.value || '').toLowerCase();
+        if (categoryFilter === 'retro') headingEl.textContent = 'Retro Jerseys';
+        else if (categoryFilter === 'combo') headingEl.textContent = 'Combo Kits';
+        else if (categoryFilter === 'hamper') headingEl.textContent = 'Gift Hampers';
+        else if (categoryFilter === 'extras') headingEl.textContent = 'Extras & Accessories';
+        else headingEl.textContent = 'All Products';
+      }
 
       const filtered = applyFiltersAndSort();
       countEl.textContent = filtered.length ? `${filtered.length} item${filtered.length !== 1 ? 's' : ''}` : '';
@@ -1756,7 +1789,7 @@
       await loadProducts(false);
       startBackgroundRefresh();
 
-      ['filterTeam','filterSize','filterPrice','filterSort'].forEach(fid => {
+      ['filterCategory','filterTeam','filterSize','filterPrice','filterSort'].forEach(fid => {
         document.getElementById(fid).addEventListener('change', () => { showAll = false; renderProducts(); });
       });
       let timer;
