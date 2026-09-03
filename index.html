@@ -743,7 +743,7 @@
         }
 
         const featuredItems = products.slice(0, 2);
-        const remainingItems= products.slice(2, 8);
+        const remainingItems= products.slice(2, 16);
 
         if (featuredItems.length) {
           featuredGrid.innerHTML = featuredItems.map(p => createCard(p)).join("");
@@ -752,8 +752,11 @@
         }
 
         if (remainingItems.length) {
-          moreGrid.innerHTML = remainingItems.map(p => createCard(p)).join("");
-        } else if (products.length <= 4) {
+          moreGrid.innerHTML = remainingItems.map(p => createCard(p)).join("") + `
+            <div style="grid-column: span 2; text-align: center; margin-top: 14px; margin-bottom: 10px;">
+              <button class="shop-now-btn" onclick="window.location.href='shop.html'" style="max-width:220px;margin:0 auto;display:block;">VIEW ALL PRODUCTS</button>
+            </div>`;
+        } else if (products.length <= 2) {
           moreGrid.style.display = "none";
         }
       } catch (e) {
