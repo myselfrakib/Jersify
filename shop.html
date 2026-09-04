@@ -1006,8 +1006,13 @@
     /* ══════════════════════════════════════════
        FETCH PRODUCTS
     ══════════════════════════════════════════ */
+    /* ── localStorage product cache key ── */
+    const CACHE_KEY     = 'jersify_products_v1';
+    const CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
+
     async function fetchViaREST() {
-      const res  = await fetch(RTDB_REST, { cache: 'no-store' });
+      // Use default cache so the browser can leverage HTTP caching (ETags/Last-Modified)
+      const res  = await fetch(RTDB_REST, { cache: 'default' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (!data || typeof data !== 'object') return [];
@@ -1021,6 +1026,24 @@
       return list;
     }
 
+    /** Save fetched products to localStorage so next visit is instant */
+    function saveProductsToCache(products) {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: products }));
+      } catch(e) { /* quota exceeded — skip silently */ }
+    }
+
+    /** Return cached products if they exist and are fresh enough, else null */
+    function loadProductsFromCache() {
+      try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        const { ts, data } = JSON.parse(raw);
+        if (Date.now() - ts > CACHE_MAX_AGE) return null; // stale
+        return data;
+      } catch(e) { return null; }
+    }
+
     function applyProducts(fresh) {
       if (fresh.length === 0 && allProducts.length > 0) return;
       allProducts = fresh;
@@ -1031,17 +1054,33 @@
     }
 
     async function loadProducts(isBackground = false) {
-      if (!isBackground) showSkeletons();
+      /* ── Step 1: Show cached data instantly (zero-wait for returning users) ── */
+      if (!isBackground) {
+        const cached = loadProductsFromCache();
+        if (cached && cached.length > 0) {
+          applyProducts(cached);
+          // Don't show skeletons — cached data renders immediately.
+          // Still fetch fresh data quietly in the background below.
+        } else {
+          showSkeletons();
+        }
+      }
+
+      /* ── Step 2: Fetch fresh data from network ── */
       let fetched = null;
       try { fetched = await fetchViaREST(); } catch(e) { console.warn('[Jersify] REST fail:', e.message); }
       if (fetched === null) {
         try { fetched = await fetchViaSDK(); } catch(e) { console.warn('[Jersify] SDK fail:', e.message); }
       }
       if (fetched === null) {
-        if (!isBackground) { showError(); document.getElementById('retryBanner').classList.remove('hidden'); }
+        if (!isBackground && allProducts.length === 0) { showError(); document.getElementById('retryBanner').classList.remove('hidden'); }
         return;
       }
+
+      /* ── Step 3: Update cache + UI ── */
+      saveProductsToCache(fetched);
       applyProducts(fetched);
+
       if (!isBackground) {
         const params = new URLSearchParams(window.location.search);
         const catParam = params.get('category');
@@ -1185,14 +1224,21 @@
         const imgCount = imgs.length;
         const badgeText = p.badge || (isNew ? 'New' : '');
 
+        // First 2 cards load eagerly with high fetch priority (above-the-fold LCP)
+        const isAboveFold   = i < 2;
+        const loadingAttr   = isAboveFold ? 'eager' : 'lazy';
+        const priorityAttr  = i === 0 ? 'fetchpriority="high"' : '';
+        // Cap stagger delay so late cards don\'t hide already-loaded images
+        const animDelay     = Math.min(i * 0.05, 0.25);
+
         return `
-          <article class="product" style="animation-delay:${i * 0.07}s" onclick="openProductPage('${id}')">
+          <article class="product" style="animation-delay:${animDelay}s" onclick="openProductPage('${id}')">
             <div class="img">
               ${p.playerVersion ? `<span style="position:absolute;top:6px;left:6px;background:var(--accent);color:#fff;font-size:8px;font-weight:800;padding:2px 5px;border-radius:3px;z-index:2;letter-spacing:0.5px;text-transform:uppercase;box-shadow:0 2px 4px rgba(0,0,0,0.2);">Player</span>` : ''}
               ${badgeText ? `<span class="badge">${badgeText}</span>` : ''}
               ${imgCount > 1 ? `<span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;z-index:2;backdrop-filter:blur(4px)">📷 ${imgCount}</span>` : ''}
               ${primary
-                ? `<div class="img-skeleton"><svg class="skel-icon" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="4"/><circle cx="8" cy="8" r="2"/><path d="M2 14l5-5 4 4 3-3 8 8"/></svg></div><img src="${primary}" alt="${p.name || 'Jersey'}" loading="lazy" decoding="async" onload="this.classList.add('loaded');this.previousElementSibling.classList.add('hidden')"/>`
+                ? `<div class="img-skeleton"><svg class="skel-icon" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="4"/><circle cx="8" cy="8" r="2"/><path d="M2 14l5-5 4 4 3-3 8 8"/></svg></div><img src="${primary}" alt="${p.name || 'Jersey'}" loading="${loadingAttr}" ${priorityAttr} decoding="async" onload="this.classList.add('loaded');this.previousElementSibling.classList.add('hidden')"/>`
                 : `<div class="jersey-card"><div><strong>${p.number || '10'}</strong><small>${(p.type || 'KIT').toUpperCase()}</small></div></div>`}
             </div>
             <div class="product-info">
