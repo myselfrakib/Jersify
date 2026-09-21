@@ -370,6 +370,9 @@
       </div>
     </section>
 
+    <!-- PRODUCTS BEFORE CLUBS SECTION -->
+    <section class="product-grid-2col" id="beforeClubsProductsGrid" style="display:none;"></section>
+
     <!-- SHOP BY CLUBS SECTION -->
     <section>
       <h2 class="title-ubuntu-bold">SHOP BY CLUBS</h2>
@@ -548,24 +551,27 @@
     const splashTimeout = setTimeout(revealPage, 5000);
 
     /* CLUB BADGES POPULATE */
-    (() => {
-      const clubs = [
-        { name: "Barcelona",  id: "barcelona",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab" },
-        { name: "Real Madrid", id: "real-madrid", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b" },
-        { name: "Arsenal",    id: "arsenal",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee" },
-        { name: "Man City",   id: "man-city",    img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7" },
-        { name: "Man Utd",    id: "man-utd",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b" },
-        { name: "Chelsea",    id: "chelsea",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a" },
-        { name: "PSG",        id: "psg",         img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6" },
-        { name: "Liverpool",  id: "liverpool",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9" }
-      ];
+    const DEFAULT_INDEX_CLUBS = [
+      { name: "Barcelona",  id: "barcelona",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab" },
+      { name: "Real Madrid", id: "real-madrid", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b" },
+      { name: "Arsenal",    id: "arsenal",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee" },
+      { name: "Man City",   id: "man-city",    img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7" },
+      { name: "Man Utd",    id: "man-utd",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b" },
+      { name: "Chelsea",    id: "chelsea",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a" },
+      { name: "PSG",        id: "psg",         img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6" },
+      { name: "Liverpool",  id: "liverpool",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9" }
+    ];
+    window.renderClubBadges = function(list) {
+      const clubs = (Array.isArray(list) && list.length) ? list : DEFAULT_INDEX_CLUBS;
       const row = document.getElementById("clubsRow");
+      if (!row) return;
       row.innerHTML = clubs.map(c => `
-        <div class="club-badge-circle" onclick="window.location.href='team.html?id=${c.id}'" title="${c.name}">
-          <img src="${c.img}" alt="${c.name}" loading="lazy" />
+        <div class="club-badge-circle" onclick="window.location.href='team.html?id=${c.id}'" title="${c.name || ''}">
+          <img src="${c.img}" alt="${c.name || ''}" loading="lazy" />
         </div>
       `).join("");
-    })();
+    };
+    window.renderClubBadges(DEFAULT_INDEX_CLUBS);
 
     /* HERO CAROUSEL INTERACTION & SWIPE */
     let heroIndex = 0, heroTimer, heroTotal = 0;
@@ -716,17 +722,40 @@
       } catch (e) { console.warn("Hero fetch failed", e); }
     }
 
-    /* PRODUCTS LOAD (Render into Figma 2-col grids) */
+    /* CLUBS CONFIG LOAD */
+    async function loadClubsConfig() {
+      try {
+        const snap = await get(ref(rtdb, "settings/indexPageConfig/clubs"));
+        if (snap.exists()) {
+          const list = snap.val();
+          if (Array.isArray(list) && list.length && typeof window.renderClubBadges === 'function') {
+            window.renderClubBadges(list);
+          }
+        }
+      } catch (e) {
+        console.warn("Clubs config load failed", e);
+      }
+    }
+
+    /* PRODUCTS LOAD (Render based on Index Page Configuration or defaults) */
     async function loadProducts() {
       setProgress(50, "Loading Jerseys…");
-      const featuredGrid = document.getElementById("featuredProductsGrid");
-      const moreGrid     = document.getElementById("moreProductsGrid");
+      const beforeClubsGrid = document.getElementById("beforeClubsProductsGrid");
+      const featuredGrid    = document.getElementById("featuredProductsGrid");
+      const moreGrid        = document.getElementById("moreProductsGrid");
       try {
-        const snap = await get(ref(rtdb, "products"));
+        const [snap, cfgSnap] = await Promise.all([
+          get(ref(rtdb, "products")),
+          get(ref(rtdb, "settings/indexPageConfig"))
+        ]);
+
         if (!snap.exists()) {
-          featuredGrid.innerHTML = moreGrid.innerHTML = `<div style="padding:20px;grid-column:span 2;text-align:center;color:#888;">No jerseys listed.</div>`;
+          if (beforeClubsGrid) beforeClubsGrid.style.display = "none";
+          if (featuredGrid) featuredGrid.innerHTML = `<div style="padding:20px;grid-column:span 2;text-align:center;color:#888;">No jerseys listed.</div>`;
+          if (moreGrid) moreGrid.innerHTML = `<div style="padding:20px;grid-column:span 2;text-align:center;color:#888;">No jerseys listed.</div>`;
           return;
         }
+
         let products = [];
         snap.forEach(d => { const p = d.val(); p._id = d.key; if (!p.status || p.status === "active") products.push(p); });
 
@@ -747,23 +776,75 @@
           `;
         }
 
-        const featuredItems = products.slice(0, 2);
-        const remainingItems= products.slice(2, 16);
+        const cfg = cfgSnap.exists() ? cfgSnap.val() : null;
+        const beforeIds = cfg && Array.isArray(cfg.beforeClubsProductIds) ? cfg.beforeClubsProductIds.filter(Boolean) : [];
+        const bottom10Ids = cfg && Array.isArray(cfg.bottom10ProductIds) ? cfg.bottom10ProductIds : [];
 
-        if (featuredItems.length) {
-          featuredGrid.innerHTML = featuredItems.map(p => createCard(p)).join("");
-        } else {
-          featuredGrid.innerHTML = `<div style="padding:20px;grid-column:span 2;text-align:center;color:#888;">No featured jerseys available.</div>`;
+        // 1. PRODUCTS BEFORE CLUBS
+        let beforeItems = [];
+        if (beforeIds.length > 0) {
+          beforeIds.forEach(id => {
+            const p = products.find(x => x._id === id);
+            if (p && !beforeItems.includes(p)) beforeItems.push(p);
+          });
         }
 
-        if (remainingItems.length) {
-          moreGrid.innerHTML = remainingItems.map(p => createCard(p)).join("") + `
+        if (beforeItems.length > 0 && beforeClubsGrid) {
+          beforeClubsGrid.innerHTML = beforeItems.map(p => createCard(p)).join("");
+          beforeClubsGrid.style.display = "grid";
+          if (featuredGrid) featuredGrid.style.display = "none";
+        } else {
+          if (beforeClubsGrid) beforeClubsGrid.style.display = "none";
+          const featuredItems = products.slice(0, 2);
+          if (featuredGrid) {
+            featuredGrid.style.display = "grid";
+            featuredGrid.innerHTML = featuredItems.length
+              ? featuredItems.map(p => createCard(p)).join("")
+              : `<div style="padding:20px;grid-column:span 2;text-align:center;color:#888;">No featured jerseys available.</div>`;
+          }
+        }
+
+        // 2. 10 SEQUENCED PRODUCTS BEFORE VIEW ALL PRODUCTS
+        let final10 = [];
+        const usedIds = new Set(beforeItems.map(p => p._id));
+
+        if (bottom10Ids.length > 0 && bottom10Ids.some(Boolean)) {
+          // Add configured products in the exact selected sequence
+          bottom10Ids.forEach(id => {
+            if (id) {
+              const p = products.find(x => x._id === id);
+              if (p && !final10.includes(p)) {
+                final10.push(p);
+                usedIds.add(p._id);
+              }
+            }
+          });
+          // Backfill up to 10 with remaining active jerseys
+          if (final10.length < 10) {
+            for (let p of products) {
+              if (final10.length >= 10) break;
+              if (!usedIds.has(p._id)) {
+                final10.push(p);
+                usedIds.add(p._id);
+              }
+            }
+          }
+        } else {
+          // Default: 10 products starting after featured items
+          const pool = products.filter(p => !usedIds.has(p._id));
+          final10 = pool.slice(beforeItems.length > 0 ? 0 : 2, beforeItems.length > 0 ? 10 : 12);
+        }
+
+        if (final10.length && moreGrid) {
+          moreGrid.style.display = "grid";
+          moreGrid.innerHTML = final10.map(p => createCard(p)).join("") + `
             <div style="grid-column: span 2; text-align: center; margin-top: 14px; margin-bottom: 10px;">
               <button class="shop-now-btn" onclick="window.location.href='shop.html'" style="max-width:220px;margin:0 auto;display:block;">VIEW ALL PRODUCTS</button>
             </div>`;
-        } else if (products.length <= 2) {
+        } else if (moreGrid) {
           moreGrid.style.display = "none";
         }
+
       } catch (e) {
         console.error("Products load failed", e);
       }
@@ -884,7 +965,7 @@
 
     async function init() {
       setProgress(10, "Connecting to Firebase…");
-      await Promise.allSettled([loadHeroes(), loadProducts(), loadIndexMedia(), loadSiteConfig(), loadCategoryCardImages(), loadMeetTheTeam()]);
+      await Promise.allSettled([loadHeroes(), loadClubsConfig(), loadProducts(), loadIndexMedia(), loadSiteConfig(), loadCategoryCardImages(), loadMeetTheTeam()]);
       clearTimeout(splashTimeout);
       revealPage();
     }

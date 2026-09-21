@@ -2442,6 +2442,13 @@
       </div>
 
       <div class="nav-section-label">Content</div>
+      <button class="nav-link" onclick="switchTab('indexpage',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        Index Page
+      </button>
       <button class="nav-link" onclick="switchTab('products',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
@@ -3027,6 +3034,115 @@
                 </div>
                 <div style="margin-top:14px;">
                   <button class="btn btn-primary btn-sm" onclick="saveCategoryImages()">💾 Save Category Images</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ INDEX PAGE MANAGER TAB ══ -->
+        <div class="tab-pane" id="tab-indexpage">
+          <div class="card" style="margin-bottom:20px;">
+            <div class="card-header" style="flex-wrap:wrap;gap:12px;">
+              <div class="card-header-left">
+                <div class="card-title">🏠 Index Page Management</div>
+                <div class="card-subtitle">Manage products before clubs, club crest icons, and the 10 sequenced products before "View All Products"</div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <button class="btn btn-ghost btn-sm" onclick="window.open('index.html','_blank')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:4px;">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                  Preview Homepage
+                </button>
+                <button class="btn btn-ghost btn-sm" onclick="resetIndexPageDefaults()">↺ Reset Defaults</button>
+                <button class="btn btn-primary btn-sm" onclick="saveIndexPageConfig()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;margin-right:4px;">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                  </svg>
+                  💾 Save All Settings
+                </button>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <!-- SECTION 1: PRODUCTS BEFORE CLUBS -->
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:24px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                  <div>
+                    <div style="font-weight:700;font-size:15px;color:var(--text);display:flex;align-items:center;gap:8px;">
+                      <span>1️⃣</span> Products Displayed Before "Shop by Clubs"
+                    </div>
+                    <div style="font-size:12px;color:var(--muted);margin-top:2px;">
+                      Choose which jerseys appear at the top of the homepage before the club crest carousel (renders in 2-column grid).
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:8px;">
+                    <button class="btn btn-ghost btn-sm" onclick="addBeforeClubsSlot()">+ Add Slot</button>
+                    <button class="btn btn-ghost btn-sm" onclick="clearBeforeClubsSlots()">Clear Slots</button>
+                  </div>
+                </div>
+
+                <div id="beforeClubsSlotsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;">
+                  <!-- Populated by JS -->
+                  <div style="padding:20px;color:var(--muted);font-size:13px;grid-column:1/-1;">Loading slots…</div>
+                </div>
+              </div>
+
+              <!-- SECTION 2: SHOP BY CLUBS ICONS & LOGOS -->
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:24px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                  <div>
+                    <div style="font-weight:700;font-size:15px;color:var(--text);display:flex;align-items:center;gap:8px;">
+                      <span>2️⃣</span> Shop by Clubs — Crest Icons &amp; Logos
+                    </div>
+                    <div style="font-size:12px;color:var(--muted);margin-top:2px;">
+                      Change the circular crest icons and logos for the clubs shown in the horizontal scroll row. You can upload an icon file or paste an image URL.
+                    </div>
+                  </div>
+                  <button class="btn btn-ghost btn-sm" onclick="resetClubIconsToDefault()">↺ Reset Club Icons</button>
+                </div>
+
+                <div id="clubsConfigGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;">
+                  <!-- Populated by JS -->
+                  <div style="padding:20px;color:var(--muted);font-size:13px;grid-column:1/-1;">Loading clubs…</div>
+                </div>
+              </div>
+
+              <!-- SECTION 3: 10 SEQUENCED PRODUCTS BEFORE VIEW ALL PRODUCTS -->
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:24px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                  <div>
+                    <div style="font-weight:700;font-size:15px;color:var(--text);display:flex;align-items:center;gap:8px;">
+                      <span>3️⃣</span> Sequence of 10 Products (Before "View All Products")
+                    </div>
+                    <div style="font-size:12px;color:var(--muted);margin-top:2px;">
+                      Select and order the exact 10 jerseys displayed in the bottom grid right before the "VIEW ALL PRODUCTS" button. Use ▲ and ▼ to reorder.
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-ghost btn-sm" onclick="autoFillBottom10Products()">⚡ Auto-fill 10 Active Products</button>
+                    <button class="btn btn-ghost btn-sm" onclick="clearBottom10Products()">Clear All</button>
+                  </div>
+                </div>
+
+                <div id="bottom10SlotsList" style="display:flex;flex-direction:column;gap:10px;">
+                  <!-- 10 sequenced slots populated by JS -->
+                  <div style="padding:20px;color:var(--muted);font-size:13px;">Loading 10 product slots…</div>
+                </div>
+              </div>
+
+              <!-- BOTTOM SAVE BAR -->
+              <div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--border);flex-wrap:wrap;gap:12px;">
+                <div id="indexPageSaveStatus" style="font-size:13px;color:var(--muted);font-weight:500;"></div>
+                <div style="display:flex;gap:10px;">
+                  <button class="btn btn-primary" style="padding:10px 24px;font-size:14px;" onclick="saveIndexPageConfig()">
+                    💾 Save All Index Page Settings
+                  </button>
                 </div>
               </div>
             </div>
@@ -4505,7 +4621,7 @@
     }
 
     /* ─── TAB SWITCH ─── */
-    const TAB_TITLES = { products: 'Products / Kits', media: 'Index Media', orders: 'Orders', users: 'Users', coupons: 'Coupon Codes', reviews: 'Customer Reviews', credentials: 'Credentials Manager', pages: 'Page Settings', teams: 'Team Pages & Images', meetteam: 'Meet the Team', siteconfig: 'Icons & Site Assets', shiprocket: 'Shiprocket Shipping', support: 'Customer Support Chats', radar: 'Riaj Radar' };
+    const TAB_TITLES = { indexpage: 'Index Page Management', products: 'Products / Kits', media: 'Index Media', orders: 'Orders', users: 'Users', coupons: 'Coupon Codes', reviews: 'Customer Reviews', credentials: 'Credentials Manager', pages: 'Page Settings', teams: 'Team Pages & Images', meetteam: 'Meet the Team', siteconfig: 'Icons & Site Assets', shiprocket: 'Shiprocket Shipping', support: 'Customer Support Chats', radar: 'Riaj Radar' };
     function switchTab(name, el) {
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
       document.getElementById('tab-' + name).classList.add('active');
@@ -4513,6 +4629,7 @@
       document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
       if (el) el.classList.add('active');
       closeSidebar();
+      if (name === 'indexpage') { initIndexPageTab(); }
       if (name === 'shiprocket') { srLoadConfig(); refreshShiprocketOverview(); }
       if (name === 'credentials') { loadCredentials(); }
       if (name === 'media') { buildWowPicksUI(); loadCategoryImages(); }
@@ -5502,6 +5619,334 @@
       } catch (e) {
         toast('Save failed: ' + e.message, 'error');
       }
+    }
+
+    /* ═══════════════════════════════════════════════
+       INDEX PAGE MANAGER
+    ═══════════════════════════════════════════════ */
+    const DEFAULT_INDEX_CLUBS = [
+      { name: "Barcelona",   id: "barcelona",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3654.PNG?alt=media&token=37bd457b-2dbf-4bcc-aa09-7321910532ab" },
+      { name: "Real Madrid", id: "real-madrid", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3655.PNG?alt=media&token=26d03bfd-4d7f-48cc-89ed-cffdd7374a5b" },
+      { name: "Arsenal",     id: "arsenal",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3660.PNG?alt=media&token=8c170800-ec6b-421f-94ba-f15dc50a0bee" },
+      { name: "Man City",    id: "man-city",    img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fmanchestar.PNG?alt=media&token=4b7fe8f5-b314-4ebe-892f-ccdab713b3d7" },
+      { name: "Man Utd",     id: "man-utd",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b" },
+      { name: "Chelsea",     id: "chelsea",     img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a" },
+      { name: "PSG",         id: "psg",         img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6" },
+      { name: "Liverpool",   id: "liverpool",   img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9" }
+    ];
+
+    let _indexPageConfig = {
+      beforeClubsProductIds: ['', ''],
+      clubs: JSON.parse(JSON.stringify(DEFAULT_INDEX_CLUBS)),
+      bottom10ProductIds: Array(10).fill('')
+    };
+
+    async function initIndexPageTab() {
+      try {
+        const { db, dbRef, get } = await waitFb();
+        if (!_allProducts || !_allProducts.length) {
+          const snap = await get(dbRef(db, 'products'));
+          if (snap.exists()) {
+            const list = [];
+            snap.forEach(d => list.push({ id: d.key, ...d.val() }));
+            _allProducts = list;
+          }
+        }
+
+        const cfgSnap = await get(dbRef(db, 'settings/indexPageConfig'));
+        if (cfgSnap.exists()) {
+          const c = cfgSnap.val();
+          _indexPageConfig.beforeClubsProductIds = Array.isArray(c.beforeClubsProductIds) && c.beforeClubsProductIds.length ? c.beforeClubsProductIds : ['', ''];
+          _indexPageConfig.clubs = (Array.isArray(c.clubs) && c.clubs.length) ? c.clubs : JSON.parse(JSON.stringify(DEFAULT_INDEX_CLUBS));
+          _indexPageConfig.bottom10ProductIds = Array.isArray(c.bottom10ProductIds) ? c.bottom10ProductIds : [];
+        } else {
+          // Initial defaults from active products
+          const activeProds = (_allProducts || []).filter(p => !p.status || p.status === 'active');
+          _indexPageConfig.beforeClubsProductIds = activeProds.slice(0, 2).map(p => p.id);
+          while (_indexPageConfig.beforeClubsProductIds.length < 2) _indexPageConfig.beforeClubsProductIds.push('');
+          _indexPageConfig.clubs = JSON.parse(JSON.stringify(DEFAULT_INDEX_CLUBS));
+          _indexPageConfig.bottom10ProductIds = activeProds.slice(2, 12).map(p => p.id);
+        }
+      } catch (e) {
+        console.warn('Could not load indexPageConfig:', e);
+      }
+
+      while (_indexPageConfig.bottom10ProductIds.length < 10) {
+        _indexPageConfig.bottom10ProductIds.push('');
+      }
+
+      renderBeforeClubsSlots();
+      renderClubsConfig();
+      renderBottom10Slots();
+    }
+
+    function getActiveProductsList() {
+      return (_allProducts || []).filter(p => !p.status || p.status === 'active');
+    }
+
+    function buildProductOptions(selectedId) {
+      const active = getActiveProductsList();
+      let html = '<option value="">-- No Jersey Selected --</option>';
+      active.forEach(p => {
+        const teamLabel = p.team ? ` [${p.team}]` : '';
+        const priceLabel = p.price ? ` — ₹${p.price}` : '';
+        const sel = p.id === selectedId ? ' selected' : '';
+        html += `<option value="${p.id}"${sel}>${esc(p.name || 'Untitled')}${esc(teamLabel)}${priceLabel}</option>`;
+      });
+      return html;
+    }
+
+    /* ── 1. PRODUCTS BEFORE CLUBS ── */
+    function renderBeforeClubsSlots() {
+      const grid = document.getElementById('beforeClubsSlotsGrid');
+      if (!grid) return;
+      const ids = _indexPageConfig.beforeClubsProductIds || [];
+      if (!ids.length) {
+        ids.push(''); ids.push('');
+      }
+
+      grid.innerHTML = ids.map((id, idx) => {
+        const prod = (_allProducts || []).find(p => p.id === id);
+        const img = prod ? (prod.imgUrl || (prod.images && prod.images[0]) || 'favicon.png') : '';
+        return `
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-weight:700;font-size:13px;color:var(--text);">Slot #${idx + 1}</span>
+              ${ids.length > 2 ? `<button class="btn btn-ghost btn-sm" onclick="removeBeforeClubsSlot(${idx})" style="color:var(--danger);padding:2px 6px;font-size:11px;">✕ Remove</button>` : ''}
+            </div>
+            <select class="form-input" onchange="onBeforeClubsSlotChange(${idx}, this.value)" style="font-size:13px;">
+              ${buildProductOptions(id)}
+            </select>
+            <div id="beforeClubsPreview_${idx}" style="display:flex;align-items:center;gap:10px;min-height:50px;background:var(--surface2);border-radius:6px;padding:6px 10px;border:1px dashed var(--border);">
+              ${prod ? `
+                <img src="${img}" style="width:44px;height:44px;object-fit:cover;border-radius:4px;flex-shrink:0;border:1px solid var(--border);" onerror="this.style.display='none'" />
+                <div style="overflow:hidden;">
+                  <div style="font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(prod.name || '')}</div>
+                  <div style="font-size:11px;color:var(--muted);">${prod.price ? '₹ ' + prod.price : ''} ${prod.team ? '• ' + esc(prod.team) : ''}</div>
+                </div>
+              ` : `<div style="font-size:11px;color:var(--muted);font-style:italic;">No jersey selected for this slot</div>`}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function onBeforeClubsSlotChange(index, newId) {
+      _indexPageConfig.beforeClubsProductIds[index] = newId;
+      renderBeforeClubsSlots();
+    }
+
+    function addBeforeClubsSlot() {
+      if ((_indexPageConfig.beforeClubsProductIds || []).length >= 6) {
+        toast('Maximum 6 slots before clubs allowed', 'info');
+        return;
+      }
+      _indexPageConfig.beforeClubsProductIds.push('');
+      renderBeforeClubsSlots();
+    }
+
+    function removeBeforeClubsSlot(index) {
+      _indexPageConfig.beforeClubsProductIds.splice(index, 1);
+      renderBeforeClubsSlots();
+    }
+
+    function clearBeforeClubsSlots() {
+      _indexPageConfig.beforeClubsProductIds = ['', ''];
+      renderBeforeClubsSlots();
+    }
+
+    /* ── 2. SHOP BY CLUBS ICONS ── */
+    function renderClubsConfig() {
+      const grid = document.getElementById('clubsConfigGrid');
+      if (!grid) return;
+      const clubs = _indexPageConfig.clubs || DEFAULT_INDEX_CLUBS;
+
+      grid.innerHTML = clubs.map((c, idx) => `
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:61px;height:61px;border-radius:50%;background:#ffffff;border:1.5px solid #ffffff;box-shadow:0 4px 10px rgba(0,0,0,0.15);filter:drop-shadow(0 2px 5px rgba(0,0,0,0.12));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+              <img id="club_preview_${idx}" src="${c.img}" alt="${esc(c.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.src='favicon.png'" />
+            </div>
+            <div style="flex:1;overflow:hidden;">
+              <div style="font-weight:700;font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(c.name)}</div>
+              <div style="display:inline-block;font-size:10px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:2px 6px;border-radius:4px;margin-top:4px;">
+                team.html?id=${esc(c.id)}
+              </div>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px;">Crest Icon Image URL</label>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <input type="url" id="club_url_${idx}" class="form-input" value="${esc(c.img || '')}" placeholder="https://.../club-logo.png" style="flex:1;font-size:12px;" oninput="updateClubIconPreview(${idx}, this.value)" />
+              <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;font-size:11px;padding:6px 10px;">
+                📁 Upload
+                <input type="file" accept="image/*" style="display:none;" onchange="uploadClubIconFile(this.files[0], ${idx})" />
+              </label>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateClubIconPreview(idx, val) {
+      if (_indexPageConfig.clubs && _indexPageConfig.clubs[idx]) {
+        _indexPageConfig.clubs[idx].img = val;
+      }
+      const img = document.getElementById(`club_preview_${idx}`);
+      if (img) img.src = val || 'favicon.png';
+    }
+
+    async function uploadClubIconFile(file, idx) {
+      if (!file) return;
+      await uploadAssetToFirebase(file, 'clubIcons', `club_url_${idx}`, `club_preview_${idx}`);
+      const input = document.getElementById(`club_url_${idx}`);
+      if (input && _indexPageConfig.clubs && _indexPageConfig.clubs[idx]) {
+        _indexPageConfig.clubs[idx].img = input.value;
+      }
+    }
+
+    function resetClubIconsToDefault() {
+      _indexPageConfig.clubs = JSON.parse(JSON.stringify(DEFAULT_INDEX_CLUBS));
+      renderClubsConfig();
+      toast('Club icons reset to default. Click "Save All Settings" to apply.', 'info');
+    }
+
+    /* ── 3. 10 SEQUENCED PRODUCTS BEFORE VIEW ALL ── */
+    function renderBottom10Slots() {
+      const list = document.getElementById('bottom10SlotsList');
+      if (!list) return;
+      while ((_indexPageConfig.bottom10ProductIds || []).length < 10) {
+        _indexPageConfig.bottom10ProductIds.push('');
+      }
+
+      list.innerHTML = _indexPageConfig.bottom10ProductIds.slice(0, 10).map((id, idx) => {
+        const prod = (_allProducts || []).find(p => p.id === id);
+        const img = prod ? (prod.imgUrl || (prod.images && prod.images[0]) || 'favicon.png') : '';
+        return `
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <!-- SEQUENCE BADGE & CONTROLS -->
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0;">
+                #${idx + 1}
+              </span>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <button class="btn btn-ghost btn-sm" onclick="moveBottom10Slot(${idx}, ${idx - 1})" ${idx === 0 ? 'disabled style="opacity:0.25;cursor:not-allowed;padding:1px 5px;"' : 'style="padding:1px 5px;"'} title="Move Up">▲</button>
+                <button class="btn btn-ghost btn-sm" onclick="moveBottom10Slot(${idx}, ${idx + 1})" ${idx === 9 ? 'disabled style="opacity:0.25;cursor:not-allowed;padding:1px 5px;"' : 'style="padding:1px 5px;"'} title="Move Down">▼</button>
+              </div>
+            </div>
+
+            <!-- PRODUCT SELECT -->
+            <div style="flex:1;min-width:220px;">
+              <select class="form-input" onchange="onBottom10SlotChange(${idx}, this.value)" style="font-size:13px;width:100%;">
+                ${buildProductOptions(id)}
+              </select>
+            </div>
+
+            <!-- PREVIEW THUMB -->
+            <div style="display:flex;align-items:center;gap:8px;min-width:160px;flex:1;">
+              ${prod ? `
+                <img src="${img}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;border:1px solid var(--border);flex-shrink:0;" onerror="this.style.display='none'" />
+                <div style="overflow:hidden;">
+                  <div style="font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">${esc(prod.name || '')}</div>
+                  <div style="font-size:11px;color:var(--muted);">${prod.price ? '₹ ' + prod.price : ''}</div>
+                </div>
+              ` : `<span style="font-size:11px;color:var(--muted);font-style:italic;">Empty Slot</span>`}
+            </div>
+
+            <!-- CLEAR -->
+            <button class="btn btn-ghost btn-sm" onclick="onBottom10SlotChange(${idx}, '')" title="Clear slot" style="color:var(--muted);padding:4px 8px;font-size:12px;">✕</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function onBottom10SlotChange(index, newId) {
+      _indexPageConfig.bottom10ProductIds[index] = newId;
+      renderBottom10Slots();
+    }
+
+    function moveBottom10Slot(fromIdx, toIdx) {
+      if (toIdx < 0 || toIdx >= 10) return;
+      const temp = _indexPageConfig.bottom10ProductIds[fromIdx];
+      _indexPageConfig.bottom10ProductIds[fromIdx] = _indexPageConfig.bottom10ProductIds[toIdx];
+      _indexPageConfig.bottom10ProductIds[toIdx] = temp;
+      renderBottom10Slots();
+    }
+
+    function autoFillBottom10Products() {
+      const active = getActiveProductsList();
+      const beforeIds = new Set((_indexPageConfig.beforeClubsProductIds || []).filter(Boolean));
+      // Candidates: active products not already in before-clubs
+      const candidates = active.filter(p => !beforeIds.has(p.id));
+      const chosen = candidates.length >= 10 ? candidates : active;
+
+      _indexPageConfig.bottom10ProductIds = Array(10).fill('').map((_, i) => {
+        return chosen[i] ? chosen[i].id : '';
+      });
+
+      renderBottom10Slots();
+      toast('Populated 10 slots with latest active products. Click "Save All Settings" to apply.', 'info');
+    }
+
+    function clearBottom10Products() {
+      _indexPageConfig.bottom10ProductIds = Array(10).fill('');
+      renderBottom10Slots();
+    }
+
+    /* ── 4. SAVE & RESET ── */
+    async function saveIndexPageConfig() {
+      const statusEl = document.getElementById('indexPageSaveStatus');
+      if (statusEl) statusEl.textContent = 'Saving settings to Firebase…';
+
+      // Gather current values
+      const beforeClubs = (_indexPageConfig.beforeClubsProductIds || []).map(id => (id || '').trim());
+      
+      const clubs = (_indexPageConfig.clubs || DEFAULT_INDEX_CLUBS).map((c, i) => {
+        const inp = document.getElementById(`club_url_${i}`);
+        return {
+          id: c.id,
+          name: c.name,
+          img: inp ? inp.value.trim() : (c.img || '')
+        };
+      });
+
+      const bottom10 = (_indexPageConfig.bottom10ProductIds || []).slice(0, 10).map(id => (id || '').trim());
+
+      const payload = {
+        beforeClubsProductIds: beforeClubs,
+        clubs: clubs,
+        bottom10ProductIds: bottom10,
+        updatedAt: Date.now()
+      };
+
+      try {
+        const { db, dbRef, set } = await waitFb();
+        await set(dbRef(db, 'settings/indexPageConfig'), payload);
+        _indexPageConfig = payload;
+        toast('Index Page settings saved successfully! 🏠', 'success');
+        if (statusEl) {
+          statusEl.textContent = `✓ Saved successfully at ${new Date().toLocaleTimeString()}`;
+        }
+      } catch (e) {
+        toast('Save failed: ' + e.message, 'error');
+        if (statusEl) statusEl.textContent = 'Error: ' + e.message;
+      }
+    }
+
+    function resetIndexPageDefaults() {
+      confirmAction('Reset all Index Page settings to system defaults? Unsaved changes will be lost.', () => {
+        const active = getActiveProductsList();
+        _indexPageConfig = {
+          beforeClubsProductIds: active.slice(0, 2).map(p => p.id),
+          clubs: JSON.parse(JSON.stringify(DEFAULT_INDEX_CLUBS)),
+          bottom10ProductIds: active.slice(2, 12).map(p => p.id)
+        };
+        while (_indexPageConfig.bottom10ProductIds.length < 10) _indexPageConfig.bottom10ProductIds.push('');
+        renderBeforeClubsSlots();
+        renderClubsConfig();
+        renderBottom10Slots();
+        toast('Defaults restored. Click "Save All Settings" to commit to database.', 'info');
+      });
     }
 
     /* ═══════════════════════════════════════════════
