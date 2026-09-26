@@ -50,15 +50,15 @@
     .topbar {
       display: flex; align-items: center;
       justify-content: space-between; gap: 10px;
-      padding: 16px 16px 10px;
+      padding: 12px 16px 10px;
       position: sticky; top: 0;
       background: rgba(255,255,255,.98);
       backdrop-filter: blur(8px);
       z-index: 30;
       border-bottom: 1px solid rgba(0,0,0,.04);
     }
-    .logo { display: flex; align-items: center; gap: 0; line-height: 1; white-space: nowrap; }
-    .logo-img { height: 30px; width: auto; display: block; image-rendering: -webkit-optimize-contrast; }
+    .logo { display: flex; align-items: center; gap: 0; line-height: 1; white-space: nowrap; cursor: pointer; }
+    .logo-img { height: 44px; width: auto; max-width: 220px; object-fit: contain; display: block; image-rendering: -webkit-optimize-contrast; }
     .header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
     .icon-btn { width: 38px; height: 38px; border: none; border-radius: 50%; background: #111; color: #fff; display: grid; place-items: center; box-shadow: var(--shadow-soft); cursor: pointer; flex: 0 0 auto; transition: transform .2s ease; position: relative; }
     .icon-btn:hover { transform: translateY(-2px) }
@@ -69,7 +69,7 @@
     .profile-btn svg { width: 16px; height: 16px }
 
     /* ── SEARCH ── */
-    .search-wrap { padding: 12px 22px 10px; display: flex; align-items: center; gap: 8px; }
+    .search-wrap { padding: 12px 22px 6px; display: flex; align-items: center; gap: 8px; }
     .search { display: flex; align-items: center; gap: 8px; border: 0.846px solid #d9d9d9; background: #f2f2f2; border-radius: 17px; padding: 8px 11px; flex: 1; }
     .search svg { width: 13.5px; height: 13.5px; opacity: .6; flex: 0 0 auto }
     .search input { border: none; outline: none; width: 100%; background: transparent; font-size: 11.85px; color: #111; font-family: 'Inter', 'Poppins', sans-serif; }
@@ -78,6 +78,52 @@
     .filter-btn.active { opacity: 1; background: #111; border-color: #111; }
     .filter-btn.active svg { stroke: #fff; }
     .filter-btn svg { width: 16px; height: 16px; transition: stroke .2s; }
+
+    /* ── SLIDABLE CATEGORY CHIPS ── */
+    .cat-slider-wrap {
+      padding: 4px 16px 12px;
+      overflow: hidden;
+    }
+    .cat-slider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding: 2px 2px 4px 2px;
+    }
+    .cat-slider::-webkit-scrollbar {
+      display: none;
+    }
+    .cat-pill {
+      flex: 0 0 auto;
+      padding: 7px 18px;
+      border-radius: 999px;
+      border: 1px solid #e2e2e2;
+      background: #f7f7f7;
+      color: #333333;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Poppins', 'Ubuntu', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .2s ease;
+      user-select: none;
+      outline: none;
+    }
+    .cat-pill:hover {
+      border-color: #111;
+      color: #111;
+      background: #efefef;
+    }
+    .cat-pill.active {
+      background: #111111;
+      color: #ffffff;
+      border-color: #111111;
+      font-weight: 600;
+      box-shadow: 0 3px 10px rgba(0,0,0,.15);
+    }
 
     /* ── FILTERS ── */
     .filters { display: none; padding: 10px 16px 14px; gap: 8px; flex-wrap: wrap; animation: fadeIn .2s ease; }
@@ -570,7 +616,7 @@
 
     <!-- TOPBAR -->
     <header class="topbar">
-      <div class="logo"><img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="JERSIFY" width="120" height="30" /></div>
+      <div class="logo" onclick="window.location.href='index.html'"><img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/IMG-20260524-WA0002.webp?alt=media&token=22cbac50-3216-4154-a3f0-f666d79b94d3" alt="JERSIFY" /></div>
       <div class="header-actions">
         <a href="checkout.html" class="icon-btn" aria-label="Cart">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.5L23 6H6"></path></svg>
@@ -594,14 +640,27 @@
       </div>
     </div>
 
+    <!-- SLIDABLE CATEGORY BAR -->
+    <div class="cat-slider-wrap">
+      <div class="cat-slider" id="catSlider">
+        <button type="button" class="cat-pill active" data-cat="" onclick="handleCatPillClick(this)">All</button>
+        <button type="button" class="cat-pill" data-cat="hot picks" onclick="handleCatPillClick(this)">Hot picks</button>
+        <button type="button" class="cat-pill" data-cat="world cup" onclick="handleCatPillClick(this)">World cup</button>
+        <button type="button" class="cat-pill" data-cat="retro" onclick="handleCatPillClick(this)">Retro</button>
+        <button type="button" class="cat-pill" data-cat="extras" onclick="handleCatPillClick(this)">Extras</button>
+      </div>
+    </div>
+
     <!-- FILTERS -->
     <section class="filters">
       <select id="filterCategory">
         <option value="">All Categories</option>
+        <option value="hot picks">Hot picks</option>
+        <option value="world cup">World cup</option>
         <option value="retro">Retro</option>
+        <option value="extras">Extras</option>
         <option value="combo">Combo</option>
         <option value="hamper">Hamper</option>
-        <option value="extras">Extras</option>
       </select>
       <select id="filterTeam"><option value="">All Teams & Clubs</option></select>
       <select id="filterSize"><option value="">All Sizes</option><option value="xs">XS</option><option value="s">S</option><option value="m">M</option><option value="l">L</option><option value="xl">XL</option></select>
@@ -611,8 +670,7 @@
 
     <!-- PRODUCTS -->
     <section class="products" id="productsSection">
-      <div class="products-header">
-        <h3>All Products</h3>
+      <div class="products-header" style="justify-content: flex-end; margin-bottom: 8px;">
         <span id="productCount"></span>
       </div>
       <div class="product-row" id="productTrack">
@@ -1086,8 +1144,7 @@
         const params = new URLSearchParams(window.location.search);
         const catParam = params.get('category');
         if (catParam) {
-          const catSel = document.getElementById('filterCategory');
-          if (catSel) catSel.value = catParam.toLowerCase();
+          selectCategory(catParam);
         }
         const pid    = params.get('product');
         if (pid) { const found = allProducts.find(p => p.id === pid); if (found) openProductPage(pid); }
@@ -1146,10 +1203,65 @@
       if (btn) btn.classList.toggle('active', isOpen);
     };
 
+    function normalizeCat(str) {
+      return (str || '').toLowerCase().replace(/[-_\s]+/g, '');
+    }
+
+    window.selectCategory = function(cat) {
+      showAll = false;
+      const normTarget = normalizeCat(cat);
+      const pills = document.querySelectorAll('.cat-pill');
+      pills.forEach(pill => {
+        const pillCat = normalizeCat(pill.getAttribute('data-cat') || '');
+        if (pillCat === normTarget) {
+          pill.classList.add('active');
+        } else {
+          pill.classList.remove('active');
+        }
+      });
+
+      const filterSel = document.getElementById('filterCategory');
+      if (filterSel) {
+        let foundVal = '';
+        for (let opt of filterSel.options) {
+          if (normalizeCat(opt.value) === normTarget) {
+            foundVal = opt.value;
+            break;
+          }
+        }
+        filterSel.value = foundVal;
+      }
+
+      const url = new URL(window.location.href);
+      if (cat) {
+        url.searchParams.set('category', cat.toLowerCase().replace(/\s+/g, '-'));
+      } else {
+        url.searchParams.delete('category');
+      }
+      window.history.replaceState({}, '', url.toString());
+
+      renderProducts();
+
+      const activePill = document.querySelector('.cat-pill.active');
+      if (activePill) {
+        activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    };
+
+    window.handleCatPillClick = function(pill) {
+      const cat = pill.getAttribute('data-cat') || '';
+      if (pill.classList.contains('active') && cat !== '') {
+        selectCategory('');
+      } else {
+        selectCategory(cat);
+      }
+    };
+
     function isActive(p) { return !p.status || p.status === 'active'; }
 
     function applyFiltersAndSort() {
-      const categoryFilter = (document.getElementById('filterCategory')?.value || '').toLowerCase();
+      const rawCatFilter = (document.getElementById('filterCategory')?.value || '').toLowerCase();
+      const normCatFilter = normalizeCat(rawCatFilter);
       const teamFilter  = document.getElementById('filterTeam').value.toLowerCase();
       const sizeFilter  = document.getElementById('filterSize').value.toLowerCase();
       const priceFilter = document.getElementById('filterPrice').value;
@@ -1158,14 +1270,15 @@
 
       let filtered = allProducts.filter(({ data: p }) => {
         if (!isActive(p)) return false;
-        if (categoryFilter) {
-          const pCat = (p.category || '').toLowerCase();
-          const matchesExplicit = pCat === categoryFilter;
-          const matchesFallback = !pCat && (
-            (p.name || '').toLowerCase().includes(categoryFilter) ||
-            (p.type || '').toLowerCase().includes(categoryFilter) ||
-            (p.badge || '').toLowerCase().includes(categoryFilter)
+        if (normCatFilter) {
+          const normProductCat = normalizeCat(p.category);
+          const matchesExplicit = normProductCat && (
+            normProductCat === normCatFilter ||
+            normProductCat.includes(normCatFilter) ||
+            normCatFilter.includes(normProductCat)
           );
+          const hay = [p.name || '', p.type || '', p.badge || '', p.description || ''].join(' ').toLowerCase();
+          const matchesFallback = hay.includes(rawCatFilter) || (normCatFilter && normalizeCat(hay).includes(normCatFilter));
           if (!matchesExplicit && !matchesFallback) return false;
         }
         if (teamFilter) {
@@ -1200,16 +1313,6 @@
       const viewAllWrap = document.getElementById('viewAllWrap');
       const countEl     = document.getElementById('productCount');
       if (!container) return;
-
-      const headingEl = document.querySelector('.products-header h3');
-      if (headingEl) {
-        const categoryFilter = (document.getElementById('filterCategory')?.value || '').toLowerCase();
-        if (categoryFilter === 'retro') headingEl.textContent = 'Retro Jerseys';
-        else if (categoryFilter === 'combo') headingEl.textContent = 'Combo Kits';
-        else if (categoryFilter === 'hamper') headingEl.textContent = 'Gift Hampers';
-        else if (categoryFilter === 'extras') headingEl.textContent = 'Extras & Accessories';
-        else headingEl.textContent = 'All Products';
-      }
 
       const filtered = applyFiltersAndSort();
       countEl.textContent = filtered.length ? `${filtered.length} item${filtered.length !== 1 ? 's' : ''}` : '';
@@ -1848,7 +1951,17 @@
       if (filterBtn) filterBtn.addEventListener('click', window.toggleFilters);
 
       ['filterCategory','filterTeam','filterSize','filterPrice','filterSort'].forEach(fid => {
-        document.getElementById(fid).addEventListener('change', () => { showAll = false; renderProducts(); });
+        document.getElementById(fid).addEventListener('change', () => {
+          showAll = false;
+          if (fid === 'filterCategory') {
+            const normTarget = normalizeCat(document.getElementById('filterCategory').value);
+            document.querySelectorAll('.cat-pill').forEach(pill => {
+              const pillCat = normalizeCat(pill.getAttribute('data-cat') || '');
+              pill.classList.toggle('active', pillCat === normTarget);
+            });
+          }
+          renderProducts();
+        });
       });
       let timer;
       document.getElementById('searchInput').addEventListener('input', () => {

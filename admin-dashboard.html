@@ -3902,10 +3902,12 @@
           <div class="form-group">
             <label>Category *</label>
             <select id="p_category">
+              <option value="Hot picks">Hot picks</option>
+              <option value="World cup">World cup</option>
               <option value="Retro">Retro</option>
+              <option value="Extras">Extras</option>
               <option value="Combo">Combo</option>
               <option value="Hamper">Hamper</option>
-              <option value="Extras">Extras</option>
               <option value="Kit">Kit / Jersey</option>
             </select>
           </div>
@@ -5370,7 +5372,25 @@
       _editId = data ? data.id : null;
       document.getElementById('productModalTitle').textContent = data ? 'Edit Product' : 'Add Product';
       setV('p_name', data?.name || ''); setV('p_team', data?.team || 'Argentina'); setV('p_type', data?.type || 'Home Kit');
-      setV('p_category', data?.category || 'Kit');
+      const rawCat = data?.category || 'Hot picks';
+      const catSelect = document.getElementById('p_category');
+      if (catSelect) {
+        let matched = false;
+        for (let opt of catSelect.options) {
+          if (opt.value.toLowerCase() === rawCat.toLowerCase()) {
+            catSelect.value = opt.value;
+            matched = true;
+            break;
+          }
+        }
+        if (!matched) {
+          const opt = document.createElement('option');
+          opt.value = rawCat;
+          opt.textContent = rawCat;
+          catSelect.appendChild(opt);
+          catSelect.value = rawCat;
+        }
+      }
       document.getElementById('p_player_version').checked = !!data?.playerVersion;
       setV('p_price', data?.price || '');
       setV('p_player_price', data?.playerPrice || data?.playerVersionPrice || '');
@@ -5395,7 +5415,7 @@
         const playerUrls = await uploadSlotArray('pplayer', _pPlayerImgSlots, 'Player');
 
         const data = {
-          name, team: getV('p_team'), type: getV('p_type'), category: getV('p_category') || 'Kit', price: getV('p_price'),
+          name, team: getV('p_team'), type: getV('p_type'), category: getV('p_category') || 'Hot picks', price: getV('p_price'),
           playerPrice: getV('p_player_price'),
           description: getV('p_desc'),
           badge: getV('p_badge'), status: getV('p_status'),
