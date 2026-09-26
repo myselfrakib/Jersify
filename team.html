@@ -208,7 +208,8 @@
 
     <!-- TEAM TITLE & ACTION -->
     <h1 class="club-title-krona" id="clubTitle">FC BARCELONA</h1>
-    <button class="shop-now-btn" onclick="window.location.href='shop.html'">SHOP NOW</button>
+    <p id="clubTagline" style="display:none; text-align:center; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--muted); margin:-4px 16px 16px 16px; line-height:1.4;"></p>
+    <button class="shop-now-btn" id="teamShopNowBtn" onclick="window.location.href='shop.html'">SHOP NOW</button>
 
     <!-- SECTION 1: 2026-27 JERSEYS -->
     <section>
@@ -294,7 +295,14 @@
       "man-utd": { name: "MANCHESTER UNITED", bg: "#c61f2f", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3657.PNG?alt=media&token=9fc94827-aaec-46cd-a301-a1bfcc03576b" },
       "chelsea": { name: "CHELSEA FC", bg: "#1a4da1", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3659.PNG?alt=media&token=ec3f7d57-8ca9-42cf-adc3-ae1f4c00408a" },
       "psg": { name: "PARIS SAINT-GERMAIN", bg: "#12284c", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2Fpsg%20300x300.webp?alt=media&token=d3b49bce-9b4a-486c-8aed-7417a896bfd6" },
-      "liverpool": { name: "LIVERPOOL FC", bg: "#c8102e", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9" }
+      "liverpool": { name: "LIVERPOOL FC", bg: "#c8102e", img: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/clubs%2FIMG_3656.PNG?alt=media&token=15b830b7-3943-45bf-b7fe-c4c542f58ea9" },
+      "argentina": { name: "ARGENTINA", bg: "#74ACDF", img: "" },
+      "brazil": { name: "BRAZIL", bg: "#009c3b", img: "" },
+      "france": { name: "FRANCE", bg: "#002395", img: "" },
+      "germany": { name: "GERMANY", bg: "#222222", img: "" },
+      "portugal": { name: "PORTUGAL", bg: "#006600", img: "" },
+      "spain": { name: "SPAIN", bg: "#AA151B", img: "" },
+      "all-teams": { name: "ALL TEAMS", bg: "#000000", img: "" }
     };
 
     const currentMeta = teamMetaMap[teamId] || { name: teamId.toUpperCase().replace("-", " "), bg: "#111827", img: "" };
@@ -302,6 +310,70 @@
     document.getElementById("clubTitle").textContent = currentMeta.name;
     document.getElementById("clubTitle").style.color = currentMeta.bg;
     if (currentMeta.img) document.getElementById("clubHeroImg").src = currentMeta.img;
+
+    const shopNowBtn = document.getElementById("teamShopNowBtn");
+    if (shopNowBtn) {
+      shopNowBtn.onclick = () => { window.location.href = `shop.html?team=${encodeURIComponent(teamId)}`; };
+    }
+
+    function isVideoUrl(url) {
+      if (!url) return false;
+      return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url) || url.includes('/video%2F') || (url.includes('alt=media&token=') && url.toLowerCase().includes('.mp4'));
+    }
+
+    async function loadTeamConfig() {
+      try {
+        const snap = await get(ref(rtdb, `settings/teams/${teamId}`));
+        let conf = snap.exists() ? snap.val() : null;
+
+        if (!conf) {
+          const allTeamsSnap = await get(ref(rtdb, "settings/teams"));
+          if (allTeamsSnap.exists()) {
+            const allTeams = allTeamsSnap.val();
+            const foundKey = Object.keys(allTeams).find(k => k.toLowerCase() === teamId.toLowerCase());
+            if (foundKey) conf = allTeams[foundKey];
+          }
+        }
+
+        const heroCard = document.getElementById("clubHeroCard");
+        const bannerUrl = conf && (conf.heroUrl || conf.bannerUrl || conf.kitUrl);
+        const logoUrl = conf && conf.logoUrl;
+
+        if (bannerUrl) {
+          if (isVideoUrl(bannerUrl)) {
+            heroCard.innerHTML = `
+              <video src="${bannerUrl}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+              <div class="club-hero-overlay"></div>
+            `;
+          } else {
+            heroCard.innerHTML = `
+              <img id="clubHeroImg" src="${bannerUrl}" alt="${currentMeta.name}" style="width:100%;height:100%;object-fit:cover;display:block;" />
+              <div class="club-hero-overlay"></div>
+            `;
+          }
+        } else if (logoUrl) {
+          heroCard.innerHTML = `
+            <img id="clubHeroImg" src="${logoUrl}" alt="${currentMeta.name}" style="width:100%;height:100%;object-fit:contain;padding:24px;display:block;" />
+            <div class="club-hero-overlay"></div>
+          `;
+        }
+
+        if (conf && conf.tagline) {
+          const taglineEl = document.getElementById("clubTagline");
+          if (taglineEl) {
+            taglineEl.textContent = conf.tagline;
+            taglineEl.style.display = "block";
+          }
+        }
+
+        if (conf && conf.name) {
+          document.getElementById("clubTitle").textContent = conf.name;
+          document.title = `JERSIFY – ${conf.name}`;
+        }
+      } catch (e) {
+        console.warn("Failed to load team config:", e);
+      }
+    }
 
     onAuthStateChanged(auth, user => {
       const cartBadge = document.getElementById("cartBadge");
@@ -321,8 +393,8 @@
 
         // Filter products matching team
         let matching = products.filter(p => {
-          const t = (p.team || "").toString().toLowerCase();
-          return t.includes(teamId) || t.includes(currentMeta.name.toLowerCase());
+          const t = ((p.team || "") + " " + (p.name || "")).toLowerCase();
+          return t.includes(teamId.replace("-", " ")) || t.includes(teamId) || t.includes(currentMeta.name.toLowerCase());
         });
 
         if (!matching.length) matching = products.slice(0, 4);
@@ -348,6 +420,8 @@
         specialGrid.innerHTML = (matching.length > 2 ? matching.slice(2, 4) : products.slice(2, 4)).map(p => createCard(p)).join("");
       } catch (e) { console.error("Team products fetch failed", e); }
     }
+
+    loadTeamConfig();
     loadTeamProducts();
   </script>
 </body>

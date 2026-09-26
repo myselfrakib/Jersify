@@ -720,12 +720,28 @@
     /* CLUBS CONFIG LOAD */
     async function loadClubsConfig() {
       try {
-        const snap = await get(ref(rtdb, "settings/indexPageConfig/clubs"));
-        if (snap.exists()) {
-          const list = snap.val();
-          if (Array.isArray(list) && list.length && typeof window.renderClubBadges === 'function') {
-            window.renderClubBadges(list);
-          }
+        const [clubsSnap, teamsSnap] = await Promise.all([
+          get(ref(rtdb, "settings/indexPageConfig/clubs")),
+          get(ref(rtdb, "settings/teams"))
+        ]);
+
+        let list = (clubsSnap.exists() && Array.isArray(clubsSnap.val()) && clubsSnap.val().length)
+          ? clubsSnap.val()
+          : JSON.parse(JSON.stringify(DEFAULT_INDEX_CLUBS));
+
+        const teams = teamsSnap.exists() ? teamsSnap.val() : null;
+        if (teams) {
+          list = list.map(c => {
+            const teamConf = teams[c.id] || (c.id ? teams[c.id.toLowerCase()] : null);
+            if (teamConf && (teamConf.logoUrl || teamConf.imgUrl)) {
+              return { ...c, img: teamConf.logoUrl || teamConf.imgUrl };
+            }
+            return c;
+          });
+        }
+
+        if (typeof window.renderClubBadges === 'function') {
+          window.renderClubBadges(list);
         }
       } catch (e) {
         console.warn("Clubs config load failed", e);

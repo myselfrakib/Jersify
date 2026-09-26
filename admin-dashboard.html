@@ -5441,13 +5441,14 @@
        TEAM PAGES & SITE CONFIG MANAGEMENT
     ═══════════════════════════════════════════════ */
     const TEAMS_LIST = [
-      { key: 'liverpool', name: 'Liverpool FC' },
       { key: 'barcelona', name: 'FC Barcelona' },
       { key: 'real-madrid', name: 'Real Madrid' },
-      { key: 'chelsea', name: 'Chelsea FC' },
+      { key: 'arsenal', name: 'Arsenal FC' },
       { key: 'man-city', name: 'Manchester City' },
       { key: 'man-utd', name: 'Manchester United' },
+      { key: 'chelsea', name: 'Chelsea FC' },
       { key: 'psg', name: 'PSG' },
+      { key: 'liverpool', name: 'Liverpool FC' },
       { key: 'argentina', name: 'Argentina' },
       { key: 'brazil', name: 'Brazil' },
       { key: 'france', name: 'France' },
@@ -5457,8 +5458,17 @@
       { key: 'all-teams', name: 'All Teams Hub' }
     ];
 
-    let _selectedTeamKey = 'liverpool';
+    let _selectedTeamKey = 'barcelona';
     let _teamConfigCache = {};
+
+    function renderTeamMediaPreviewHtml(id, url) {
+      if (!url) return `<img id="${id}" style="max-height:80px;border-radius:6px;border:1px solid var(--border);display:none;" />`;
+      const isVid = (typeof isVideoUrl === 'function' && isVideoUrl(url)) || /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url) || url.includes('/video%2F');
+      if (isVid) {
+        return `<video id="${id}" src="${url}" controls muted style="max-height:100px;max-width:100%;border-radius:6px;border:1px solid var(--border);display:block;"></video>`;
+      }
+      return `<img id="${id}" src="${url}" style="max-height:80px;border-radius:6px;border:1px solid var(--border);display:block;" onerror="this.style.display='none'" />`;
+    }
 
     async function initTeamsTab() {
       const row = document.getElementById('teamTabsRow');
@@ -5471,14 +5481,38 @@
 
       try {
         const { db, dbRef, get } = await waitFb();
-        const snap = await get(dbRef(db, 'settings/teams'));
-        if (snap.exists()) _teamConfigCache = snap.val();
+        const [teamsSnap, indexCfgSnap] = await Promise.all([
+          get(dbRef(db, 'settings/teams')),
+          get(dbRef(db, 'settings/indexPageConfig/clubs'))
+        ]);
+        if (teamsSnap.exists()) _teamConfigCache = teamsSnap.val() || {};
+
+        // Merge default logos if not set
+        const defaultClubs = (indexCfgSnap.exists() && Array.isArray(indexCfgSnap.val()))
+          ? indexCfgSnap.val()
+          : (typeof DEFAULT_INDEX_CLUBS !== 'undefined' ? DEFAULT_INDEX_CLUBS : []);
+        defaultClubs.forEach(c => {
+          if (c.id && c.img) {
+            if (!_teamConfigCache[c.id]) _teamConfigCache[c.id] = {};
+            if (!_teamConfigCache[c.id].logoUrl) _teamConfigCache[c.id].logoUrl = c.img;
+          }
+        });
       } catch (e) { console.warn('Could not load team settings:', e); }
 
       renderSelectedTeamConfig();
     }
 
     function selectTeamConfigTab(key) {
+      // Stash current input values for previously selected team into cache
+      const heroInput = document.getElementById('tc_hero_url');
+      if (heroInput && _selectedTeamKey) {
+        if (!_teamConfigCache[_selectedTeamKey]) _teamConfigCache[_selectedTeamKey] = {};
+        _teamConfigCache[_selectedTeamKey].heroUrl = heroInput.value.trim();
+        _teamConfigCache[_selectedTeamKey].logoUrl = (document.getElementById('tc_logo_url')?.value || '').trim();
+        _teamConfigCache[_selectedTeamKey].kitUrl = (document.getElementById('tc_kit_url')?.value || '').trim();
+        _teamConfigCache[_selectedTeamKey].tagline = (document.getElementById('tc_tagline')?.value || '').trim();
+      }
+
       _selectedTeamKey = key;
       document.querySelectorAll('#teamTabsRow button').forEach(b => {
         b.className = 'btn btn-sm btn-ghost';
@@ -5495,47 +5529,55 @@
       const conf = _teamConfigCache[_selectedTeamKey] || {};
 
       body.innerHTML = `
-        <div style="font-weight:700;font-size:16px;margin-bottom:14px;color:var(--text);">${team.name} Media &amp; Configuration</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+          <div style="font-weight:700;font-size:16px;color:var(--text);">⚽ ${team.name} Media &amp; Configuration</div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <a href="team.html?id=${team.key}" target="_blank" class="btn btn-ghost btn-sm" style="font-size:11px;display:inline-flex;align-items:center;gap:4px;">
+              👁️ View Page
+            </a>
+            <button class="btn btn-primary btn-sm" onclick="saveCurrentTeamConfig()">💾 Save ${team.name}</button>
+          </div>
+        </div>
         <div class="form-grid" style="gap:14px;">
           <div class="form-group span-2">
-            <label>Hero Banner Image / Video URL</label>
+            <label>Hero Banner Image / Video URL (Displays at top of team page)</label>
             <div style="display:flex;gap:8px;align-items:center;">
-              <input type="url" id="tc_hero_url" class="form-input" value="${esc(conf.heroUrl || '')}" placeholder="https://firebasestorage.googleapis.com/.../hero.webp" style="flex:1;" />
+              <input type="url" id="tc_hero_url" class="form-input" value="${esc(conf.heroUrl || '')}" placeholder="https://firebasestorage.googleapis.com/.../hero.webp" style="flex:1;" oninput="const wrap=document.getElementById('tc_hero_preview_wrap'); if(wrap) wrap.innerHTML=renderTeamMediaPreviewHtml('tc_hero_preview', this.value);" />
               <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
                 📁 Upload Hero
                 <input type="file" accept="image/*,video/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'teamMedia', 'tc_hero_url', 'tc_hero_preview')" />
               </label>
             </div>
-            <div style="margin-top:6px;">
-              ${conf.heroUrl ? `<img id="tc_hero_preview" src="${conf.heroUrl}" style="max-height:80px;border-radius:6px;border:1px solid var(--border);" onerror="this.style.display='none'" />` : '<img id="tc_hero_preview" style="max-height:80px;border-radius:6px;border:1px solid var(--border);display:none;" />'}
+            <div style="margin-top:6px;" id="tc_hero_preview_wrap">
+              ${renderTeamMediaPreviewHtml('tc_hero_preview', conf.heroUrl)}
             </div>
           </div>
 
           <div class="form-group">
-            <label>Team Logo URL</label>
+            <label>Team Logo URL (Updates Club Badge on Homepage &amp; Team Page)</label>
             <div style="display:flex;gap:8px;align-items:center;">
-              <input type="url" id="tc_logo_url" class="form-input" value="${esc(conf.logoUrl || '')}" placeholder="https://.../logo.png" style="flex:1;" />
+              <input type="url" id="tc_logo_url" class="form-input" value="${esc(conf.logoUrl || '')}" placeholder="https://.../logo.png" style="flex:1;" oninput="const img=document.getElementById('tc_logo_preview'); if(img){ img.src=this.value; img.style.display=this.value?'block':'none'; }" />
               <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
                 📁 Upload Logo
                 <input type="file" accept="image/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'teamLogos', 'tc_logo_url', 'tc_logo_preview')" />
               </label>
             </div>
             <div style="margin-top:6px;">
-              ${conf.logoUrl ? `<img id="tc_logo_preview" src="${conf.logoUrl}" style="height:36px;object-fit:contain;" onerror="this.style.display='none'" />` : '<img id="tc_logo_preview" style="height:36px;object-fit:contain;display:none;" />'}
+              ${conf.logoUrl ? `<img id="tc_logo_preview" src="${conf.logoUrl}" style="height:44px;object-fit:contain;background:rgba(255,255,255,0.05);padding:4px;border-radius:6px;border:1px solid var(--border);" onerror="this.style.display='none'" />` : '<img id="tc_logo_preview" style="height:44px;object-fit:contain;display:none;background:rgba(255,255,255,0.05);padding:4px;border-radius:6px;border:1px solid var(--border);" />'}
             </div>
           </div>
 
           <div class="form-group">
             <label>Featured Kit Image URL</label>
             <div style="display:flex;gap:8px;align-items:center;">
-              <input type="url" id="tc_kit_url" class="form-input" value="${esc(conf.kitUrl || '')}" placeholder="https://.../kit.png" style="flex:1;" />
+              <input type="url" id="tc_kit_url" class="form-input" value="${esc(conf.kitUrl || '')}" placeholder="https://.../kit.png" style="flex:1;" oninput="const img=document.getElementById('tc_kit_preview'); if(img){ img.src=this.value; img.style.display=this.value?'block':'none'; }" />
               <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;">
                 📁 Upload Kit
                 <input type="file" accept="image/*" style="display:none;" onchange="uploadAssetToFirebase(this.files[0], 'teamKits', 'tc_kit_url', 'tc_kit_preview')" />
               </label>
             </div>
             <div style="margin-top:6px;">
-              ${conf.kitUrl ? `<img id="tc_kit_preview" src="${conf.kitUrl}" style="height:60px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'" />` : '<img id="tc_kit_preview" style="height:60px;object-fit:cover;border-radius:6px;display:none;" />'}
+              ${conf.kitUrl ? `<img id="tc_kit_preview" src="${conf.kitUrl}" style="height:60px;object-fit:cover;border-radius:6px;border:1px solid var(--border);" onerror="this.style.display='none'" />` : '<img id="tc_kit_preview" style="height:60px;object-fit:cover;border-radius:6px;display:none;border:1px solid var(--border);" />'}
             </div>
           </div>
 
@@ -5557,8 +5599,35 @@
       _teamConfigCache[_selectedTeamKey] = conf;
 
       try {
-        const { db, dbRef, update } = await waitFb();
-        await update(dbRef(db, `settings/teams/${_selectedTeamKey}`), conf);
+        const { db, dbRef, set, get } = await waitFb();
+        // 1. Save directly to settings/teams/${_selectedTeamKey}
+        await set(dbRef(db, `settings/teams/${_selectedTeamKey}`), conf);
+
+        // 2. Synchronize logo with settings/indexPageConfig/clubs if present
+        if (logoUrl) {
+          if (_indexPageConfig && Array.isArray(_indexPageConfig.clubs)) {
+            const idx = _indexPageConfig.clubs.findIndex(c => c.id === _selectedTeamKey);
+            if (idx !== -1) {
+              _indexPageConfig.clubs[idx].img = logoUrl;
+            }
+          }
+          try {
+            const clubsSnap = await get(dbRef(db, 'settings/indexPageConfig/clubs'));
+            if (clubsSnap.exists()) {
+              const list = clubsSnap.val();
+              if (Array.isArray(list)) {
+                const idx = list.findIndex(c => c.id === _selectedTeamKey);
+                if (idx !== -1) {
+                  list[idx].img = logoUrl;
+                  await set(dbRef(db, 'settings/indexPageConfig/clubs'), list);
+                }
+              }
+            }
+          } catch (syncErr) {
+            console.warn('Sync to indexPageConfig/clubs error:', syncErr);
+          }
+        }
+
         toast(`Settings saved for ${_selectedTeamKey}! ⚽`, 'success');
       } catch (e) {
         toast('Save failed: ' + e.message, 'error');
@@ -6085,8 +6154,15 @@
                 if (input) input.value = url;
               }
               if (previewImgId) {
-                const img = document.getElementById(previewImgId);
-                if (img) { img.src = url; img.style.display = 'block'; }
+                if (previewImgId === 'tc_hero_preview') {
+                  const wrap = document.getElementById('tc_hero_preview_wrap');
+                  if (wrap && typeof renderTeamMediaPreviewHtml === 'function') {
+                    wrap.innerHTML = renderTeamMediaPreviewHtml('tc_hero_preview', url);
+                  }
+                } else {
+                  const img = document.getElementById(previewImgId);
+                  if (img) { img.src = url; img.style.display = 'block'; }
+                }
               }
               toast('File uploaded to Firebase! 📁', 'success');
               resolve(url);

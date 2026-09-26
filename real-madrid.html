@@ -322,6 +322,26 @@
         specialGrid.innerHTML = (matching.length > 2 ? matching.slice(2, 4) : products.slice(2, 4)).map(p => createCard(p)).join("");
       } catch (e) { console.error("Real Madrid products fetch failed", e); }
     }
+
+    async function loadTeamBanner() {
+      try {
+        const snap = await get(ref(rtdb, "settings/teams/real-madrid"));
+        if (!snap.exists()) return;
+        const conf = snap.val();
+        const bannerUrl = conf.heroUrl || conf.bannerUrl;
+        if (bannerUrl) {
+          const heroCard = document.getElementById("clubHeroCard");
+          const isVid = /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(bannerUrl) || bannerUrl.includes('/video%2F');
+          if (heroCard) {
+            heroCard.innerHTML = isVid
+              ? `<video src="${bannerUrl}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video><div class="club-hero-overlay"></div>`
+              : `<img id="clubHeroImg" src="${bannerUrl}" alt="Real Madrid" style="width:100%;height:100%;object-fit:cover;display:block;" /><div class="club-hero-overlay"></div>`;
+          }
+        }
+      } catch (e) { console.warn(e); }
+    }
+
+    loadTeamBanner();
     loadRealMadridProducts();
   </script>
 </body>
