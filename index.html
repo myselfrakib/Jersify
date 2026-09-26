@@ -254,6 +254,14 @@
     }
     .secondary-banner img, .secondary-banner video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+    /* ── 9:16 VERTICAL PROMO BANNER ── */
+    .vertical-banner-container { padding: 0 11px; margin-bottom: 24px; }
+    .vertical-banner {
+      width: 100%; aspect-ratio: 9 / 16; border-radius: 10px; overflow: hidden;
+      position: relative; background: #111; display: block;
+    }
+    .vertical-banner img, .vertical-banner video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
     /* ── FOOTER ("Get in touch" & "Meet the Team" Figma node 65:22) ── */
     .footer-figma {
       background: #000000; color: #ffffff; padding: 28px 16px 36px 16px;
@@ -456,11 +464,21 @@
       </div>
     </section>
 
-    <!-- MORE PRODUCTS GRID -->
+    <!-- MORE PRODUCTS GRID (FIRST 8 PRODUCTS) -->
     <section class="product-grid-2col" id="moreProductsGrid">
       <div class="product-card-figma skeleton-box" style="height: 280px;"></div>
       <div class="product-card-figma skeleton-box" style="height: 280px;"></div>
     </section>
+
+    <!-- 9:16 VERTICAL PROMO BANNER -->
+    <section class="vertical-banner-container" id="verticalBannerContainer">
+      <div class="vertical-banner" id="verticalBanner">
+        <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=800&auto=format&fit=crop" alt="Special Promo Banner" onclick="window.location.href='shop.html'" style="cursor:pointer;width:100%;height:100%;object-fit:cover;display:block;" />
+      </div>
+    </section>
+
+    <!-- MORE PRODUCTS GRID (NEXT 8 PRODUCTS) -->
+    <section class="product-grid-2col" id="afterBannerProductsGrid" style="display:none;"></section>
 
     <!-- FOOTER ("Get in touch" & "Meet the Team") -->
     <footer class="footer-figma">
@@ -775,6 +793,8 @@
       const beforeClubsGrid = document.getElementById("beforeClubsProductsGrid");
       const featuredGrid    = document.getElementById("featuredProductsGrid");
       const moreGrid        = document.getElementById("moreProductsGrid");
+      const afterGrid       = document.getElementById("afterBannerProductsGrid");
+      const vBannerWrap     = document.getElementById("verticalBannerContainer");
       try {
         const [snap, cfgSnap] = await Promise.all([
           get(ref(rtdb, "products")),
@@ -785,6 +805,8 @@
           if (beforeClubsGrid) beforeClubsGrid.style.display = "none";
           if (featuredGrid) featuredGrid.innerHTML = `<div style="padding:20px;grid-column:span 2;text-align:center;color:#888;">No jerseys listed.</div>`;
           if (moreGrid) moreGrid.innerHTML = `<div style="padding:20px;grid-column:span 2;text-align:center;color:#888;">No jerseys listed.</div>`;
+          if (afterGrid) afterGrid.style.display = "none";
+          if (vBannerWrap) vBannerWrap.style.display = "none";
           return;
         }
 
@@ -836,45 +858,66 @@
           }
         }
 
-        // 2. 10 SEQUENCED PRODUCTS BEFORE VIEW ALL PRODUCTS
-        let final10 = [];
+        // 2. 16 SEQUENCED PRODUCTS: 8 BEFORE 9:16 BANNER, 8 AFTER BANNER
+        let final16 = [];
         const usedIds = new Set(beforeItems.map(p => p._id));
+        if (beforeItems.length === 0) {
+          products.slice(0, 2).forEach(p => usedIds.add(p._id));
+        }
 
         if (bottom10Ids.length > 0 && bottom10Ids.some(Boolean)) {
           // Add configured products in the exact selected sequence
           bottom10Ids.forEach(id => {
             if (id) {
               const p = products.find(x => x._id === id);
-              if (p && !final10.includes(p)) {
-                final10.push(p);
+              if (p && !final16.includes(p)) {
+                final16.push(p);
                 usedIds.add(p._id);
               }
             }
           });
-          // Backfill up to 10 with remaining active jerseys
-          if (final10.length < 10) {
+          // Backfill up to 16 with remaining active jerseys
+          if (final16.length < 16) {
             for (let p of products) {
-              if (final10.length >= 10) break;
+              if (final16.length >= 16) break;
               if (!usedIds.has(p._id)) {
-                final10.push(p);
+                final16.push(p);
                 usedIds.add(p._id);
               }
             }
           }
         } else {
-          // Default: 10 products starting after featured items
+          // Default: 16 products starting after featured items
           const pool = products.filter(p => !usedIds.has(p._id));
-          final10 = pool.slice(beforeItems.length > 0 ? 0 : 2, beforeItems.length > 0 ? 10 : 12);
+          final16 = pool.slice(0, 16);
         }
 
-        if (final10.length && moreGrid) {
+        const first8 = final16.slice(0, 8);
+        const next8  = final16.slice(8, 16);
+
+        if (first8.length && moreGrid) {
           moreGrid.style.display = "grid";
-          moreGrid.innerHTML = final10.map(p => createCard(p)).join("") + `
+          moreGrid.innerHTML = first8.map(p => createCard(p)).join("");
+          if (vBannerWrap) vBannerWrap.style.display = "block";
+        } else if (moreGrid) {
+          moreGrid.style.display = "none";
+          if (vBannerWrap) vBannerWrap.style.display = "none";
+        }
+
+        if (next8.length && afterGrid) {
+          afterGrid.style.display = "grid";
+          afterGrid.innerHTML = next8.map(p => createCard(p)).join("") + `
             <div style="grid-column: span 2; text-align: center; margin-top: 14px; margin-bottom: 10px;">
               <button class="shop-now-btn" onclick="window.location.href='shop.html'" style="max-width:220px;margin:0 auto;display:block;">VIEW ALL PRODUCTS</button>
             </div>`;
-        } else if (moreGrid) {
-          moreGrid.style.display = "none";
+        } else {
+          if (afterGrid) afterGrid.style.display = "none";
+          if (moreGrid && first8.length) {
+            moreGrid.innerHTML += `
+              <div style="grid-column: span 2; text-align: center; margin-top: 14px; margin-bottom: 10px;">
+                <button class="shop-now-btn" onclick="window.location.href='shop.html'" style="max-width:220px;margin:0 auto;display:block;">VIEW ALL PRODUCTS</button>
+              </div>`;
+          }
         }
 
       } catch (e) {
@@ -1053,6 +1096,20 @@
               : `<img src="${url}" alt="Secondary Banner" onclick="window.location.href='${link}'" style="cursor:pointer;" />`;
           } else {
             secondaryBanner.innerHTML = `<img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=800&auto=format&fit=crop" alt="Secondary Banner" />`;
+          }
+        }
+
+        const verticalBanner = document.getElementById("verticalBanner");
+        if (verticalBanner) {
+          const reelItem = items.find(m => (m.section === "reels" || (m.key && m.key.startsWith("reel"))) && (m.mediaUrl || m.imgUrl));
+          const vItem = reelItem || featured[2] || items.find(m => m.section === "gallery" && (m.mediaUrl || m.imgUrl));
+          if (vItem) {
+            const url = vItem.mediaUrl || vItem.imgUrl;
+            const link = vItem.link || "shop.html";
+            const isVid = vItem.mediaType === "video" || isVideoUrl(url);
+            verticalBanner.innerHTML = isVid
+              ? `<video src="${url}" autoplay muted loop playsinline onclick="window.location.href='${link}'" style="cursor:pointer;width:100%;height:100%;object-fit:cover;display:block;"></video>`
+              : `<img src="${url}" alt="Promo Banner" onclick="window.location.href='${link}'" style="cursor:pointer;width:100%;height:100%;object-fit:cover;display:block;" />`;
           }
         }
       } catch (e) {
