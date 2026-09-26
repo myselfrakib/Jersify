@@ -194,13 +194,37 @@
       font-weight: 400; color: #000000;
     }
 
-    /* ── MID BANNER (Figma spec height 222px) ── */
+    /* ── MID BANNER / FEATURED MEDIA SLIDER (Figma spec height 222px) ── */
     .mid-banner-container { padding: 0 11px; margin-bottom: 12px; }
     .mid-banner {
       width: 100%; height: 220px; border-radius: 10px; overflow: hidden;
-      position: relative; background: #111;
+      position: relative; background: #111; user-select: none;
     }
     .mid-banner img, .mid-banner video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .featured-slides {
+      display: flex; height: 100%; width: 100%;
+      transition: transform .5s cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: transform;
+    }
+    .featured-slide {
+      width: 100%; height: 100%; flex: 0 0 100%;
+      position: relative; cursor: pointer;
+    }
+    .featured-slide img, .featured-slide video {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .featured-dots {
+      position: absolute; bottom: 10px; left: 50%;
+      transform: translateX(-50%); display: flex; gap: 6px; z-index: 5;
+    }
+    .featured-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.45); border: none; padding: 0;
+      cursor: pointer; transition: all .25s ease;
+    }
+    .featured-dot.active {
+      width: 18px; border-radius: 99px; background: #ffffff;
+    }
 
     /* ── SHOP BY CATEGORY (2x2 Grid with Krona One dark overlay) ── */
     .category-grid-2col {
@@ -896,7 +920,90 @@
       } catch (e) { console.warn("Site config load failed", e); }
     }
 
-    /* INDEX MEDIA LOAD (Mid Banner & Secondary Banner) */
+    /* ── FEATURED MEDIA SLIDER (Slidable from left to right) ── */
+    let featIndex = 0, featTimer = null, featTotal = 0;
+    let featTouchStartX = 0, featTouchEndX = 0;
+    let featSliderInitialized = false;
+
+    function buildFeaturedDots(count) {
+      const dotsWrap = document.getElementById("featuredDots");
+      if (!dotsWrap) return;
+      dotsWrap.innerHTML = "";
+      if (count <= 1) return;
+      for (let i = 0; i < count; i++) {
+        const btn = document.createElement("button");
+        btn.className = "featured-dot" + (i === 0 ? " active" : "");
+        btn.setAttribute("aria-label", `Slide ${i + 1}`);
+        btn.addEventListener("click", () => { showFeaturedSlide(i); startFeaturedTimer(); });
+        dotsWrap.appendChild(btn);
+      }
+    }
+
+    function showFeaturedSlide(i) {
+      featIndex = i;
+      const slides = document.getElementById("featuredSlides");
+      if (slides) slides.style.transform = `translateX(-${i * 100}%)`;
+      document.querySelectorAll("#featuredDots .featured-dot").forEach((d, idx) => d.classList.toggle("active", idx === i));
+    }
+
+    function nextFeaturedSlide() {
+      if (featTotal > 1) {
+        featIndex = (featIndex + 1) % featTotal;
+        showFeaturedSlide(featIndex);
+      }
+    }
+
+    function prevFeaturedSlide() {
+      if (featTotal > 1) {
+        featIndex = (featIndex - 1 + featTotal) % featTotal;
+        showFeaturedSlide(featIndex);
+      }
+    }
+
+    function startFeaturedTimer() {
+      clearInterval(featTimer);
+      if (featTotal > 1) featTimer = setInterval(nextFeaturedSlide, 4500);
+    }
+
+    function initFeaturedSliderEvents() {
+      if (featSliderInitialized) return;
+      const slider = document.getElementById("midBanner");
+      if (!slider) return;
+      featSliderInitialized = true;
+
+      slider.addEventListener("touchstart", e => {
+        featTouchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      slider.addEventListener("touchend", e => {
+        featTouchEndX = e.changedTouches[0].screenX;
+        const diff = featTouchEndX - featTouchStartX;
+        if (Math.abs(diff) > 35) {
+          if (diff < 0) nextFeaturedSlide();
+          else prevFeaturedSlide();
+          startFeaturedTimer();
+        }
+      }, { passive: true });
+
+      let isMouseDown = false, mouseStartX = 0;
+      slider.addEventListener("mousedown", e => {
+        isMouseDown = true;
+        mouseStartX = e.clientX;
+      });
+      slider.addEventListener("mouseup", e => {
+        if (!isMouseDown) return;
+        isMouseDown = false;
+        const diff = e.clientX - mouseStartX;
+        if (Math.abs(diff) > 35) {
+          if (diff < 0) nextFeaturedSlide();
+          else prevFeaturedSlide();
+          startFeaturedTimer();
+        }
+      });
+      slider.addEventListener("mouseleave", () => { isMouseDown = false; });
+    }
+
+    /* INDEX MEDIA LOAD (Mid Banner Featured Slider & Secondary Banner) */
     async function loadIndexMedia() {
       setProgress(80, "Loading Featured Media…");
       const midBanner       = document.getElementById("midBanner");
@@ -906,28 +1013,47 @@
         if (!snap.exists()) return;
         let items = [];
         snap.forEach(d => { const v = d.val(); items.push(v); });
-        const featured = items.filter(m => m.section === "featured" && (m.mediaUrl || m.imgUrl));
+        const featured = items.filter(m => m.section === "featured" && (m.mediaUrl || m.imgUrl))
+                              .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-        if (featured[0]) {
-          const url = featured[0].mediaUrl || featured[0].imgUrl;
-          const link= featured[0].link || "shop.html";
-          const isVid = featured[0].mediaType === "video" || isVideoUrl(url);
-          midBanner.innerHTML = isVid
-            ? `<video src="${url}" autoplay muted loop playsinline onclick="window.location.href='${link}'" style="cursor:pointer;"></video>`
-            : `<img src="${url}" alt="Mid Banner" onclick="window.location.href='${link}'" style="cursor:pointer;" />`;
-        } else {
-          midBanner.innerHTML = `<img src="https://images.unsplash.com/photo-1577223625816-7546f13df25d?q=80&w=800&auto=format&fit=crop" alt="Mid Banner" />`;
+        if (midBanner) {
+          const mediasToDisplay = featured.length ? featured : [
+            { mediaUrl: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?q=80&w=800&auto=format&fit=crop", link: "shop.html" }
+          ];
+
+          featTotal = mediasToDisplay.length;
+          midBanner.innerHTML = `
+            <div class="featured-slides" id="featuredSlides">
+              ${mediasToDisplay.map((m, idx) => {
+                const url = m.mediaUrl || m.imgUrl;
+                const link = m.link || "shop.html";
+                const isVid = m.mediaType === "video" || isVideoUrl(url);
+                const mediaHtml = isVid
+                  ? `<video src="${url}" autoplay muted loop playsinline onclick="window.location.href='${link}'" style="cursor:pointer;"></video>`
+                  : `<img src="${url}" alt="Featured Media ${idx + 1}" onclick="window.location.href='${link}'" style="cursor:pointer;" />`;
+                return `<div class="featured-slide">${mediaHtml}</div>`;
+              }).join("")}
+            </div>
+            <div class="featured-dots" id="featuredDots"></div>
+          `;
+
+          buildFeaturedDots(featTotal);
+          showFeaturedSlide(0);
+          startFeaturedTimer();
+          initFeaturedSliderEvents();
         }
 
-        if (featured[1]) {
-          const url = featured[1].mediaUrl || featured[1].imgUrl;
-          const link= featured[1].link || "shop.html";
-          const isVid = featured[1].mediaType === "video" || isVideoUrl(url);
-          secondaryBanner.innerHTML = isVid
-            ? `<video src="${url}" autoplay muted loop playsinline onclick="window.location.href='${link}'" style="cursor:pointer;"></video>`
-            : `<img src="${url}" alt="Secondary Banner" onclick="window.location.href='${link}'" style="cursor:pointer;" />`;
-        } else {
-          secondaryBanner.innerHTML = `<img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=800&auto=format&fit=crop" alt="Secondary Banner" />`;
+        if (secondaryBanner) {
+          if (featured[1]) {
+            const url = featured[1].mediaUrl || featured[1].imgUrl;
+            const link= featured[1].link || "shop.html";
+            const isVid = featured[1].mediaType === "video" || isVideoUrl(url);
+            secondaryBanner.innerHTML = isVid
+              ? `<video src="${url}" autoplay muted loop playsinline onclick="window.location.href='${link}'" style="cursor:pointer;"></video>`
+              : `<img src="${url}" alt="Secondary Banner" onclick="window.location.href='${link}'" style="cursor:pointer;" />`;
+          } else {
+            secondaryBanner.innerHTML = `<img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=800&auto=format&fit=crop" alt="Secondary Banner" />`;
+          }
         }
       } catch (e) {
         console.error("Index media load failed", e);
