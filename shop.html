@@ -643,7 +643,6 @@
     <!-- SLIDABLE CATEGORY BAR -->
     <div class="cat-slider-wrap">
       <div class="cat-slider" id="catSlider">
-        <button type="button" class="cat-pill active" data-cat="" onclick="handleCatPillClick(this)">All</button>
         <button type="button" class="cat-pill" data-cat="hot picks" onclick="handleCatPillClick(this)">Hot picks</button>
         <button type="button" class="cat-pill" data-cat="world cup" onclick="handleCatPillClick(this)">World cup</button>
         <button type="button" class="cat-pill" data-cat="retro" onclick="handleCatPillClick(this)">Retro</button>
@@ -1250,7 +1249,7 @@
 
     window.handleCatPillClick = function(pill) {
       const cat = pill.getAttribute('data-cat') || '';
-      if (pill.classList.contains('active') && cat !== '') {
+      if (pill.classList.contains('active')) {
         selectCategory('');
       } else {
         selectCategory(cat);
