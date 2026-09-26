@@ -3113,26 +3113,78 @@
                 </div>
               </div>
 
-              <!-- SECTION 3: 10 SEQUENCED PRODUCTS BEFORE VIEW ALL PRODUCTS -->
+              <!-- SECTION 3: 9:16 RATIO VERTICAL MID BANNER -->
               <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:24px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
                   <div>
                     <div style="font-weight:700;font-size:15px;color:var(--text);display:flex;align-items:center;gap:8px;">
-                      <span>3️⃣</span> Sequence of 10 Products (Before "View All Products")
+                      <span>3️⃣</span> 📱 9:16 Vertical Mid Banner (After 8 Products)
                     </div>
                     <div style="font-size:12px;color:var(--muted);margin-top:2px;">
-                      Select and order the exact 10 jerseys displayed in the bottom grid right before the "VIEW ALL PRODUCTS" button. Use ▲ and ▼ to reorder.
+                      Configures the full-width 9:16 ratio vertical banner displayed right after the first 8 products in the bottom section.
                     </div>
-                  </div>
-                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                    <button class="btn btn-ghost btn-sm" onclick="autoFillBottom10Products()">⚡ Auto-fill 10 Active Products</button>
-                    <button class="btn btn-ghost btn-sm" onclick="clearBottom10Products()">Clear All</button>
                   </div>
                 </div>
 
-                <div id="bottom10SlotsList" style="display:flex;flex-direction:column;gap:10px;">
-                  <!-- 10 sequenced slots populated by JS -->
-                  <div style="padding:20px;color:var(--muted);font-size:13px;">Loading 10 product slots…</div>
+                <div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;">
+                  <!-- 9:16 Ratio Visual Preview -->
+                  <div style="width:140px;aspect-ratio:9/16;background:var(--surface);border:1.5px dashed var(--border);border-radius:10px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="banner916_preview_wrap">
+                    <img id="idx_banner916_preview" src="" alt="9:16 Banner Preview" style="width:100%;height:100%;object-fit:cover;display:none;" onerror="this.style.display='none'" />
+                    <video id="idx_banner916_vid_preview" src="" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:none;"></video>
+                    <div id="idx_banner916_empty" style="text-align:center;padding:12px;color:var(--muted);font-size:11px;">
+                      <div style="font-size:24px;margin-bottom:4px;">📱</div>
+                      9:16 Ratio<br>Preview
+                    </div>
+                  </div>
+
+                  <!-- Inputs -->
+                  <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:12px;">
+                    <div>
+                      <label style="font-size:12px;font-weight:600;color:var(--text);display:block;margin-bottom:4px;">Banner Image or Video URL</label>
+                      <div style="display:flex;gap:8px;align-items:center;">
+                        <input type="url" id="idx_banner916_url" class="form-input" placeholder="https://.../banner.jpg or .mp4" style="flex:1;font-size:13px;" oninput="updateBanner916Preview(this.value)" />
+                        <label class="btn btn-ghost btn-sm" style="cursor:pointer;margin:0;white-space:nowrap;font-size:12px;padding:8px 14px;">
+                          📁 Upload File
+                          <input type="file" accept="image/*,video/*" style="display:none;" onchange="uploadBanner916File(this.files[0])" />
+                        </label>
+                      </div>
+                      <div id="idx_banner916_upload_prog" style="display:none;height:4px;background:var(--surface);border-radius:2px;overflow:hidden;margin-top:6px;">
+                        <div id="idx_banner916_upload_fill" style="width:0%;height:100%;background:var(--primary);transition:width 0.3s;"></div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style="font-size:12px;font-weight:600;color:var(--text);display:block;margin-bottom:4px;">Clickable Link URL (Optional)</label>
+                      <input type="text" id="idx_banner916_link" class="form-input" placeholder="shop.html or https://..." style="font-size:13px;" />
+                    </div>
+
+                    <div style="display:flex;gap:8px;margin-top:4px;">
+                      <button class="btn btn-ghost btn-sm" onclick="clearBanner916Config()">✕ Clear Banner</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION 4: 16 SEQUENCED PRODUCTS (8 BEFORE BANNER + 8 AFTER BANNER) -->
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:24px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                  <div>
+                    <div style="font-weight:700;font-size:15px;color:var(--text);display:flex;align-items:center;gap:8px;">
+                      <span>4️⃣</span> Sequence of 16 Products (8 Before Banner + 8 After Banner)
+                    </div>
+                    <div style="font-size:12px;color:var(--muted);margin-top:2px;">
+                      Configure the 8 products displayed before the 9:16 banner, and the 8 products displayed after the banner before "VIEW ALL PRODUCTS".
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-ghost btn-sm" onclick="autoFillBottom16Products()">⚡ Auto-fill 16 Active Products</button>
+                    <button class="btn btn-ghost btn-sm" onclick="clearBottom16Products()">Clear All</button>
+                  </div>
+                </div>
+
+                <div id="bottom16SlotsList" style="display:flex;flex-direction:column;gap:10px;">
+                  <!-- Populated by JS -->
+                  <div style="padding:20px;color:var(--muted);font-size:13px;">Loading product slots…</div>
                 </div>
               </div>
 
@@ -5074,6 +5126,7 @@
       { key: 'featured_3', section: 'featured', label: 'Featured 3', row: 'featuredBoxesRow', cls: '' },
       { key: 'featured_4', section: 'featured', label: 'Featured 4', row: 'featuredBoxesRow', cls: '' },
       { key: 'featured_5', section: 'featured', label: 'Featured 5', row: 'featuredBoxesRow', cls: '' },
+      { key: 'banner_9_16', section: 'banner_9_16', label: '9:16 Banner (After 8 Products)', row: 'featuredBoxesRow', cls: 'reel' },
       { key: 'gallery_photo_1', section: 'gallery', label: 'Gallery Photo 1', row: 'galleryBoxesRow', cls: 'gallery-wide' },
       { key: 'gallery_photo_2', section: 'gallery', label: 'Gallery Photo 2', row: 'galleryBoxesRow', cls: '' },
       { key: 'reel_1', section: 'reels', label: 'Reel 1', row: 'reelsBoxesRow', cls: 'reel' },
@@ -5727,7 +5780,9 @@
     let _indexPageConfig = {
       beforeClubsProductIds: ['', ''],
       clubs: JSON.parse(JSON.stringify(DEFAULT_INDEX_CLUBS)),
-      bottom10ProductIds: Array(10).fill('')
+      bottom16ProductIds: Array(16).fill(''),
+      bottom10ProductIds: Array(10).fill(''),
+      banner916: { url: '', link: '', mediaType: '' }
     };
 
     async function initIndexPageTab() {
@@ -5742,31 +5797,48 @@
           }
         }
 
-        const cfgSnap = await get(dbRef(db, 'settings/indexPageConfig'));
+        const [cfgSnap, mediaSnap] = await Promise.all([
+          get(dbRef(db, 'settings/indexPageConfig')),
+          get(dbRef(db, 'indexMedia/banner_9_16'))
+        ]);
+
         if (cfgSnap.exists()) {
           const c = cfgSnap.val();
           _indexPageConfig.beforeClubsProductIds = Array.isArray(c.beforeClubsProductIds) && c.beforeClubsProductIds.length ? c.beforeClubsProductIds : ['', ''];
           _indexPageConfig.clubs = (Array.isArray(c.clubs) && c.clubs.length) ? c.clubs : JSON.parse(JSON.stringify(DEFAULT_INDEX_CLUBS));
-          _indexPageConfig.bottom10ProductIds = Array.isArray(c.bottom10ProductIds) ? c.bottom10ProductIds : [];
+          const loadedBottom = Array.isArray(c.bottom16ProductIds) && c.bottom16ProductIds.length
+            ? c.bottom16ProductIds
+            : (Array.isArray(c.bottom10ProductIds) ? c.bottom10ProductIds : []);
+          _indexPageConfig.bottom16ProductIds = loadedBottom;
+          _indexPageConfig.bottom10ProductIds = loadedBottom.slice(0, 10);
+          _indexPageConfig.banner916 = c.banner916 || {};
         } else {
           // Initial defaults from active products
           const activeProds = (_allProducts || []).filter(p => !p.status || p.status === 'active');
           _indexPageConfig.beforeClubsProductIds = activeProds.slice(0, 2).map(p => p.id);
           while (_indexPageConfig.beforeClubsProductIds.length < 2) _indexPageConfig.beforeClubsProductIds.push('');
           _indexPageConfig.clubs = JSON.parse(JSON.stringify(DEFAULT_INDEX_CLUBS));
+          _indexPageConfig.bottom16ProductIds = activeProds.slice(2, 18).map(p => p.id);
           _indexPageConfig.bottom10ProductIds = activeProds.slice(2, 12).map(p => p.id);
+          _indexPageConfig.banner916 = {};
+        }
+
+        if (!_indexPageConfig.banner916?.url && mediaSnap.exists()) {
+          const m = mediaSnap.val();
+          _indexPageConfig.banner916 = { url: m.mediaUrl || m.imgUrl || '', link: m.link || '', mediaType: m.mediaType || '' };
         }
       } catch (e) {
         console.warn('Could not load indexPageConfig:', e);
       }
 
-      while (_indexPageConfig.bottom10ProductIds.length < 10) {
-        _indexPageConfig.bottom10ProductIds.push('');
+      while ((_indexPageConfig.bottom16ProductIds || []).length < 16) {
+        _indexPageConfig.bottom16ProductIds.push('');
       }
 
       renderBeforeClubsSlots();
       renderClubsConfig();
-      renderBottom10Slots();
+      renderBanner916Config();
+      renderBottom16Slots();
     }
 
     function getActiveProductsList() {
@@ -5900,33 +5972,133 @@
       toast('Club icons reset to default. Click "Save All Settings" to apply.', 'info');
     }
 
-    /* ── 3. 10 SEQUENCED PRODUCTS BEFORE VIEW ALL ── */
-    function renderBottom10Slots() {
-      const list = document.getElementById('bottom10SlotsList');
-      if (!list) return;
-      while ((_indexPageConfig.bottom10ProductIds || []).length < 10) {
-        _indexPageConfig.bottom10ProductIds.push('');
+    /* ── 3. 9:16 VERTICAL MID BANNER (AFTER 8 PRODUCTS) ── */
+    function renderBanner916Config() {
+      const b = _indexPageConfig.banner916 || {};
+      const urlInp = document.getElementById('idx_banner916_url');
+      const linkInp = document.getElementById('idx_banner916_link');
+      if (urlInp) urlInp.value = b.url || '';
+      if (linkInp) linkInp.value = b.link || '';
+      updateBanner916Preview(b.url || '');
+    }
+
+    function updateBanner916Preview(url) {
+      if (!_indexPageConfig.banner916) _indexPageConfig.banner916 = {};
+      _indexPageConfig.banner916.url = (url || '').trim();
+      const img = document.getElementById('idx_banner916_preview');
+      const vid = document.getElementById('idx_banner916_vid_preview');
+      const empty = document.getElementById('idx_banner916_empty');
+      const isVid = isVideoUrl(url);
+
+      if (!url) {
+        if (img) img.style.display = 'none';
+        if (vid) { vid.style.display = 'none'; vid.pause(); }
+        if (empty) empty.style.display = 'block';
+        return;
       }
 
-      list.innerHTML = _indexPageConfig.bottom10ProductIds.slice(0, 10).map((id, idx) => {
+      if (empty) empty.style.display = 'none';
+      if (isVid) {
+        if (img) img.style.display = 'none';
+        if (vid) {
+          vid.src = url;
+          vid.style.display = 'block';
+          vid.play().catch(() => {});
+        }
+      } else {
+        if (vid) { vid.style.display = 'none'; vid.pause(); }
+        if (img) {
+          img.src = url;
+          img.style.display = 'block';
+        }
+      }
+    }
+
+    async function uploadBanner916File(file) {
+      if (!file) return;
+      const prog = document.getElementById('idx_banner916_upload_prog');
+      const fill = document.getElementById('idx_banner916_upload_fill');
+      if (prog) prog.style.display = 'block';
+      if (fill) fill.style.width = '20%';
+      toast('Uploading 9:16 banner…', 'info');
+      try {
+        await uploadAssetToFirebase(file, 'banners', 'idx_banner916_url');
+        const urlInp = document.getElementById('idx_banner916_url');
+        if (urlInp && urlInp.value) {
+          updateBanner916Preview(urlInp.value);
+          if (fill) fill.style.width = '100%';
+          setTimeout(() => { if (prog) prog.style.display = 'none'; if (fill) fill.style.width = '0%'; }, 600);
+          toast('9:16 banner uploaded! Click "Save All Settings" to apply.', 'success');
+        }
+      } catch (e) {
+        toast('Upload failed: ' + e.message, 'error');
+        if (prog) prog.style.display = 'none';
+      }
+    }
+
+    function clearBanner916Config() {
+      if (!_indexPageConfig.banner916) _indexPageConfig.banner916 = {};
+      _indexPageConfig.banner916.url = '';
+      _indexPageConfig.banner916.link = '';
+      const urlInp = document.getElementById('idx_banner916_url');
+      const linkInp = document.getElementById('idx_banner916_link');
+      if (urlInp) urlInp.value = '';
+      if (linkInp) linkInp.value = '';
+      updateBanner916Preview('');
+      toast('9:16 banner cleared. Click "Save All Settings" to apply.', 'info');
+    }
+
+    /* ── 4. 16 SEQUENCED PRODUCTS (8 BEFORE BANNER + 8 AFTER BANNER) ── */
+    function renderBottom16Slots() {
+      const list = document.getElementById('bottom16SlotsList') || document.getElementById('bottom10SlotsList');
+      if (!list) return;
+      while ((_indexPageConfig.bottom16ProductIds || []).length < 16) {
+        _indexPageConfig.bottom16ProductIds.push('');
+      }
+
+      const slots = _indexPageConfig.bottom16ProductIds.slice(0, 16);
+      let html = '';
+
+      html += `<div style="font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;padding:4px 0 2px 0;">
+        <span>⚽</span> Section A: First 8 Products (Displayed Before 9:16 Banner)
+      </div>`;
+
+      for (let idx = 0; idx < 16; idx++) {
+        if (idx === 8) {
+          html += `
+            <div style="background:var(--primary);color:#fff;border-radius:var(--radius);padding:10px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:10px;margin:8px 0;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+              <span style="font-size:18px;">📱</span>
+              <div style="flex:1;">
+                <div>9:16 Ratio Banner Appears Here on Homepage</div>
+                <div style="font-size:11px;font-weight:400;opacity:0.9;">Editable in Section 3 above</div>
+              </div>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;padding:4px 0 2px 0;">
+              <span>⚽</span> Section B: Next 8 Products (Displayed After 9:16 Banner)
+            </div>
+          `;
+        }
+
+        const id = slots[idx];
         const prod = (_allProducts || []).find(p => p.id === id);
         const img = prod ? (prod.imgUrl || (prod.images && prod.images[0]) || 'favicon.png') : '';
-        return `
+
+        html += `
           <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
             <!-- SEQUENCE BADGE & CONTROLS -->
             <div style="display:flex;align-items:center;gap:6px;">
-              <span style="width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0;">
+              <span style="width:28px;height:28px;border-radius:50%;background:${idx < 8 ? 'var(--primary)' : '#2563eb'};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0;">
                 #${idx + 1}
               </span>
               <div style="display:flex;flex-direction:column;gap:2px;">
-                <button class="btn btn-ghost btn-sm" onclick="moveBottom10Slot(${idx}, ${idx - 1})" ${idx === 0 ? 'disabled style="opacity:0.25;cursor:not-allowed;padding:1px 5px;"' : 'style="padding:1px 5px;"'} title="Move Up">▲</button>
-                <button class="btn btn-ghost btn-sm" onclick="moveBottom10Slot(${idx}, ${idx + 1})" ${idx === 9 ? 'disabled style="opacity:0.25;cursor:not-allowed;padding:1px 5px;"' : 'style="padding:1px 5px;"'} title="Move Down">▼</button>
+                <button class="btn btn-ghost btn-sm" onclick="moveBottom16Slot(${idx}, ${idx - 1})" ${idx === 0 ? 'disabled style="opacity:0.25;cursor:not-allowed;padding:1px 5px;"' : 'style="padding:1px 5px;"'} title="Move Up">▲</button>
+                <button class="btn btn-ghost btn-sm" onclick="moveBottom16Slot(${idx}, ${idx + 1})" ${idx === 15 ? 'disabled style="opacity:0.25;cursor:not-allowed;padding:1px 5px;"' : 'style="padding:1px 5px;"'} title="Move Down">▼</button>
               </div>
             </div>
 
             <!-- PRODUCT SELECT -->
             <div style="flex:1;min-width:220px;">
-              <select class="form-input" onchange="onBottom10SlotChange(${idx}, this.value)" style="font-size:13px;width:100%;">
+              <select class="form-input" onchange="onBottom16SlotChange(${idx}, this.value)" style="font-size:13px;width:100%;">
                 ${buildProductOptions(id)}
               </select>
             </div>
@@ -5943,46 +6115,54 @@
             </div>
 
             <!-- CLEAR -->
-            <button class="btn btn-ghost btn-sm" onclick="onBottom10SlotChange(${idx}, '')" title="Clear slot" style="color:var(--muted);padding:4px 8px;font-size:12px;">✕</button>
+            <button class="btn btn-ghost btn-sm" onclick="onBottom16SlotChange(${idx}, '')" title="Clear slot" style="color:var(--muted);padding:4px 8px;font-size:12px;">✕</button>
           </div>
         `;
-      }).join('');
+      }
+
+      list.innerHTML = html;
     }
 
-    function onBottom10SlotChange(index, newId) {
-      _indexPageConfig.bottom10ProductIds[index] = newId;
-      renderBottom10Slots();
+    function onBottom16SlotChange(index, newId) {
+      _indexPageConfig.bottom16ProductIds[index] = newId;
+      renderBottom16Slots();
     }
 
-    function moveBottom10Slot(fromIdx, toIdx) {
-      if (toIdx < 0 || toIdx >= 10) return;
-      const temp = _indexPageConfig.bottom10ProductIds[fromIdx];
-      _indexPageConfig.bottom10ProductIds[fromIdx] = _indexPageConfig.bottom10ProductIds[toIdx];
-      _indexPageConfig.bottom10ProductIds[toIdx] = temp;
-      renderBottom10Slots();
+    function moveBottom16Slot(fromIdx, toIdx) {
+      if (toIdx < 0 || toIdx >= 16) return;
+      const temp = _indexPageConfig.bottom16ProductIds[fromIdx];
+      _indexPageConfig.bottom16ProductIds[fromIdx] = _indexPageConfig.bottom16ProductIds[toIdx];
+      _indexPageConfig.bottom16ProductIds[toIdx] = temp;
+      renderBottom16Slots();
     }
 
-    function autoFillBottom10Products() {
+    function autoFillBottom16Products() {
       const active = getActiveProductsList();
       const beforeIds = new Set((_indexPageConfig.beforeClubsProductIds || []).filter(Boolean));
-      // Candidates: active products not already in before-clubs
       const candidates = active.filter(p => !beforeIds.has(p.id));
-      const chosen = candidates.length >= 10 ? candidates : active;
+      const chosen = candidates.length >= 16 ? candidates : active;
 
-      _indexPageConfig.bottom10ProductIds = Array(10).fill('').map((_, i) => {
+      _indexPageConfig.bottom16ProductIds = Array(16).fill('').map((_, i) => {
         return chosen[i] ? chosen[i].id : '';
       });
 
-      renderBottom10Slots();
-      toast('Populated 10 slots with latest active products. Click "Save All Settings" to apply.', 'info');
+      renderBottom16Slots();
+      toast('Populated 16 slots with latest active products. Click "Save All Settings" to apply.', 'info');
     }
 
-    function clearBottom10Products() {
-      _indexPageConfig.bottom10ProductIds = Array(10).fill('');
-      renderBottom10Slots();
+    function clearBottom16Products() {
+      _indexPageConfig.bottom16ProductIds = Array(16).fill('');
+      renderBottom16Slots();
     }
 
-    /* ── 4. SAVE & RESET ── */
+    // Backward-compatible aliases for 10-slot functions
+    function renderBottom10Slots() { renderBottom16Slots(); }
+    function onBottom10SlotChange(i, v) { onBottom16SlotChange(i, v); }
+    function moveBottom10Slot(f, t) { moveBottom16Slot(f, t); }
+    function autoFillBottom10Products() { autoFillBottom16Products(); }
+    function clearBottom10Products() { clearBottom16Products(); }
+
+    /* ── 5. SAVE & RESET ── */
     async function saveIndexPageConfig() {
       const statusEl = document.getElementById('indexPageSaveStatus');
       if (statusEl) statusEl.textContent = 'Saving settings to Firebase…';
@@ -5999,18 +6179,41 @@
         };
       });
 
-      const bottom10 = (_indexPageConfig.bottom10ProductIds || []).slice(0, 10).map(id => (id || '').trim());
+      const bottom16 = (_indexPageConfig.bottom16ProductIds || []).slice(0, 16).map(id => (id || '').trim());
+      const bannerUrl  = (document.getElementById('idx_banner916_url')?.value || '').trim();
+      const bannerLink = (document.getElementById('idx_banner916_link')?.value || '').trim();
+      const isVid = isVideoUrl(bannerUrl);
+
+      const banner916Data = {
+        url: bannerUrl,
+        link: bannerLink,
+        mediaType: isVid ? 'video' : 'image',
+        updatedAt: Date.now()
+      };
 
       const payload = {
         beforeClubsProductIds: beforeClubs,
         clubs: clubs,
-        bottom10ProductIds: bottom10,
+        bottom16ProductIds: bottom16,
+        bottom10ProductIds: bottom16.slice(0, 10),
+        banner916: banner916Data,
         updatedAt: Date.now()
       };
 
       try {
         const { db, dbRef, set } = await waitFb();
-        await set(dbRef(db, 'settings/indexPageConfig'), payload);
+        await Promise.all([
+          set(dbRef(db, 'settings/indexPageConfig'), payload),
+          set(dbRef(db, 'indexMedia/banner_9_16'), {
+            section: 'banner_9_16',
+            label: '9:16 Vertical Banner',
+            imgUrl: bannerUrl,
+            mediaUrl: bannerUrl,
+            mediaType: isVid ? 'video' : 'image',
+            link: bannerLink,
+            updatedAt: Date.now()
+          })
+        ]);
         _indexPageConfig = payload;
         toast('Index Page settings saved successfully! 🏠', 'success');
         if (statusEl) {
@@ -6028,12 +6231,15 @@
         _indexPageConfig = {
           beforeClubsProductIds: active.slice(0, 2).map(p => p.id),
           clubs: JSON.parse(JSON.stringify(DEFAULT_INDEX_CLUBS)),
-          bottom10ProductIds: active.slice(2, 12).map(p => p.id)
+          bottom16ProductIds: active.slice(2, 18).map(p => p.id),
+          bottom10ProductIds: active.slice(2, 12).map(p => p.id),
+          banner916: { url: '', link: '', mediaType: '' }
         };
-        while (_indexPageConfig.bottom10ProductIds.length < 10) _indexPageConfig.bottom10ProductIds.push('');
+        while (_indexPageConfig.bottom16ProductIds.length < 16) _indexPageConfig.bottom16ProductIds.push('');
         renderBeforeClubsSlots();
         renderClubsConfig();
-        renderBottom10Slots();
+        renderBanner916Config();
+        renderBottom16Slots();
         toast('Defaults restored. Click "Save All Settings" to commit to database.', 'info');
       });
     }

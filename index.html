@@ -254,13 +254,13 @@
     }
     .secondary-banner img, .secondary-banner video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    /* ── 9:16 VERTICAL PROMO BANNER ── */
-    .vertical-banner-container { padding: 0 11px; margin-bottom: 24px; }
-    .vertical-banner {
+    /* ── 9:16 RATIO BANNER (After 8 Products) ── */
+    .banner-9-16-container { padding: 0 11px; margin-bottom: 24px; }
+    .banner-9-16 {
       width: 100%; aspect-ratio: 9 / 16; border-radius: 10px; overflow: hidden;
-      position: relative; background: #111; display: block;
+      position: relative; background: #111; cursor: pointer; user-select: none;
     }
-    .vertical-banner img, .vertical-banner video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .banner-9-16 img, .banner-9-16 video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
     /* ── FOOTER ("Get in touch" & "Meet the Team" Figma node 65:22) ── */
     .footer-figma {
@@ -464,21 +464,19 @@
       </div>
     </section>
 
-    <!-- MORE PRODUCTS GRID (FIRST 8 PRODUCTS) -->
+    <!-- MORE PRODUCTS GRID (First 8 Products) -->
     <section class="product-grid-2col" id="moreProductsGrid">
       <div class="product-card-figma skeleton-box" style="height: 280px;"></div>
       <div class="product-card-figma skeleton-box" style="height: 280px;"></div>
     </section>
 
-    <!-- 9:16 VERTICAL PROMO BANNER -->
-    <section class="vertical-banner-container" id="verticalBannerContainer">
-      <div class="vertical-banner" id="verticalBanner">
-        <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=800&auto=format&fit=crop" alt="Special Promo Banner" onclick="window.location.href='shop.html'" style="cursor:pointer;width:100%;height:100%;object-fit:cover;display:block;" />
-      </div>
+    <!-- 9:16 RATIO BANNER (After 8 Products) -->
+    <section class="banner-9-16-container" id="banner916Container" style="display:none;">
+      <div class="banner-9-16" id="banner916"></div>
     </section>
 
-    <!-- MORE PRODUCTS GRID (NEXT 8 PRODUCTS) -->
-    <section class="product-grid-2col" id="afterBannerProductsGrid" style="display:none;"></section>
+    <!-- MORE PRODUCTS GRID 2 (Next 8 Products) -->
+    <section class="product-grid-2col" id="moreProductsGrid2" style="display:none;"></section>
 
     <!-- FOOTER ("Get in touch" & "Meet the Team") -->
     <footer class="footer-figma">
@@ -793,8 +791,6 @@
       const beforeClubsGrid = document.getElementById("beforeClubsProductsGrid");
       const featuredGrid    = document.getElementById("featuredProductsGrid");
       const moreGrid        = document.getElementById("moreProductsGrid");
-      const afterGrid       = document.getElementById("afterBannerProductsGrid");
-      const vBannerWrap     = document.getElementById("verticalBannerContainer");
       try {
         const [snap, cfgSnap] = await Promise.all([
           get(ref(rtdb, "products")),
@@ -805,8 +801,6 @@
           if (beforeClubsGrid) beforeClubsGrid.style.display = "none";
           if (featuredGrid) featuredGrid.innerHTML = `<div style="padding:20px;grid-column:span 2;text-align:center;color:#888;">No jerseys listed.</div>`;
           if (moreGrid) moreGrid.innerHTML = `<div style="padding:20px;grid-column:span 2;text-align:center;color:#888;">No jerseys listed.</div>`;
-          if (afterGrid) afterGrid.style.display = "none";
-          if (vBannerWrap) vBannerWrap.style.display = "none";
           return;
         }
 
@@ -858,30 +852,30 @@
           }
         }
 
-        // 2. 16 SEQUENCED PRODUCTS: 8 BEFORE 9:16 BANNER, 8 AFTER BANNER
-        let final16 = [];
-        const usedIds = new Set(beforeItems.map(p => p._id));
-        if (beforeItems.length === 0) {
-          products.slice(0, 2).forEach(p => usedIds.add(p._id));
-        }
+        // 2. SEQUENCED PRODUCTS (8 products -> 9:16 banner -> 8 products)
+        const bottomConfiguredIds = (cfg && Array.isArray(cfg.bottom16ProductIds) && cfg.bottom16ProductIds.length)
+          ? cfg.bottom16ProductIds
+          : (cfg && Array.isArray(cfg.bottom10ProductIds) ? cfg.bottom10ProductIds : []);
 
-        if (bottom10Ids.length > 0 && bottom10Ids.some(Boolean)) {
-          // Add configured products in the exact selected sequence
-          bottom10Ids.forEach(id => {
+        let finalBottomProducts = [];
+        const usedIds = new Set(beforeItems.map(p => p._id));
+
+        if (bottomConfiguredIds.length > 0 && bottomConfiguredIds.some(Boolean)) {
+          bottomConfiguredIds.forEach(id => {
             if (id) {
               const p = products.find(x => x._id === id);
-              if (p && !final16.includes(p)) {
-                final16.push(p);
+              if (p && !finalBottomProducts.includes(p)) {
+                finalBottomProducts.push(p);
                 usedIds.add(p._id);
               }
             }
           });
           // Backfill up to 16 with remaining active jerseys
-          if (final16.length < 16) {
+          if (finalBottomProducts.length < 16) {
             for (let p of products) {
-              if (final16.length >= 16) break;
+              if (finalBottomProducts.length >= 16) break;
               if (!usedIds.has(p._id)) {
-                final16.push(p);
+                finalBottomProducts.push(p);
                 usedIds.add(p._id);
               }
             }
@@ -889,34 +883,59 @@
         } else {
           // Default: 16 products starting after featured items
           const pool = products.filter(p => !usedIds.has(p._id));
-          final16 = pool.slice(0, 16);
+          finalBottomProducts = pool.slice(beforeItems.length > 0 ? 0 : 2, beforeItems.length > 0 ? 16 : 18);
         }
 
-        const first8 = final16.slice(0, 8);
-        const next8  = final16.slice(8, 16);
+        const first8 = finalBottomProducts.slice(0, 8);
+        const next8  = finalBottomProducts.slice(8, 16);
 
         if (first8.length && moreGrid) {
           moreGrid.style.display = "grid";
           moreGrid.innerHTML = first8.map(p => createCard(p)).join("");
-          if (vBannerWrap) vBannerWrap.style.display = "block";
         } else if (moreGrid) {
           moreGrid.style.display = "none";
-          if (vBannerWrap) vBannerWrap.style.display = "none";
         }
 
-        if (next8.length && afterGrid) {
-          afterGrid.style.display = "grid";
-          afterGrid.innerHTML = next8.map(p => createCard(p)).join("") + `
+        // Render 9:16 Banner (after 8 products)
+        const banner916Container = document.getElementById("banner916Container");
+        const banner916El        = document.getElementById("banner916");
+        let b916 = cfg && cfg.banner916;
+        if (!b916 || !b916.url) {
+          try {
+            const snap916 = await get(ref(rtdb, "indexMedia/banner_9_16"));
+            if (snap916.exists()) {
+              const v = snap916.val();
+              b916 = { url: v.mediaUrl || v.imgUrl, link: v.link };
+            }
+          } catch(e) {}
+        }
+        const bUrl  = (b916 && b916.url) || "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=800&auto=format&fit=crop";
+        const bLink = (b916 && b916.link) || "shop.html";
+        const isVid = isVideoUrl(bUrl);
+
+        if (banner916Container && banner916El) {
+          banner916El.onclick = () => { window.location.href = bLink; };
+          banner916El.innerHTML = isVid
+            ? `<video src="${bUrl}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
+            : `<img src="${bUrl}" alt="Featured Banner" style="width:100%;height:100%;object-fit:cover;display:block;" />`;
+          banner916Container.style.display = "block";
+        }
+
+        // Render next 8 products (after 9:16 banner)
+        const moreGrid2 = document.getElementById("moreProductsGrid2");
+        if (next8.length && moreGrid2) {
+          moreGrid2.style.display = "grid";
+          moreGrid2.innerHTML = next8.map(p => createCard(p)).join("") + `
             <div style="grid-column: span 2; text-align: center; margin-top: 14px; margin-bottom: 10px;">
               <button class="shop-now-btn" onclick="window.location.href='shop.html'" style="max-width:220px;margin:0 auto;display:block;">VIEW ALL PRODUCTS</button>
             </div>`;
-        } else {
-          if (afterGrid) afterGrid.style.display = "none";
-          if (moreGrid && first8.length) {
-            moreGrid.innerHTML += `
+        } else if (moreGrid2) {
+          moreGrid2.style.display = "none";
+          if (first8.length && moreGrid) {
+            moreGrid.insertAdjacentHTML("beforeend", `
               <div style="grid-column: span 2; text-align: center; margin-top: 14px; margin-bottom: 10px;">
                 <button class="shop-now-btn" onclick="window.location.href='shop.html'" style="max-width:220px;margin:0 auto;display:block;">VIEW ALL PRODUCTS</button>
-              </div>`;
+              </div>`);
           }
         }
 
@@ -1096,20 +1115,6 @@
               : `<img src="${url}" alt="Secondary Banner" onclick="window.location.href='${link}'" style="cursor:pointer;" />`;
           } else {
             secondaryBanner.innerHTML = `<img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=800&auto=format&fit=crop" alt="Secondary Banner" />`;
-          }
-        }
-
-        const verticalBanner = document.getElementById("verticalBanner");
-        if (verticalBanner) {
-          const reelItem = items.find(m => (m.section === "reels" || (m.key && m.key.startsWith("reel"))) && (m.mediaUrl || m.imgUrl));
-          const vItem = reelItem || featured[2] || items.find(m => m.section === "gallery" && (m.mediaUrl || m.imgUrl));
-          if (vItem) {
-            const url = vItem.mediaUrl || vItem.imgUrl;
-            const link = vItem.link || "shop.html";
-            const isVid = vItem.mediaType === "video" || isVideoUrl(url);
-            verticalBanner.innerHTML = isVid
-              ? `<video src="${url}" autoplay muted loop playsinline onclick="window.location.href='${link}'" style="cursor:pointer;width:100%;height:100%;object-fit:cover;display:block;"></video>`
-              : `<img src="${url}" alt="Promo Banner" onclick="window.location.href='${link}'" style="cursor:pointer;width:100%;height:100%;object-fit:cover;display:block;" />`;
           }
         }
       } catch (e) {
