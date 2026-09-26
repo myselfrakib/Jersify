@@ -294,62 +294,24 @@
     .pp-version-thumb-label { font-family: 'Ubuntu', sans-serif; font-size: 12px; font-weight: 300; color: #000; white-space: nowrap; }
 
     /* ══════════════════════════════════════════
-       STICKY ACTION BAR — Figma: solid black 393×87px
-       Left: 66×66 grey square (heart/cart icon)
-       Right: grey area with "Buy Now" Lato 20px tracking 4px
+       UNSCROLLABLE ACTION BAR — Previously present Add to Cart & Buy Now buttons
     ══════════════════════════════════════════ */
-    .pp-actions {
+    .pp-inline-actions {
       position: fixed;
       bottom: 0; left: 0; right: 0;
       max-width: 430px;
       margin: 0 auto;
-      background: #000;
-      height: 87px;
-      padding: 0;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 12px 16px 14px;
       display: none;
-      gap: 0;
+      gap: 10px;
       z-index: 210;
-      align-items: stretch;
+      box-shadow: 0 -4px 18px rgba(0,0,0,0.08);
+      border-top: 1px solid rgba(0,0,0,0.06);
     }
-    .pp-actions.visible { display: flex; }
-
-    .pp-cart-btn {
-      width: 66px;
-      height: 66px;
-      flex: 0 0 66px;
-      margin: 10.5px 0 10.5px 15px;
-      border: none;
-      border-radius: 0;
-      background: #d9d9d9;
-      color: #333;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      transition: background .2s ease;
-    }
-    .pp-cart-btn:hover { background: #c8c8c8; }
-    .pp-cart-btn:active { background: #b8b8b8; }
-    .pp-cart-btn svg { width: 28px; height: 28px; flex-shrink: 0; }
-
-    .pp-buy-btn {
-      flex: 1;
-      margin: 10.5px 15px 10.5px 13px;
-      border: none;
-      border-radius: 0;
-      background: #d9d9d9;
-      color: #000;
-      font-size: 20px;
-      font-family: 'Lato', sans-serif;
-      font-weight: 400;
-      letter-spacing: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background .2s ease;
-    }
-    .pp-buy-btn:hover { background: #c8c8c8; }
-    .pp-buy-btn:active { background: #b8b8b8; }
+    .pp-inline-actions.visible { display: flex; }
 
     /* Size hint inside action bar when no size selected */
     .pp-size-hint {
@@ -371,13 +333,6 @@
     .pp-size-hint.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
-    }
-
-    /* Inline action buttons below size selection */
-    .pp-inline-actions {
-      display: flex;
-      gap: 10px;
-      margin: 14px 0 18px;
     }
     .pp-inline-cart-btn {
       flex: 1;
@@ -787,14 +742,6 @@
         <div class="pp-version-thumbs" id="ppVersionThumbs"></div>
       </div>
 
-      <!-- Inline action buttons (below size chart) -->
-      <div class="pp-inline-actions">
-        <button class="pp-inline-cart-btn" onclick="ppAddToCart()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-          Add to Cart
-        </button>
-        <button class="pp-inline-buy-btn" id="ppInlineBuyBtn">Buy Now</button>
-      </div>
 
       <!-- Details label + Description -->
       <div class="pp-details-label">Details</div>
@@ -852,16 +799,16 @@
   </div>
 
   <!-- ════════════════════════════════════════
-       STICKY BUY BAR — lives OUTSIDE product-page div
-       so it overlays everything when visible
+       UNSCROLLABLE ACTION BAR — Previously present Add to Cart and Buy Now buttons
   ════════════════════════════════════════ -->
-  <div class="pp-actions" id="ppActions">
+  <div class="pp-inline-actions" id="ppInlineActions">
     <!-- Size hint tooltip -->
     <div class="pp-size-hint" id="ppSizeHint">👆 Please select a size first</div>
-    <button class="pp-cart-btn" onclick="ppAddToCart()" title="Add to Cart" aria-label="Add to Cart">
+    <button class="pp-inline-cart-btn" onclick="ppAddToCart()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Add to Cart
     </button>
-    <button class="pp-buy-btn" id="ppBuyBtn">Buy Now</button>
+    <button class="pp-inline-buy-btn" id="ppInlineBuyBtn">Buy Now</button>
   </div>
 
   <!-- LIGHTBOX -->
@@ -1437,7 +1384,7 @@
       if (!found) return;
       populateProductPage(found);
       document.getElementById('productPage').classList.add('open');
-      document.getElementById('ppActions').classList.add('visible');
+      document.getElementById('ppInlineActions')?.classList.add('visible');
       document.getElementById('productPage').scrollTop = 0;
       document.body.style.overflow = 'hidden';
       // Hide bottom nav when product page opens
@@ -1447,7 +1394,7 @@
 
     window.closeProductPage = function() {
       document.getElementById('productPage').classList.remove('open');
-      document.getElementById('ppActions').classList.remove('visible');
+      document.getElementById('ppInlineActions')?.classList.remove('visible');
       document.body.style.overflow = '';
       currentProductId = null;
       // Restore bottom nav
@@ -1566,7 +1513,6 @@
         }
         window.location.href = `checkout.html?id=${id}&size=${sel.dataset.size}&version=${currentPPVersion}`;
       };
-      document.getElementById('ppBuyBtn').onclick       = buyHandler;
       const inlineBuy = document.getElementById('ppInlineBuyBtn');
       if (inlineBuy) inlineBuy.onclick = buyHandler;
 
@@ -1971,7 +1917,7 @@
       window.addEventListener('popstate', e => {
         if (!e.state || !e.state.productId) {
           document.getElementById('productPage').classList.remove('open');
-          document.getElementById('ppActions').classList.remove('visible');
+          document.getElementById('ppInlineActions')?.classList.remove('visible');
           document.body.style.overflow = '';
           currentProductId = null;
           document.getElementById('bottomNav').classList.remove('hidden');
