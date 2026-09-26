@@ -3113,27 +3113,27 @@
                 </div>
               </div>
 
-              <!-- SECTION 3: 9:16 RATIO VERTICAL MID BANNER -->
+              <!-- SECTION 3: 16:6 RATIO MID BANNER -->
               <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:24px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:gap:10px;margin-bottom:14px;">
                   <div>
                     <div style="font-weight:700;font-size:15px;color:var(--text);display:flex;align-items:center;gap:8px;">
-                      <span>3️⃣</span> 📱 9:16 Vertical Mid Banner (After 8 Products)
+                      <span>3️⃣</span> 📱 16:6 Ratio Mid Banner (After 8 Products)
                     </div>
                     <div style="font-size:12px;color:var(--muted);margin-top:2px;">
-                      Configures the full-width 9:16 ratio vertical banner displayed right after the first 8 products in the bottom section.
+                      Configures the full-width 16:6 ratio banner displayed right after the first 8 products in the bottom section.
                     </div>
                   </div>
                 </div>
 
                 <div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;">
-                  <!-- 9:16 Ratio Visual Preview -->
-                  <div style="width:140px;aspect-ratio:9/16;background:var(--surface);border:1.5px dashed var(--border);border-radius:10px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="banner916_preview_wrap">
-                    <img id="idx_banner916_preview" src="" alt="9:16 Banner Preview" style="width:100%;height:100%;object-fit:cover;display:none;" onerror="this.style.display='none'" />
+                  <!-- 16:6 Ratio Visual Preview -->
+                  <div style="width:280px;max-width:100%;aspect-ratio:16/6;background:var(--surface);border:1.5px dashed var(--border);border-radius:10px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="banner916_preview_wrap">
+                    <img id="idx_banner916_preview" src="" alt="16:6 Banner Preview" style="width:100%;height:100%;object-fit:cover;display:none;" onerror="this.style.display='none'" />
                     <video id="idx_banner916_vid_preview" src="" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:none;"></video>
                     <div id="idx_banner916_empty" style="text-align:center;padding:12px;color:var(--muted);font-size:11px;">
-                      <div style="font-size:24px;margin-bottom:4px;">📱</div>
-                      9:16 Ratio<br>Preview
+                      <div style="font-size:20px;margin-bottom:4px;">📱</div>
+                      16:6 Ratio<br>Preview
                     </div>
                   </div>
 
@@ -3173,7 +3173,7 @@
                       <span>4️⃣</span> Sequence of 16 Products (8 Before Banner + 8 After Banner)
                     </div>
                     <div style="font-size:12px;color:var(--muted);margin-top:2px;">
-                      Configure the 8 products displayed before the 9:16 banner, and the 8 products displayed after the banner before "VIEW ALL PRODUCTS".
+                      Configure the 8 products displayed before the 16:6 banner, and the 8 products displayed after the banner before "VIEW ALL PRODUCTS".
                     </div>
                   </div>
                   <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -5126,7 +5126,7 @@
       { key: 'featured_3', section: 'featured', label: 'Featured 3', row: 'featuredBoxesRow', cls: '' },
       { key: 'featured_4', section: 'featured', label: 'Featured 4', row: 'featuredBoxesRow', cls: '' },
       { key: 'featured_5', section: 'featured', label: 'Featured 5', row: 'featuredBoxesRow', cls: '' },
-      { key: 'banner_9_16', section: 'banner_9_16', label: '9:16 Banner (After 8 Products)', row: 'featuredBoxesRow', cls: 'reel' },
+      { key: 'banner_9_16', section: 'banner_9_16', label: '16:6 Banner (After 8 Products)', row: 'featuredBoxesRow', cls: 'gallery-wide' },
       { key: 'gallery_photo_1', section: 'gallery', label: 'Gallery Photo 1', row: 'galleryBoxesRow', cls: 'gallery-wide' },
       { key: 'gallery_photo_2', section: 'gallery', label: 'Gallery Photo 2', row: 'galleryBoxesRow', cls: '' },
       { key: 'reel_1', section: 'reels', label: 'Reel 1', row: 'reelsBoxesRow', cls: 'reel' },
@@ -5972,7 +5972,7 @@
       toast('Club icons reset to default. Click "Save All Settings" to apply.', 'info');
     }
 
-    /* ── 3. 9:16 VERTICAL MID BANNER (AFTER 8 PRODUCTS) ── */
+    /* ── 3. 16:6 RATIO MID BANNER (AFTER 8 PRODUCTS) ── */
     function renderBanner916Config() {
       const b = _indexPageConfig.banner916 || {};
       const urlInp = document.getElementById('idx_banner916_url');
@@ -6020,7 +6020,7 @@
       const fill = document.getElementById('idx_banner916_upload_fill');
       if (prog) prog.style.display = 'block';
       if (fill) fill.style.width = '20%';
-      toast('Uploading 9:16 banner…', 'info');
+      toast('Uploading 16:6 banner…', 'info');
       try {
         await uploadAssetToFirebase(file, 'banners', 'idx_banner916_url');
         const urlInp = document.getElementById('idx_banner916_url');
@@ -6028,7 +6028,7 @@
           updateBanner916Preview(urlInp.value);
           if (fill) fill.style.width = '100%';
           setTimeout(() => { if (prog) prog.style.display = 'none'; if (fill) fill.style.width = '0%'; }, 600);
-          toast('9:16 banner uploaded! Click "Save All Settings" to apply.', 'success');
+          toast('16:6 banner uploaded! Click "Save All Settings" to apply.', 'success');
         }
       } catch (e) {
         toast('Upload failed: ' + e.message, 'error');
@@ -6045,7 +6045,7 @@
       if (urlInp) urlInp.value = '';
       if (linkInp) linkInp.value = '';
       updateBanner916Preview('');
-      toast('9:16 banner cleared. Click "Save All Settings" to apply.', 'info');
+      toast('16:6 banner cleared. Click "Save All Settings" to apply.', 'info');
     }
 
     /* ── 4. 16 SEQUENCED PRODUCTS (8 BEFORE BANNER + 8 AFTER BANNER) ── */
@@ -6060,7 +6060,7 @@
       let html = '';
 
       html += `<div style="font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;padding:4px 0 2px 0;">
-        <span>⚽</span> Section A: First 8 Products (Displayed Before 9:16 Banner)
+        <span>⚽</span> Section A: First 8 Products (Displayed Before 16:6 Banner)
       </div>`;
 
       for (let idx = 0; idx < 16; idx++) {
@@ -6069,12 +6069,12 @@
             <div style="background:var(--primary);color:#fff;border-radius:var(--radius);padding:10px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:10px;margin:8px 0;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
               <span style="font-size:18px;">📱</span>
               <div style="flex:1;">
-                <div>9:16 Ratio Banner Appears Here on Homepage</div>
+                <div>16:6 Ratio Banner Appears Here on Homepage</div>
                 <div style="font-size:11px;font-weight:400;opacity:0.9;">Editable in Section 3 above</div>
               </div>
             </div>
             <div style="font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px;padding:4px 0 2px 0;">
-              <span>⚽</span> Section B: Next 8 Products (Displayed After 9:16 Banner)
+              <span>⚽</span> Section B: Next 8 Products (Displayed After 16:6 Banner)
             </div>
           `;
         }
