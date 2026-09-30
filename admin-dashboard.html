@@ -2782,7 +2782,7 @@
                 </div>
               </div>
 
-              <!-- Method + Search -->
+              <!-- Method, Status + Search -->
               <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
                 <div style="display:flex;flex-direction:column;gap:4px;">
                   <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Method</label>
@@ -2793,13 +2793,23 @@
                     <option value="netbanking">Net Banking</option>
                     <option value="wallet">Wallet</option>
                     <option value="emi">EMI</option>
+                    <option value="partial_cod">Partial COD</option>
+                  </select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Status</label>
+                  <select id="rzpStatusFilter" onchange="renderRazorpayOrders()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;color:var(--text);outline:none;">
+                    <option value="">All Statuses</option>
+                    <option value="captured">Successful</option>
+                    <option value="pending">Pending</option>
+                    <option value="failed">Failed / Cancelled</option>
                   </select>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:4px;">
                   <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;">Search</label>
                   <div style="position:relative;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--muted);pointer-events:none;"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-                    <input class="search-input" id="rzpSearchInput" placeholder="Order ID, email, phone…" oninput="renderRazorpayOrders()" style="padding-left:30px;" />
+                    <input class="search-input" id="rzpSearchInput" placeholder="Order ID, email, phone, name…" oninput="renderRazorpayOrders()" style="padding-left:30px;" />
                   </div>
                 </div>
                 <button class="btn btn-ghost btn-sm" onclick="clearRzpFilters()" style="align-self:flex-end;">✕ Clear</button>
@@ -4814,6 +4824,7 @@
         renderOrders(data);
         document.getElementById('ordersSubtitle').textContent = `${data.length} order${data.length !== 1 ? 's' : ''} — live from database`;
         if (typeof filterReviews === 'function') filterReviews();
+        if (typeof window.syncRzpWithOrders === 'function') window.syncRzpWithOrders();
       }, err => {
         document.getElementById('ordersTable').innerHTML = emptyRow(10, '⚠ Could not load orders. Check Firebase rules.');
       });
@@ -9287,21 +9298,169 @@ Always output your response in strict JSON. Do not include markdown formatting.`
 
 
 
-    /* -- Render Razorpay Orders -- */
+    /* ═══════════════════════════════════════════════
+       UNIFIED RAZORPAY & ONLINE PAYMENTS SYSTEM
+    ═══════════════════════════════════════════════ */
+    let _rzpRawApiPayments = null;
     let _rzpPaymentsCache = null;
+    let _rzpActivePreset = 'all';
+
+    function extractRzpOrderId(p) {
+      if (p.notes && typeof p.notes === 'object' && !Array.isArray(p.notes)) {
+        if (p.notes.orderId) return String(p.notes.orderId).trim();
+        if (p.notes.order_id) return String(p.notes.order_id).trim();
+      }
+      if (p.receipt) return String(p.receipt).trim();
+      if (p.description) {
+        const m = p.description.match(/JRS-\d+/i);
+        if (m) return m[0].toUpperCase();
+      }
+      return '';
+    }
+
+    function buildUnifiedRazorpayPayments(apiPayments, dbOrders) {
+      const orders = Array.isArray(dbOrders) ? dbOrders : [];
+      const apiList = Array.isArray(apiPayments) ? apiPayments : [];
+
+      const orderByOrderId = new Map();
+      const orderByPayId = new Map();
+
+      orders.forEach(o => {
+        const oid = (o.orderId || o.id || '').toUpperCase().trim();
+        if (oid) orderByOrderId.set(oid, o);
+        if (o.paymentId) orderByPayId.set(String(o.paymentId).trim(), o);
+      });
+
+      const merged = [];
+      const seenOrderIds = new Set();
+      const seenPayIds = new Set();
+
+      // 1. Process Live Razorpay API Payments (highest priority for gateway metadata)
+      apiList.forEach(p => {
+        const oid = extractRzpOrderId(p).toUpperCase();
+        const payId = (p.id || '').trim();
+
+        if (payId) seenPayIds.add(payId);
+        if (oid) seenOrderIds.add(oid);
+
+        const matchedOrder = (payId && orderByPayId.get(payId)) || (oid && orderByOrderId.get(oid));
+
+        merged.push({
+          ...p,
+          resolvedOrderId: oid || (matchedOrder ? (matchedOrder.orderId || matchedOrder.id) : ''),
+          customerName: matchedOrder ? (matchedOrder.customerName || matchedOrder.name || '') : (p.customerName || ''),
+          email: p.email || (matchedOrder ? (matchedOrder.email || matchedOrder.userEmail) : '') || '',
+          contact: p.contact || (matchedOrder ? (matchedOrder.phone || matchedOrder.mobile) : '') || '',
+          source: 'gateway',
+          rawStatus: p.status || 'captured'
+        });
+      });
+
+      // 2. Process Database Orders with online / prepaid / partial_cod / razorpay payment
+      orders.forEach(o => {
+        const pm = (o.paymentMethod || '').toLowerCase().trim();
+        const hasRzpId = !!(o.paymentId && String(o.paymentId).startsWith('pay_'));
+        const isOnline = pm === 'razorpay' || pm === 'online' || pm === 'partial_cod' || pm === 'pcod' || pm === 'prepaid' || pm === 'online payment';
+        if (!isOnline && !hasRzpId) return;
+
+        const oid = (o.orderId || o.id || '').toUpperCase().trim();
+        const payId = (o.paymentId || '').trim();
+
+        // Avoid duplicates if already present from gateway
+        if (payId && seenPayIds.has(payId)) return;
+        if (oid && seenOrderIds.has(oid)) return;
+
+        if (oid) seenOrderIds.add(oid);
+        if (payId) seenPayIds.add(payId);
+
+        let createdAtSec;
+        if (o.createdAt) {
+          const t = new Date(o.createdAt).getTime();
+          createdAtSec = isNaN(t) ? Math.floor(Date.now() / 1000) : Math.floor(t / 1000);
+        } else if (o.date) {
+          const t = new Date(o.date).getTime();
+          createdAtSec = isNaN(t) ? Math.floor(Date.now() / 1000) : Math.floor(t / 1000);
+        } else {
+          createdAtSec = Math.floor(Date.now() / 1000);
+        }
+
+        const amt = parseFloat(o.amountPaid || (pm === 'partial_cod' ? (o.pcodPayNow || o.total) : o.total)) || 0;
+        const stLower = (o.status || 'pending').toLowerCase();
+        let status = 'captured';
+        if (stLower === 'pending') status = 'pending';
+        else if (stLower === 'cancelled') status = 'failed';
+
+        merged.push({
+          id: o.paymentId || ('pay_rec_' + (oid.replace('JRS-', '') || Date.now())),
+          amount: Math.round(amt * 100),
+          currency: 'INR',
+          status: status,
+          method: (pm === 'partial_cod' || pm === 'pcod') ? 'partial_cod' : ((pm === 'online' || pm === 'razorpay') ? 'upi' : pm),
+          email: o.email || o.userEmail || '',
+          contact: o.phone || o.mobile || '',
+          customerName: o.customerName || o.name || '',
+          created_at: createdAtSec,
+          resolvedOrderId: oid,
+          notes: { orderId: oid },
+          receipt: oid,
+          description: `Order ${oid}`,
+          source: 'database',
+          rawStatus: o.status
+        });
+      });
+
+      return merged.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
+    }
+
+    function updateRzpStatCards() {
+      if (!_rzpPaymentsCache) return;
+      const allTotal = _rzpPaymentsCache.length;
+      const allRev = _rzpPaymentsCache.filter(p => p.status === 'captured').reduce((a, p) => a + (p.amount / 100), 0);
+      const capCount = _rzpPaymentsCache.filter(p => p.status === 'captured').length;
+      const allAvg = capCount ? allRev / capCount : (allTotal ? allRev / allTotal : 0);
+      const todayMid = new Date(); todayMid.setHours(0, 0, 0, 0);
+      const todayCnt = _rzpPaymentsCache.filter(p => (p.created_at * 1000) >= todayMid.getTime()).length;
+
+      const fmtK = n => n >= 100000 ? '₹' + (n / 100000).toFixed(2) + 'L' : n >= 1000 ? '₹' + (n / 1000).toFixed(1) + 'K' : '₹' + n.toFixed(0);
+      const el = id => document.getElementById(id);
+      if (el('rzpStatTotal')) el('rzpStatTotal').textContent = allTotal;
+      if (el('rzpStatRevenue')) el('rzpStatRevenue').textContent = fmtK(allRev);
+      if (el('rzpStatAvg')) el('rzpStatAvg').textContent = fmtK(allAvg);
+      if (el('rzpStatToday')) el('rzpStatToday').textContent = todayCnt;
+    }
+
+    window.syncRzpWithOrders = function () {
+      if (!_allOrders && !_rzpRawApiPayments) return;
+      _rzpPaymentsCache = buildUnifiedRazorpayPayments(_rzpRawApiPayments || [], _allOrders || []);
+      populateRzpYearFilter(_rzpPaymentsCache);
+      updateRzpStatCards();
+      const rzpTab = document.getElementById('tab-razorpay');
+      if (rzpTab && rzpTab.classList.contains('active')) {
+        renderRazorpayOrders();
+      }
+    };
 
     window.fetchRazorpayPayments = async function (force = false) {
       const tbody = document.getElementById('rzpOrdersTableBody');
       const btn = document.getElementById('rzpRefreshBtn');
       if (!tbody) return;
 
-      if (_rzpPaymentsCache && !force) {
+      // If we already have the raw API data and this is not a forced refresh, just render
+      if (_rzpRawApiPayments && !force) {
+        window.syncRzpWithOrders();
         window.renderRazorpayOrders();
         return;
       }
 
+      // Pre-render immediately with available database orders so UI is instantly responsive
+      if (_allOrders && _allOrders.length && !_rzpPaymentsCache) {
+        window.syncRzpWithOrders();
+      }
+
       if (btn) btn.style.opacity = '0.5';
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted)">Fetching live data from Razorpay API...</td></tr>`;
+      if (!_rzpPaymentsCache || !_rzpPaymentsCache.length) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--muted)">Fetching live data from Razorpay API...</td></tr>`;
+      }
 
       try {
         const res = await fetch("https://us-central1-jersify-f9b5e.cloudfunctions.net/getAllRazorpayPayments");
@@ -9309,31 +9468,23 @@ Always output your response in strict JSON. Do not include markdown formatting.`
 
         if (data.error) throw new Error(data.error);
 
-        _rzpPaymentsCache = data.payments || [];
-        populateRzpYearFilter(_rzpPaymentsCache);
-        // Update stat cards with all-time data
-        const allTotal = _rzpPaymentsCache.length;
-        const allRev   = _rzpPaymentsCache.reduce((a,p) => a + p.amount/100, 0);
-        const allAvg   = allTotal ? allRev / allTotal : 0;
-        const todayMid = new Date(); todayMid.setHours(0,0,0,0);
-        const todayCnt = _rzpPaymentsCache.filter(p => p.created_at*1000 >= todayMid.getTime()).length;
-        const fmtK = n => n >= 1000 ? '₹'+( n/1000).toFixed(1)+'K' : '₹'+n.toFixed(0);
-        const el = id => document.getElementById(id);
-        if(el('rzpStatTotal'))   el('rzpStatTotal').textContent   = allTotal;
-        if(el('rzpStatRevenue')) el('rzpStatRevenue').textContent = fmtK(allRev);
-        if(el('rzpStatAvg'))     el('rzpStatAvg').textContent     = fmtK(allAvg);
-        if(el('rzpStatToday'))   el('rzpStatToday').textContent   = todayCnt;
+        _rzpRawApiPayments = data.payments || [];
+        window.syncRzpWithOrders();
         window.renderRazorpayOrders();
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:#ef4444">Error fetching from Razorpay: ${esc(err.message)}</td></tr>`;
+        console.warn("Notice: Live Razorpay API sync:", err.message);
+        // Ensure all database payments are displayed even if live API fetch had network issues
+        window.syncRzpWithOrders();
+        window.renderRazorpayOrders();
+        if (!_rzpPaymentsCache || !_rzpPaymentsCache.length) {
+          tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:#ef4444">Error fetching from Razorpay: ${esc(err.message)}</td></tr>`;
+        }
       } finally {
         if (btn) btn.style.opacity = '1';
       }
     };
 
     /* ─── RZP PRESET / FILTER HELPERS ─── */
-    let _rzpActivePreset = 'all';
-
     function setRzpPreset(preset) {
       _rzpActivePreset = preset;
       document.querySelectorAll('.rzp-preset-btn').forEach(b => b.classList.remove('rzp-preset-active'));
@@ -9342,15 +9493,15 @@ Always output your response in strict JSON. Do not include markdown formatting.`
 
       const now = new Date();
       const pad = n => String(n).padStart(2, '0');
-      const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
       const fromEl = document.getElementById('rzpDateFrom');
-      const toEl   = document.getElementById('rzpDateTo');
-      const mEl    = document.getElementById('rzpMonthFilter');
-      const yEl    = document.getElementById('rzpYearFilter');
+      const toEl = document.getElementById('rzpDateTo');
+      const mEl = document.getElementById('rzpMonthFilter');
+      const yEl = document.getElementById('rzpYearFilter');
 
       // Reset month/year pickers when using presets (except custom)
-      if (preset !== 'custom') { mEl.value = ''; yEl.value = ''; }
+      if (preset !== 'custom') { if (mEl) mEl.value = ''; if (yEl) yEl.value = ''; }
 
       if (preset === 'today') {
         fromEl.value = fmt(now); toEl.value = fmt(now);
@@ -9358,7 +9509,7 @@ Always output your response in strict JSON. Do not include markdown formatting.`
         const start = new Date(now); start.setDate(now.getDate() - now.getDay());
         fromEl.value = fmt(start); toEl.value = fmt(now);
       } else if (preset === 'month') {
-        fromEl.value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-01`;
+        fromEl.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-01`;
         toEl.value = fmt(now);
       } else if (preset === 'lastmonth') {
         const lm = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -9371,7 +9522,6 @@ Always output your response in strict JSON. Do not include markdown formatting.`
     }
 
     function onRzpMonthYearChange() {
-      // Switch to custom preset and clear date range when month/year pickers are used
       _rzpActivePreset = 'custom';
       document.querySelectorAll('.rzp-preset-btn').forEach(b => b.classList.remove('rzp-preset-active'));
       const btn = document.getElementById('rzpPreset_custom');
@@ -9388,35 +9538,38 @@ Always output your response in strict JSON. Do not include markdown formatting.`
       document.getElementById('rzpMonthFilter').value = '';
       document.getElementById('rzpYearFilter').value = '';
       document.getElementById('rzpMethodFilter').value = '';
+      const stEl = document.getElementById('rzpStatusFilter');
+      if (stEl) stEl.value = '';
       setRzpPreset('all');
     }
 
     function populateRzpYearFilter(payments) {
       const sel = document.getElementById('rzpYearFilter');
-      if (!sel) return;
-      const years = [...new Set(payments.map(p => new Date(p.created_at * 1000).getFullYear()))].sort((a,b) => b-a);
+      if (!sel || !payments) return;
+      const years = [...new Set(payments.map(p => new Date(p.created_at * 1000).getFullYear()))].filter(Boolean).sort((a, b) => b - a);
       const current = sel.value;
-      sel.innerHTML = '<option value="">All Years</option>' + years.map(y => `<option value="${y}"${y==current?' selected':''}>${y}</option>`).join('');
+      sel.innerHTML = '<option value="">All Years</option>' + years.map(y => `<option value="${y}"${y == current ? ' selected' : ''}>${y}</option>`).join('');
     }
 
     function exportRzpCSV() {
       if (!_rzpPaymentsCache) return toast('No data to export', 'error');
       const filtered = applyRzpFilters(_rzpPaymentsCache);
       if (!filtered.length) return toast('No payments match current filters', 'error');
-      const headers = ['#','Date','Order ID','Payment ID','Email','Phone','Method','Amount (₹)','Status'];
-      const rows = filtered.map((o,i) => [
-        i+1,
-        new Date(o.created_at*1000).toLocaleString('en-IN'),
-        o.notes?.orderId || o.receipt || '',
+      const headers = ['#', 'Date', 'Order ID', 'Payment ID', 'Customer Name', 'Email', 'Phone', 'Method', 'Amount (₹)', 'Status'];
+      const rows = filtered.map((o, i) => [
+        i + 1,
+        new Date(o.created_at * 1000).toLocaleString('en-IN'),
+        o.resolvedOrderId || o.notes?.orderId || o.receipt || '',
         o.id || '',
+        o.customerName || '',
         o.email || '',
         o.contact || '',
-        o.method || '',
-        (o.amount/100).toFixed(2),
-        'SUCCESSFUL'
+        (o.method || '').toUpperCase(),
+        (o.amount / 100).toFixed(2),
+        (o.status || 'SUCCESS').toUpperCase()
       ]);
-      const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-      const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+      const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = `razorpay_payments_${Date.now()}.csv`;
@@ -9425,26 +9578,28 @@ Always output your response in strict JSON. Do not include markdown formatting.`
     }
 
     function applyRzpFilters(payments) {
-      const q      = (document.getElementById('rzpSearchInput')?.value || '').toLowerCase().trim();
-      const fromV  = document.getElementById('rzpDateFrom')?.value;
-      const toV    = document.getElementById('rzpDateTo')?.value;
-      const month  = document.getElementById('rzpMonthFilter')?.value;
-      const year   = document.getElementById('rzpYearFilter')?.value;
+      const q = (document.getElementById('rzpSearchInput')?.value || '').toLowerCase().trim();
+      const fromV = document.getElementById('rzpDateFrom')?.value;
+      const toV = document.getElementById('rzpDateTo')?.value;
+      const month = document.getElementById('rzpMonthFilter')?.value;
+      const year = document.getElementById('rzpYearFilter')?.value;
       const method = (document.getElementById('rzpMethodFilter')?.value || '').toLowerCase();
+      const status = (document.getElementById('rzpStatusFilter')?.value || '').toLowerCase();
 
       const fromTs = fromV ? new Date(fromV + 'T00:00:00').getTime() : null;
-      const toTs   = toV   ? new Date(toV   + 'T23:59:59').getTime() : null;
+      const toTs = toV ? new Date(toV + 'T23:59:59').getTime() : null;
 
       return payments.filter(o => {
         const ts = o.created_at * 1000;
-        const d  = new Date(ts);
+        const d = new Date(ts);
         if (fromTs && ts < fromTs) return false;
-        if (toTs   && ts > toTs)   return false;
+        if (toTs && ts > toTs) return false;
         if (month !== '' && month != null && String(d.getMonth()) !== month) return false;
-        if (year  && String(d.getFullYear()) !== year) return false;
+        if (year && String(d.getFullYear()) !== year) return false;
         if (method && (o.method || '').toLowerCase() !== method) return false;
+        if (status && (o.status || '').toLowerCase() !== status) return false;
         if (q) {
-          const text = `${o.id||''} ${o.notes?.orderId||''} ${o.receipt||''} ${o.email||''} ${o.contact||''}`.toLowerCase();
+          const text = `${o.id || ''} ${o.resolvedOrderId || ''} ${o.notes?.orderId || ''} ${o.receipt || ''} ${o.email || ''} ${o.contact || ''} ${o.customerName || ''}`.toLowerCase();
           if (!text.includes(q)) return false;
         }
         return true;
@@ -9461,20 +9616,20 @@ Always output your response in strict JSON. Do not include markdown formatting.`
       const total = _rzpPaymentsCache.length;
 
       // Update subtitle
-      if (subtitle) subtitle.textContent = `Showing ${filtered.length} of ${total} successful payments`;
+      if (subtitle) subtitle.textContent = `Showing ${filtered.length} of ${total} total payments`;
 
       // Update summary strip
       if (strip) {
         const isFiltered = filtered.length < total;
         strip.style.display = isFiltered ? 'flex' : 'none';
         if (isFiltered && filtered.length > 0) {
-          const sum  = filtered.reduce((a,o) => a + o.amount/100, 0);
-          const avg  = sum / filtered.length;
-          const max  = Math.max(...filtered.map(o => o.amount/100));
-          document.getElementById('rzpSumCount').textContent  = filtered.length;
+          const sum = filtered.reduce((a, o) => a + (o.amount / 100), 0);
+          const avg = sum / filtered.length;
+          const max = Math.max(...filtered.map(o => o.amount / 100));
+          document.getElementById('rzpSumCount').textContent = filtered.length;
           document.getElementById('rzpSumAmount').textContent = '₹' + sum.toFixed(2);
-          document.getElementById('rzpSumAvg').textContent    = '₹' + avg.toFixed(2);
-          document.getElementById('rzpSumMax').textContent    = '₹' + max.toFixed(2);
+          document.getElementById('rzpSumAvg').textContent = '₹' + avg.toFixed(2);
+          document.getElementById('rzpSumMax').textContent = '₹' + max.toFixed(2);
         }
       }
 
@@ -9484,15 +9639,41 @@ Always output your response in strict JSON. Do not include markdown formatting.`
       }
 
       // Sort newest first
-      const sorted = [...filtered].sort((a,b) => b.created_at - a.created_at);
+      const sorted = [...filtered].sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
 
       tbody.innerHTML = sorted.map((o, index) => {
         const d = new Date(o.created_at * 1000);
-        const dateStr = d.toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
-        const timeStr = d.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+        const dateStr = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        const timeStr = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
         const amountStr = '₹' + (o.amount / 100).toFixed(2);
-        const orderId = o.notes?.orderId || o.receipt || '--';
-        const methodBadge = {'upi':'badge-teal','card':'badge-blue','netbanking':'badge-purple','wallet':'badge-gold','emi':'badge-orange'}[o.method] || 'badge-gray';
+        const orderId = o.resolvedOrderId || o.notes?.orderId || o.receipt || '--';
+
+        const methodBadges = {
+          'upi': 'badge-teal',
+          'card': 'badge-blue',
+          'netbanking': 'badge-purple',
+          'wallet': 'badge-gold',
+          'emi': 'badge-orange',
+          'partial_cod': 'badge-orange',
+          'pcod': 'badge-orange',
+          'prepaid': 'badge-teal'
+        };
+        const methodDisplay = (o.method === 'partial_cod' || o.method === 'pcod') ? 'PARTIAL COD' : (o.method || 'Online').toUpperCase();
+        const methodBadge = methodBadges[o.method] || 'badge-gray';
+
+        let statusBadge = '<span class="badge badge-green" style="font-size:10px;">✓ SUCCESS</span>';
+        if (o.status === 'pending') {
+          statusBadge = '<span class="badge badge-orange" style="font-size:10px;">⏳ PENDING</span>';
+        } else if (o.status === 'failed') {
+          statusBadge = '<span class="badge badge-red" style="font-size:10px;">✕ FAILED</span>';
+        } else if (o.status === 'refunded') {
+          statusBadge = '<span class="badge badge-purple" style="font-size:10px;">↩ REFUNDED</span>';
+        }
+
+        const custName = o.customerName ? `<div style="font-size:12px;font-weight:600;color:var(--text);">${esc(o.customerName)}</div>` : '';
+        const custEmail = o.email ? `<div style="font-size:11px;color:var(--text2);">${esc(o.email)}</div>` : '';
+        const custPhone = o.contact ? `<div style="font-size:11px;color:var(--muted);">${esc(o.contact)}</div>` : '';
+        const customerDisplay = (custName || custEmail || custPhone) ? `${custName}${custEmail}${custPhone}` : '<span style="font-size:12px;color:var(--muted);">—</span>';
 
         return `<tr>
           <td style="font-size:12px;color:var(--muted);font-weight:600;">${index + 1}</td>
@@ -9502,13 +9683,10 @@ Always output your response in strict JSON. Do not include markdown formatting.`
           </td>
           <td><span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--text);background:var(--surface2);padding:2px 6px;border-radius:4px;border:1px solid var(--border);">${esc(orderId)}</span></td>
           <td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue);">${esc(o.id || '--')}</span></td>
-          <td>
-            <div style="font-size:12px;font-weight:600;color:var(--text);">${esc(o.email || '—')}</div>
-            <div style="font-size:11px;color:var(--muted);">${esc(o.contact || '')}</div>
-          </td>
-          <td><span class="badge ${methodBadge}" style="text-transform:uppercase;font-size:10px;">${esc(o.method || 'Online')}</span></td>
+          <td>${customerDisplay}</td>
+          <td><span class="badge ${methodBadge}" style="font-size:10px;">${esc(methodDisplay)}</span></td>
           <td><span style="font-weight:800;font-size:13px;color:var(--accent);">${amountStr}</span></td>
-          <td><span class="badge badge-green" style="font-size:10px;">✓ SUCCESS</span></td>
+          <td>${statusBadge}</td>
         </tr>`;
       }).join('');
     };
