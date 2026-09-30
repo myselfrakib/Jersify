@@ -9,6 +9,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>JERSIFY</title>
+  <script src="store-guard.js"></script>
 
   <!-- Early connection hints — establish sockets before any resource is requested -->
   <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
@@ -1161,6 +1162,16 @@
 
     async function init() {
       setProgress(10, "Connecting to Firebase…");
+      try {
+        const statusSnap = await get(ref(rtdb, "settings/storeStatus"));
+        if (statusSnap.exists() && statusSnap.val().isOpen === false) {
+          try { sessionStorage.setItem('jersify_store_closed', 'true'); } catch (e) {}
+          window.location.replace("countdown.html");
+          return;
+        } else {
+          try { sessionStorage.removeItem('jersify_store_closed'); } catch (e) {}
+        }
+      } catch (e) { console.warn("Store status check failed:", e); }
       await Promise.allSettled([loadHeroes(), loadClubsConfig(), loadProducts(), loadIndexMedia(), loadSiteConfig(), loadCategoryCardImages(), loadMeetTheTeam()]);
       clearTimeout(splashTimeout);
       revealPage();

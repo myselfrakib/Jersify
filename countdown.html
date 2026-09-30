@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JERSIFY — We're Coming Back</title>
+    <!-- Standard favicon -->
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="favicon.png">
+
+    <meta name="description" content="A sleek, animated countdown landing page with a matte black theme that builds anticipation for the Jersify brand relaunch on October 5th.">
+    <meta name="robots" content="noindex, nofollow">
+    <meta property="og:title" content="JERSIFY — We're Coming Back">
+    <meta property="og:description" content="A sleek, animated countdown landing page with a matte black theme that builds anticipation for the Jersify brand relaunch on October 5th.">
+
+    <script type="module" crossorigin src="/assets/index-DAzqohsF.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DhPK1ms0.css">
+
+    <script>
+      (function() {
+        var isPreview = (window.location.search || '').indexOf('preview=true') !== -1;
+        if (!isPreview) {
+          // Check if store has reopened
+          var statusUrl = 'https://jersify-f9b5e-default-rtdb.firebaseio.com/settings/storeStatus.json';
+          function checkReopen() {
+            fetch(statusUrl)
+              .then(function(res) { return res.json(); })
+              .then(function(data) {
+                if (data && data.isOpen === true) {
+                  try { sessionStorage.removeItem('jersify_store_closed'); } catch(e){}
+                  window.location.replace('index.html');
+                }
+              })
+              .catch(function() {});
+          }
+          checkReopen();
+          // Periodically check every 15s in case admin reopens while user is on page
+          setInterval(checkReopen, 15000);
+        }
+
+        // Capture email signup from the countdown form to Firebase RTDB
+        document.addEventListener('click', function(e) {
+          var btn = e.target.closest('button');
+          if (btn && btn.textContent && btn.textContent.trim().toUpperCase() === 'NOTIFY ME') {
+            var input = document.querySelector('input[type="email"]');
+            if (input && input.value && input.value.indexOf('@') !== -1) {
+              var email = input.value.trim();
+              fetch('https://jersify-f9b5e-default-rtdb.firebaseio.com/countdown_subscribers.json', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, timestamp: Date.now(), date: new Date().toISOString() })
+              }).catch(function(err) { console.warn('Subscriber save:', err); });
+            }
+          }
+        });
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
