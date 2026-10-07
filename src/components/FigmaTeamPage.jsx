@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { rtdb, ref, get } from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
 import { 
   imgBack, 
@@ -58,6 +59,21 @@ export default function FigmaTeamPage({
 }) {
   const [activeTab, setActiveTab] = useState('All');
   const [savedWishlist, setSavedWishlist] = useState({});
+  const [allProducts, setAllProducts] = useState(INITIAL_PRODUCTS);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const snap = await get(ref(rtdb, 'products'));
+        if (snap.exists()) {
+          const val = snap.val();
+          const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+          if (items.length > 0) setAllProducts(items);
+        }
+      } catch (e) {}
+    }
+    loadProducts();
+  }, []);
 
   const info = TEAM_DETAILS[teamName] || {
     name: teamName.toUpperCase(),
@@ -69,8 +85,8 @@ export default function FigmaTeamPage({
     description: `Official and concept kits for ${teamName}. Premium breathable fabric.`
   };
 
-  // Filter products by team
-  const teamProducts = INITIAL_PRODUCTS.filter(p => 
+  // Filter products by team dynamically from RTDB
+  const teamProducts = allProducts.filter(p => 
     p.team?.toLowerCase() === teamName.toLowerCase() || 
     p.name.toLowerCase().includes(teamName.toLowerCase())
   );
