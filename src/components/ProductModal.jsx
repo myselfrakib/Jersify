@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { X, Heart, ShoppingBag, Check, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
+import { X, Heart, ShoppingBag, Check, ShieldCheck, Truck, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import ImageWithSpinner from './ImageWithSpinner';
-
 
 export default function ProductModal({ 
   product, 
@@ -13,9 +12,11 @@ export default function ProductModal({
   if (!product) return null;
 
   const images = product.images && product.images.length > 0 ? product.images : [product.imgUrl];
-  const [selectedImage, setSelectedImage] = useState(images[0]);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const selectedImage = images[activeImageIndex] || images[0];
   const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
+
 
   const availableSizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
@@ -74,7 +75,7 @@ export default function ProductModal({
               marginBottom: '1rem'
             }}>
               <ImageWithSpinner 
-                src={selectedImage || product.imgUrl} 
+                src={selectedImage} 
                 alt={product.name}
                 style={{
                   position: 'absolute',
@@ -84,6 +85,60 @@ export default function ProductModal({
                   objectFit: 'cover'
                 }} 
               />
+
+              {/* Prev Image Arrow */}
+              {images.length > 1 && (
+                <button
+                  onClick={() => setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length)}
+                  style={{
+                    position: 'absolute',
+                    left: '8px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    zIndex: 10,
+                    background: 'rgba(255, 255, 255, 0.85)',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+                  }}
+                  aria-label="Previous Image"
+                >
+                  <ChevronLeft size={18} color="#111111" />
+                </button>
+              )}
+
+              {/* Next Image Arrow */}
+              {images.length > 1 && (
+                <button
+                  onClick={() => setActiveImageIndex((prev) => (prev + 1) % images.length)}
+                  style={{
+                    position: 'absolute',
+                    right: '8px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    zIndex: 10,
+                    background: 'rgba(255, 255, 255, 0.85)',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+                  }}
+                  aria-label="Next Image"
+                >
+                  <ChevronRight size={18} color="#111111" />
+                </button>
+              )}
             </div>
 
             {/* Thumbnail Row */}
@@ -92,15 +147,15 @@ export default function ProductModal({
                 {images.map((img, idx) => (
                   <div 
                     key={idx}
-                    onClick={() => setSelectedImage(img)}
+                    onClick={() => setActiveImageIndex(idx)}
                     style={{
                       width: '64px',
                       height: '64px',
                       borderRadius: 'var(--radius-sm)',
                       overflow: 'hidden',
                       cursor: 'pointer',
-                      border: selectedImage === img ? '2px solid #111827' : '1px solid var(--color-border)',
-                      opacity: selectedImage === img ? 1 : 0.7,
+                      border: activeImageIndex === idx ? '2px solid #111827' : '1px solid var(--color-border)',
+                      opacity: activeImageIndex === idx ? 1 : 0.7,
                       flexShrink: 0
                     }}
                   >
@@ -109,8 +164,8 @@ export default function ProductModal({
                 ))}
               </div>
             )}
-
           </div>
+
 
           {/* Right Column: Product Details & Controls */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>

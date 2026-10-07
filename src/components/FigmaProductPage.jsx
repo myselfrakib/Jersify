@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import ImageWithSpinner from './ImageWithSpinner';
 import { rtdb, ref, onValue } from '../firebase';
 
@@ -33,6 +33,10 @@ export default function FigmaProductPage({
     imgUrl: imgSlide1
   };
 
+  const productImages = Array.isArray(currentProduct.images) && currentProduct.images.length > 0
+    ? currentProduct.images
+    : [currentProduct.imgUrl || imgSlide1];
+
   const [headerLogo, setHeaderLogo] = useState(() => {
     try {
       const cached = sessionStorage.getItem('jersify_site_images');
@@ -58,6 +62,32 @@ export default function FigmaProductPage({
 
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedSize, setSelectedSize] = useState('M');
+
+  // Touch Swipe State
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchEndX, setTouchEndX] = useState(0);
+
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX || !touchEndX) return;
+    const distance = touchStartX - touchEndX;
+    if (distance > 40) {
+      // Swipe Left -> Next Image
+      setActiveSlide((prev) => (prev + 1) % productImages.length);
+    } else if (distance < -40) {
+      // Swipe Right -> Prev Image
+      setActiveSlide((prev) => (prev - 1 + productImages.length) % productImages.length);
+    }
+    setTouchStartX(0);
+    setTouchEndX(0);
+  };
 
   const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
@@ -100,35 +130,128 @@ export default function FigmaProductPage({
         </div>
       </div>
 
-      {/* Hero Product Carousel Image */}
-      <div style={{ position: 'relative', top: '70px', width: '393px', height: '568px', background: '#F3F2EF' }}>
-        <ImageWithSpinner 
-          src={currentProduct.imgUrl || imgSlide1} 
-          alt={currentProduct.name} 
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-        />
-        
-        {/* Carousel Slide Indicators */}
-        <div style={{ position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '8px' }}>
-          {[0, 1, 2, 3].map((idx) => (
-            <div 
-              key={idx}
-              onClick={() => setActiveSlide(idx)}
-              style={{
-                width: '20px',
-                height: '4px',
-                background: idx === activeSlide ? '#000000' : '#D1D5DB',
-                cursor: 'pointer',
-                transition: 'background 0.2s ease'
-              }}
-            />
+      {/* Slidable Hero Product Carousel */}
+      <div 
+        style={{ position: 'relative', top: '70px', width: '393px', height: '568px', background: '#F3F2EF', overflow: 'hidden' }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div style={{
+          display: 'flex',
+          width: `${productImages.length * 393}px`,
+          height: '100%',
+          transform: `translateX(-${activeSlide * 393}px)`,
+          transition: 'transform 0.35s cubic-bezier(0.25, 1, 0.5, 1)'
+        }}>
+          {productImages.map((imgUrl, idx) => (
+            <div key={idx} style={{ width: '393px', height: '100%', flexShrink: 0 }}>
+              <ImageWithSpinner src={imgUrl} alt={`${currentProduct.name} ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
           ))}
         </div>
-      </div>
 
+        {/* Previous Image Arrow */}
+        {productImages.length > 1 && (
+          <button
+            onClick={() => setActiveSlide((prev) => (prev - 1 + productImages.length) % productImages.length)}
+            style={{
+              position: 'absolute',
+              left: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 10,
+              background: 'rgba(255, 255, 255, 0.85)',
+              border: 'none',
+              borderRadius: '50%',
+              width: '36px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+            }}
+            aria-label="Previous Image"
+          >
+            <ChevronLeft size={20} color="#111111" />
+          </button>
+        )}
+
+        {/* Next Image Arrow */}
+        {productImages.length > 1 && (
+          <button
+            onClick={() => setActiveSlide((prev) => (prev + 1) % productImages.length)}
+            style={{
+              position: 'absolute',
+              right: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 10,
+              background: 'rgba(255, 255, 255, 0.85)',
+              border: 'none',
+              borderRadius: '50%',
+              width: '36px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+            }}
+            aria-label="Next Image"
+          >
+            <ChevronRight size={20} color="#111111" />
+          </button>
+        )}
+
+        {/* Slide Indicator Dots */}
+        {productImages.length > 1 && (
+          <div style={{ position: 'absolute', bottom: '14px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '8px', zIndex: 10 }}>
+            {productImages.map((_, idx) => (
+              <div 
+                key={idx}
+                onClick={() => setActiveSlide(idx)}
+                style={{
+                  width: activeSlide === idx ? '24px' : '8px',
+                  height: '8px',
+                  borderRadius: '4px',
+                  background: activeSlide === idx ? '#000000' : 'rgba(0, 0, 0, 0.3)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Product Information Container */}
       <div style={{ padding: '24px', paddingTop: '80px' }}>
+        {/* Gallery Thumbnails Strip */}
+        {productImages.length > 1 && (
+          <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', marginBottom: '20px', paddingBottom: '4px' }}>
+            {productImages.map((img, idx) => (
+              <div
+                key={idx}
+                onClick={() => setActiveSlide(idx)}
+                style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '2px',
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  border: activeSlide === idx ? '2px solid #111111' : '1px solid #E5E7EB',
+                  opacity: activeSlide === idx ? 1 : 0.6,
+                  flexShrink: 0
+                }}
+              >
+                <ImageWithSpinner src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Title */}
         <h1 style={{ fontFamily: 'Karla', fontWeight: 400, fontSize: '18px', color: '#000000', lineHeight: 'normal', marginBottom: '12px' }}>
           {currentProduct.name}
