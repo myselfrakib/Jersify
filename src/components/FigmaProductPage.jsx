@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 
-const imgSlide1 = "http://localhost:3845/assets/f43a4e3b049382f36975b7b65e8e9cbd3e4c9715.png";
-const imgImg44493 = "http://localhost:3845/assets/3d9c63e439c097fd35375eee418847add198ba5e.png";
-const imgHome = "http://localhost:3845/assets/770d6e8de263da4c03f4e35592767143b42b118e.svg";
-const imgShoppingBag = "http://localhost:3845/assets/1eecf7ef8412c1f7eff5133baff9c8d9a3e03da6.svg";
-const imgShoppingCart = "http://localhost:3845/assets/4aab5a9f06367897d9c75fe4f12fa26a336c118e.svg";
-const imgUser = "http://localhost:3845/assets/2cca44153aa7147baae8f4ea673f094d77907545.svg";
+import { 
+  imgHome, 
+  imgShoppingBag, 
+  imgUser, 
+  imgShoppingCart 
+} from '../assets/svgIcons';
+
+const imgSlide1 = "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de";
+const imgImg44493 = "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de";
 
 export default function FigmaProductPage({ 
   product, 

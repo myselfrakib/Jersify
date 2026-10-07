@@ -1,34 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { rtdb, ref, get } from '../firebase';
 
+import { 
+  imgHome, 
+  imgShoppingBag, 
+  imgUser, 
+  imgShoppingCart 
+} from '../assets/svgIcons';
+
+const sampleJerseyImg = "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de";
+
 const defaultImages = {
-  heroBanner1: "http://localhost:3845/assets/4a5bf1256465888e3f8ad578d93f2194a847b287.png",
-  heroBanner2: "http://localhost:3845/assets/08eaae9b8d6f047ba9b1bf816be8279c23ca5b79.png",
-  heroBanner3: "http://localhost:3845/assets/b4ca2f4a5332624caba58bcf3f92587c23c71169.png",
-  wearYourIdentity: "http://localhost:3845/assets/aa1cf1709f82c4b2a1cf7ce45b739d3379b0e0e7.png",
-  notBasicSpotlight: "http://localhost:3845/assets/3d9c63e439c097fd35375eee418847add198ba5e.png",
-  curatedSeasonPkg: "http://localhost:3845/assets/c7321852f457d9b37da7803950e5e2379a736556.png",
-  qualityYouCanWear: "http://localhost:3845/assets/855ef2d489a779d01e498ba93cd96f51680e222c.png",
-  retroBanner1: "http://localhost:3845/assets/64269d952e03e2cfe6b2f34338cedcfd8c20be9c.png",
-  retroBanner2: "http://localhost:3845/assets/1b0f4742125549062a00a04d67497746c3a4fd77.png",
-  lifestyleClubs: "http://localhost:3845/assets/5ba9af2b698fca31703a423d73a073f2012857c6.png",
-  lifestyleNationals: "http://localhost:3845/assets/f44f755c468bd086a40ef40d4bb7c4c9d3301587.png"
+  heroBanner1: sampleJerseyImg,
+  heroBanner2: sampleJerseyImg,
+  heroBanner3: sampleJerseyImg,
+  wearYourIdentity: sampleJerseyImg,
+  notBasicSpotlight: sampleJerseyImg,
+  curatedSeasonPkg: sampleJerseyImg,
+  qualityYouCanWear: sampleJerseyImg,
+  retroBanner1: sampleJerseyImg,
+  retroBanner2: sampleJerseyImg,
+  lifestyleClubs: sampleJerseyImg,
+  lifestyleNationals: sampleJerseyImg
 };
 
-const imgEllipse12 = "http://localhost:3845/assets/39ab2a4dd213aa9206bf0e36859faf18175daef5.png";
-const imgEllipse18 = "http://localhost:3845/assets/4272137932a53bd9f16f8d60ee1548cf5f975643.png";
-const imgEllipse14 = "http://localhost:3845/assets/06e03a5ac717eff1a306d8fc3fda648e08d0fa89.png";
-const imgEllipse15 = "http://localhost:3845/assets/2097926c577d6098c40d8d445adb1e14fcc3438b.png";
-const imgEllipse16 = "http://localhost:3845/assets/a8647aad699c0b8286625d0bba860873cb936c32.png";
-const imgEllipse17 = "http://localhost:3845/assets/b41954dd7858b0ad1c0699454ff03bab1fdc4f3d.png";
-const imgEllipse13 = "http://localhost:3845/assets/1447f142b4c6a11180a331925393d53396661562.png";
-const imgEllipse19 = "http://localhost:3845/assets/8c3cfca9dea1755f265b3b26136f1e1a41bbd36b.png";
-const imgImg44492 = "http://localhost:3845/assets/3d9c63e439c097fd35375eee418847add198ba5e.png";
-const imgRectangle3 = "http://localhost:3845/assets/5c48669b89b932b67810151ad0e742bb4c5a4ec6.png";
-const imgHome = "http://localhost:3845/assets/770d6e8de263da4c03f4e35592767143b42b118e.svg";
-const imgShoppingBag = "http://localhost:3845/assets/1eecf7ef8412c1f7eff5133baff9c8d9a3e03da6.svg";
-const imgShoppingCart = "http://localhost:3845/assets/4aab5a9f06367897d9c75fe4f12fa26a336c118e.svg";
-const imgUser = "http://localhost:3845/assets/2cca44153aa7147baae8f4ea673f094d77907545.svg";
+const imgEllipse12 = "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg";
+const imgEllipse18 = "https://upload.wikimedia.org/wikipedia/commons/d/d0/AC_Milan_logo.svg";
+const imgEllipse14 = "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg";
+const imgEllipse15 = "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg";
+const imgEllipse16 = "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg";
+const imgEllipse17 = "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg";
+const imgEllipse13 = "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg";
+const imgEllipse19 = "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg";
+
+const imgImg44492 = sampleJerseyImg;
+const imgRectangle3 = sampleJerseyImg;
 
 export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCart, onOpenAuth, onNavigateShop }) {
   const [siteImages, setSiteImages] = useState(defaultImages);

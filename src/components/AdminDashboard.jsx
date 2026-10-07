@@ -3,17 +3,17 @@ import { rtdb, ref, get, set, update, push, remove, signOut, auth } from '../fir
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
 
 const DEFAULT_INDEX_IMAGES = {
-  heroBanner1: { label: "Hero Slider Banner 1", aspect: "16:9 (393x220px)", url: "http://localhost:3845/assets/4a5bf1256465888e3f8ad578d93f2194a847b287.png" },
-  heroBanner2: { label: "Hero Slider Banner 2", aspect: "16:9 (393x220px)", url: "http://localhost:3845/assets/08eaae9b8d6f047ba9b1bf816be8279c23ca5b79.png" },
-  heroBanner3: { label: "Hero Slider Banner 3", aspect: "16:9 (393x220px)", url: "http://localhost:3845/assets/b4ca2f4a5332624caba58bcf3f92587c23c71169.png" },
-  wearYourIdentity: { label: "Wear Your Identity Banner", aspect: "2.4:1 (393x162px)", url: "http://localhost:3845/assets/aa1cf1709f82c4b2a1cf7ce45b739d3379b0e0e7.png" },
-  notBasicSpotlight: { label: "Not Basic Spotlight Banner", aspect: "3:4 (393x510px)", url: "http://localhost:3845/assets/3d9c63e439c097fd35375eee418847add198ba5e.png" },
-  curatedSeasonPkg: { label: "Curated Season Main Packaging", aspect: "4:3 (393x333px)", url: "http://localhost:3845/assets/c7321852f457d9b37da7803950e5e2379a736556.png" },
-  qualityYouCanWear: { label: "Quality You Can Wear Short Banner", aspect: "3:1 (393x131px)", url: "http://localhost:3845/assets/855ef2d489a779d01e498ba93cd96f51680e222c.png" },
-  retroBanner1: { label: "Good Old Kits Retro Banner 1", aspect: "1:2.1 (168x360px)", url: "http://localhost:3845/assets/64269d952e03e2cfe6b2f34338cedcfd8c20be9c.png" },
-  retroBanner2: { label: "Good Old Kits Retro Banner 2", aspect: "1:2.1 (168x360px)", url: "http://localhost:3845/assets/1b0f4742125549062a00a04d67497746c3a4fd77.png" },
-  lifestyleClubs: { label: "Lifestyle Clubs Banner", aspect: "5:4 (207x166px)", url: "http://localhost:3845/assets/5ba9af2b698fca31703a423d73a073f2012857c6.png" },
-  lifestyleNationals: { label: "Lifestyle Nationals Banner", aspect: "4:5 (136x166px)", url: "http://localhost:3845/assets/f44f755c468bd086a40ef40d4bb7c4c9d3301587.png" }
+  heroBanner1: { label: "Hero Slider Banner 1", aspect: "16:9 (393x220px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de" },
+  heroBanner2: { label: "Hero Slider Banner 2", aspect: "16:9 (393x220px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790334116027_pfan_0_IMG_3915.png?alt=media&token=8c2058d5-2b95-4926-8960-1b2ce77d29eb" },
+  heroBanner3: { label: "Hero Slider Banner 3", aspect: "16:9 (393x220px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030635314_1_IMG_6074.jpeg?alt=media&token=f8e8d995-63d7-4c57-aef4-948d93e6533d" },
+  wearYourIdentity: { label: "Wear Your Identity Banner", aspect: "2.4:1 (393x162px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030642038_2_IMG_6072.jpeg?alt=media&token=d0ba389d-4214-44ec-b2b3-c0dbdb548678" },
+  notBasicSpotlight: { label: "Not Basic Spotlight Banner", aspect: "3:4 (393x510px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030648696_3_IMG_6073.jpeg?alt=media&token=90f31fe5-1bb0-4522-aada-9db03fbcfab8" },
+  curatedSeasonPkg: { label: "Curated Season Main Packaging", aspect: "4:3 (393x333px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030675022_4_IMG_6071.jpeg?alt=media&token=ab978713-fa93-4b20-a8f2-a69b2f5c6aaf" },
+  qualityYouCanWear: { label: "Quality You Can Wear Short Banner", aspect: "3:1 (393x131px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777010842917_0_IMG_3702.jpeg?alt=media&token=1797da70-902b-42e8-9682-7feb6c89d4ef" },
+  retroBanner1: { label: "Good Old Kits Retro Banner 1", aspect: "1:2.1 (168x360px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777324422299_0_IMG_4061.jpeg?alt=media&token=f94be5a7-75e9-486d-bf07-92135cb38132" },
+  retroBanner2: { label: "Good Old Kits Retro Banner 2", aspect: "1:2.1 (168x360px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777348522170_0_IMG_4080.jpeg?alt=media&token=86b339ae-0b9b-41e0-b926-fe7a4fccecc8" },
+  lifestyleClubs: { label: "Lifestyle Clubs Banner", aspect: "5:4 (207x166px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1778510513151_0_IMG_5263.jpeg?alt=media&token=17bad7fd-0018-4016-9fa2-5aedc6c3d09d" },
+  lifestyleNationals: { label: "Lifestyle Nationals Banner", aspect: "4:5 (136x166px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de" }
 };
 
 export default function AdminDashboard({

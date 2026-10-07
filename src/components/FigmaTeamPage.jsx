@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
-
-const imgBack = "http://localhost:3845/assets/5477904d734c4ea184f72d77c9401d63dfc00eba.svg";
-const imgShoppingBag = "http://localhost:3845/assets/722dc33ce4e6a8b7e63a5465d96ac31089753cbf.svg";
-const imgHome = "http://localhost:3845/assets/770d6e8de263da4c03f4e35592767143b42b118e.svg";
-const imgUser = "http://localhost:3845/assets/2cca44153aa7147baae8f4ea673f094d77907545.svg";
-const imgEllipse12 = "http://localhost:3845/assets/39ab2a4dd213aa9206bf0e36859faf18175daef5.png"; // Barca logo
-const imgHeroBarca = "http://localhost:3845/assets/4a5bf1256465888e3f8ad578d93f2194a847b287.png";
+import { 
+  imgBack, 
+  imgShoppingBag, 
+  imgHome, 
+  imgUser, 
+  imgJerseyPhoto as imgEllipse12, 
+  imgHeroBarca 
+} from '../assets/svgIcons';
 
 const TEAM_DETAILS = {
   'Barcelona': {
@@ -23,8 +24,8 @@ const TEAM_DETAILS = {
     subtitle: 'La Liga · Spain',
     founded: '1902',
     stadium: 'Santiago Bernabéu',
-    logo: 'http://localhost:3845/assets/a8647aad699c0b8286625d0bba860873cb936c32.png',
-    banner: 'http://localhost:3845/assets/08eaae9b8d6f047ba9b1bf816be8279c23ca5b79.png',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg',
+    banner: imgHeroBarca,
     description: 'Discover Los Blancos official home, away and special edition kits with 15-time Champions League heritage.'
   },
   'Argentina': {
@@ -32,8 +33,8 @@ const TEAM_DETAILS = {
     subtitle: 'CONMEBOL · World Champions',
     founded: '1893',
     stadium: 'Estadio MÁS Monumental',
-    logo: 'http://localhost:3845/assets/39ab2a4dd213aa9206bf0e36859faf18175daef5.png',
-    banner: 'http://localhost:3845/assets/b4ca2f4a5332624caba58bcf3f92587c23c71169.png',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1a/Association_Argentine_de_Football_logo.svg',
+    banner: imgHeroBarca,
     description: 'Wear the iconic Albiceleste stripes with 3-star World Cup champion badges and authentic fan versions.'
   },
   'Man City': {
@@ -41,8 +42,8 @@ const TEAM_DETAILS = {
     subtitle: 'Premier League · England',
     founded: '1880',
     stadium: 'Etihad Stadium',
-    logo: 'http://localhost:3845/assets/b41954dd7858b0ad1c0699454ff03bab1fdc4f3d.png',
-    banner: 'http://localhost:3845/assets/4a5bf1256465888e3f8ad578d93f2194a847b287.png',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg',
+    banner: imgHeroBarca,
     description: 'Explore Cityzens modern home and away kits designed for pitch performance and lifestyle wear.'
   }
 };

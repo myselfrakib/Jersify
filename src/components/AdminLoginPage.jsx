@@ -11,7 +11,7 @@ import {
   signOut 
 } from '../firebase';
 
-const imgBack = "http://localhost:3845/assets/5477904d734c4ea184f72d77c9401d63dfc00eba.svg";
+import { imgBack } from '../assets/svgIcons';
 
 export default function AdminLoginPage({
   onBack,

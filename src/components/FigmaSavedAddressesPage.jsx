@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-
-const imgBack = "http://localhost:3845/assets/5477904d734c4ea184f72d77c9401d63dfc00eba.svg";
-const imgShoppingBag = "http://localhost:3845/assets/722dc33ce4e6a8b7e63a5465d96ac31089753cbf.svg";
-const imgHome = "http://localhost:3845/assets/770d6e8de263da4c03f4e35592767143b42b118e.svg";
-const imgUser = "http://localhost:3845/assets/2cca44153aa7147baae8f4ea673f094d77907545.svg";
-const imgMapPin = "http://localhost:3845/assets/c1a84c98c647011d908e4d7ae297601dca171c5c.svg";
+import { 
+  imgBack, 
+  imgShoppingBag, 
+  imgHome, 
+  imgUser, 
+  imgMapPin 
+} from '../assets/svgIcons';
 
 const DEFAULT_ADDRESSES = [
   {

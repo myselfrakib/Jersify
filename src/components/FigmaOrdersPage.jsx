@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { rtdb, ref, get } from '../firebase';
-
-const imgJerseyPhoto = "http://localhost:3845/assets/f43a4e3b049382f36975b7b65e8e9cbd3e4c9715.png";
-const imgBack = "http://localhost:3845/assets/5477904d734c4ea184f72d77c9401d63dfc00eba.svg";
-const imgShoppingBag = "http://localhost:3845/assets/722dc33ce4e6a8b7e63a5465d96ac31089753cbf.svg";
-const imgHelp = "http://localhost:3845/assets/b7733692eadca0a450bc20abcf29479cd70463b3.svg";
-const imgOpenHelp = "http://localhost:3845/assets/c927a7e20e5a97c89fe05a37697866529705c469.svg";
-const imgHome = "http://localhost:3845/assets/770d6e8de263da4c03f4e35592767143b42b118e.svg";
-const imgUser = "http://localhost:3845/assets/2cca44153aa7147baae8f4ea673f094d77907545.svg";
+import { 
+  imgBack, 
+  imgShoppingBag, 
+  imgCircleHelp as imgHelp, 
+  imgChevronRight as imgOpenHelp, 
+  imgHome, 
+  imgUser, 
+  imgJerseyPhoto 
+} from '../assets/svgIcons';
 
 export default function FigmaOrdersPage({ 
   user,

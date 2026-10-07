@@ -1,15 +1,16 @@
 import React from 'react';
-
-const imgBack = "http://localhost:3845/assets/5477904d734c4ea184f72d77c9401d63dfc00eba.svg";
-const imgShoppingBag = "http://localhost:3845/assets/722dc33ce4e6a8b7e63a5465d96ac31089753cbf.svg";
-const imgPackage = "http://localhost:3845/assets/f78630990845c2a690a447fb1218fe92a802a785.svg";
-const imgChevronRight = "http://localhost:3845/assets/c927a7e20e5a97c89fe05a37697866529705c469.svg";
-const imgMapPin = "http://localhost:3845/assets/c1a84c98c647011d908e4d7ae297601dca171c5c.svg";
-const imgHeart = "http://localhost:3845/assets/5c253d429953f94378af7a8444ba607d180b50d9.svg";
-const imgCircleHelp = "http://localhost:3845/assets/b7733692eadca0a450bc20abcf29479cd70463b3.svg";
-const imgLogOut = "http://localhost:3845/assets/57ecc911633f912dca44e54b710db0cd6b57f730.svg";
-const imgHome = "http://localhost:3845/assets/770d6e8de263da4c03f4e35592767143b42b118e.svg";
-const imgUser = "http://localhost:3845/assets/2cca44153aa7147baae8f4ea673f094d77907545.svg";
+import { 
+  imgBack, 
+  imgShoppingBag, 
+  imgPackage, 
+  imgChevronRight, 
+  imgMapPin, 
+  imgHeart, 
+  imgCircleHelp, 
+  imgLogOut, 
+  imgHome, 
+  imgUser 
+} from '../assets/svgIcons';
 
 export default function FigmaProfilePage({ 
   user, 
