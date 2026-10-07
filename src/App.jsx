@@ -47,6 +47,128 @@ export default function App() {
 
   const [toasts, setToasts] = useState([]);
 
+  // Centralized Navigation with URL Hash Deep Linking
+  const navigateTo = (page, param = null, options = {}) => {
+    let targetHash = `#${page}`;
+    if (page === 'product' && param) {
+      const prodId = typeof param === 'object' ? param.id : param;
+      targetHash = `#product/${prodId}`;
+      if (typeof param === 'object') {
+        setSelectedProduct(param);
+        try {
+          sessionStorage.setItem('jersify_active_product', JSON.stringify(param));
+        } catch (e) {}
+      }
+    } else if (page === 'team' && param) {
+      targetHash = `#team/${encodeURIComponent(param)}`;
+      setSelectedTeam(param);
+      try {
+        sessionStorage.setItem('jersify_active_team', param);
+      } catch (e) {}
+    }
+
+    if (window.location.hash !== targetHash) {
+      window.location.hash = targetHash;
+    }
+    setCurrentPage(page);
+
+    if (options.scrollToTop !== false) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Synchronize route with URL hash & handle Refresh / Deep Linking
+  useEffect(() => {
+    const handleRouteFromHash = () => {
+      const rawHash = window.location.hash.replace(/^#\/?/, '');
+      if (!rawHash || rawHash === 'home') {
+        setCurrentPage('home');
+        return;
+      }
+
+      if (rawHash.startsWith('product/')) {
+        const prodId = rawHash.replace('product/', '');
+        setCurrentPage('product');
+        try {
+          const cachedProductStr = sessionStorage.getItem('jersify_active_product');
+          if (cachedProductStr) {
+            const cachedProduct = JSON.parse(cachedProductStr);
+            if (cachedProduct?.id === prodId) {
+              setSelectedProduct(cachedProduct);
+              return;
+            }
+          }
+          const cachedProds = sessionStorage.getItem('jersify_products');
+          const list = cachedProds ? JSON.parse(cachedProds) : INITIAL_PRODUCTS;
+          const found = list.find((p) => p.id === prodId);
+          if (found) {
+            setSelectedProduct(found);
+          } else {
+            setSelectedProduct({
+              id: prodId,
+              name: prodId.toUpperCase().replace(/-/g, ' '),
+              price: 750,
+              type: 'Fan version · S–XXL'
+            });
+          }
+        } catch (e) {
+          setSelectedProduct({
+            id: prodId,
+            name: prodId.toUpperCase().replace(/-/g, ' '),
+            price: 750,
+            type: 'Fan version · S–XXL'
+          });
+        }
+        return;
+      }
+
+      if (rawHash.startsWith('team/')) {
+        const teamName = decodeURIComponent(rawHash.replace('team/', ''));
+        setSelectedTeam(teamName);
+        setCurrentPage('team');
+        return;
+      }
+
+      const validPages = [
+        'shop', 'profile', 'orders', 'addresses', 'login', 'signup',
+        'checkout', 'admin-login', 'admin-dashboard'
+      ];
+
+      if (validPages.includes(rawHash)) {
+        setCurrentPage(rawHash);
+      } else {
+        setCurrentPage('home');
+      }
+    };
+
+    handleRouteFromHash();
+    window.addEventListener('hashchange', handleRouteFromHash);
+    return () => window.removeEventListener('hashchange', handleRouteFromHash);
+  }, []);
+
+  // Save scroll position per route & restore on refresh / navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentRoute = window.location.hash || '#home';
+      sessionStorage.setItem(`scroll_${currentRoute}`, window.scrollY.toString());
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const currentRoute = window.location.hash || '#home';
+    const savedY = sessionStorage.getItem(`scroll_${currentRoute}`);
+    if (savedY !== null) {
+      const scrollPos = parseInt(savedY, 10);
+      if (scrollPos > 0) {
+        setTimeout(() => {
+          window.scrollTo({ top: scrollPos, behavior: 'auto' });
+        }, 80);
+      }
+    }
+  }, [currentPage, selectedProduct?.id, selectedTeam]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -131,65 +253,32 @@ export default function App() {
       {/* FIGMA MOBILE PAGES ROUTER */}
       {currentPage === 'home' && (
         <FigmaExactView
-          onSelectProduct={(p) => {
-            setSelectedProduct(p);
-            setCurrentPage('product');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onSelectTeam={(t) => {
-            setSelectedTeam(t);
-            setCurrentPage('team');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onSelectProduct={(p) => navigateTo('product', p)}
+          onSelectTeam={(t) => navigateTo('team', t)}
           onOpenCart={() => setIsCartOpen(true)}
-          onOpenAuth={() => {
-            setCurrentPage(user ? 'profile' : 'login');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onNavigateShop={() => {
-            setCurrentPage('shop');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onOpenAuth={() => navigateTo(user ? 'profile' : 'login')}
+          onNavigateShop={() => navigateTo('shop')}
         />
       )}
 
       {currentPage === 'shop' && (
         <FigmaShopPage
-          onSelectProduct={(p) => {
-            setSelectedProduct(p);
-            setCurrentPage('product');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onSelectProduct={(p) => navigateTo('product', p)}
           onOpenCart={() => setIsCartOpen(true)}
-          onOpenAuth={() => {
-            setCurrentPage(user ? 'profile' : 'login');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onOpenAuth={() => navigateTo(user ? 'profile' : 'login')}
+          onNavigateHome={() => navigateTo('home')}
         />
       )}
 
       {currentPage === 'product' && (
         <FigmaProductPage
           product={selectedProduct}
-          onBack={() => setCurrentPage('shop')}
+          onBack={() => navigateTo('shop')}
           onAddToCart={handleAddToCart}
-          onSelectProduct={(p) => {
-            setSelectedProduct(p);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onSelectProduct={(p) => navigateTo('product', p)}
           onOpenCart={() => setIsCartOpen(true)}
-          onOpenAuth={() => {
-            setCurrentPage(user ? 'profile' : 'login');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onOpenAuth={() => navigateTo(user ? 'profile' : 'login')}
+          onNavigateHome={() => navigateTo('home')}
         />
       )}
 
@@ -201,157 +290,79 @@ export default function App() {
               await auth.signOut();
               setUser(null);
             }
-            setCurrentPage('login');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateTo('login');
           }}
-          onOpenLogin={() => {
-            setCurrentPage('login');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onOpenLogin={() => navigateTo('login')}
           onOpenCart={() => setIsCartOpen(true)}
-          onOpenOrders={() => {
-            setCurrentPage('orders');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onOpenAddresses={() => {
-            setCurrentPage('addresses');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onOpenOrders={() => navigateTo('orders')}
+          onOpenAddresses={() => navigateTo('addresses')}
           onOpenWishlist={() => setIsWishlistOpen(true)}
-          onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onNavigateShop={() => {
-            setCurrentPage('shop');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onNavigateHome={() => navigateTo('home')}
+          onNavigateShop={() => navigateTo('shop')}
         />
       )}
 
       {currentPage === 'orders' && (
         <FigmaOrdersPage
           user={user}
-          onBack={() => {
-            setCurrentPage('profile');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onBack={() => navigateTo('profile')}
           onOpenCart={() => setIsCartOpen(true)}
-          onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onNavigateShop={() => {
-            setCurrentPage('shop');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onNavigateHome={() => navigateTo('home')}
+          onNavigateShop={() => navigateTo('shop')}
         />
       )}
 
       {currentPage === 'addresses' && (
         <FigmaSavedAddressesPage
-          onBack={() => {
-            setCurrentPage('profile');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onBack={() => navigateTo('profile')}
           onOpenCart={() => setIsCartOpen(true)}
-          onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onNavigateShop={() => {
-            setCurrentPage('shop');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onNavigateHome={() => navigateTo('home')}
+          onNavigateShop={() => navigateTo('shop')}
         />
       )}
 
       {currentPage === 'team' && (
         <FigmaTeamPage
           teamName={selectedTeam}
-          onBack={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onSelectProduct={(p) => {
-            setSelectedProduct(p);
-            setCurrentPage('product');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onBack={() => navigateTo('home')}
+          onSelectProduct={(p) => navigateTo('product', p)}
           onOpenCart={() => setIsCartOpen(true)}
-          onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onNavigateShop={() => {
-            setCurrentPage('shop');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onNavigateHome={() => navigateTo('home')}
+          onNavigateShop={() => navigateTo('shop')}
         />
       )}
 
       {currentPage === 'login' && (
         <FigmaLoginPage
           user={user}
-          onBack={() => {
-            setCurrentPage('profile');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onBack={() => navigateTo('profile')}
           onUserChanged={(u) => setUser(u)}
           onOpenCart={() => setIsCartOpen(true)}
-          onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onNavigateShop={() => {
-            setCurrentPage('shop');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onNavigateSignup={() => {
-            setCurrentPage('signup');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onOpenAdminLogin={() => {
-            setCurrentPage('admin-login');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onNavigateHome={() => navigateTo('home')}
+          onNavigateShop={() => navigateTo('shop')}
+          onNavigateSignup={() => navigateTo('signup')}
+          onOpenAdminLogin={() => navigateTo('admin-login')}
         />
       )}
 
       {currentPage === 'signup' && (
         <FigmaSignupPage
           user={user}
-          onBack={() => {
-            setCurrentPage('profile');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onBack={() => navigateTo('profile')}
           onUserChanged={(u) => setUser(u)}
           onOpenCart={() => setIsCartOpen(true)}
-          onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onNavigateShop={() => {
-            setCurrentPage('shop');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onNavigateLogin={() => {
-            setCurrentPage('login');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onNavigateHome={() => navigateTo('home')}
+          onNavigateShop={() => navigateTo('shop')}
+          onNavigateLogin={() => navigateTo('login')}
         />
       )}
 
       {currentPage === 'admin-login' && (
         <AdminLoginPage
-          onBack={() => {
-            setCurrentPage('login');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onBack={() => navigateTo('login')}
           onAdminAuthenticated={(authUser, valData) => {
             setAdminData(valData);
-            setCurrentPage('admin-dashboard');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateTo('admin-dashboard');
           }}
         />
       )}
@@ -362,13 +373,9 @@ export default function App() {
           adminData={adminData}
           onSignOut={() => {
             setAdminData(null);
-            setCurrentPage('admin-login');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateTo('admin-login');
           }}
-          onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onNavigateHome={() => navigateTo('home')}
         />
       )}
 
@@ -377,24 +384,15 @@ export default function App() {
           user={user}
           cartItems={cartItems}
           checkoutData={checkoutData}
-          onBack={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onBack={() => navigateTo('home')}
           onOrderSuccess={() => {
             setCartItems([]);
             localStorage.removeItem('jersify_cart');
             showToast('Order confirmed! 🎉');
           }}
           onOpenCart={() => setIsCartOpen(true)}
-          onNavigateHome={() => {
-            setCurrentPage('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onNavigateShop={() => {
-            setCurrentPage('shop');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
+          onNavigateHome={() => navigateTo('home')}
+          onNavigateShop={() => navigateTo('shop')}
         />
       )}
 
@@ -408,19 +406,16 @@ export default function App() {
         user={user}
         onRequireLogin={() => {
           showToast('Please log in to proceed to checkout!');
-          setCurrentPage('login');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateTo('login');
         }}
         onProceedToCheckout={(data) => {
           if (!user) {
             showToast('Please log in to proceed to checkout!');
-            setCurrentPage('login');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateTo('login');
             return;
           }
           setCheckoutData(data);
-          setCurrentPage('checkout');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateTo('checkout');
         }}
       />
 
@@ -431,10 +426,8 @@ export default function App() {
         onRemoveWishlist={handleToggleWishlist}
         onQuickAdd={(p) => handleAddToCart({ ...p, selectedSize: 'M', quantity: 1 })}
         onSelectProduct={(p) => {
-          setSelectedProduct(p);
-          setCurrentPage('product');
+          navigateTo('product', p);
           setIsWishlistOpen(false);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
 
