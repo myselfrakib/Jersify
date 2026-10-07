@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { X, Heart, ShoppingBag, Check, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
+import ImageWithSpinner from './ImageWithSpinner';
+
 
 export default function ProductModal({ 
   product, 
@@ -74,7 +76,7 @@ export default function ProductModal({
               background: '#F3F2EF',
               marginBottom: '1rem'
             }}>
-              <img 
+              <ImageWithSpinner 
                 src={selectedImage || product.imgUrl} 
                 alt={product.name}
                 style={{
@@ -105,11 +107,12 @@ export default function ProductModal({
                       flexShrink: 0
                     }}
                   >
-                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <ImageWithSpinner src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 ))}
               </div>
             )}
+
           </div>
 
           {/* Right Column: Product Details & Controls */}

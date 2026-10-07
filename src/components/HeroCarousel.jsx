@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { HERO_BANNERS } from '../data/clubsData';
+import ImageWithSpinner from './ImageWithSpinner';
 
 export default function HeroCarousel({ onShopNow }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,8 +28,9 @@ export default function HeroCarousel({ onShopNow }) {
           key={banner.id}
           className={`hero-slide ${idx === currentIndex ? 'active' : ''}`}
         >
-          <img src={banner.image} alt={banner.title} className="hero-bg-img" />
+          <ImageWithSpinner src={banner.image} alt={banner.title} className="hero-bg-img" />
           <div className="hero-overlay" />
+
           
           <div className="container" style={{ position: 'relative', zIndex: 10, width: '100%' }}>
             <div className="hero-content">

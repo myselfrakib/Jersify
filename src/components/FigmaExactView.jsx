@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { rtdb, ref, get, onValue } from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
+import ImageWithSpinner from './ImageWithSpinner';
+
 
 import { 
   imgHome, 
@@ -118,7 +120,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '4924px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Top Header Logo */}
       <div style={{ position: 'absolute', top: '16px', left: '7px', width: '128px', height: '47px', zIndex: 10 }}>
-        <img src={imgImg44492} alt="Jersify Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <ImageWithSpinner src={imgImg44492} alt="Jersify Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
 
       {/* Slidable 3 Hero Banners Slider with Dots */}
@@ -132,7 +134,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
         }}>
           {heroSlides.map((slideUrl, idx) => (
             <div key={idx} style={{ width: '393px', height: '510px', flexShrink: 0 }}>
-              <img src={slideUrl} alt={`Hero Banner ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <ImageWithSpinner src={slideUrl} alt={`Hero Banner ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           ))}
         </div>
@@ -171,26 +173,26 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
       {/* Club Crest Badges Grid */}
       <div style={{ position: 'absolute', top: '673px', left: '19px', width: '356px', height: '166px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
-          <img onClick={() => onSelectTeam && onSelectTeam('Barcelona')} src={imgEllipse12} alt="Barcelona" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-          <img onClick={() => onSelectTeam && onSelectTeam('Real Madrid')} src={imgEllipse16} alt="Real Madrid" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-          <img onClick={() => onSelectTeam && onSelectTeam('Man City')} src={imgEllipse17} alt="Man City" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-          <img onClick={() => onSelectTeam && onSelectTeam('Liverpool')} src={imgEllipse13} alt="Liverpool" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
+          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Barcelona')} src={imgEllipse12} alt="Barcelona" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
+          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Real Madrid')} src={imgEllipse16} alt="Real Madrid" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
+          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Man City')} src={imgEllipse17} alt="Man City" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
+          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Liverpool')} src={imgEllipse13} alt="Liverpool" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
 
-          <img onClick={() => onSelectTeam && onSelectTeam('AC Milan')} src={imgEllipse18} alt="AC Milan" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-          <img onClick={() => onSelectTeam && onSelectTeam('Bayern Munich')} src={imgEllipse14} alt="Bayern Munich" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-          <img onClick={() => onSelectTeam && onSelectTeam('Man United')} src={imgEllipse15} alt="Man United" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-          <img onClick={() => onSelectTeam && onSelectTeam('Juventus')} src={imgEllipse19} alt="Juventus" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
+          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('AC Milan')} src={imgEllipse18} alt="AC Milan" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
+          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Bayern Munich')} src={imgEllipse14} alt="Bayern Munich" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
+          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Man United')} src={imgEllipse15} alt="Man United" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
+          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Juventus')} src={imgEllipse19} alt="Juventus" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
         </div>
       </div>
 
       {/* WEAR YOUR IDENTITY Banner */}
       <div style={{ position: 'absolute', top: '864px', left: 0, width: '393px', height: '162px' }}>
-        <img src={siteImages.wearYourIdentity || defaultImages.wearYourIdentity} alt="Wear Your Identity" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <ImageWithSpinner src={siteImages.wearYourIdentity || defaultImages.wearYourIdentity} alt="Wear Your Identity" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
 
       {/* NOT BASIC Spotlight Banner */}
       <div style={{ position: 'absolute', top: '1038px', left: 0, width: '393px', height: '510px' }}>
-        <img src={siteImages.notBasicSpotlight || defaultImages.notBasicSpotlight} alt="Not Basic" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <ImageWithSpinner src={siteImages.notBasicSpotlight || defaultImages.notBasicSpotlight} alt="Not Basic" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
 
       {/* Merchandising Section */}
@@ -201,10 +203,10 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
             Curated for the season
           </h2>
           <div style={{ marginBottom: '16px', borderRadius: '2px', overflow: 'hidden', border: '1px solid #E5E7EB' }}>
-            <img src={siteImages.curatedSeasonPkg || defaultImages.curatedSeasonPkg} alt="Premium Packaging" style={{ width: '100%', height: '333px', objectFit: 'cover' }} />
+            <ImageWithSpinner src={siteImages.curatedSeasonPkg || defaultImages.curatedSeasonPkg} alt="Premium Packaging" style={{ width: '100%', height: '333px', objectFit: 'cover' }} />
           </div>
           <div style={{ background: '#F5F5F5', borderRadius: '2px', border: '1px solid #E5E7EB', overflow: 'hidden' }}>
-            <img src={siteImages.qualityYouCanWear || defaultImages.qualityYouCanWear} alt="Quality you can wear" style={{ width: '100%', height: '131px', objectFit: 'cover' }} />
+            <ImageWithSpinner src={siteImages.qualityYouCanWear || defaultImages.qualityYouCanWear} alt="Quality you can wear" style={{ width: '100%', height: '131px', objectFit: 'cover' }} />
             <div style={{ padding: '16px' }}>
               <h3 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '18px', color: '#111111', marginBottom: '8px' }}>
                 Quality you can wear
@@ -225,8 +227,8 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
             GOOD OLD KITS
           </h2>
           <div style={{ display: 'flex', gap: '19px' }}>
-            <img src={siteImages.retroBanner1 || defaultImages.retroBanner1} alt="Retro 1" style={{ width: '168px', height: '360px', objectFit: 'cover', borderRadius: '2px', border: '1px solid #E5E7EB' }} />
-            <img src={siteImages.retroBanner2 || defaultImages.retroBanner2} alt="Retro 2" style={{ width: '168px', height: '360px', objectFit: 'cover', borderRadius: '2px', border: '1px solid #E5E7EB' }} />
+            <ImageWithSpinner src={siteImages.retroBanner1 || defaultImages.retroBanner1} alt="Retro 1" style={{ width: '168px', height: '360px', objectFit: 'cover', borderRadius: '2px', border: '1px solid #E5E7EB' }} />
+            <ImageWithSpinner src={siteImages.retroBanner2 || defaultImages.retroBanner2} alt="Retro 2" style={{ width: '168px', height: '360px', objectFit: 'cover', borderRadius: '2px', border: '1px solid #E5E7EB' }} />
           </div>
         </div>
 
@@ -240,7 +242,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', background: '#F5F5F5', border: '1px solid #E5E7EB', borderRadius: '2px', overflow: 'hidden' }}>
-              <img src={siteImages.lifestyleClubs || defaultImages.lifestyleClubs} alt="Clubs" style={{ width: '207px', height: '166px', objectFit: 'cover' }} />
+              <ImageWithSpinner src={siteImages.lifestyleClubs || defaultImages.lifestyleClubs} alt="Clubs" style={{ width: '207px', height: '166px', objectFit: 'cover' }} />
               <div style={{ padding: '16px' }}>
                 <h3 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '18px', color: '#111111', marginBottom: '8px' }}>CLUBS</h3>
                 <p style={{ fontFamily: 'Karla', fontSize: '13px', color: '#6B7280' }}>Elevated essentials for the city.</p>
@@ -252,7 +254,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
                 <h3 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '18px', color: '#111111', marginBottom: '8px' }}>NATIONALS</h3>
                 <p style={{ fontFamily: 'Karla', fontSize: '13px', color: '#6B7280' }}>Finishing touches for the modern fan.</p>
               </div>
-              <img src={siteImages.lifestyleNationals || defaultImages.lifestyleNationals} alt="Nationals" style={{ width: '136px', height: '166px', objectFit: 'cover' }} />
+              <ImageWithSpinner src={siteImages.lifestyleNationals || defaultImages.lifestyleNationals} alt="Nationals" style={{ width: '136px', height: '166px', objectFit: 'cover' }} />
             </div>
           </div>
         </div>
@@ -267,7 +269,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
                 style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '8px' }}
               >
                 <div style={{ width: '166px', height: '210px', background: '#F3F2EF', borderRadius: '2px', overflow: 'hidden' }}>
-                  <img src={item.imgUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <ImageWithSpinner src={item.imgUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <div>
                   <h4 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '13px', color: '#111111', lineHeight: '17px' }}>
@@ -283,6 +285,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
               </div>
             ))}
           </div>
+
 
           <div style={{ textAlign: 'center', marginTop: '40px', paddingBottom: '28px' }}>
             <p style={{ fontFamily: 'Karla', fontSize: '12px', color: '#737373', marginBottom: '16px' }}>

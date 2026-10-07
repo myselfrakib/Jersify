@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import ImageWithSpinner from './ImageWithSpinner';
+
 
 import { 
   imgHome, 
@@ -75,13 +77,13 @@ export default function FigmaProductPage({
           </button>
         )}
         <div style={{ width: '128px', height: '47px', cursor: 'pointer' }} onClick={onNavigateHome}>
-          <img src={imgImg44493} alt="Jersify" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <ImageWithSpinner src={imgImg44493} alt="Jersify" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
       </div>
 
       {/* Hero Product Carousel Image */}
       <div style={{ position: 'relative', top: '70px', width: '393px', height: '568px', background: '#F3F2EF' }}>
-        <img 
+        <ImageWithSpinner 
           src={currentProduct.imgUrl || imgSlide1} 
           alt={currentProduct.name} 
           style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
@@ -104,6 +106,7 @@ export default function FigmaProductPage({
           ))}
         </div>
       </div>
+
 
       {/* Product Information Container */}
       <div style={{ padding: '24px', paddingTop: '80px' }}>
@@ -240,11 +243,12 @@ export default function FigmaProductPage({
                 style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '8px' }}
               >
                 <div style={{ width: '166px', height: '210px', background: '#D9D9D9', borderRadius: '2px', overflow: 'hidden' }}>
-                  <img src={rec.imgUrl} alt={rec.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <ImageWithSpinner src={rec.imgUrl} alt={rec.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <h4 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '13px', color: '#111827' }}>
                   {rec.name}
                 </h4>
+
                 <p style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '13px', color: '#111827' }}>
                   ₹{rec.price}
                 </p>

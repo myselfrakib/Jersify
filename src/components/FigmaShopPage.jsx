@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { rtdb, ref, onValue } from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
+import ImageWithSpinner from './ImageWithSpinner';
+
 
 import { 
   imgHome, 
@@ -71,7 +73,7 @@ export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth,
       {/* Store Navigation Header */}
       <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 18px' }}>
         <div style={{ width: '128px', height: '47px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={onNavigateHome}>
-          <img src={headerLogo} alt="Jersify" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <ImageWithSpinner src={headerLogo} alt="Jersify" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
@@ -104,7 +106,7 @@ export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth,
               style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '8px' }}
             >
               <div style={{ width: '166.5px', height: '210px', background: '#F3F2EF', borderRadius: '2px', overflow: 'hidden' }}>
-                <img src={item.imgUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <ImageWithSpinner src={item.imgUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div>
                 <h4 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '13px', color: '#111111', lineHeight: '17px' }}>
@@ -120,6 +122,7 @@ export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth,
             </div>
           ))}
         </div>
+
 
         {/* Catalog Completion Footer Note */}
         <div style={{ textAlign: 'center', marginTop: '40px', paddingBottom: '28px' }}>

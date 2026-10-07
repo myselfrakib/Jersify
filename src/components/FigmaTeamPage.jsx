@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { rtdb, ref, get, onValue } from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
+import ImageWithSpinner from './ImageWithSpinner';
+
 import { 
   imgBack, 
   imgShoppingBag, 
@@ -152,13 +154,13 @@ export default function FigmaTeamPage({
 
       {/* Team Hero Section */}
       <div style={{ position: 'relative', width: '100%', height: '220px', overflow: 'hidden', background: '#111111' }}>
-        <img src={info.banner} alt={info.name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
+        <ImageWithSpinner src={info.banner} alt={info.name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)' }} />
         
         {/* Team Crest & Details Overlay */}
         <div style={{ position: 'absolute', bottom: '16px', left: '20px', right: '20px', display: 'flex', alignItems: 'flex-end', gap: '16px' }}>
           <div style={{ width: '72px', height: '72px', background: '#FFFFFF', borderRadius: '50%', padding: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', flexShrink: 0 }}>
-            <img src={info.logo} alt={info.name} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '50%' }} />
+            <ImageWithSpinner src={info.logo} alt={info.name} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '50%' }} />
           </div>
           <div style={{ color: '#FFFFFF', flexGrow: 1 }}>
             <span style={{ fontSize: '11px', fontFamily: 'Karla', textTransform: 'uppercase', letterSpacing: '1px', color: '#E5E7EB' }}>
@@ -217,7 +219,7 @@ export default function FigmaTeamPage({
               <span style={{ fontFamily: 'Karla', fontSize: '11px', color: '#EDDBDB' }}>26/27 SEASON</span>
             </div>
             <div style={{ height: '240px', width: '100%', position: 'relative', background: '#FFFFFF' }}>
-              <img src={featuredProduct.imgUrl} alt={featuredProduct.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <ImageWithSpinner src={featuredProduct.imgUrl} alt={featuredProduct.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
             <div style={{ padding: '16px', background: '#FFFFFF', borderTop: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <h3 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '16px', color: '#111111' }}>
@@ -263,7 +265,8 @@ export default function FigmaTeamPage({
                 style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '8px' }}
               >
                 <div style={{ position: 'relative', width: '100%', height: '220px', background: '#F5F5F5', border: '1px solid #E5E7EB', borderRadius: '2px', overflow: 'hidden' }}>
-                  <img src={p.imgUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <ImageWithSpinner src={p.imgUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+
                   
                   {p.badge && (
                     <div style={{ position: 'absolute', top: '8px', left: '8px', background: '#EDDBDB', padding: '3px 8px' }}>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Heart, ShoppingBag, Trash2 } from 'lucide-react';
+import ImageWithSpinner from './ImageWithSpinner';
 
 export default function WishlistDrawer({ 
   isOpen, 
@@ -44,7 +45,8 @@ export default function WishlistDrawer({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {wishlistItems.map((item) => (
                 <div key={item.id} className="cart-item" style={{ cursor: 'pointer' }} onClick={() => { onClose(); onSelectProduct(item); }}>
-                  <img src={item.imgUrl || item.images?.[0]} alt={item.name} className="cart-item-img" />
+                  <ImageWithSpinner src={item.imgUrl || item.images?.[0]} alt={item.name} className="cart-item-img" />
+
                   
                   <div className="cart-item-info">
                     <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-accent)' }}>{item.team}</span>

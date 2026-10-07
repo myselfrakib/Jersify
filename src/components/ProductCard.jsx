@@ -1,5 +1,6 @@
 import React from 'react';
 import { Heart, ShoppingBag, Star } from 'lucide-react';
+import ImageWithSpinner from './ImageWithSpinner';
 
 export default function ProductCard({ 
   product, 
@@ -11,12 +12,12 @@ export default function ProductCard({
   return (
     <div className="product-card">
       <div className="product-media" onClick={() => onSelectProduct(product)} style={{ cursor: 'pointer' }}>
-        <img 
+        <ImageWithSpinner 
           src={product.imgUrl || product.images?.[0]} 
           alt={product.name} 
-          className="product-img" 
-          loading="lazy"
+          className="product-img"
         />
+
 
         {/* Badge Overlay */}
         {product.badge ? (

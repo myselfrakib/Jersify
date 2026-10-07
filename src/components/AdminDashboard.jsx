@@ -16,6 +16,8 @@ import {
   onValue
 } from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
+import ImageWithSpinner from './ImageWithSpinner';
+
 
 const DEFAULT_INDEX_IMAGES = {
   heroBanner1: { label: "Hero Slider Banner 1", aspect: "16:9 (393x220px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de" },
@@ -506,11 +508,12 @@ export default function AdminDashboard({
                   {/* Image Preview Box */}
                   <div style={{ width: '100%', height: '140px', background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                     {item.url ? (
-                      <img src={item.url} alt={item.label} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      <ImageWithSpinner src={item.url} alt={item.label} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                     ) : (
                       <span style={{ color: '#9CA3AF', fontSize: '12px' }}>No Image URL Provided</span>
                     )}
                   </div>
+
 
                   {/* URL Input & Direct File Upload */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -616,7 +619,7 @@ export default function AdminDashboard({
                       <span style={{ fontSize: '10px', background: '#EDDBDB', padding: '2px 6px', fontWeight: 700 }}>Aspect: 16:9 (393x220px)</span>
                     </div>
                     <div style={{ width: '100%', height: '120px', background: '#111111', overflow: 'hidden', borderRadius: '2px', position: 'relative' }}>
-                      <img src={team.banner} alt={team.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <ImageWithSpinner src={team.banner} alt={team.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                     <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
                       <input
@@ -650,8 +653,9 @@ export default function AdminDashboard({
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ width: '56px', height: '56px', background: '#F3F4F6', borderRadius: '50%', padding: '4px', border: '1px solid #E5E7EB', flexShrink: 0 }}>
-                        <img src={team.logo} alt={team.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        <ImageWithSpinner src={team.logo} alt={team.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                       </div>
+
                       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         <input
                           type="text"
@@ -884,9 +888,10 @@ export default function AdminDashboard({
             {productsList.map(p => (
               <div key={p.id} style={{ border: '1px solid #E5E7EB', padding: '14px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ height: '160px', width: '100%', background: '#F5F5F5', overflow: 'hidden' }}>
-                  <img src={p.imgUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  <ImageWithSpinner src={p.imgUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+
                   <div>
                     <h4 style={{ fontWeight: 700, fontSize: '14px', color: '#111111' }}>{p.name}</h4>
                     <p style={{ fontSize: '12px', color: '#6B7280' }}>{p.team} · <span style={{ textTransform: 'uppercase', fontWeight: 700 }}>{p.categoryTag}</span></p>
@@ -1092,9 +1097,10 @@ export default function AdminDashboard({
                     {selectedOrderModal.items.map((item, idx) => (
                       <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '14px', border: '1px solid #E5E7EB', padding: '10px', borderRadius: '4px', background: '#FFFFFF' }}>
                         <div style={{ width: '60px', height: '60px', background: '#F3F4F6', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
-                          <img src={item.imgUrl || item.image || "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de"} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                          <ImageWithSpinner src={item.imgUrl || item.image || "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de"} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                         </div>
                         <div style={{ flex: 1 }}>
+
                           <h5 style={{ fontSize: '14px', fontWeight: 700, margin: 0, color: '#111111' }}>{item.name || item.title}</h5>
                           <p style={{ fontSize: '12px', color: '#6B7280', margin: '2px 0 0' }}>
                             Team: {item.team || 'Standard'} · Size: <span style={{ fontWeight: 700 }}>{item.size || 'M'}</span> · Version: {item.version || 'Fan'}
