@@ -142,6 +142,15 @@ export default function FigmaExactView({ cartCount = 0, onSelectProduct, onSelec
   ].filter(Boolean);
 
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+  const [isPageLoading, setIsPageLoading] = useState(true);
+
+  useEffect(() => {
+    // Smooth full page loader on initial homepage mount
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (heroSlides.length <= 1) return;
@@ -153,6 +162,105 @@ export default function FigmaExactView({ cartCount = 0, onSelectProduct, onSelec
 
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '4924px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
+      {/* Keyframe animations for full page loader */}
+      <style>{`
+        @keyframes pageSpin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes pagePulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(0.96); opacity: 0.85; }
+        }
+      `}</style>
+
+      {/* Whole Page Loading Animation Overlay */}
+      {isPageLoading && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 99999,
+          background: '#090D14',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '24px',
+          color: '#FFFFFF'
+        }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '12px',
+            animation: 'pagePulse 1.8s ease-in-out infinite'
+          }}>
+            <div style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '32px',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.6)'
+            }}>
+              🎽
+            </div>
+            <h1 style={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 900,
+              fontSize: '32px',
+              color: '#FFFFFF',
+              letterSpacing: '3px',
+              margin: 0
+            }}>
+              JERSIFY<span style={{ color: '#E11D48' }}>.</span>
+            </h1>
+            <p style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '11px',
+              color: '#94A3B8',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              fontWeight: 600,
+              marginTop: '-4px'
+            }}>
+              Official Football Kits & Jerseys
+            </p>
+          </div>
+
+          <div style={{
+            marginTop: '36px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '14px'
+          }}>
+            <div style={{
+              width: '34px',
+              height: '34px',
+              border: '3px solid rgba(255,255,255,0.12)',
+              borderTopColor: '#FFFFFF',
+              borderRightColor: '#E11D48',
+              borderRadius: '50%',
+              animation: 'pageSpin 0.75s linear infinite'
+            }} />
+            <span style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '11px',
+              color: '#64748B',
+              fontWeight: 500,
+              letterSpacing: '1px'
+            }}>
+              Loading Homepage…
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Top Header Logo */}
       <div style={{ position: 'absolute', top: '16px', left: '19px', width: '128px', height: '47px', zIndex: 10 }}>
         <ImageWithSpinner src={imgImg44492} alt="Jersify Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
