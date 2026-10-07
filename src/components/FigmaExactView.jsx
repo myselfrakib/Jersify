@@ -142,15 +142,6 @@ export default function FigmaExactView({ cartCount = 0, onSelectProduct, onSelec
   ].filter(Boolean);
 
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
-  const [isPageLoading, setIsPageLoading] = useState(true);
-
-  useEffect(() => {
-    // Smooth full page loader on initial homepage mount
-    const timer = setTimeout(() => {
-      setIsPageLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     if (heroSlides.length <= 1) return;
@@ -162,53 +153,6 @@ export default function FigmaExactView({ cartCount = 0, onSelectProduct, onSelec
 
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '4924px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
-      {/* Keyframe animations for full page loader */}
-      <style>{`
-        @keyframes pageSpin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        @keyframes pagePulse {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(0.96); opacity: 0.85; }
-        }
-      `}</style>
-
-      {/* Simple Loading Spinner Overlay */}
-      {isPageLoading && (
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 99999,
-          background: '#FFFFFF',
-          padding: '16px 24px',
-          borderRadius: '8px',
-          boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-          border: '1px solid #E5E7EB',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px'
-        }}>
-          <div style={{
-            width: '24px',
-            height: '24px',
-            border: '2.5px solid #E5E7EB',
-            borderTopColor: '#111827',
-            borderRadius: '50%',
-            animation: 'pageSpin 0.75s linear infinite'
-          }} />
-          <span style={{
-            fontFamily: "'Karla', sans-serif",
-            fontSize: '13px',
-            fontWeight: 600,
-            color: '#111827'
-          }}>
-            Loading…
-          </span>
-        </div>
-      )}
 
       {/* Top Header Logo */}
       <div style={{ position: 'absolute', top: '16px', left: '19px', width: '128px', height: '47px', zIndex: 10 }}>
