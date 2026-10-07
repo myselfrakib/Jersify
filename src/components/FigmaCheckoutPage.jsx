@@ -26,13 +26,13 @@ export default function FigmaCheckoutPage({
   const total = Math.max(0, subtotal - discount + shipping);
 
   const [formData, setFormData] = useState({
-    fullName: user?.displayName || 'Alex Morgan',
-    phone: '+91 98765 43210',
-    pincode: '400050',
-    line1: '42 Palm Crest Heights, Apt 4B',
-    line2: 'Bandra West, Hill Road',
-    city: 'Mumbai',
-    state: 'Maharashtra',
+    fullName: user?.displayName || '',
+    phone: '',
+    pincode: '',
+    line1: '',
+    line2: '',
+    city: '',
+    state: '',
     paymentMethod: 'upi' // 'upi' | 'card' | 'cod'
   });
 
@@ -181,6 +181,7 @@ export default function FigmaCheckoutPage({
             <input
               type="text"
               required
+              placeholder="e.g. Alex Morgan"
               value={formData.fullName}
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
               style={{ height: '42px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
@@ -193,6 +194,7 @@ export default function FigmaCheckoutPage({
               <input
                 type="text"
                 required
+                placeholder="e.g. +91 98765 43210"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 style={{ height: '42px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
@@ -203,6 +205,7 @@ export default function FigmaCheckoutPage({
               <input
                 type="text"
                 required
+                placeholder="e.g. 400050"
                 value={formData.pincode}
                 onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
                 style={{ height: '42px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
@@ -215,8 +218,20 @@ export default function FigmaCheckoutPage({
             <input
               type="text"
               required
+              placeholder="e.g. 42 Palm Crest Heights, Apt 4B"
               value={formData.line1}
               onChange={(e) => setFormData({ ...formData, line1: e.target.value })}
+              style={{ height: '42px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#111111', fontWeight: 700 }}>STREET / AREA / LOCALITY</label>
+            <input
+              type="text"
+              placeholder="e.g. Bandra West, Hill Road"
+              value={formData.line2}
+              onChange={(e) => setFormData({ ...formData, line2: e.target.value })}
               style={{ height: '42px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
             />
           </div>
@@ -226,6 +241,7 @@ export default function FigmaCheckoutPage({
               <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#111111', fontWeight: 700 }}>CITY</label>
               <input
                 type="text"
+                placeholder="e.g. Mumbai"
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 style={{ height: '42px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
@@ -235,6 +251,7 @@ export default function FigmaCheckoutPage({
               <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#111111', fontWeight: 700 }}>STATE</label>
               <input
                 type="text"
+                placeholder="e.g. Maharashtra"
                 value={formData.state}
                 onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                 style={{ height: '42px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}

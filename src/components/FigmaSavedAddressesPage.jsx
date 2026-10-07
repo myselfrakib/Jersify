@@ -54,8 +54,8 @@ export default function FigmaSavedAddressesPage({
     tag: 'Home',
     line1: '',
     line2: '',
-    city: 'Mumbai',
-    state: 'Maharashtra',
+    city: '',
+    state: '',
     pincode: '',
     phone: ''
   });
@@ -87,8 +87,8 @@ export default function FigmaSavedAddressesPage({
       tag: 'Home',
       line1: '',
       line2: '',
-      city: 'Mumbai',
-      state: 'Maharashtra',
+      city: '',
+      state: '',
       pincode: '',
       phone: ''
     });
@@ -269,6 +269,7 @@ export default function FigmaSavedAddressesPage({
                 type="text"
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                placeholder="e.g. Mumbai"
                 style={{ height: '40px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
               />
             </div>
@@ -278,6 +279,7 @@ export default function FigmaSavedAddressesPage({
                 type="text"
                 value={formData.state}
                 onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                placeholder="e.g. Maharashtra"
                 style={{ height: '40px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
               />
             </div>
