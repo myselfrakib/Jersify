@@ -20,7 +20,7 @@ export default function Navbar({
       {/* Top Announcement Bar */}
       <div className="announcement-bar">
         <span>⚡ EXPRESS NATIONWIDE SHIPPING</span>
-        <span className="accent">• FREE SHIPPING ON ORDERS OVER ₹999</span>
+        <span className="accent">• FREE SHIPPING ON ORDERS OVER ₹1999</span>
         <span>• 100% AUTHENTIC QUALITY</span>
       </div>
 

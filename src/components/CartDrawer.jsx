@@ -45,7 +45,7 @@ export default function CartDrawer({
     }
   }
 
-  const shipping = subtotal > 999 || cartItems.length === 0 ? 0 : 70;
+  const shipping = subtotal > 1999 || cartItems.length === 0 ? 0 : 69;
   const total = Math.max(0, subtotal - discount + shipping);
 
   return (

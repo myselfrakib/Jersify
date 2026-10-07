@@ -20,11 +20,20 @@ export default function CheckoutModal({
     city: '',
     state: '',
     pincode: '',
-    paymentMethod: 'cod'
+    paymentMethod: 'partial_cod'
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderComplete, setOrderComplete] = useState(null);
+
+  // Partial COD Calculations
+  const subtotal = checkoutData.subtotal || 0;
+  const discount = checkoutData.discount || 0;
+  const productNetPrice = Math.max(0, subtotal - discount);
+  const halfProduct = Math.round(productNetPrice * 0.5);
+  const remainingProduct = productNetPrice - halfProduct;
+  const partialPaidNow = halfProduct + 120;
+  const partialDueOnDelivery = remainingProduct;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,6 +44,8 @@ export default function CheckoutModal({
     setIsSubmitting(true);
 
     const orderId = 'JRS-' + Date.now();
+    const isPartial = formData.paymentMethod === 'partial_cod';
+
     const newOrder = {
       orderId,
       customerName: formData.name,
@@ -50,6 +61,8 @@ export default function CheckoutModal({
       discount: checkoutData.discount,
       shipping: checkoutData.shipping,
       total: checkoutData.total,
+      paidNowAmount: isPartial ? partialPaidNow : (formData.paymentMethod === 'online' ? checkoutData.total : 0),
+      dueOnDeliveryAmount: isPartial ? partialDueOnDelivery : 0,
       status: 'confirmed',
       createdAt: new Date().toISOString(),
       userId: user?.uid || 'guest'
@@ -113,7 +126,12 @@ export default function CheckoutModal({
             <div style={{ background: '#F9FAFB', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: '1rem', textAlign: 'left', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
               <p><strong>Deliver to:</strong> {orderComplete.customerName}</p>
               <p>{orderComplete.address}, {orderComplete.city} - {orderComplete.pincode}</p>
-              <p style={{ marginTop: '0.5rem' }}><strong>Total Paid:</strong> ₹{orderComplete.total} ({orderComplete.paymentMethod.toUpperCase()})</p>
+              <p style={{ marginTop: '0.5rem' }}><strong>Payment Method:</strong> {orderComplete.paymentMethod === 'partial_cod' ? 'Partial COD' : orderComplete.paymentMethod.toUpperCase()}</p>
+              {orderComplete.paymentMethod === 'partial_cod' ? (
+                <p><strong>Paid Now:</strong> ₹{orderComplete.paidNowAmount} | <strong>Due at Delivery:</strong> ₹{orderComplete.dueOnDeliveryAmount}</p>
+              ) : (
+                <p><strong>Total Amount:</strong> ₹{orderComplete.total}</p>
+              )}
             </div>
 
             <button className="btn btn-primary" onClick={onClose}>
@@ -227,8 +245,8 @@ export default function CheckoutModal({
                     flex: 1,
                     padding: '0.75rem',
                     borderRadius: '4px',
-                    border: formData.paymentMethod === 'cod' ? '2px solid #111827' : '1px solid var(--color-border)',
-                    background: formData.paymentMethod === 'cod' ? '#F9FAFB' : '#FFFFFF',
+                    border: formData.paymentMethod === 'partial_cod' ? '2px solid #111827' : '1px solid var(--color-border)',
+                    background: formData.paymentMethod === 'partial_cod' ? '#F9FAFB' : '#FFFFFF',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -239,11 +257,11 @@ export default function CheckoutModal({
                     <input 
                       type="radio" 
                       name="paymentMethod" 
-                      value="cod" 
-                      checked={formData.paymentMethod === 'cod'} 
+                      value="partial_cod" 
+                      checked={formData.paymentMethod === 'partial_cod'} 
                       onChange={handleChange}
                     />
-                    <Truck size={18} /> Cash On Delivery
+                    <Truck size={18} /> Partial COD (50% + ₹120 now)
                   </label>
 
                   <label style={{
@@ -266,16 +284,33 @@ export default function CheckoutModal({
                       checked={formData.paymentMethod === 'online'} 
                       onChange={handleChange}
                     />
-                    <CreditCard size={18} /> Online / UPI / Card
+                    <CreditCard size={18} /> Full Prepaid Online
                   </label>
                 </div>
+
+                {formData.paymentMethod === 'partial_cod' && (
+                  <div style={{ marginTop: '0.75rem', padding: '0.75rem 1rem', background: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: '4px', fontSize: '0.8rem', color: '#92400E' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span>Pay Now Online (50% product + ₹120 delivery):</span>
+                      <strong>₹{partialPaidNow}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Pay at Delivery (50% balance product):</span>
+                      <strong>₹{partialDueOnDelivery}</strong>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Order Total Highlight */}
               <div style={{ background: '#111827', color: '#FFFFFF', padding: '1rem', borderRadius: 'var(--radius-sm)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
                 <div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-accent)', fontWeight: 700 }}>PAYABLE AMOUNT</span>
-                  <p style={{ fontFamily: 'var(--font-inter)', fontWeight: 900, fontSize: '1.4rem' }}>₹{checkoutData.total}</p>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-accent)', fontWeight: 700 }}>
+                    {formData.paymentMethod === 'partial_cod' ? 'PAY NOW ONLINE' : 'TOTAL PAYABLE'}
+                  </span>
+                  <p style={{ fontFamily: 'var(--font-inter)', fontWeight: 900, fontSize: '1.4rem' }}>
+                    ₹{formData.paymentMethod === 'partial_cod' ? partialPaidNow : checkoutData.total}
+                  </p>
                 </div>
                 <button 
                   type="submit" 

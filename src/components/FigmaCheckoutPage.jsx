@@ -22,8 +22,17 @@ export default function FigmaCheckoutPage({
   const items = checkoutData?.cartItems || cartItems;
   const subtotal = checkoutData?.subtotal || items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const discount = checkoutData?.discount || 0;
-  const shipping = checkoutData?.shipping !== undefined ? checkoutData.shipping : (subtotal > 999 ? 0 : 70);
-  const total = Math.max(0, subtotal - discount + shipping);
+  const shipping = checkoutData?.shipping !== undefined ? checkoutData.shipping : (subtotal > 1999 ? 0 : 69);
+  const standardTotal = Math.max(0, subtotal - discount + shipping);
+
+  // Partial COD calculation: 50% product price + 120 delivery charge paid now, 50% product price paid on delivery
+  const productNetPrice = Math.max(0, subtotal - discount);
+  const halfProductPrice = Math.round(productNetPrice * 0.5);
+  const remainingProductPrice = productNetPrice - halfProductPrice;
+
+  const partialCodPayNow = halfProductPrice + 120;
+  const partialCodDueDelivery = remainingProductPrice;
+  const partialCodTotal = partialCodPayNow + partialCodDueDelivery;
 
   const [formData, setFormData] = useState({
     fullName: user?.displayName || '',
@@ -33,7 +42,7 @@ export default function FigmaCheckoutPage({
     line2: '',
     city: '',
     state: '',
-    paymentMethod: 'upi' // 'upi' | 'card' | 'cod'
+    paymentMethod: 'upi' // 'upi' | 'card' | 'partial_cod'
   });
 
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
@@ -54,14 +63,21 @@ export default function FigmaCheckoutPage({
     setIsProcessingPayment(true);
     const orderId = 'JRS-' + Math.floor(100000 + Math.random() * 900000);
 
+    const isPartialCod = formData.paymentMethod === 'partial_cod';
+    const paidNowAmt = isPartialCod ? partialCodPayNow : standardTotal;
+    const dueOnDeliveryAmt = isPartialCod ? partialCodDueDelivery : 0;
+    const orderTotalAmt = isPartialCod ? partialCodTotal : standardTotal;
+
     const newOrder = {
       orderId,
       customerName: formData.fullName,
       email: user?.email || 'fan@jersify.online',
       phone: formData.phone,
       address: `${formData.line1}, ${formData.line2 ? formData.line2 + ', ' : ''}${formData.city}, ${formData.state} - ${formData.pincode}`,
-      paymentMethod: formData.paymentMethod.toUpperCase(),
-      paymentStatus: formData.paymentMethod === 'cod' ? 'Pending (COD)' : 'Paid Online',
+      paymentMethod: isPartialCod ? 'PARTIAL COD' : formData.paymentMethod.toUpperCase(),
+      paymentStatus: isPartialCod ? `Partial Paid (₹${paidNowAmt} Online Advance, ₹${dueOnDeliveryAmt} Due on Delivery)` : 'Paid Online',
+      paidNow: paidNowAmt,
+      dueOnDelivery: dueOnDeliveryAmt,
       items: items.map(i => ({
         id: i.id,
         name: i.name,
@@ -73,8 +89,8 @@ export default function FigmaCheckoutPage({
       })),
       subtotal,
       discount,
-      shipping,
-      total,
+      shipping: isPartialCod ? 120 : shipping,
+      total: orderTotalAmt,
       status: 'confirmed',
       createdAt: new Date().toISOString(),
       userId: user?.uid || 'authenticated-user'
@@ -138,9 +154,17 @@ export default function FigmaCheckoutPage({
             <p style={{ fontFamily: 'Karla', fontSize: '13px', color: '#4B5563', lineHeight: '18px' }}>
               {orderSuccess.address}
             </p>
-            <p style={{ fontFamily: 'Karla', fontSize: '13px', color: '#111111', fontWeight: 600, marginTop: '4px' }}>
-              Total Paid: ₹{orderSuccess.total} ({orderSuccess.paymentMethod})
-            </p>
+            {orderSuccess.dueOnDelivery > 0 ? (
+              <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '10px', marginTop: '6px', fontSize: '12px', color: '#1E40AF' }}>
+                <p><strong>Pay Now Online:</strong> ₹{orderSuccess.paidNow} (Advance + Delivery)</p>
+                <p><strong>Due on Doorstep Delivery:</strong> ₹{orderSuccess.dueOnDelivery} (Cash)</p>
+                <p style={{ fontWeight: 700, marginTop: '2px' }}>Total Order Value: ₹{orderSuccess.total}</p>
+              </div>
+            ) : (
+              <p style={{ fontFamily: 'Karla', fontSize: '13px', color: '#111111', fontWeight: 600, marginTop: '4px' }}>
+                Total Paid Online: ₹{orderSuccess.total} ({orderSuccess.paymentMethod})
+              </p>
+            )}
           </div>
 
           <button
@@ -279,24 +303,54 @@ export default function FigmaCheckoutPage({
 
           <div style={{ height: '1px', background: '#E5E7EB', margin: '4px 0' }} />
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontFamily: 'Karla', color: '#6B7280' }}>
-            <span>Subtotal</span>
-            <span>₹{subtotal}</span>
-          </div>
-          {discount > 0 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontFamily: 'Karla', color: '#10B981', fontWeight: 700 }}>
-              <span>Discount</span>
-              <span>-₹{discount}</span>
-            </div>
+          {formData.paymentMethod === 'partial_cod' ? (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontFamily: 'Karla', color: '#6B7280' }}>
+                <span>Subtotal</span>
+                <span>₹{subtotal}</span>
+              </div>
+              {discount > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontFamily: 'Karla', color: '#10B981', fontWeight: 700 }}>
+                  <span>Discount</span>
+                  <span>-₹{discount}</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontFamily: 'Karla', color: '#6B7280' }}>
+                <span>Partial COD Handling & Delivery Fee</span>
+                <span>₹120</span>
+              </div>
+              <div style={{ height: '1px', background: '#E5E7EB', margin: '2px 0' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontFamily: 'Karla', fontWeight: 700, color: '#10B981' }}>
+                <span>PAY NOW ONLINE (50% Product + ₹120 Fee)</span>
+                <span>₹{partialCodPayNow}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontFamily: 'Karla', fontWeight: 700, color: '#2563EB' }}>
+                <span>PAY ON DELIVERY (Remaining 50% Cash)</span>
+                <span>₹{partialCodDueDelivery}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontFamily: 'Karla', color: '#6B7280' }}>
+                <span>Subtotal</span>
+                <span>₹{subtotal}</span>
+              </div>
+              {discount > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontFamily: 'Karla', color: '#10B981', fontWeight: 700 }}>
+                  <span>Discount</span>
+                  <span>-₹{discount}</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontFamily: 'Karla', color: '#6B7280' }}>
+                <span>Shipping</span>
+                <span>{shipping === 0 ? <strong style={{ color: '#10B981' }}>FREE (Over ₹1999)</strong> : `₹${shipping}`}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontFamily: 'Karla', fontWeight: 700, color: '#111111', paddingTop: '6px', borderTop: '1px solid #E5E7EB' }}>
+                <span>TOTAL AMOUNT</span>
+                <span>₹{standardTotal}</span>
+              </div>
+            </>
           )}
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontFamily: 'Karla', color: '#6B7280' }}>
-            <span>Shipping</span>
-            <span>{shipping === 0 ? <strong style={{ color: '#10B981' }}>FREE</strong> : `₹${shipping}`}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontFamily: 'Karla', fontWeight: 700, color: '#111111', paddingTop: '6px', borderTop: '1px solid #E5E7EB' }}>
-            <span>TOTAL AMOUNT</span>
-            <span>₹{total}</span>
-          </div>
         </div>
 
         {/* Payment Method Selector */}
@@ -316,7 +370,7 @@ export default function FigmaCheckoutPage({
               />
               <div style={{ flexGrow: 1 }}>
                 <p style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '14px', color: '#111111' }}>
-                  UPI / GPay / PhonePe / Paytm (Instant Gateway)
+                  UPI / GPay / PhonePe / Paytm (Full Online)
                 </p>
                 <p style={{ fontFamily: 'Karla', fontSize: '12px', color: '#6B7280' }}>
                   Fast & secure 1-click payment with 100% buyer protection
@@ -342,20 +396,20 @@ export default function FigmaCheckoutPage({
               </div>
             </label>
 
-            <label style={{ border: formData.paymentMethod === 'cod' ? '1.5px solid #111111' : '1px solid #E5E7EB', padding: '14px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', background: '#FFFFFF' }}>
+            <label style={{ border: formData.paymentMethod === 'partial_cod' ? '1.5px solid #111111' : '1px solid #E5E7EB', padding: '14px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', background: formData.paymentMethod === 'partial_cod' ? '#F9FAFB' : '#FFFFFF' }}>
               <input
                 type="radio"
                 name="payment"
-                value="cod"
-                checked={formData.paymentMethod === 'cod'}
-                onChange={() => setFormData({ ...formData, paymentMethod: 'cod' })}
+                value="partial_cod"
+                checked={formData.paymentMethod === 'partial_cod'}
+                onChange={() => setFormData({ ...formData, paymentMethod: 'partial_cod' })}
               />
               <div style={{ flexGrow: 1 }}>
                 <p style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '14px', color: '#111111' }}>
-                  Cash on Delivery (COD)
+                  ⚡ Partial COD (50% Advance Online + ₹120 Delivery Fee, 50% Cash on Delivery)
                 </p>
-                <p style={{ fontFamily: 'Karla', fontSize: '12px', color: '#6B7280' }}>
-                  Pay cash upon doorstep delivery
+                <p style={{ fontFamily: 'Karla', fontSize: '12px', color: '#4B5563', marginTop: '2px' }}>
+                  Pay <strong>₹{partialCodPayNow}</strong> now online (50% product + ₹120 delivery fee) & <strong>₹{partialCodDueDelivery}</strong> cash at doorstep delivery.
                 </p>
               </div>
             </label>
@@ -365,7 +419,9 @@ export default function FigmaCheckoutPage({
             type="submit"
             style={{ width: '100%', height: '48px', background: '#000000', color: '#FFFFFF', fontFamily: 'Karla', fontWeight: 700, fontSize: '15px', border: 'none', cursor: 'pointer', marginTop: '8px' }}
           >
-            PROCEED TO PAYMENT → ₹{total}
+            {formData.paymentMethod === 'partial_cod'
+              ? `PROCEED TO PAY ₹${partialCodPayNow} NOW (PARTIAL COD) →`
+              : `PROCEED TO PAYMENT → ₹${standardTotal}`}
           </button>
         </div>
       </form>
@@ -380,12 +436,24 @@ export default function FigmaCheckoutPage({
                 <span style={{ fontFamily: 'Karla', fontSize: '11px', color: '#6B7280', fontWeight: 700 }}>SECURE PAYMENT GATEWAY</span>
                 <h3 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '18px', color: '#111111' }}>Jersify Pay</h3>
               </div>
-              <span style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '18px', color: '#111111' }}>₹{total}</span>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '18px', color: '#111111' }}>₹{activePayNow}</span>
+                {formData.paymentMethod === 'partial_cod' && (
+                  <p style={{ fontSize: '10px', color: '#10B981', fontWeight: 700 }}>Partial COD Advance</p>
+                )}
+              </div>
             </div>
 
-            {formData.paymentMethod === 'upi' && (
+            {formData.paymentMethod === 'partial_cod' && (
+              <div style={{ padding: '12px', background: '#FEF3C7', border: '1px solid #F59E0B', color: '#92400E', fontSize: '12px', fontFamily: 'Karla', lineHeight: '18px' }}>
+                <strong>⚡ Partial COD Advance Payment</strong><br />
+                Pay <strong>₹{partialCodPayNow}</strong> now online via UPI/Card to confirm order dispatch. Remaining balance <strong>₹{partialCodDueDelivery}</strong> will be collected at doorstep delivery.
+              </div>
+            )}
+
+            {(formData.paymentMethod === 'upi' || formData.paymentMethod === 'partial_cod') && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <p style={{ fontFamily: 'Karla', fontSize: '13px', color: '#374151', fontWeight: 700 }}>SELECT YOUR UPI APP:</p>
+                <p style={{ fontFamily: 'Karla', fontSize: '13px', color: '#374151', fontWeight: 700 }}>SELECT YOUR UPI APP FOR PAYMENT:</p>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                   {['gpay', 'phonepe', 'paytm'].map(app => (
                     <button
@@ -409,7 +477,7 @@ export default function FigmaCheckoutPage({
                 </div>
                 <div style={{ textAlign: 'center', padding: '12px', background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
                   <p style={{ fontFamily: 'Karla', fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>UPI ID / VPA</p>
-                  <p style={{ fontFamily: 'Karla', fontSize: '14px', fontWeight: 700, color: '#111111' }}>jersify.{formData.phone.replace(/[^0-9]/g, '')}@okaxis</p>
+                  <p style={{ fontFamily: 'Karla', fontSize: '14px', fontWeight: 700, color: '#111111' }}>jersify.{formData.phone ? formData.phone.replace(/[^0-9]/g, '') : '9876543210'}@okaxis</p>
                 </div>
               </div>
             )}
@@ -424,12 +492,6 @@ export default function FigmaCheckoutPage({
               </div>
             )}
 
-            {formData.paymentMethod === 'cod' && (
-              <div style={{ padding: '16px', background: '#FEF3C7', border: '1px solid #F59E0B', color: '#92400E', fontSize: '13px', fontFamily: 'Karla' }}>
-                Please keep exact cash amount of <strong>₹{total}</strong> ready at the time of delivery.
-              </div>
-            )}
-
             <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
               <button
                 type="button"
@@ -437,7 +499,7 @@ export default function FigmaCheckoutPage({
                 onClick={handleCompletePayment}
                 style={{ flex: 1, height: '44px', background: '#000000', color: '#FFFFFF', border: 'none', fontFamily: 'Karla', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}
               >
-                {isProcessingPayment ? 'PROCESSING PAYMENT...' : `PAY ₹${total}`}
+                {isProcessingPayment ? 'PROCESSING PAYMENT...' : `PAY ₹${activePayNow} NOW`}
               </button>
               <button
                 type="button"
