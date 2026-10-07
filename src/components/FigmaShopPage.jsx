@@ -71,7 +71,7 @@ export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth,
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '1604px', paddingBottom: '60px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Store Navigation Header */}
-      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 18px' }}>
+      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 19px' }}>
         <div style={{ width: '128px', height: '47px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={onNavigateHome}>
           <ImageWithSpinner src={headerLogo} alt="Jersify" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
@@ -90,14 +90,14 @@ export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth,
       </div>
 
       {/* Shop Title Heading */}
-      <div style={{ padding: '20px 24px 18px', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ padding: '20px 19px 18px', borderBottom: '1px solid #E5E7EB' }}>
         <h1 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '28px', color: '#111111', lineHeight: '32px' }}>
           Shop
         </h1>
       </div>
 
       {/* Product Listing Grid */}
-      <div style={{ padding: '24px' }}>
+      <div style={{ padding: '19px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
           {shopJerseys.map((item) => (
             <div 
@@ -105,7 +105,7 @@ export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth,
               onClick={() => onSelectProduct(item)}
               style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '8px' }}
             >
-              <div style={{ width: '166.5px', height: '210px', background: '#F3F2EF', borderRadius: '2px', overflow: 'hidden' }}>
+              <div style={{ width: '100%', height: '210px', background: '#F3F2EF', borderRadius: '2px', overflow: 'hidden' }}>
                 <ImageWithSpinner src={item.imgUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div>
@@ -122,6 +122,7 @@ export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth,
             </div>
           ))}
         </div>
+
 
 
         {/* Catalog Completion Footer Note */}
