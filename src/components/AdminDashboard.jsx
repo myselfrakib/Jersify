@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { rtdb, ref, get, set, update, push, remove, signOut, auth } from '../firebase';
+import { 
+  rtdb, 
+  ref, 
+  get, 
+  set, 
+  update, 
+  push, 
+  remove, 
+  signOut, 
+  auth,
+  storage,
+  storageRef,
+  uploadBytes,
+  getDownloadURL
+} from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
 
 const DEFAULT_INDEX_IMAGES = {
@@ -24,14 +38,16 @@ export default function AdminDashboard({
 }) {
   const [activeTab, setActiveTab] = useState('images'); // 'images' | 'products' | 'orders'
 
-  // Image Control State
+  // Image Control State & Upload State
   const [indexImages, setIndexImages] = useState(DEFAULT_INDEX_IMAGES);
   const [imagesSavedToast, setImagesSavedToast] = useState(false);
+  const [uploadingState, setUploadingState] = useState({});
 
-  // Products State
+  // Products State & Upload State
   const [productsList, setProductsList] = useState([]);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProductId, setEditingProductId] = useState(null);
+  const [uploadingProductImg, setUploadingProductImg] = useState(false);
 
   const [productForm, setProductForm] = useState({
     name: '',
@@ -121,6 +137,40 @@ export default function AdminDashboard({
         url: newUrl
       }
     }));
+  };
+
+  // Upload image file directly to Firebase Storage for Index Banner
+  const handleFileUploadForIndexImage = async (key, file) => {
+    if (!file) return;
+    setUploadingState(prev => ({ ...prev, [key]: true }));
+    try {
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const sRef = storageRef(storage, `siteConfig/images/${key}_${Date.now()}_${cleanFileName}`);
+      await uploadBytes(sRef, file);
+      const downloadUrl = await getDownloadURL(sRef);
+      handleImageChange(key, downloadUrl);
+    } catch (err) {
+      alert('Failed to upload image to Firebase Storage: ' + err.message);
+    } finally {
+      setUploadingState(prev => ({ ...prev, [key]: false }));
+    }
+  };
+
+  // Upload image file directly to Firebase Storage for Product
+  const handleFileUploadForProduct = async (file) => {
+    if (!file) return;
+    setUploadingProductImg(true);
+    try {
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const sRef = storageRef(storage, `products/${Date.now()}_${cleanFileName}`);
+      await uploadBytes(sRef, file);
+      const downloadUrl = await getDownloadURL(sRef);
+      setProductForm(prev => ({ ...prev, imgUrl: downloadUrl }));
+    } catch (err) {
+      alert('Failed to upload product image to Firebase Storage: ' + err.message);
+    } finally {
+      setUploadingProductImg(false);
+    }
   };
 
   // Product Handlers
@@ -252,15 +302,44 @@ export default function AdminDashboard({
                     )}
                   </div>
 
-                  {/* URL Input */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <label style={{ fontSize: '11px', fontWeight: 700, color: '#4B5563' }}>IMAGE URL (http:// or https://)</label>
-                    <input
-                      type="text"
-                      value={item.url}
-                      onChange={(e) => handleImageChange(key, e.target.value)}
-                      style={{ height: '38px', padding: '0 10px', border: '1px solid #D1D5DB', fontSize: '12px', fontFamily: 'monospace' }}
-                    />
+                  {/* URL Input & Direct File Upload */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label style={{ fontSize: '11px', fontWeight: 700, color: '#4B5563' }}>IMAGE URL (or Upload File Below)</label>
+                      <input
+                        type="text"
+                        value={item.url}
+                        onChange={(e) => handleImageChange(key, e.target.value)}
+                        style={{ height: '38px', padding: '0 10px', border: '1px solid #D1D5DB', fontSize: '12px', fontFamily: 'monospace' }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <label style={{
+                        background: '#111111',
+                        color: '#FFFFFF',
+                        padding: '6px 12px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}>
+                        {uploadingState[key] ? '⏳ Uploading to Storage...' : '📁 Upload Image File'}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              handleFileUploadForIndexImage(key, e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </label>
+                      {uploadingState[key] && <span style={{ fontSize: '12px', color: '#059669', fontWeight: 700 }}>Uploading...</span>}
+                    </div>
                   </div>
                 </div>
               );
@@ -336,9 +415,42 @@ export default function AdminDashboard({
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <label style={{ fontSize: '12px', fontWeight: 700 }}>PRODUCT IMAGE URL *</label>
-                <input type="text" required value={productForm.imgUrl} onChange={(e) => setProductForm({ ...productForm, imgUrl: e.target.value })} placeholder="https://firebasestorage..." style={{ height: '38px', padding: '0 10px', border: '1px solid #D1D5DB' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 700 }}>PRODUCT IMAGE *</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    required
+                    value={productForm.imgUrl}
+                    onChange={(e) => setProductForm({ ...productForm, imgUrl: e.target.value })}
+                    placeholder="IMAGE URL or Upload File ->"
+                    style={{ flex: 1, height: '38px', padding: '0 10px', border: '1px solid #D1D5DB', fontFamily: 'monospace', fontSize: '12px' }}
+                  />
+                  <label style={{
+                    background: '#111111',
+                    color: '#FFFFFF',
+                    padding: '8px 14px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
+                    {uploadingProductImg ? '⏳ Uploading...' : '📁 Upload File'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          handleFileUploadForProduct(e.target.files[0]);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                {uploadingProductImg && <span style={{ fontSize: '12px', color: '#059669', fontWeight: 700 }}>Uploading to Firebase Storage...</span>}
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
