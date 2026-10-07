@@ -48,11 +48,15 @@ const googleProvider = new GoogleAuthProvider();
 
 let analytics = null;
 if (typeof window !== 'undefined') {
-  isAnalyticsSupported().then((supported) => {
-    if (supported) {
-      analytics = getAnalytics(app);
-    }
-  }).catch(() => {});
+  try {
+    isAnalyticsSupported().then((supported) => {
+      if (supported) {
+        try {
+          analytics = getAnalytics(app);
+        } catch (e) {}
+      }
+    }).catch(() => {});
+  } catch (e) {}
 }
 
 // RTDB Compatibility helpers for seamless app operation

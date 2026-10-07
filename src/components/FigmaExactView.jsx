@@ -23,6 +23,7 @@ const imgEllipse16 = "http://localhost:3845/assets/a8647aad699c0b8286625d0bba860
 const imgEllipse17 = "http://localhost:3845/assets/b41954dd7858b0ad1c0699454ff03bab1fdc4f3d.png";
 const imgEllipse13 = "http://localhost:3845/assets/1447f142b4c6a11180a331925393d53396661562.png";
 const imgEllipse19 = "http://localhost:3845/assets/8c3cfca9dea1755f265b3b26136f1e1a41bbd36b.png";
+const imgImg44492 = "http://localhost:3845/assets/3d9c63e439c097fd35375eee418847add198ba5e.png";
 const imgRectangle3 = "http://localhost:3845/assets/5c48669b89b932b67810151ad0e742bb4c5a4ec6.png";
 const imgHome = "http://localhost:3845/assets/770d6e8de263da4c03f4e35592767143b42b118e.svg";
 const imgShoppingBag = "http://localhost:3845/assets/1eecf7ef8412c1f7eff5133baff9c8d9a3e03da6.svg";
