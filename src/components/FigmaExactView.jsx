@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { rtdb, ref, get, onValue } from '../firebase';
+import { INITIAL_PRODUCTS } from '../data/initialProducts';
 
 import { 
   imgHome, 
