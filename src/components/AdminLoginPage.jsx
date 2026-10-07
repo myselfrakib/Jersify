@@ -51,7 +51,7 @@ export default function AdminLoginPage({
 
       await set(ref(rtdb, `admins/${res.user.uid}`), adminData);
 
-      setInfoMsg('Admin registration submitted successfully! Status is currently isAdmin == false. An authorized Super Admin must enable isAdmin == true in database before you can access the dashboard.');
+      setInfoMsg('Admin account created successfully! Please sign in once approved.');
       await signOut(auth);
     } catch (err) {
       console.warn('Admin signup error:', err);
@@ -79,7 +79,7 @@ export default function AdminLoginPage({
 
       if (!isApproved) {
         await signOut(auth);
-        setErrorMsg('Access Denied: Your account at /admins/' + uid + ' has status: false (isAdmin == false). Approval is required in database before login.');
+        setErrorMsg('Access Denied: Account approval required before login.');
         setLoading(false);
         return;
       }
