@@ -174,90 +174,39 @@ export default function FigmaExactView({ cartCount = 0, onSelectProduct, onSelec
         }
       `}</style>
 
-      {/* Whole Page Loading Animation Overlay */}
+      {/* Simple Loading Spinner Overlay */}
       {isPageLoading && (
         <div style={{
           position: 'fixed',
-          inset: 0,
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
           zIndex: 99999,
-          background: '#090D14',
+          background: '#FFFFFF',
+          padding: '16px 24px',
+          borderRadius: '8px',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+          border: '1px solid #E5E7EB',
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          padding: '24px',
-          color: '#FFFFFF'
+          gap: '12px'
         }}>
           <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '12px',
-            animation: 'pagePulse 1.8s ease-in-out infinite'
+            width: '24px',
+            height: '24px',
+            border: '2.5px solid #E5E7EB',
+            borderTopColor: '#111827',
+            borderRadius: '50%',
+            animation: 'pageSpin 0.75s linear infinite'
+          }} />
+          <span style={{
+            fontFamily: "'Karla', sans-serif",
+            fontSize: '13px',
+            fontWeight: 600,
+            color: '#111827'
           }}>
-            <div style={{
-              width: '64px',
-              height: '64px',
-              borderRadius: '16px',
-              background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
-              border: '1px solid rgba(255,255,255,0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '32px',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.6)'
-            }}>
-              🎽
-            </div>
-            <h1 style={{
-              fontFamily: "'Inter', sans-serif",
-              fontWeight: 900,
-              fontSize: '32px',
-              color: '#FFFFFF',
-              letterSpacing: '3px',
-              margin: 0
-            }}>
-              JERSIFY<span style={{ color: '#E11D48' }}>.</span>
-            </h1>
-            <p style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '11px',
-              color: '#94A3B8',
-              letterSpacing: '2px',
-              textTransform: 'uppercase',
-              fontWeight: 600,
-              marginTop: '-4px'
-            }}>
-              Official Football Kits & Jerseys
-            </p>
-          </div>
-
-          <div style={{
-            marginTop: '36px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '14px'
-          }}>
-            <div style={{
-              width: '34px',
-              height: '34px',
-              border: '3px solid rgba(255,255,255,0.12)',
-              borderTopColor: '#FFFFFF',
-              borderRightColor: '#E11D48',
-              borderRadius: '50%',
-              animation: 'pageSpin 0.75s linear infinite'
-            }} />
-            <span style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '11px',
-              color: '#64748B',
-              fontWeight: 500,
-              letterSpacing: '1px'
-            }}>
-              Loading Homepage…
-            </span>
-          </div>
+            Loading…
+          </span>
         </div>
       )}
 
