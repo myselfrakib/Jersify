@@ -40,18 +40,108 @@ const DEFAULT_INDEX_IMAGES = {
   clubLogoJuventus: { label: "Club Crest: Juventus", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg" }
 };
 
+const DEFAULT_TEAM_CONFIG = {
+  'Barcelona': {
+    name: 'FC BARCELONA',
+    subtitle: 'La Liga · Spain',
+    founded: '1899',
+    stadium: 'Spotify Camp Nou',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
+    banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+    description: 'Explore official Blaugrana kits, retro classics, and exclusive concept editions for the 26/27 season.'
+  },
+  'Real Madrid': {
+    name: 'REAL MADRID CF',
+    subtitle: 'La Liga · Spain',
+    founded: '1902',
+    stadium: 'Santiago Bernabéu',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg',
+    banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+    description: 'Discover Los Blancos official home, away and special edition kits with 15-time Champions League heritage.'
+  },
+  'Argentina': {
+    name: 'ARGENTINA',
+    subtitle: 'CONMEBOL · World Champions',
+    founded: '1893',
+    stadium: 'Estadio MÁS Monumental',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1a/Association_Argentine_de_Football_logo.svg',
+    banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+    description: 'Wear the iconic Albiceleste stripes with 3-star World Cup champion badges and authentic fan versions.'
+  },
+  'Man City': {
+    name: 'MANCHESTER CITY',
+    subtitle: 'Premier League · England',
+    founded: '1880',
+    stadium: 'Etihad Stadium',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg',
+    banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+    description: 'Explore Cityzens modern home and away kits designed for pitch performance and lifestyle wear.'
+  },
+  'Liverpool': {
+    name: 'LIVERPOOL FC',
+    subtitle: 'Premier League · England',
+    founded: '1892',
+    stadium: 'Anfield Stadium',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg',
+    banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+    description: 'You will never walk alone with the legendary Anfield red kits and classic edition jerseys.'
+  },
+  'AC Milan': {
+    name: 'AC MILAN',
+    subtitle: 'Serie A · Italy',
+    founded: '1899',
+    stadium: 'San Siro Stadium',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/d/d0/AC_Milan_logo.svg',
+    banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+    description: 'Rossoneri classic red & black stripes engineered for performance and Italian football heritage.'
+  },
+  'Bayern Munich': {
+    name: 'BAYERN MUNICH',
+    subtitle: 'Bundesliga · Germany',
+    founded: '1900',
+    stadium: 'Allianz Arena',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg',
+    banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+    description: 'Mia San Mia. Experience Bavaria legendary red home and away kits with 33 Bundesliga titles.'
+  },
+  'Man United': {
+    name: 'MANCHESTER UNITED',
+    subtitle: 'Premier League · England',
+    founded: '1878',
+    stadium: 'Old Trafford',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg',
+    banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+    description: 'The Theatre of Dreams red devil jerseys, retro classics and official fan versions.'
+  },
+  'Juventus': {
+    name: 'JUVENTUS FC',
+    subtitle: 'Serie A · Italy',
+    founded: '1897',
+    stadium: 'Allianz Stadium Turin',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg',
+    banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+    description: 'Bianconeri iconic black & white stripes crafted with modern lifestyle aesthetics.'
+  }
+};
+
 export default function AdminDashboard({
   adminUser,
   adminData,
   onSignOut,
   onNavigateHome
 }) {
-  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'products' | 'orders' | 'users'
+  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'clubs' | 'products' | 'orders' | 'users'
 
   // Image Control State & Upload State
   const [indexImages, setIndexImages] = useState(DEFAULT_INDEX_IMAGES);
   const [imagesSavedToast, setImagesSavedToast] = useState(false);
   const [uploadingState, setUploadingState] = useState({});
+
+  // Clubs & Nations Banners State
+  const [teamBanners, setTeamBanners] = useState(DEFAULT_TEAM_CONFIG);
+  const [teamsSavedToast, setTeamsSavedToast] = useState(false);
+  const [uploadingTeamState, setUploadingTeamState] = useState({});
+  const [newClubName, setNewClubName] = useState('');
 
   // Products State & Upload State
   const [productsList, setProductsList] = useState([]);
@@ -77,7 +167,7 @@ export default function AdminDashboard({
   // Users & Admins State
   const [usersList, setUsersList] = useState([]);
 
-  // Fetch RTDB configuration, products, orders & users
+  // Fetch RTDB configuration, products, orders & users with realtime onValue listeners
   useEffect(() => {
     // 1. Realtime listener for siteConfig/images
     const unsubImages = onValue(ref(rtdb, 'siteConfig/images'), (snap) => {
@@ -88,7 +178,16 @@ export default function AdminDashboard({
       }
     }, () => {});
 
-    // 2. Realtime listener for products
+    // 2. Realtime listener for siteConfig/teamBanners
+    const unsubTeams = onValue(ref(rtdb, 'siteConfig/teamBanners'), (snap) => {
+      if (snap.exists()) {
+        const merged = { ...DEFAULT_TEAM_CONFIG, ...snap.val() };
+        setTeamBanners(merged);
+        sessionStorage.setItem('jersify_team_banners', JSON.stringify(merged));
+      }
+    }, () => {});
+
+    // 3. Realtime listener for products
     const unsubProds = onValue(ref(rtdb, 'products'), (snap) => {
       if (snap.exists()) {
         const val = snap.val();
@@ -100,7 +199,7 @@ export default function AdminDashboard({
       }
     }, () => {});
 
-    // 3. Realtime listener for orders
+    // 4. Realtime listener for orders
     const unsubOrders = onValue(ref(rtdb, 'orders'), (snap) => {
       if (snap.exists()) {
         const val = snap.val();
@@ -112,7 +211,7 @@ export default function AdminDashboard({
       }
     }, () => {});
 
-    // 4. Realtime listener for users & admins
+    // 5. Realtime listener for users & admins
     const unsubAdmins = onValue(ref(rtdb, 'admins'), () => loadUsersAndAdmins(), () => {});
     const unsubUsers = onValue(ref(rtdb, 'users'), () => loadUsersAndAdmins(), () => {});
 
@@ -136,6 +235,7 @@ export default function AdminDashboard({
 
     return () => {
       unsubImages();
+      unsubTeams();
       unsubProds();
       unsubOrders();
       unsubAdmins();
@@ -143,7 +243,7 @@ export default function AdminDashboard({
     };
   }, []);
 
-  // Image Save Handler
+  // Image Save Handler for Index Page
   const handleSaveImages = async () => {
     try {
       await set(ref(rtdb, 'siteConfig/images'), indexImages);
@@ -179,6 +279,66 @@ export default function AdminDashboard({
     } finally {
       setUploadingState(prev => ({ ...prev, [key]: false }));
     }
+  };
+
+  // Save Team Banners Config
+  const handleSaveTeamBanners = async () => {
+    try {
+      await set(ref(rtdb, 'siteConfig/teamBanners'), teamBanners);
+      setTeamsSavedToast(true);
+      setTimeout(() => setTeamsSavedToast(false), 3000);
+    } catch (err) {
+      alert('Failed to save team banners to RTDB: ' + err.message);
+    }
+  };
+
+  const handleTeamFieldChange = (teamKey, field, val) => {
+    setTeamBanners(prev => ({
+      ...prev,
+      [teamKey]: {
+        ...(prev[teamKey] || {}),
+        [field]: val
+      }
+    }));
+  };
+
+  const handleFileUploadForTeamField = async (teamKey, field, file) => {
+    if (!file) return;
+    const stateKey = `${teamKey}_${field}`;
+    setUploadingTeamState(prev => ({ ...prev, [stateKey]: true }));
+    try {
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const sRef = storageRef(storage, `siteConfig/teamBanners/${teamKey}_${field}_${Date.now()}_${cleanFileName}`);
+      await uploadBytes(sRef, file);
+      const downloadUrl = await getDownloadURL(sRef);
+      handleTeamFieldChange(teamKey, field, downloadUrl);
+    } catch (err) {
+      alert('Failed to upload team image: ' + err.message);
+    } finally {
+      setUploadingTeamState(prev => ({ ...prev, [stateKey]: false }));
+    }
+  };
+
+  const handleAddNewClub = () => {
+    if (!newClubName.trim()) return;
+    const key = newClubName.trim();
+    if (teamBanners[key]) {
+      alert('Club/Nation already exists!');
+      return;
+    }
+    setTeamBanners(prev => ({
+      ...prev,
+      [key]: {
+        name: key.toUpperCase(),
+        subtitle: 'Official Collection',
+        founded: '2026',
+        stadium: 'Home Stadium',
+        logo: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
+        banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+        description: `Official and concept kits for ${key}.`
+      }
+    }));
+    setNewClubName('');
   };
 
   // Upload image file directly to Firebase Storage for Product
@@ -272,13 +432,19 @@ export default function AdminDashboard({
         </div>
       </div>
 
-      {/* Navigation Tabs (4 Separated Tabs) */}
+      {/* Navigation Tabs (5 Separated Tabs) */}
       <div style={{ display: 'flex', background: '#F3F4F6', borderBottom: '1px solid #E5E7EB', overflowX: 'auto' }}>
         <button
           onClick={() => setActiveTab('images')}
           style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'images' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'images' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
         >
           🖼️ Index Page Images ({Object.keys(indexImages).length})
+        </button>
+        <button
+          onClick={() => setActiveTab('clubs')}
+          style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'clubs' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'clubs' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+        >
+          🛡️ Clubs & Nations ({Object.keys(teamBanners).length})
         </button>
         <button
           onClick={() => setActiveTab('products')}
@@ -392,7 +558,157 @@ export default function AdminDashboard({
         </div>
       )}
 
-      {/* TAB 2: PRODUCTS LIST MANAGER */}
+      {/* TAB 2: CLUBS & NATIONS PAGE IMAGE CONTROLLER */}
+      {activeTab === 'clubs' && (
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111111' }}>Clubs & Nations Page Image Controller</h2>
+              <p style={{ fontSize: '13px', color: '#6B7280' }}>Manage hero banners, crest logos, stadium titles & descriptions for every club and national team page.</p>
+            </div>
+            <button
+              onClick={handleSaveTeamBanners}
+              style={{ background: '#000000', color: '#FFFFFF', padding: '10px 20px', border: 'none', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}
+            >
+              💾 Save All Club Banners
+            </button>
+          </div>
+
+          {teamsSavedToast && (
+            <div style={{ background: '#D1FAE5', color: '#065F46', padding: '12px', fontWeight: 700, fontSize: '14px' }}>
+              ✓ Club page banners and descriptions saved to Realtime Database successfully!
+            </div>
+          )}
+
+          {/* Quick Add New Club / Nation Bar */}
+          <div style={{ background: '#F3F4F6', padding: '14px 18px', border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: '#111111' }}>+ Add New Club or Nation:</span>
+            <input
+              type="text"
+              placeholder="e.g. PSG or France"
+              value={newClubName}
+              onChange={(e) => setNewClubName(e.target.value)}
+              style={{ height: '36px', padding: '0 10px', border: '1px solid #D1D5DB', width: '220px', fontSize: '13px' }}
+            />
+            <button
+              onClick={handleAddNewClub}
+              style={{ background: '#111111', color: '#FFFFFF', border: 'none', padding: '8px 16px', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}
+            >
+              Create Club Entry
+            </button>
+          </div>
+
+          {/* Cards Grid for Each Club / Nation */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '24px' }}>
+            {Object.keys(teamBanners).map(teamKey => {
+              const team = teamBanners[teamKey];
+              return (
+                <div key={teamKey} style={{ border: '1.5px solid #111111', padding: '18px', borderRadius: '4px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E5E7EB', paddingBottom: '8px' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#111111', margin: 0 }}>{teamKey}</h3>
+                    <span style={{ fontSize: '11px', background: '#F3F4F6', padding: '3px 8px', fontWeight: 700 }}>CLUB Showcase Page</span>
+                  </div>
+
+                  {/* 1. Hero Banner Image (Aspect 16:9 / 393x220px) */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label style={{ fontSize: '12px', fontWeight: 700, color: '#111111' }}>1. HERO BANNER IMAGE</label>
+                      <span style={{ fontSize: '10px', background: '#EDDBDB', padding: '2px 6px', fontWeight: 700 }}>Aspect: 16:9 (393x220px)</span>
+                    </div>
+                    <div style={{ width: '100%', height: '120px', background: '#111111', overflow: 'hidden', borderRadius: '2px', position: 'relative' }}>
+                      <img src={team.banner} alt={team.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+                      <input
+                        type="text"
+                        value={team.banner || ''}
+                        onChange={(e) => handleTeamFieldChange(teamKey, 'banner', e.target.value)}
+                        placeholder="Banner URL..."
+                        style={{ flex: 1, height: '34px', padding: '0 8px', border: '1px solid #D1D5DB', fontSize: '11px', fontFamily: 'monospace' }}
+                      />
+                      <label style={{ background: '#111111', color: '#FFFFFF', padding: '6px 10px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+                        {uploadingTeamState[`${teamKey}_banner`] ? '⏳...' : '📁 Upload Banner'}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              handleFileUploadForTeamField(teamKey, 'banner', e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* 2. Club Logo / Crest Image (Aspect 1:1) */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label style={{ fontSize: '12px', fontWeight: 700, color: '#111111' }}>2. CLUB CREST LOGO</label>
+                      <span style={{ fontSize: '10px', background: '#EDDBDB', padding: '2px 6px', fontWeight: 700 }}>Aspect: 1:1 Crest (64x64px)</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ width: '56px', height: '56px', background: '#F3F4F6', borderRadius: '50%', padding: '4px', border: '1px solid #E5E7EB', flexShrink: 0 }}>
+                        <img src={team.logo} alt={team.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <input
+                          type="text"
+                          value={team.logo || ''}
+                          onChange={(e) => handleTeamFieldChange(teamKey, 'logo', e.target.value)}
+                          placeholder="Logo Crest URL..."
+                          style={{ height: '34px', padding: '0 8px', border: '1px solid #D1D5DB', fontSize: '11px', fontFamily: 'monospace' }}
+                        />
+                        <label style={{ background: '#111111', color: '#FFFFFF', padding: '4px 10px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', display: 'inline-block', width: 'fit-content' }}>
+                          {uploadingTeamState[`${teamKey}_logo`] ? '⏳ Uploading...' : '📁 Upload Crest Logo'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                handleFileUploadForTeamField(teamKey, 'logo', e.target.files[0]);
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 3. Club Details Inputs */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label style={{ fontSize: '11px', fontWeight: 700 }}>DISPLAY NAME</label>
+                      <input type="text" value={team.name || ''} onChange={(e) => handleTeamFieldChange(teamKey, 'name', e.target.value)} style={{ height: '34px', padding: '0 8px', border: '1px solid #D1D5DB', fontSize: '12px' }} />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label style={{ fontSize: '11px', fontWeight: 700 }}>LEAGUE / SUBTITLE</label>
+                      <input type="text" value={team.subtitle || ''} onChange={(e) => handleTeamFieldChange(teamKey, 'subtitle', e.target.value)} style={{ height: '34px', padding: '0 8px', border: '1px solid #D1D5DB', fontSize: '12px' }} />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label style={{ fontSize: '11px', fontWeight: 700 }}>FOUNDED YEAR</label>
+                      <input type="text" value={team.founded || ''} onChange={(e) => handleTeamFieldChange(teamKey, 'founded', e.target.value)} style={{ height: '34px', padding: '0 8px', border: '1px solid #D1D5DB', fontSize: '12px' }} />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label style={{ fontSize: '11px', fontWeight: 700 }}>HOME STADIUM</label>
+                      <input type="text" value={team.stadium || ''} onChange={(e) => handleTeamFieldChange(teamKey, 'stadium', e.target.value)} style={{ height: '34px', padding: '0 8px', border: '1px solid #D1D5DB', fontSize: '12px' }} />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: 700 }}>CLUB DESCRIPTION</label>
+                    <textarea value={team.description || ''} onChange={(e) => handleTeamFieldChange(teamKey, 'description', e.target.value)} style={{ height: '50px', padding: '6px 8px', border: '1px solid #D1D5DB', fontSize: '12px', fontFamily: 'Karla' }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: PRODUCTS LIST MANAGER */}
       {activeTab === 'products' && (
         <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -601,7 +917,7 @@ export default function AdminDashboard({
         </div>
       )}
 
-      {/* TAB 3: CUSTOMER ORDERS (SEPARATED TAB) */}
+      {/* TAB 4: CUSTOMER ORDERS (SEPARATED TAB) */}
       {activeTab === 'orders' && (
         <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
@@ -667,7 +983,7 @@ export default function AdminDashboard({
         </div>
       )}
 
-      {/* TAB 4: REGISTERED USERS & ADMINS (SEPARATED TAB) */}
+      {/* TAB 5: REGISTERED USERS & ADMINS (SEPARATED TAB) */}
       {activeTab === 'users' && (
         <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>

@@ -68,8 +68,17 @@ export default function FigmaTeamPage({
     }
   });
 
+  const [teamConfig, setTeamConfig] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_team_banners');
+      return cached ? JSON.parse(cached) : TEAM_DETAILS;
+    } catch (e) {
+      return TEAM_DETAILS;
+    }
+  });
+
   useEffect(() => {
-    const unsub = onValue(ref(rtdb, 'products'), (snap) => {
+    const unsubProds = onValue(ref(rtdb, 'products'), (snap) => {
       if (snap.exists()) {
         const val = snap.val();
         const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
@@ -80,10 +89,21 @@ export default function FigmaTeamPage({
       }
     }, () => {});
 
-    return () => unsub();
+    const unsubTeams = onValue(ref(rtdb, 'siteConfig/teamBanners'), (snap) => {
+      if (snap.exists()) {
+        const merged = { ...TEAM_DETAILS, ...snap.val() };
+        setTeamConfig(merged);
+        sessionStorage.setItem('jersify_team_banners', JSON.stringify(merged));
+      }
+    }, () => {});
+
+    return () => {
+      unsubProds();
+      unsubTeams();
+    };
   }, []);
 
-  const info = TEAM_DETAILS[teamName] || {
+  const info = teamConfig[teamName] || TEAM_DETAILS[teamName] || {
     name: teamName.toUpperCase(),
     subtitle: 'Official Collection',
     founded: '1900',
