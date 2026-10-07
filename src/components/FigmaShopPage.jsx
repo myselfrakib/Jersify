@@ -10,11 +10,24 @@ import {
   imgShoppingCart 
 } from '../assets/svgIcons';
 
-const imgJersifyLogo = "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de";
+const DEFAULT_LOGO_URL = "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de";
 const imgAccountButton = imgUser;
 const imgShoppingBagButton = imgShoppingBag;
 
 export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth, onNavigateHome }) {
+  const [headerLogo, setHeaderLogo] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_site_images');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.jersifyLogoHeader) return parsed.jersifyLogoHeader;
+      }
+      return DEFAULT_LOGO_URL;
+    } catch (e) {
+      return DEFAULT_LOGO_URL;
+    }
+  });
+
   const [shopJerseys, setShopJerseys] = useState(() => {
     try {
       const cached = sessionStorage.getItem('jersify_products');
@@ -25,7 +38,7 @@ export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth,
   });
 
   useEffect(() => {
-    const unsub = onValue(ref(rtdb, 'products'), (snap) => {
+    const unsubProds = onValue(ref(rtdb, 'products'), (snap) => {
       if (snap.exists()) {
         const val = snap.val();
         const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
@@ -36,15 +49,29 @@ export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth,
       }
     }, () => {});
 
-    return () => unsub();
+    const unsubImages = onValue(ref(rtdb, 'siteConfig/images'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        if (val.jersifyLogoHeader?.url) {
+          setHeaderLogo(val.jersifyLogoHeader.url);
+        } else if (typeof val.jersifyLogoHeader === 'string') {
+          setHeaderLogo(val.jersifyLogoHeader);
+        }
+      }
+    }, () => {});
+
+    return () => {
+      unsubProds();
+      unsubImages();
+    };
   }, []);
 
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '1604px', paddingBottom: '60px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Store Navigation Header */}
       <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 18px' }}>
-        <div style={{ width: '116px', height: '43px', cursor: 'pointer' }} onClick={onNavigateHome}>
-          <img src={imgJersifyLogo} alt="Jersify" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div style={{ width: '128px', height: '47px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={onNavigateHome}>
+          <img src={headerLogo} alt="Jersify" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
