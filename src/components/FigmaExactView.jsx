@@ -119,7 +119,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '4924px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Top Header Logo */}
-      <div style={{ position: 'absolute', top: '16px', left: '7px', width: '128px', height: '47px', zIndex: 10 }}>
+      <div style={{ position: 'absolute', top: '16px', left: '19px', width: '128px', height: '47px', zIndex: 10 }}>
         <ImageWithSpinner src={imgImg44492} alt="Jersify Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
 
@@ -171,7 +171,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
       </p>
 
       {/* Club Crest Badges Grid */}
-      <div style={{ position: 'absolute', top: '673px', left: '19px', width: '356px', height: '166px' }}>
+      <div style={{ position: 'absolute', top: '673px', left: '19px', width: '355px', height: '166px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
           <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Barcelona')} src={imgEllipse12} alt="Barcelona" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
           <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Real Madrid')} src={imgEllipse16} alt="Real Madrid" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
@@ -227,8 +227,8 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
             GOOD OLD KITS
           </h2>
           <div style={{ display: 'flex', gap: '19px' }}>
-            <ImageWithSpinner src={siteImages.retroBanner1 || defaultImages.retroBanner1} alt="Retro 1" style={{ width: '168px', height: '360px', objectFit: 'cover', borderRadius: '2px', border: '1px solid #E5E7EB' }} />
-            <ImageWithSpinner src={siteImages.retroBanner2 || defaultImages.retroBanner2} alt="Retro 2" style={{ width: '168px', height: '360px', objectFit: 'cover', borderRadius: '2px', border: '1px solid #E5E7EB' }} />
+            <ImageWithSpinner src={siteImages.retroBanner1 || defaultImages.retroBanner1} alt="Retro 1" style={{ flex: 1, height: '360px', objectFit: 'cover', borderRadius: '2px', border: '1px solid #E5E7EB' }} />
+            <ImageWithSpinner src={siteImages.retroBanner2 || defaultImages.retroBanner2} alt="Retro 2" style={{ flex: 1, height: '360px', objectFit: 'cover', borderRadius: '2px', border: '1px solid #E5E7EB' }} />
           </div>
         </div>
 
@@ -268,7 +268,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
                 onClick={() => onSelectProduct(item)}
                 style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '8px' }}
               >
-                <div style={{ width: '166px', height: '210px', background: '#F3F2EF', borderRadius: '2px', overflow: 'hidden' }}>
+                <div style={{ width: '100%', height: '210px', background: '#F3F2EF', borderRadius: '2px', overflow: 'hidden' }}>
                   <ImageWithSpinner src={item.imgUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <div>
@@ -285,6 +285,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
               </div>
             ))}
           </div>
+
 
 
           <div style={{ textAlign: 'center', marginTop: '40px', paddingBottom: '28px' }}>
