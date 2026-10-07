@@ -42,6 +42,22 @@ const DEFAULT_INDEX_IMAGES = {
   clubLogoJuventus: { label: "Club Crest: Juventus", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg" }
 };
 
+const CLUB_OPTIONS = [
+  "Barcelona", "Real Madrid", "Man City", "Liverpool", "Man United",
+  "Arsenal", "Chelsea", "Tottenham", "PSG", "Bayern Munich",
+  "Borussia Dortmund", "AC Milan", "Inter Milan", "Juventus",
+  "Atletico Madrid", "Napoli", "AS Roma", "Benfica", "Porto", "Ajax",
+  "Inter Miami", "Al Nassr", "Al Hilal", "Al Ittihad", "Flamengo",
+  "Boca Juniors", "River Plate"
+];
+
+const NATIONAL_OPTIONS = [
+  "Argentina", "Portugal", "France", "Brazil", "England",
+  "Germany", "Spain", "Italy", "Netherlands", "Japan",
+  "Morocco", "Croatia", "Belgium", "Uruguay", "Colombia", "Mexico"
+];
+
+
 const DEFAULT_TEAM_CONFIG = {
   'Barcelona': {
     name: 'FC BARCELONA',
@@ -155,6 +171,7 @@ export default function AdminDashboard({
 
   const [productForm, setProductForm] = useState({
     name: '',
+    teamType: 'club', // 'club' | 'national'
     team: 'Barcelona',
     categoryTag: 'this season', // 'this season' | 'retro' | 'hot picks'
     version: 'fan', // 'player' | 'fan'
@@ -367,14 +384,29 @@ export default function AdminDashboard({
     setNewClubName('');
   };
 
-  // Upload single or multiple image files directly to Firebase Storage for Product
+  // Upload single or multiple image files directly to Firebase Storage for Product (Max 5 images)
   const handleMultipleFileUploadForProduct = async (files) => {
     if (!files || files.length === 0) return;
+    const currentImgs = Array.isArray(productForm.images) && productForm.images.length > 0
+      ? [...productForm.images]
+      : (productForm.imgUrl ? [productForm.imgUrl] : []);
+
+    const spaceLeft = 5 - currentImgs.length;
+    if (spaceLeft <= 0) {
+      alert('Maximum 5 images allowed per product.');
+      return;
+    }
+
+    const filesToUpload = Array.from(files).slice(0, spaceLeft);
+    if (files.length > spaceLeft) {
+      alert(`Only uploading ${spaceLeft} image(s) to maintain the maximum 5 images limit.`);
+    }
+
     setUploadingProductImg(true);
     try {
       const uploadedUrls = [];
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+      for (let i = 0; i < filesToUpload.length; i++) {
+        const file = filesToUpload[i];
         const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
         const sRef = storageRef(storage, `products/${Date.now()}_${i}_${cleanFileName}`);
         await uploadBytes(sRef, file);
@@ -382,10 +414,10 @@ export default function AdminDashboard({
         uploadedUrls.push(downloadUrl);
       }
       setProductForm(prev => {
-        const currentImgs = Array.isArray(prev.images) && prev.images.length > 0
+        const existing = Array.isArray(prev.images) && prev.images.length > 0
           ? [...prev.images]
           : (prev.imgUrl ? [prev.imgUrl] : []);
-        const updatedImages = [...currentImgs, ...uploadedUrls];
+        const updatedImages = [...existing, ...uploadedUrls].slice(0, 5);
         return {
           ...prev,
           images: updatedImages,
@@ -401,12 +433,21 @@ export default function AdminDashboard({
 
   const handleAddImageUrl = () => {
     if (!newImageUrlInput.trim()) return;
+    const currentImgs = Array.isArray(productForm.images) && productForm.images.length > 0
+      ? [...productForm.images]
+      : (productForm.imgUrl ? [productForm.imgUrl] : []);
+
+    if (currentImgs.length >= 5) {
+      alert('Maximum 5 images allowed per product.');
+      return;
+    }
+
     const trimmed = newImageUrlInput.trim();
     setProductForm(prev => {
-      const currentImgs = Array.isArray(prev.images) && prev.images.length > 0
+      const existing = Array.isArray(prev.images) && prev.images.length > 0
         ? [...prev.images]
         : (prev.imgUrl ? [prev.imgUrl] : []);
-      const updatedImages = [...currentImgs, trimmed];
+      const updatedImages = [...existing, trimmed].slice(0, 5);
       return {
         ...prev,
         images: updatedImages,
@@ -452,9 +493,9 @@ export default function AdminDashboard({
   const handleSaveProduct = async (e) => {
     e.preventDefault();
     try {
-      const imagesArr = Array.isArray(productForm.images) && productForm.images.length > 0
+      const imagesArr = (Array.isArray(productForm.images) && productForm.images.length > 0
         ? productForm.images
-        : (productForm.imgUrl ? [productForm.imgUrl] : []);
+        : (productForm.imgUrl ? [productForm.imgUrl] : [])).slice(0, 5);
       const mainImgUrl = imagesArr[0] || productForm.imgUrl || '';
 
       if (!mainImgUrl) {
@@ -462,8 +503,11 @@ export default function AdminDashboard({
         return;
       }
 
+      const inferredTeamType = productForm.teamType || (NATIONAL_OPTIONS.includes(productForm.team) ? 'national' : 'club');
+
       const finalProductData = {
         ...productForm,
+        teamType: inferredTeamType,
         images: imagesArr,
         imgUrl: mainImgUrl
       };
@@ -916,11 +960,11 @@ export default function AdminDashboard({
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111111' }}>Catalogue Product Manager</h2>
-              <p style={{ fontSize: '13px', color: '#6B7280' }}>Add and manage jersey products with team, version, category, and description fields.</p>
+              <p style={{ fontSize: '13px', color: '#6B7280' }}>Add and manage jersey products with team selection (Club vs National) and up to 5 product gallery images.</p>
             </div>
             <button
               onClick={() => {
-                setProductForm({ name: '', team: 'Barcelona', categoryTag: 'this season', version: 'fan', price: 750, imgUrl: '', images: [], badge: 'NEW', description: '' });
+                setProductForm({ name: '', teamType: 'club', team: 'Barcelona', categoryTag: 'this season', version: 'fan', price: 750, imgUrl: '', images: [], badge: 'NEW', description: '' });
                 setNewImageUrlInput('');
                 setEditingProductId(null);
                 setIsAddingProduct(true);
@@ -936,72 +980,89 @@ export default function AdminDashboard({
             <form onSubmit={handleSaveProduct} style={{ background: '#F9FAFB', border: '1.5px solid #111111', padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <h3 style={{ fontWeight: 700, fontSize: '18px' }}>{editingProductId ? 'Edit Product' : 'Add New Product'}</h3>
               
+              {/* Category Type Toggle: Club vs National */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', background: '#FFFFFF', padding: '12px', border: '1px solid #D1D5DB' }}>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#111111' }}>1. SELECT CATEGORY TYPE *</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const defaultClub = CLUB_OPTIONS[0];
+                      setProductForm(prev => ({
+                        ...prev,
+                        teamType: 'club',
+                        team: CLUB_OPTIONS.includes(prev.team) ? prev.team : defaultClub
+                      }));
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '10px 14px',
+                      border: (productForm.teamType || 'club') === 'club' ? '2px solid #111111' : '1px solid #D1D5DB',
+                      background: (productForm.teamType || 'club') === 'club' ? '#111111' : '#F9FAFB',
+                      color: (productForm.teamType || 'club') === 'club' ? '#FFFFFF' : '#374151',
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    🛡️ Club Team
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const defaultNational = NATIONAL_OPTIONS[0];
+                      setProductForm(prev => ({
+                        ...prev,
+                        teamType: 'national',
+                        team: NATIONAL_OPTIONS.includes(prev.team) ? prev.team : defaultNational
+                      }));
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '10px 14px',
+                      border: productForm.teamType === 'national' ? '2px solid #111111' : '1px solid #D1D5DB',
+                      background: productForm.teamType === 'national' ? '#111111' : '#F9FAFB',
+                      color: productForm.teamType === 'national' ? '#FFFFFF' : '#374151',
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    🌐 National Team
+                  </button>
+                </div>
+              </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <label style={{ fontSize: '12px', fontWeight: 700 }}>PRODUCT NAME *</label>
                   <input type="text" required value={productForm.name} onChange={(e) => setProductForm({ ...productForm, name: e.target.value })} placeholder="BARCELONA HOME 26/27" style={{ height: '38px', padding: '0 10px', border: '1px solid #D1D5DB' }} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 700 }}>CLUB / NATION *</label>
+                  <label style={{ fontSize: '12px', fontWeight: 700 }}>
+                    {productForm.teamType === 'national' ? 'NATIONAL TEAM NAME *' : 'CLUB TEAM NAME *'}
+                  </label>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <select
                       value={productForm.team}
                       onChange={(e) => setProductForm({ ...productForm, team: e.target.value })}
                       style={{ flex: 1, height: '38px', padding: '0 10px', border: '1px solid #D1D5DB', background: '#FFFFFF', fontWeight: 600, fontSize: '13px' }}
                     >
-                      <optgroup label="Popular European Clubs">
-                        <option value="Barcelona">FC Barcelona</option>
-                        <option value="Real Madrid">Real Madrid</option>
-                        <option value="Man City">Manchester City</option>
-                        <option value="Liverpool">Liverpool</option>
-                        <option value="Man United">Manchester United</option>
-                        <option value="Arsenal">Arsenal</option>
-                        <option value="Chelsea">Chelsea</option>
-                        <option value="Tottenham">Tottenham Hotspur</option>
-                        <option value="PSG">Paris Saint-Germain (PSG)</option>
-                        <option value="Bayern Munich">Bayern Munich</option>
-                        <option value="Borussia Dortmund">Borussia Dortmund</option>
-                        <option value="AC Milan">AC Milan</option>
-                        <option value="Inter Milan">Inter Milan</option>
-                        <option value="Juventus">Juventus</option>
-                        <option value="Atletico Madrid">Atletico Madrid</option>
-                        <option value="Napoli">Napoli</option>
-                        <option value="AS Roma">AS Roma</option>
-                        <option value="Benfica">Benfica</option>
-                        <option value="Porto">FC Porto</option>
-                        <option value="Ajax">Ajax</option>
-                      </optgroup>
-                      <optgroup label="National Teams">
-                        <option value="Argentina">Argentina</option>
-                        <option value="Portugal">Portugal</option>
-                        <option value="France">France</option>
-                        <option value="Brazil">Brazil</option>
-                        <option value="England">England</option>
-                        <option value="Germany">Germany</option>
-                        <option value="Spain">Spain</option>
-                        <option value="Italy">Italy</option>
-                        <option value="Netherlands">Netherlands</option>
-                        <option value="Japan">Japan</option>
-                        <option value="Morocco">Morocco</option>
-                        <option value="Croatia">Croatia</option>
-                        <option value="Belgium">Belgium</option>
-                        <option value="Uruguay">Uruguay</option>
-                        <option value="Colombia">Colombia</option>
-                        <option value="Mexico">Mexico</option>
-                      </optgroup>
-                      <optgroup label="Rest of World & MLS / Saudi">
-                        <option value="Inter Miami">Inter Miami</option>
-                        <option value="Al Nassr">Al Nassr</option>
-                        <option value="Al Hilal">Al Hilal</option>
-                        <option value="Al Ittihad">Al Ittihad</option>
-                        <option value="Flamengo">Flamengo</option>
-                        <option value="Boca Juniors">Boca Juniors</option>
-                        <option value="River Plate">River Plate</option>
-                      </optgroup>
+                      {(productForm.teamType === 'national' ? NATIONAL_OPTIONS : CLUB_OPTIONS).map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
                     </select>
                     <input
                       type="text"
-                      placeholder="Or type custom..."
+                      placeholder={productForm.teamType === 'national' ? "Or type nation..." : "Or type club..."}
                       value={productForm.team}
                       onChange={(e) => setProductForm({ ...productForm, team: e.target.value })}
                       style={{ flex: 1, height: '38px', padding: '0 10px', border: '1px solid #D1D5DB', fontSize: '13px' }}
@@ -1032,15 +1093,14 @@ export default function AdminDashboard({
                 </div>
               </div>
 
+              {/* Product Images (Max 5 Images with 1st as Primary Cover) */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', background: '#FFFFFF', padding: '12px', border: '1px solid #D1D5DB' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <label style={{ fontSize: '12px', fontWeight: 700, color: '#111111' }}>
-                    PRODUCT IMAGES GALLERY (Multiple Images) *
+                    PRODUCT IMAGES GALLERY (Up to 5 Images - 1st is Primary Cover) *
                   </label>
-                  <span style={{ fontSize: '11px', color: '#6B7280' }}>
-                    {Array.isArray(productForm.images) && productForm.images.length > 0
-                      ? productForm.images.length
-                      : (productForm.imgUrl ? 1 : 0)} image(s) added
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: (Array.isArray(productForm.images) ? productForm.images.length : (productForm.imgUrl ? 1 : 0)) >= 5 ? '#DC2626' : '#10B981' }}>
+                    {(Array.isArray(productForm.images) && productForm.images.length > 0 ? productForm.images.length : (productForm.imgUrl ? 1 : 0))} / 5 attached
                   </span>
                 </div>
 
@@ -1050,21 +1110,21 @@ export default function AdminDashboard({
                     {(Array.isArray(productForm.images) && productForm.images.length > 0
                       ? productForm.images
                       : [productForm.imgUrl]
-                    ).map((imgUrl, idx) => (
+                    ).slice(0, 5).map((imgUrl, idx) => (
                       <div key={idx} style={{ position: 'relative', width: '84px', height: '84px', border: idx === 0 ? '2px solid #10B981' : '1px solid #D1D5DB', borderRadius: '4px', overflow: 'hidden', background: '#F9FAFB', flexShrink: 0 }}>
                         <ImageWithSpinner src={imgUrl} alt={`Product ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                         <span style={{ position: 'absolute', top: '2px', left: '2px', background: idx === 0 ? '#10B981' : '#374151', color: '#FFFFFF', fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: '2px' }}>
-                          {idx === 0 ? 'COVER' : `#${idx + 1}`}
+                          {idx === 0 ? 'PRIMARY' : `#${idx + 1}`}
                         </span>
                         <div style={{ position: 'absolute', bottom: '2px', left: '2px', right: '2px', display: 'flex', gap: '2px' }}>
                           {idx > 0 && (
                             <button
                               type="button"
                               onClick={() => handleSetMainProductImage(idx)}
-                              style={{ flex: 1, background: 'rgba(0,0,0,0.8)', color: '#FFFFFF', border: 'none', fontSize: '8px', fontWeight: 700, padding: '3px 0', cursor: 'pointer', borderRadius: '2px' }}
-                              title="Set as Main Cover Image"
+                              style={{ flex: 1, background: 'rgba(0,0,0,0.85)', color: '#FFFFFF', border: 'none', fontSize: '8px', fontWeight: 700, padding: '3px 0', cursor: 'pointer', borderRadius: '2px' }}
+                              title="Set as Primary Cover Image"
                             >
-                              ★ Main
+                              ★ Primary
                             </button>
                           )}
                           <button
@@ -1081,51 +1141,57 @@ export default function AdminDashboard({
                   </div>
                 )}
 
-                {/* Upload or Add URL Inputs */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
-                  <label style={{
-                    background: '#111111',
-                    color: '#FFFFFF',
-                    padding: '8px 14px',
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    display: 'flex',
-                    alignItems: 'center',
-                    borderRadius: '2px'
-                  }}>
-                    {uploadingProductImg ? '⏳ Uploading Files...' : '📁 Upload Image(s) (Select Multiple)'}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      style={{ display: 'none' }}
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files.length > 0) {
-                          handleMultipleFileUploadForProduct(e.target.files);
-                        }
-                      }}
-                    />
-                  </label>
+                {/* Upload or Add URL Inputs (Max 5 enforced) */}
+                {((Array.isArray(productForm.images) ? productForm.images.length : (productForm.imgUrl ? 1 : 0)) < 5) ? (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
+                    <label style={{
+                      background: '#111111',
+                      color: '#FFFFFF',
+                      padding: '8px 14px',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      display: 'flex',
+                      alignItems: 'center',
+                      borderRadius: '2px'
+                    }}>
+                      {uploadingProductImg ? '⏳ Uploading Files...' : '📁 Upload Image File(s)'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files.length > 0) {
+                            handleMultipleFileUploadForProduct(e.target.files);
+                          }
+                        }}
+                      />
+                    </label>
 
-                  <div style={{ display: 'flex', flex: 1, minWidth: '240px', gap: '4px' }}>
-                    <input
-                      type="text"
-                      value={newImageUrlInput}
-                      onChange={(e) => setNewImageUrlInput(e.target.value)}
-                      placeholder="Or paste image URL here..."
-                      style={{ flex: 1, height: '36px', padding: '0 10px', border: '1px solid #D1D5DB', fontSize: '12px', fontFamily: 'monospace' }}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddImageUrl}
-                      style={{ background: '#374151', color: '#FFFFFF', border: 'none', padding: '0 12px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
-                    >
-                      + Add URL
-                    </button>
+                    <div style={{ display: 'flex', flex: 1, minWidth: '240px', gap: '4px' }}>
+                      <input
+                        type="text"
+                        value={newImageUrlInput}
+                        onChange={(e) => setNewImageUrlInput(e.target.value)}
+                        placeholder="Or paste image URL here..."
+                        style={{ flex: 1, height: '36px', padding: '0 10px', border: '1px solid #D1D5DB', fontSize: '12px', fontFamily: 'monospace' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddImageUrl}
+                        style={{ background: '#374151', color: '#FFFFFF', border: 'none', padding: '0 12px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        + Add URL
+                      </button>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div style={{ background: '#FEF3C7', color: '#92400E', padding: '8px 12px', fontSize: '12px', fontWeight: 700, borderRadius: '2px' }}>
+                    ✓ Maximum limit of 5 images reached. To change images, remove an existing thumbnail or click "★ Primary" to set the cover image.
+                  </div>
+                )}
                 {uploadingProductImg && <span style={{ fontSize: '12px', color: '#059669', fontWeight: 700 }}>Uploading image files to Firebase Storage...</span>}
               </div>
 
@@ -1143,47 +1209,60 @@ export default function AdminDashboard({
 
           {/* Products Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
-            {productsList.map(p => (
-              <div key={p.id} style={{ border: '1px solid #E5E7EB', padding: '14px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ height: '160px', width: '100%', background: '#F5F5F5', overflow: 'hidden' }}>
-                  <ImageWithSpinner src={p.imgUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            {productsList.map(p => {
+              const pImages = (Array.isArray(p.images) && p.images.length > 0 ? p.images : (p.imgUrl ? [p.imgUrl] : [])).slice(0, 5);
+              const isNation = NATIONAL_OPTIONS.includes(p.team);
+              const pType = p.teamType || (isNation ? 'national' : 'club');
 
-                  <div>
-                    <h4 style={{ fontWeight: 700, fontSize: '14px', color: '#111111' }}>{p.name}</h4>
-                    <p style={{ fontSize: '12px', color: '#6B7280' }}>{p.team} · <span style={{ textTransform: 'uppercase', fontWeight: 700 }}>{p.categoryTag}</span></p>
+              return (
+                <div key={p.id} style={{ border: '1px solid #E5E7EB', padding: '14px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ height: '160px', width: '100%', background: '#F5F5F5', overflow: 'hidden', position: 'relative' }}>
+                    <ImageWithSpinner src={p.imgUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <span style={{ position: 'absolute', top: '6px', left: '6px', background: pType === 'national' ? '#2563EB' : '#111111', color: '#FFFFFF', fontSize: '9px', fontWeight: 800, padding: '2px 6px', textTransform: 'uppercase', borderRadius: '2px' }}>
+                      {pType === 'national' ? '🌐 NATIONAL' : '🛡️ CLUB'}
+                    </span>
+                    <span style={{ position: 'absolute', bottom: '6px', right: '6px', background: 'rgba(0,0,0,0.75)', color: '#FFFFFF', fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '2px' }}>
+                      📷 {pImages.length}/5
+                    </span>
                   </div>
-                  <span style={{ fontWeight: 700, fontSize: '15px' }}>₹{p.price}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <h4 style={{ fontWeight: 700, fontSize: '14px', color: '#111111' }}>{p.name}</h4>
+                      <p style={{ fontSize: '12px', color: '#6B7280' }}>{p.team} · <span style={{ textTransform: 'uppercase', fontWeight: 700 }}>{p.categoryTag}</span></p>
+                    </div>
+                    <span style={{ fontWeight: 700, fontSize: '15px' }}>₹{p.price}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                    <button
+                      onClick={() => {
+                        const existingImages = (Array.isArray(p.images) && p.images.length > 0
+                          ? [...p.images]
+                          : (p.imgUrl ? [p.imgUrl] : [])).slice(0, 5);
+                        const inferredType = p.teamType || (NATIONAL_OPTIONS.includes(p.team) ? 'national' : 'club');
+                        setProductForm({
+                          ...p,
+                          teamType: inferredType,
+                          images: existingImages,
+                          imgUrl: p.imgUrl || existingImages[0] || ''
+                        });
+                        setNewImageUrlInput('');
+                        setEditingProductId(p.id);
+                        setIsAddingProduct(true);
+                      }}
+                      style={{ flex: 1, padding: '6px', background: '#FFFFFF', border: '1px solid #111111', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProduct(p.id)}
+                      style={{ flex: 1, padding: '6px', background: '#FFFFFF', border: '1px solid #EF4444', color: '#EF4444', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                  <button
-                    onClick={() => {
-                      const existingImages = Array.isArray(p.images) && p.images.length > 0
-                        ? [...p.images]
-                        : (p.imgUrl ? [p.imgUrl] : []);
-                      setProductForm({
-                        ...p,
-                        images: existingImages,
-                        imgUrl: p.imgUrl || existingImages[0] || ''
-                      });
-                      setNewImageUrlInput('');
-                      setEditingProductId(p.id);
-                      setIsAddingProduct(true);
-                    }}
-                    style={{ flex: 1, padding: '6px', background: '#FFFFFF', border: '1px solid #111111', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteProduct(p.id)}
-                    style={{ flex: 1, padding: '6px', background: '#FFFFFF', border: '1px solid #EF4444', color: '#EF4444', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
