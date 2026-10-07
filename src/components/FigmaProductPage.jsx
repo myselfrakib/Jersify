@@ -17,8 +17,11 @@ const DEFAULT_LOGO_URL = imgSlide1;
 export default function FigmaProductPage({ 
   product, 
   allProducts = [],
+  cartItems = [],
+  cartCount = 0,
   onBack, 
-  onAddToCart, 
+  onAddToCart,
+  onUpdateQty,
   onSelectProduct,
   onOpenCart,
   onOpenAuth,
@@ -136,6 +139,11 @@ export default function FigmaProductPage({
           imgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1779627815641_0_675C45F9-A02E-4936-8088-13695728CA76.png?alt=media&token=0dcaea32-29d4-4ad7-9df3-9e894ea604fe"
         }
       ];
+
+  const cartIndex = Array.isArray(cartItems)
+    ? cartItems.findIndex(item => String(item.id) === String(currentProduct.id) && item.selectedSize === selectedSize)
+    : -1;
+  const existingInCart = cartIndex > -1 ? cartItems[cartIndex] : null;
 
   const handleAdd = () => {
     onAddToCart({
@@ -334,25 +342,90 @@ export default function FigmaProductPage({
           </p>
         </div>
 
-        {/* Add to Bag Button */}
-        <button
-          onClick={handleAdd}
-          style={{
+        {/* Add to Bag Button OR Sleek Black Plus/Minus Quantity Controller */}
+        {existingInCart && existingInCart.quantity > 0 ? (
+          <div style={{
             width: '100%',
             height: '56px',
             background: '#000000',
             color: '#FFFFFF',
-            fontFamily: 'Karla',
-            fontSize: '18px',
-            border: 'none',
             borderRadius: '2px',
-            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 12px',
             marginBottom: '16px',
-            transition: 'background 0.2s ease'
-          }}
-        >
-          Add to Bag
-        </button>
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+          }}>
+            <button
+              type="button"
+              onClick={() => onUpdateQty && onUpdateQty(cartIndex, existingInCart.quantity - 1)}
+              style={{
+                background: 'transparent',
+                color: '#FFFFFF',
+                border: 'none',
+                fontSize: '24px',
+                fontWeight: 700,
+                width: '48px',
+                height: '100%',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                lineHeight: 1
+              }}
+              title="Decrease quantity in bag"
+            >
+              −
+            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'Karla', fontSize: '15px', fontWeight: 700 }}>
+              <span style={{ color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: '12px' }}>IN BAG:</span>
+              <span style={{ fontSize: '18px', fontWeight: 800, background: '#222222', color: '#FFFFFF', padding: '2px 12px', borderRadius: '4px', border: '1px solid #333333' }}>
+                {existingInCart.quantity}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => onUpdateQty && onUpdateQty(cartIndex, existingInCart.quantity + 1)}
+              style={{
+                background: 'transparent',
+                color: '#FFFFFF',
+                border: 'none',
+                fontSize: '24px',
+                fontWeight: 700,
+                width: '48px',
+                height: '100%',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                lineHeight: 1
+              }}
+              title="Increase quantity in bag"
+            >
+              +
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleAdd}
+            style={{
+              width: '100%',
+              height: '56px',
+              background: '#000000',
+              color: '#FFFFFF',
+              fontFamily: 'Karla',
+              fontSize: '18px',
+              border: 'none',
+              borderRadius: '2px',
+              cursor: 'pointer',
+              marginBottom: '16px',
+              transition: 'background 0.2s ease'
+            }}
+          >
+            Add to Bag
+          </button>
+        )}
 
 
         {/* Same Day Dispatch Banner */}
@@ -418,8 +491,31 @@ export default function FigmaProductPage({
           <img src={imgShoppingBag} alt="Shop" style={{ width: '20px', height: '20px' }} />
           <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Shop</span>
         </button>
-        <button onClick={onOpenCart} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer' }}>
-          <img src={imgShoppingCart} alt="Bag" style={{ width: '20px', height: '20px' }} />
+        <button onClick={onOpenCart} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', background: 'none', border: 'none' }}>
+          <div style={{ position: 'relative', display: 'inline-flex' }}>
+            <img src={imgShoppingCart} alt="Bag" style={{ width: '20px', height: '20px' }} />
+            {cartCount > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '-5px',
+                right: '-8px',
+                background: '#EF4444',
+                color: '#FFFFFF',
+                fontSize: '9px',
+                fontWeight: 800,
+                borderRadius: '9999px',
+                minWidth: '16px',
+                height: '16px',
+                padding: '0 3px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1.5px solid #FFFFFF'
+              }}>
+                {cartCount}
+              </span>
+            )}
+          </div>
           <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Bag</span>
         </button>
         <button onClick={onOpenAuth} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer' }}>

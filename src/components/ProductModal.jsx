@@ -4,8 +4,10 @@ import ImageWithSpinner from './ImageWithSpinner';
 
 export default function ProductModal({ 
   product, 
+  cartItems = [],
   onClose, 
-  onAddToCart, 
+  onAddToCart,
+  onUpdateQty,
   isWishlisted, 
   onToggleWishlist 
 }) {
@@ -19,6 +21,11 @@ export default function ProductModal({
 
 
   const availableSizes = ['S', 'M', 'L', 'XL', 'XXL'];
+
+  const cartIndex = Array.isArray(cartItems)
+    ? cartItems.findIndex(item => String(item.id) === String(product.id) && item.selectedSize === selectedSize)
+    : -1;
+  const existingInCart = cartIndex > -1 ? cartItems[cartIndex] : null;
 
   const handleAdd = () => {
     onAddToCart({
@@ -227,13 +234,74 @@ export default function ProductModal({
                 <button className="qty-btn" onClick={() => setQuantity(quantity + 1)}>+</button>
               </div>
 
-              <button 
-                className="btn btn-primary" 
-                onClick={handleAdd}
-                style={{ flexGrow: 1, height: '48px' }}
-              >
-                <ShoppingBag size={18} /> Add To Bag
-              </button>
+              {existingInCart && existingInCart.quantity > 0 ? (
+                <div style={{
+                  flexGrow: 1,
+                  height: '48px',
+                  background: '#000000',
+                  color: '#FFFFFF',
+                  borderRadius: 'var(--radius-sm)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '0 10px'
+                }}>
+                  <button
+                    type="button"
+                    onClick={() => onUpdateQty && onUpdateQty(cartIndex, existingInCart.quantity - 1)}
+                    style={{
+                      background: 'transparent',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontSize: '22px',
+                      fontWeight: 700,
+                      width: '36px',
+                      height: '100%',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                    title="Decrease quantity"
+                  >
+                    −
+                  </button>
+                  <div style={{ fontFamily: 'var(--font-inter)', fontSize: '0.85rem', fontWeight: 700, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>IN BAG:</span>
+                    <span style={{ fontSize: '1rem', fontWeight: 800, background: '#222222', padding: '1px 8px', borderRadius: '4px' }}>
+                      {existingInCart.quantity}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onUpdateQty && onUpdateQty(cartIndex, existingInCart.quantity + 1)}
+                    style={{
+                      background: 'transparent',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontSize: '22px',
+                      fontWeight: 700,
+                      width: '36px',
+                      height: '100%',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                    title="Increase quantity"
+                  >
+                    +
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  className="btn btn-primary" 
+                  onClick={handleAdd}
+                  style={{ flexGrow: 1, height: '48px' }}
+                >
+                  <ShoppingBag size={18} /> Add To Bag
+                </button>
+              )}
 
               <button 
                 className={`wishlist-btn ${isWishlisted ? 'active' : ''}`}

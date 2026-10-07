@@ -239,6 +239,8 @@ export default function App() {
     }
   };
 
+  const cartCount = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
+
   return (
     <div style={{ minHeight: '100vh', background: '#F3F4F6', display: 'flex', flexDirection: 'column' }}>
       {/* Toast Notifications */}
@@ -253,6 +255,7 @@ export default function App() {
       {/* FIGMA MOBILE PAGES ROUTER */}
       {currentPage === 'home' && (
         <FigmaExactView
+          cartCount={cartCount}
           onSelectProduct={(p) => navigateTo('product', p)}
           onSelectTeam={(t) => navigateTo('team', t)}
           onOpenCart={() => setIsCartOpen(true)}
@@ -263,6 +266,7 @@ export default function App() {
 
       {currentPage === 'shop' && (
         <FigmaShopPage
+          cartCount={cartCount}
           onSelectProduct={(p) => navigateTo('product', p)}
           onOpenCart={() => setIsCartOpen(true)}
           onOpenAuth={() => navigateTo(user ? 'profile' : 'login')}
@@ -273,8 +277,11 @@ export default function App() {
       {currentPage === 'product' && (
         <FigmaProductPage
           product={selectedProduct}
+          cartItems={cartItems}
+          cartCount={cartCount}
           onBack={() => navigateTo('shop')}
           onAddToCart={handleAddToCart}
+          onUpdateQty={handleUpdateQty}
           onSelectProduct={(p) => navigateTo('product', p)}
           onOpenCart={() => setIsCartOpen(true)}
           onOpenAuth={() => navigateTo(user ? 'profile' : 'login')}

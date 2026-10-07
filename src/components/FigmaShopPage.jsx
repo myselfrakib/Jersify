@@ -16,7 +16,7 @@ const DEFAULT_LOGO_URL = "https://firebasestorage.googleapis.com/v0/b/jersify-f9
 const imgAccountButton = imgUser;
 const imgShoppingBagButton = imgShoppingBag;
 
-export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth, onNavigateHome }) {
+export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCart, onOpenAuth, onNavigateHome }) {
   const [headerLogo, setHeaderLogo] = useState(() => {
     try {
       const cached = sessionStorage.getItem('jersify_site_images');
@@ -146,8 +146,31 @@ export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth,
           <img src={imgShoppingBag} alt="Shop" style={{ width: '20px', height: '20px' }} />
           <span style={{ fontSize: '10px', fontWeight: 500, color: '#111827' }}>Shop</span>
         </button>
-        <button onClick={onOpenCart} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer' }}>
-          <img src={imgShoppingCart} alt="Bag" style={{ width: '20px', height: '20px' }} />
+        <button onClick={onOpenCart} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', background: 'none', border: 'none' }}>
+          <div style={{ position: 'relative', display: 'inline-flex' }}>
+            <img src={imgShoppingCart} alt="Bag" style={{ width: '20px', height: '20px' }} />
+            {cartCount > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '-5px',
+                right: '-8px',
+                background: '#EF4444',
+                color: '#FFFFFF',
+                fontSize: '9px',
+                fontWeight: 800,
+                borderRadius: '9999px',
+                minWidth: '16px',
+                height: '16px',
+                padding: '0 3px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1.5px solid #FFFFFF'
+              }}>
+                {cartCount}
+              </span>
+            )}
+          </div>
           <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Bag</span>
         </button>
         <button onClick={onOpenAuth} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer' }}>

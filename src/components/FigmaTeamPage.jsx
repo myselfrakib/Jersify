@@ -53,6 +53,7 @@ const TEAM_DETAILS = {
 
 export default function FigmaTeamPage({
   teamName = 'Barcelona',
+  cartCount = 0,
   onBack,
   onSelectProduct,
   onOpenCart,
@@ -324,7 +325,30 @@ export default function FigmaTeamPage({
           <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Shop</span>
         </button>
         <button onClick={onOpenCart} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', background: 'none', border: 'none' }}>
-          <img src={imgShoppingBag} alt="Bag" style={{ width: '20px', height: '20px' }} />
+          <div style={{ position: 'relative', display: 'inline-flex' }}>
+            <img src={imgShoppingBag} alt="Bag" style={{ width: '20px', height: '20px' }} />
+            {cartCount > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '-5px',
+                right: '-8px',
+                background: '#EF4444',
+                color: '#FFFFFF',
+                fontSize: '9px',
+                fontWeight: 800,
+                borderRadius: '9999px',
+                minWidth: '16px',
+                height: '16px',
+                padding: '0 3px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1.5px solid #FFFFFF'
+              }}>
+                {cartCount}
+              </span>
+            )}
+          </div>
           <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Bag</span>
         </button>
         <button onClick={onBack} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', background: 'none', border: 'none' }}>
