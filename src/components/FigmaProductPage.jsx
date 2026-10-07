@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import ImageWithSpinner from './ImageWithSpinner';
-
+import { rtdb, ref, onValue } from '../firebase';
 
 import { 
   imgHome, 
@@ -11,7 +11,7 @@ import {
 } from '../assets/svgIcons';
 
 const imgSlide1 = "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de";
-const imgImg44493 = "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de";
+const DEFAULT_LOGO_URL = imgSlide1;
 
 export default function FigmaProductPage({ 
   product, 
@@ -33,10 +33,31 @@ export default function FigmaProductPage({
     imgUrl: imgSlide1
   };
 
+  const [headerLogo, setHeaderLogo] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_site_images');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.jersifyLogoHeader) return parsed.jersifyLogoHeader;
+      }
+    } catch (e) {}
+    return DEFAULT_LOGO_URL;
+  });
+
+  useEffect(() => {
+    const unsubImages = onValue(ref(rtdb, 'siteConfig/images'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        if (val.jersifyLogoHeader?.url) {
+          setHeaderLogo(val.jersifyLogoHeader.url);
+        }
+      }
+    }, () => {});
+    return () => unsubImages();
+  }, []);
+
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedSize, setSelectedSize] = useState('M');
-  const [customName, setCustomName] = useState('');
-  const [customNumber, setCustomNumber] = useState('');
 
   const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
@@ -61,8 +82,6 @@ export default function FigmaProductPage({
     onAddToCart({
       ...currentProduct,
       selectedSize,
-      customName,
-      customNumber,
       quantity: 1
     });
   };
@@ -70,14 +89,14 @@ export default function FigmaProductPage({
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '1600px', paddingBottom: '60px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Top Header Logo & Back Action */}
-      <div style={{ position: 'absolute', top: '24px', left: '10px', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 20 }}>
+      <div style={{ position: 'absolute', top: '24px', left: '19px', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 20 }}>
         {onBack && (
           <button onClick={onBack} style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             <ArrowLeft size={16} />
           </button>
         )}
         <div style={{ width: '128px', height: '47px', cursor: 'pointer' }} onClick={onNavigateHome}>
-          <ImageWithSpinner src={imgImg44493} alt="Jersify" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <ImageWithSpinner src={headerLogo} alt="Jersify" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
       </div>
 
@@ -163,31 +182,6 @@ export default function FigmaProductPage({
           </p>
         </div>
 
-        {/* Custom Jersey Name & Number Printing */}
-        <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: '4px', padding: '12px', marginBottom: '20px' }}>
-          <label style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '12px', color: '#111827', display: 'block', marginBottom: '6px' }}>
-            CUSTOM PRINTING (NAME & NUMBER)
-          </label>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <input
-              type="text"
-              placeholder="NAME (e.g. MESSI)"
-              value={customName}
-              onChange={(e) => setCustomName(e.target.value.toUpperCase())}
-              maxLength={12}
-              style={{ flex: 2, padding: '6px 10px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '2px', outline: 'none' }}
-            />
-            <input
-              type="number"
-              placeholder="NO. (10)"
-              value={customNumber}
-              onChange={(e) => setCustomNumber(e.target.value)}
-              maxLength={3}
-              style={{ flex: 1, padding: '6px 10px', fontSize: '12px', border: '1px solid #E5E7EB', borderRadius: '2px', outline: 'none' }}
-            />
-          </div>
-        </div>
-
         {/* Add to Bag Button */}
         <button
           onClick={handleAdd}
@@ -207,6 +201,7 @@ export default function FigmaProductPage({
         >
           Add to Bag
         </button>
+
 
         {/* Same Day Dispatch Banner */}
         <div style={{ width: '100%', height: '40px', background: '#EDDBDB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '32px', borderRadius: '2px' }}>

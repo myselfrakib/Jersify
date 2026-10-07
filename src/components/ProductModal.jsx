@@ -15,8 +15,6 @@ export default function ProductModal({
   const images = product.images && product.images.length > 0 ? product.images : [product.imgUrl];
   const [selectedImage, setSelectedImage] = useState(images[0]);
   const [selectedSize, setSelectedSize] = useState('M');
-  const [customName, setCustomName] = useState('');
-  const [customNumber, setCustomNumber] = useState('');
   const [quantity, setQuantity] = useState(1);
 
   const availableSizes = ['S', 'M', 'L', 'XL', 'XXL'];
@@ -25,12 +23,11 @@ export default function ProductModal({
     onAddToCart({
       ...product,
       selectedSize,
-      customName: customName.trim().toUpperCase(),
-      customNumber: customNumber.trim(),
       quantity
     });
     onClose();
   };
+
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -166,53 +163,8 @@ export default function ProductModal({
               </div>
             </div>
 
-            {/* Custom Name & Number Jersey Printing */}
-            <div style={{ 
-              background: '#F9FAFB', 
-              border: '1px solid var(--color-border)', 
-              borderRadius: 'var(--radius-sm)', 
-              padding: '1rem',
-              marginBottom: '1.25rem' 
-            }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: 800, color: '#111827', display: 'block', marginBottom: '0.5rem' }}>
-                ⚡ CUSTOM NAME & NUMBER PRINTING (OPTIONAL)
-              </label>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <input
-                  type="text"
-                  placeholder="NAME (e.g. MESSI)"
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                  maxLength={12}
-                  style={{
-                    flex: 2,
-                    padding: '0.5rem 0.75rem',
-                    fontSize: '0.85rem',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius-sm)',
-                    outline: 'none',
-                    textTransform: 'uppercase'
-                  }}
-                />
-                <input
-                  type="number"
-                  placeholder="NO. (10)"
-                  value={customNumber}
-                  onChange={(e) => setCustomNumber(e.target.value)}
-                  maxLength={3}
-                  style={{
-                    flex: 1,
-                    padding: '0.5rem 0.75rem',
-                    fontSize: '0.85rem',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius-sm)',
-                    outline: 'none'
-                  }}
-                />
-              </div>
-            </div>
+                {/* Quantity Selector & Action Buttons */}
 
-            {/* Quantity Selector & Action Buttons */}
             <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto' }}>
               <div className="qty-control" style={{ height: '48px' }}>
                 <button className="qty-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
