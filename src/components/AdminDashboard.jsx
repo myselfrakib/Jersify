@@ -160,9 +160,11 @@ export default function AdminDashboard({
     version: 'fan', // 'player' | 'fan'
     price: 750,
     imgUrl: '',
+    images: [],
     badge: 'NEW',
     description: ''
   });
+  const [newImageUrlInput, setNewImageUrlInput] = useState('');
 
   // Orders State & Details Modal State
   const [ordersList, setOrdersList] = useState([]);
@@ -365,33 +367,113 @@ export default function AdminDashboard({
     setNewClubName('');
   };
 
-  // Upload image file directly to Firebase Storage for Product
-  const handleFileUploadForProduct = async (file) => {
-    if (!file) return;
+  // Upload single or multiple image files directly to Firebase Storage for Product
+  const handleMultipleFileUploadForProduct = async (files) => {
+    if (!files || files.length === 0) return;
     setUploadingProductImg(true);
     try {
-      const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const sRef = storageRef(storage, `products/${Date.now()}_${cleanFileName}`);
-      await uploadBytes(sRef, file);
-      const downloadUrl = await getDownloadURL(sRef);
-      setProductForm(prev => ({ ...prev, imgUrl: downloadUrl }));
+      const uploadedUrls = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const sRef = storageRef(storage, `products/${Date.now()}_${i}_${cleanFileName}`);
+        await uploadBytes(sRef, file);
+        const downloadUrl = await getDownloadURL(sRef);
+        uploadedUrls.push(downloadUrl);
+      }
+      setProductForm(prev => {
+        const currentImgs = Array.isArray(prev.images) && prev.images.length > 0
+          ? [...prev.images]
+          : (prev.imgUrl ? [prev.imgUrl] : []);
+        const updatedImages = [...currentImgs, ...uploadedUrls];
+        return {
+          ...prev,
+          images: updatedImages,
+          imgUrl: updatedImages[0] || prev.imgUrl || ''
+        };
+      });
     } catch (err) {
-      alert('Failed to upload product image to Firebase Storage: ' + err.message);
+      alert('Failed to upload image(s) to Firebase Storage: ' + err.message);
     } finally {
       setUploadingProductImg(false);
     }
+  };
+
+  const handleAddImageUrl = () => {
+    if (!newImageUrlInput.trim()) return;
+    const trimmed = newImageUrlInput.trim();
+    setProductForm(prev => {
+      const currentImgs = Array.isArray(prev.images) && prev.images.length > 0
+        ? [...prev.images]
+        : (prev.imgUrl ? [prev.imgUrl] : []);
+      const updatedImages = [...currentImgs, trimmed];
+      return {
+        ...prev,
+        images: updatedImages,
+        imgUrl: updatedImages[0] || prev.imgUrl || trimmed
+      };
+    });
+    setNewImageUrlInput('');
+  };
+
+  const handleRemoveProductImage = (indexToRemove) => {
+    setProductForm(prev => {
+      const currentImgs = Array.isArray(prev.images) && prev.images.length > 0
+        ? [...prev.images]
+        : (prev.imgUrl ? [prev.imgUrl] : []);
+      const updatedImages = currentImgs.filter((_, idx) => idx !== indexToRemove);
+      const newMainUrl = updatedImages[0] || '';
+      return {
+        ...prev,
+        images: updatedImages,
+        imgUrl: updatedImages.includes(prev.imgUrl) ? prev.imgUrl : newMainUrl
+      };
+    });
+  };
+
+  const handleSetMainProductImage = (indexToMain) => {
+    setProductForm(prev => {
+      const currentImgs = Array.isArray(prev.images) && prev.images.length > 0
+        ? [...prev.images]
+        : (prev.imgUrl ? [prev.imgUrl] : []);
+      if (indexToMain > 0 && indexToMain < currentImgs.length) {
+        const [targetImg] = currentImgs.splice(indexToMain, 1);
+        currentImgs.unshift(targetImg);
+      }
+      return {
+        ...prev,
+        images: currentImgs,
+        imgUrl: currentImgs[0] || prev.imgUrl || ''
+      };
+    });
   };
 
   // Product Handlers
   const handleSaveProduct = async (e) => {
     e.preventDefault();
     try {
+      const imagesArr = Array.isArray(productForm.images) && productForm.images.length > 0
+        ? productForm.images
+        : (productForm.imgUrl ? [productForm.imgUrl] : []);
+      const mainImgUrl = imagesArr[0] || productForm.imgUrl || '';
+
+      if (!mainImgUrl) {
+        alert('Please upload or add at least one product image.');
+        return;
+      }
+
+      const finalProductData = {
+        ...productForm,
+        images: imagesArr,
+        imgUrl: mainImgUrl
+      };
+
       if (editingProductId) {
-        await update(ref(rtdb, `products/${editingProductId}`), productForm);
-        setProductsList(prev => prev.map(p => p.id === editingProductId ? { ...p, ...productForm } : p));
+        await update(ref(rtdb, `products/${editingProductId}`), finalProductData);
+        setProductsList(prev => prev.map(p => p.id === editingProductId ? { ...p, ...finalProductData } : p));
       } else {
         const newRef = push(ref(rtdb, 'products'));
-        const newProd = { ...productForm, id: newRef.key };
+        const newProd = { ...finalProductData, id: newRef.key };
         await set(newRef, newProd);
         setProductsList(prev => [newProd, ...prev]);
       }
@@ -838,7 +920,8 @@ export default function AdminDashboard({
             </div>
             <button
               onClick={() => {
-                setProductForm({ name: '', team: 'Barcelona', categoryTag: 'this season', version: 'fan', price: 750, imgUrl: '', badge: 'NEW', description: '' });
+                setProductForm({ name: '', team: 'Barcelona', categoryTag: 'this season', version: 'fan', price: 750, imgUrl: '', images: [], badge: 'NEW', description: '' });
+                setNewImageUrlInput('');
                 setEditingProductId(null);
                 setIsAddingProduct(true);
               }}
@@ -949,17 +1032,57 @@ export default function AdminDashboard({
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '12px', fontWeight: 700 }}>PRODUCT IMAGE *</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <input
-                    type="text"
-                    required
-                    value={productForm.imgUrl}
-                    onChange={(e) => setProductForm({ ...productForm, imgUrl: e.target.value })}
-                    placeholder="IMAGE URL or Upload File ->"
-                    style={{ flex: 1, height: '38px', padding: '0 10px', border: '1px solid #D1D5DB', fontFamily: 'monospace', fontSize: '12px' }}
-                  />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', background: '#FFFFFF', padding: '12px', border: '1px solid #D1D5DB' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#111111' }}>
+                    PRODUCT IMAGES GALLERY (Multiple Images) *
+                  </label>
+                  <span style={{ fontSize: '11px', color: '#6B7280' }}>
+                    {Array.isArray(productForm.images) && productForm.images.length > 0
+                      ? productForm.images.length
+                      : (productForm.imgUrl ? 1 : 0)} image(s) added
+                  </span>
+                </div>
+
+                {/* Gallery Thumbnails List */}
+                {((Array.isArray(productForm.images) && productForm.images.length > 0) || productForm.imgUrl) && (
+                  <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', padding: '6px 0' }}>
+                    {(Array.isArray(productForm.images) && productForm.images.length > 0
+                      ? productForm.images
+                      : [productForm.imgUrl]
+                    ).map((imgUrl, idx) => (
+                      <div key={idx} style={{ position: 'relative', width: '84px', height: '84px', border: idx === 0 ? '2px solid #10B981' : '1px solid #D1D5DB', borderRadius: '4px', overflow: 'hidden', background: '#F9FAFB', flexShrink: 0 }}>
+                        <ImageWithSpinner src={imgUrl} alt={`Product ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        <span style={{ position: 'absolute', top: '2px', left: '2px', background: idx === 0 ? '#10B981' : '#374151', color: '#FFFFFF', fontSize: '9px', fontWeight: 700, padding: '1px 5px', borderRadius: '2px' }}>
+                          {idx === 0 ? 'COVER' : `#${idx + 1}`}
+                        </span>
+                        <div style={{ position: 'absolute', bottom: '2px', left: '2px', right: '2px', display: 'flex', gap: '2px' }}>
+                          {idx > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => handleSetMainProductImage(idx)}
+                              style={{ flex: 1, background: 'rgba(0,0,0,0.8)', color: '#FFFFFF', border: 'none', fontSize: '8px', fontWeight: 700, padding: '3px 0', cursor: 'pointer', borderRadius: '2px' }}
+                              title="Set as Main Cover Image"
+                            >
+                              ★ Main
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveProductImage(idx)}
+                            style={{ flex: 1, background: '#EF4444', color: '#FFFFFF', border: 'none', fontSize: '9px', fontWeight: 700, padding: '3px 0', cursor: 'pointer', borderRadius: '2px' }}
+                            title="Remove Image"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Upload or Add URL Inputs */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
                   <label style={{
                     background: '#111111',
                     color: '#FFFFFF',
@@ -969,22 +1092,41 @@ export default function AdminDashboard({
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
                     display: 'flex',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    borderRadius: '2px'
                   }}>
-                    {uploadingProductImg ? '⏳ Uploading...' : '📁 Upload File'}
+                    {uploadingProductImg ? '⏳ Uploading Files...' : '📁 Upload Image(s) (Select Multiple)'}
                     <input
                       type="file"
                       accept="image/*"
+                      multiple
                       style={{ display: 'none' }}
                       onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          handleFileUploadForProduct(e.target.files[0]);
+                        if (e.target.files && e.target.files.length > 0) {
+                          handleMultipleFileUploadForProduct(e.target.files);
                         }
                       }}
                     />
                   </label>
+
+                  <div style={{ display: 'flex', flex: 1, minWidth: '240px', gap: '4px' }}>
+                    <input
+                      type="text"
+                      value={newImageUrlInput}
+                      onChange={(e) => setNewImageUrlInput(e.target.value)}
+                      placeholder="Or paste image URL here..."
+                      style={{ flex: 1, height: '36px', padding: '0 10px', border: '1px solid #D1D5DB', fontSize: '12px', fontFamily: 'monospace' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddImageUrl}
+                      style={{ background: '#374151', color: '#FFFFFF', border: 'none', padding: '0 12px', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      + Add URL
+                    </button>
+                  </div>
                 </div>
-                {uploadingProductImg && <span style={{ fontSize: '12px', color: '#059669', fontWeight: 700 }}>Uploading to Firebase Storage...</span>}
+                {uploadingProductImg && <span style={{ fontSize: '12px', color: '#059669', fontWeight: 700 }}>Uploading image files to Firebase Storage...</span>}
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -1017,7 +1159,15 @@ export default function AdminDashboard({
                 <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                   <button
                     onClick={() => {
-                      setProductForm(p);
+                      const existingImages = Array.isArray(p.images) && p.images.length > 0
+                        ? [...p.images]
+                        : (p.imgUrl ? [p.imgUrl] : []);
+                      setProductForm({
+                        ...p,
+                        images: existingImages,
+                        imgUrl: p.imgUrl || existingImages[0] || ''
+                      });
+                      setNewImageUrlInput('');
                       setEditingProductId(p.id);
                       setIsAddingProduct(true);
                     }}
