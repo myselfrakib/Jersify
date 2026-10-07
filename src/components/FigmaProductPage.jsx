@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import ImageWithSpinner from './ImageWithSpinner';
 import { rtdb, ref, onValue } from '../firebase';
+import { INITIAL_PRODUCTS } from '../data/initialProducts';
 
 import { 
   imgHome, 
@@ -17,7 +18,7 @@ export default function FigmaProductPage({
   product, 
   allProducts = [],
   onBack, 
-  onAddToCart,
+  onAddToCart, 
   onSelectProduct,
   onOpenCart,
   onOpenAuth,
@@ -49,6 +50,15 @@ export default function FigmaProductPage({
     return DEFAULT_LOGO_URL;
   });
 
+  const [internalProducts, setInternalProducts] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_products');
+      return cached ? JSON.parse(cached) : INITIAL_PRODUCTS;
+    } catch (e) {
+      return INITIAL_PRODUCTS;
+    }
+  });
+
   useEffect(() => {
     const unsubImages = onValue(ref(rtdb, 'siteConfig/images'), (snap) => {
       if (snap.exists()) {
@@ -58,7 +68,21 @@ export default function FigmaProductPage({
         }
       }
     }, () => {});
-    return () => unsubImages();
+
+    const unsubProds = onValue(ref(rtdb, 'products'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        if (items.length > 0) {
+          setInternalProducts(items);
+        }
+      }
+    }, () => {});
+
+    return () => {
+      unsubImages();
+      unsubProds();
+    };
   }, []);
 
   const [activeSlide, setActiveSlide] = useState(0);
@@ -92,8 +116,10 @@ export default function FigmaProductPage({
 
   const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
-  const recProducts = (Array.isArray(allProducts) && allProducts.length > 1)
-    ? allProducts.filter(p => p.id !== currentProduct.id).slice(0, 2)
+  const productsListToUse = (Array.isArray(allProducts) && allProducts.length > 0) ? allProducts : internalProducts;
+
+  const recProducts = (Array.isArray(productsListToUse) && productsListToUse.length > 1)
+    ? productsListToUse.filter(p => p.id !== currentProduct.id).slice(0, 2)
     : [
         {
           id: "rec-1",

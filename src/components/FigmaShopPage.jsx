@@ -105,7 +105,7 @@ export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth,
               onClick={() => onSelectProduct(item)}
               style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '8px' }}
             >
-              <div style={{ width: '100%', height: '210px', background: '#F3F2EF', borderRadius: '2px', overflow: 'hidden' }}>
+              <div style={{ width: '100%', aspectRatio: '3/4', background: '#F3F2EF', borderRadius: '2px', overflow: 'hidden' }}>
                 <ImageWithSpinner src={item.imgUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div>
