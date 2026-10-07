@@ -15,6 +15,7 @@ const DEFAULT_LOGO_URL = imgSlide1;
 
 export default function FigmaProductPage({ 
   product, 
+  allProducts = [],
   onBack, 
   onAddToCart,
   onSelectProduct,
@@ -91,22 +92,24 @@ export default function FigmaProductPage({
 
   const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
-  const recProducts = [
-    {
-      id: "rec-1",
-      name: "BARCELONA HOME 26/27",
-      price: 750,
-      type: "Concept · Fan version",
-      imgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de"
-    },
-    {
-      id: "rec-2",
-      name: "REAL MADRID HOME 24/25",
-      price: 750,
-      type: "Player Issue · S–XXL",
-      imgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1779627815641_0_675C45F9-A02E-4936-8088-13695728CA76.png?alt=media&token=0dcaea32-29d4-4ad7-9df3-9e894ea604fe"
-    }
-  ];
+  const recProducts = (Array.isArray(allProducts) && allProducts.length > 1)
+    ? allProducts.filter(p => p.id !== currentProduct.id).slice(0, 2)
+    : [
+        {
+          id: "rec-1",
+          name: "BARCELONA HOME 26/27",
+          price: 750,
+          type: "Fan version · S–XXL",
+          imgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de"
+        },
+        {
+          id: "rec-2",
+          name: "REAL MADRID HOME 24/25",
+          price: 750,
+          type: "Player Issue · S–XXL",
+          imgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1779627815641_0_675C45F9-A02E-4936-8088-13695728CA76.png?alt=media&token=0dcaea32-29d4-4ad7-9df3-9e894ea604fe"
+        }
+      ];
 
   const handleAdd = () => {
     onAddToCart({

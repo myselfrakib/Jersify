@@ -5,7 +5,7 @@ export const INITIAL_PRODUCTS = [
     team: "Barcelona",
     price: 750,
     category: "Kit",
-    type: "Concept · Fan version",
+    type: "Fan version · S–XXL",
     imgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de",
     images: [
       "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de"
@@ -13,8 +13,8 @@ export const INITIAL_PRODUCTS = [
     sizes: { s: 10, m: 10, l: 10, xl: 8, xxl: 5 },
     status: "active",
     playerVersion: false,
-    badge: "CONCEPT",
-    description: "Official Barcelona Home kit concept design for 26/27 season with premium breathable fabric and high quality club crest.",
+    badge: "26/27",
+    description: "Official Barcelona Home kit 26/27 season with premium breathable fabric and high quality club crest.",
     rating: 4.9,
     reviewsCount: 42
   },
@@ -24,7 +24,7 @@ export const INITIAL_PRODUCTS = [
     team: "Barcelona",
     price: 750,
     category: "Kit",
-    type: "Concept · Fan version",
+    type: "Fan version · S–XXL",
     imgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790334116027_pfan_0_IMG_3915.png?alt=media&token=8c2058d5-2b95-4926-8960-1b2ce77d29eb",
     images: [
       "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790334116027_pfan_0_IMG_3915.png?alt=media&token=8c2058d5-2b95-4926-8960-1b2ce77d29eb"
@@ -32,7 +32,7 @@ export const INITIAL_PRODUCTS = [
     sizes: { s: 10, m: 10, l: 10, xl: 8, xxl: 5 },
     status: "active",
     playerVersion: false,
-    badge: "CONCEPT",
+    badge: "26/27",
     description: "Barcelona Away 26/27 Edition with moisture-wicking technology and premium embroidery.",
     rating: 4.8,
     reviewsCount: 38

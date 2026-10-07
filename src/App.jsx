@@ -175,6 +175,7 @@ export default function App() {
       {currentPage === 'product' && (
         <FigmaProductPage
           product={selectedProduct}
+          allProducts={products}
           onBack={() => setCurrentPage('shop')}
           onAddToCart={handleAddToCart}
           onSelectProduct={(p) => {

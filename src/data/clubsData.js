@@ -93,7 +93,7 @@ export const HERO_BANNERS = [
     id: 2,
     title: "WEAR YOUR IDENTITY.",
     tagline: "Crafted for those who live for the sport",
-    subtitle: "LIMITED CONCEPT KITS & RETRO KITS",
+    subtitle: "AUTHENTIC RETRO KITS & SPECIAL EDITIONS",
     ctaText: "Explore Collection",
     image: FIGMA_ASSETS.hero2
   },

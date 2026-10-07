@@ -20,7 +20,7 @@ const TEAM_DETAILS = {
     stadium: 'Spotify Camp Nou',
     logo: imgEllipse12,
     banner: imgHeroBarca,
-    description: 'Explore official Blaugrana kits, retro classics, and exclusive concept editions for the 26/27 season.'
+    description: 'Explore official Blaugrana kits and retro classics for this season.'
   },
   'Real Madrid': {
     name: 'REAL MADRID CF',
@@ -112,7 +112,7 @@ export default function FigmaTeamPage({
     stadium: 'Home Stadium',
     logo: imgEllipse12,
     banner: imgHeroBarca,
-    description: `Official and concept kits for ${teamName}. Premium breathable fabric.`
+    description: `Official kits for ${teamName}. Premium breathable fabric.`
   };
 
   // Filter products by team dynamically from RTDB
@@ -126,7 +126,7 @@ export default function FigmaTeamPage({
     if (activeTab === 'Home') return p.name.toLowerCase().includes('home');
     if (activeTab === 'Away') return p.name.toLowerCase().includes('away');
     if (activeTab === 'Retro') return p.type?.toLowerCase().includes('retro') || p.badge?.includes('08/') || p.badge?.includes('14/');
-    if (activeTab === 'Concept') return p.type?.toLowerCase().includes('concept');
+    if (activeTab === 'Player Issue') return p.playerVersion || p.type?.toLowerCase().includes('player');
     return true;
   });
 
@@ -185,7 +185,7 @@ export default function FigmaTeamPage({
 
       {/* Category Tabs Filter */}
       <div style={{ display: 'flex', gap: '8px', padding: '16px 20px', overflowX: 'auto', borderBottom: '1px solid #E5E7EB', scrollbarWidth: 'none' }}>
-        {['All', 'Home', 'Away', 'Retro', 'Concept'].map(tab => (
+        {['All', 'Home', 'Away', 'Retro', 'Player Issue'].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}

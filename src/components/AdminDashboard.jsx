@@ -50,7 +50,7 @@ const DEFAULT_TEAM_CONFIG = {
     stadium: 'Spotify Camp Nou',
     logo: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
     banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
-    description: 'Explore official Blaugrana kits, retro classics, and exclusive concept editions for the 26/27 season.'
+    description: 'Explore official Blaugrana kits and retro classics for this season.'
   },
   'Real Madrid': {
     name: 'REAL MADRID CF',
@@ -359,7 +359,7 @@ export default function AdminDashboard({
         stadium: 'Home Stadium',
         logo: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
         banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
-        description: `Official and concept kits for ${key}.`
+        description: `Official kits for ${key}.`
       }
     }));
     setNewClubName('');
