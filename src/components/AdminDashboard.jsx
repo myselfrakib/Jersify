@@ -424,18 +424,70 @@ export default function AdminDashboard({
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <label style={{ fontSize: '12px', fontWeight: 700 }}>CLUB / NATION *</label>
-                  <select value={productForm.team} onChange={(e) => setProductForm({ ...productForm, team: e.target.value })} style={{ height: '38px', padding: '0 10px', border: '1px solid #D1D5DB', background: '#FFFFFF' }}>
-                    <option value="Barcelona">Barcelona</option>
-                    <option value="Real Madrid">Real Madrid</option>
-                    <option value="Argentina">Argentina</option>
-                    <option value="PSG">PSG</option>
-                    <option value="Man City">Man City</option>
-                    <option value="Liverpool">Liverpool</option>
-                    <option value="Arsenal">Arsenal</option>
-                    <option value="Chelsea">Chelsea</option>
-                    <option value="AC Milan">AC Milan</option>
-                    <option value="Bayern Munich">Bayern Munich</option>
-                  </select>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <select
+                      value={productForm.team}
+                      onChange={(e) => setProductForm({ ...productForm, team: e.target.value })}
+                      style={{ flex: 1, height: '38px', padding: '0 10px', border: '1px solid #D1D5DB', background: '#FFFFFF', fontWeight: 600, fontSize: '13px' }}
+                    >
+                      <optgroup label="Popular European Clubs">
+                        <option value="Barcelona">FC Barcelona</option>
+                        <option value="Real Madrid">Real Madrid</option>
+                        <option value="Man City">Manchester City</option>
+                        <option value="Liverpool">Liverpool</option>
+                        <option value="Man United">Manchester United</option>
+                        <option value="Arsenal">Arsenal</option>
+                        <option value="Chelsea">Chelsea</option>
+                        <option value="Tottenham">Tottenham Hotspur</option>
+                        <option value="PSG">Paris Saint-Germain (PSG)</option>
+                        <option value="Bayern Munich">Bayern Munich</option>
+                        <option value="Borussia Dortmund">Borussia Dortmund</option>
+                        <option value="AC Milan">AC Milan</option>
+                        <option value="Inter Milan">Inter Milan</option>
+                        <option value="Juventus">Juventus</option>
+                        <option value="Atletico Madrid">Atletico Madrid</option>
+                        <option value="Napoli">Napoli</option>
+                        <option value="AS Roma">AS Roma</option>
+                        <option value="Benfica">Benfica</option>
+                        <option value="Porto">FC Porto</option>
+                        <option value="Ajax">Ajax</option>
+                      </optgroup>
+                      <optgroup label="National Teams">
+                        <option value="Argentina">Argentina</option>
+                        <option value="Portugal">Portugal</option>
+                        <option value="France">France</option>
+                        <option value="Brazil">Brazil</option>
+                        <option value="England">England</option>
+                        <option value="Germany">Germany</option>
+                        <option value="Spain">Spain</option>
+                        <option value="Italy">Italy</option>
+                        <option value="Netherlands">Netherlands</option>
+                        <option value="Japan">Japan</option>
+                        <option value="Morocco">Morocco</option>
+                        <option value="Croatia">Croatia</option>
+                        <option value="Belgium">Belgium</option>
+                        <option value="Uruguay">Uruguay</option>
+                        <option value="Colombia">Colombia</option>
+                        <option value="Mexico">Mexico</option>
+                      </optgroup>
+                      <optgroup label="Rest of World & MLS / Saudi">
+                        <option value="Inter Miami">Inter Miami</option>
+                        <option value="Al Nassr">Al Nassr</option>
+                        <option value="Al Hilal">Al Hilal</option>
+                        <option value="Al Ittihad">Al Ittihad</option>
+                        <option value="Flamengo">Flamengo</option>
+                        <option value="Boca Juniors">Boca Juniors</option>
+                        <option value="River Plate">River Plate</option>
+                      </optgroup>
+                    </select>
+                    <input
+                      type="text"
+                      placeholder="Or type custom..."
+                      value={productForm.team}
+                      onChange={(e) => setProductForm({ ...productForm, team: e.target.value })}
+                      style={{ flex: 1, height: '38px', padding: '0 10px', border: '1px solid #D1D5DB', fontSize: '13px' }}
+                    />
+                  </div>
                 </div>
               </div>
 
