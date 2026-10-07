@@ -136,8 +136,10 @@ export default function AdminDashboard({
 
   // Image Control State & Upload State
   const [indexImages, setIndexImages] = useState(DEFAULT_INDEX_IMAGES);
+  const [homepageOrder, setHomepageOrder] = useState([]);
   const [imagesSavedToast, setImagesSavedToast] = useState(false);
   const [uploadingState, setUploadingState] = useState({});
+
 
   // Clubs & Nations Banners State
   const [teamBanners, setTeamBanners] = useState(DEFAULT_TEAM_CONFIG);
@@ -233,6 +235,13 @@ export default function AdminDashboard({
       } catch (e) {}
     }
 
+    // 6. Realtime listener for homepage product sequence
+    const unsubOrder = onValue(ref(rtdb, 'siteConfig/homepageOrder'), (snap) => {
+      if (snap.exists() && Array.isArray(snap.val())) {
+        setHomepageOrder(snap.val());
+      }
+    }, () => {});
+
     loadUsersAndAdmins();
 
     return () => {
@@ -242,6 +251,7 @@ export default function AdminDashboard({
       unsubOrders();
       unsubAdmins();
       unsubUsers();
+      unsubOrder();
     };
   }, []);
 
@@ -255,6 +265,18 @@ export default function AdminDashboard({
       alert('Failed to save image configuration to RTDB: ' + err.message);
     }
   };
+
+  const handleSaveHomepageOrder = async (newOrder) => {
+    try {
+      const orderToSave = newOrder || (homepageOrder.length >= 10 ? homepageOrder : productsList.slice(0, 10).map(p => p.id));
+      await set(ref(rtdb, 'siteConfig/homepageOrder'), orderToSave);
+      setImagesSavedToast(true);
+      setTimeout(() => setImagesSavedToast(false), 3000);
+    } catch (err) {
+      alert('Failed to save homepage product order: ' + err.message);
+    }
+  };
+
 
   const handleImageChange = (key, newUrl) => {
     setIndexImages(prev => ({
@@ -558,8 +580,102 @@ export default function AdminDashboard({
               );
             })}
           </div>
+
+          {/* Homepage 10 Products Sequence Controller */}
+          <div style={{ marginTop: '32px', borderTop: '2px solid #E5E7EB', paddingTop: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+              <div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#111111', margin: 0 }}>Homepage 10 Products Sequence Controller</h3>
+                <p style={{ fontSize: '12px', color: '#6B7280', margin: '4px 0 0' }}>Re-order or pick which 10 products appear on the main index page.</p>
+              </div>
+              <button
+                onClick={() => handleSaveHomepageOrder()}
+                style={{ background: '#000000', color: '#FFFFFF', padding: '10px 20px', border: 'none', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}
+              >
+                💾 Save Homepage Product Sequence
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', background: '#F9FAFB', padding: '16px', border: '1px solid #E5E7EB', borderRadius: '4px' }}>
+              {Array.from({ length: 10 }).map((_, idx) => {
+                const currentSequence = homepageOrder.length >= 10 ? homepageOrder : productsList.slice(0, 10).map(p => p.id);
+                const currentSelectedId = currentSequence[idx] || (productsList[idx] ? productsList[idx].id : '');
+                const selectedProd = productsList.find(p => String(p.id) === String(currentSelectedId)) || productsList[idx];
+
+                return (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#FFFFFF', padding: '10px 14px', border: '1px solid #E5E7EB', borderRadius: '4px' }}>
+                    <span style={{ fontWeight: 800, fontSize: '14px', color: '#111111', minWidth: '32px' }}>
+                      #{idx + 1}
+                    </span>
+
+                    <div style={{ width: '42px', height: '42px', background: '#F3F4F6', borderRadius: '2px', overflow: 'hidden', flexShrink: 0 }}>
+                      {selectedProd && (
+                        <ImageWithSpinner src={selectedProd.imgUrl} alt={selectedProd.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      )}
+                    </div>
+
+                    <div style={{ flex: 1 }}>
+                      <select
+                        value={currentSelectedId}
+                        onChange={(e) => {
+                          const newId = e.target.value;
+                          const updated = [...currentSequence];
+                          updated[idx] = newId;
+                          setHomepageOrder(updated);
+                          handleSaveHomepageOrder(updated);
+                        }}
+                        style={{ width: '100%', height: '36px', padding: '0 8px', border: '1px solid #D1D5DB', borderRadius: '2px', fontSize: '13px', fontWeight: 600, color: '#111111' }}
+                      >
+                        {productsList.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} — ₹{p.price} ({p.team || 'General'})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <button
+                        disabled={idx === 0}
+                        onClick={() => {
+                          if (idx === 0) return;
+                          const currentArr = [...currentSequence];
+                          const temp = currentArr[idx];
+                          currentArr[idx] = currentArr[idx - 1];
+                          currentArr[idx - 1] = temp;
+                          setHomepageOrder(currentArr);
+                          handleSaveHomepageOrder(currentArr);
+                        }}
+                        style={{ padding: '6px 10px', fontSize: '12px', fontWeight: 700, background: idx === 0 ? '#E5E7EB' : '#111111', color: idx === 0 ? '#9CA3AF' : '#FFFFFF', border: 'none', borderRadius: '2px', cursor: idx === 0 ? 'default' : 'pointer' }}
+                        title="Move Up"
+                      >
+                        ▲
+                      </button>
+                      <button
+                        disabled={idx === 9}
+                        onClick={() => {
+                          if (idx === 9) return;
+                          const currentArr = [...currentSequence];
+                          const temp = currentArr[idx];
+                          currentArr[idx] = currentArr[idx + 1];
+                          currentArr[idx + 1] = temp;
+                          setHomepageOrder(currentArr);
+                          handleSaveHomepageOrder(currentArr);
+                        }}
+                        style={{ padding: '6px 10px', fontSize: '12px', fontWeight: 700, background: idx === 9 ? '#E5E7EB' : '#111111', color: idx === 9 ? '#9CA3AF' : '#FFFFFF', border: 'none', borderRadius: '2px', cursor: idx === 9 ? 'default' : 'pointer' }}
+                        title="Move Down"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
+
 
       {/* TAB 2: CLUBS & NATIONS PAGE IMAGE CONTROLLER */}
       {activeTab === 'clubs' && (

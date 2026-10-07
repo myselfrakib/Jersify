@@ -67,6 +67,15 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
     }
   });
 
+  const [homepageOrder, setHomepageOrder] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_homepage_order');
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
   useEffect(() => {
     // Realtime auto-loading for site images
     const unsubImages = onValue(ref(rtdb, 'siteConfig/images'), (snap) => {
@@ -94,11 +103,37 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
       }
     }, () => {});
 
+    // Realtime auto-loading for homepage product sequence
+    const unsubOrder = onValue(ref(rtdb, 'siteConfig/homepageOrder'), (snap) => {
+      if (snap.exists() && Array.isArray(snap.val())) {
+        setHomepageOrder(snap.val());
+        sessionStorage.setItem('jersify_homepage_order', JSON.stringify(snap.val()));
+      }
+    }, () => {});
+
     return () => {
       unsubImages();
       unsubProds();
+      unsubOrder();
     };
   }, []);
+
+  const displayedJerseys = React.useMemo(() => {
+    if (homepageOrder && homepageOrder.length > 0) {
+      const ordered = [];
+      homepageOrder.forEach(id => {
+        const found = figmaJerseys.find(p => String(p.id) === String(id));
+        if (found) ordered.push(found);
+      });
+      figmaJerseys.forEach(p => {
+        if (ordered.length < 10 && !ordered.some(o => String(o.id) === String(p.id))) {
+          ordered.push(p);
+        }
+      });
+      return ordered.slice(0, 10);
+    }
+    return figmaJerseys.slice(0, 10);
+  }, [figmaJerseys, homepageOrder]);
 
   const heroSlides = [
     siteImages.heroBanner1 || defaultImages.heroBanner1,
@@ -262,7 +297,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
         {/* Product Catalog Grid (10 Jerseys) */}
         <div style={{ marginTop: '60px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-            {figmaJerseys.map((item) => (
+            {displayedJerseys.map((item) => (
               <div 
                 key={item.id}
                 onClick={() => onSelectProduct(item)}
@@ -286,12 +321,31 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
             ))}
           </div>
 
-
-
-          <div style={{ textAlign: 'center', marginTop: '40px', paddingBottom: '28px' }}>
-            <p style={{ fontFamily: 'Karla', fontSize: '12px', color: '#737373', marginBottom: '16px' }}>
-              You’ve seen all 10 jerseys
-            </p>
+          <div style={{ textAlign: 'center', marginTop: '32px', paddingBottom: '28px' }}>
+            <button 
+              onClick={onNavigateShop}
+              style={{
+                width: '100%',
+                height: '48px',
+                background: '#111111',
+                color: '#FFFFFF',
+                fontFamily: 'Karla',
+                fontWeight: 700,
+                fontSize: '14px',
+                border: 'none',
+                borderRadius: '2px',
+                cursor: 'pointer',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                marginBottom: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              Load More Jerseys →
+            </button>
             <div style={{ borderTop: '1px solid #E5E7EB', paddingTop: '16px', fontSize: '12px', color: '#111111' }}>
               Size guide · Shipping & returns · Help
             </div>
@@ -300,6 +354,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
       </div>
 
       {/* Bottom Navigation */}
+
       <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '393px', height: '56px', background: '#F9FAFB', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 50 }}>
         <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
           <img src={imgHome} alt="Home" style={{ width: '20px', height: '20px' }} />
