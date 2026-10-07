@@ -21,23 +21,32 @@ const defaultImages = {
   retroBanner1: sampleJerseyImg,
   retroBanner2: sampleJerseyImg,
   lifestyleClubs: sampleJerseyImg,
-  lifestyleNationals: sampleJerseyImg
+  lifestyleNationals: sampleJerseyImg,
+  jersifyLogoHeader: sampleJerseyImg,
+  clubLogoBarca: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg",
+  clubLogoReal: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg",
+  clubLogoMilan: "https://upload.wikimedia.org/wikipedia/commons/d/d0/AC_Milan_logo.svg",
+  clubLogoBayern: "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg",
+  clubLogoManUtd: "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg",
+  clubLogoManCity: "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg",
+  clubLogoLiverpool: "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg",
+  clubLogoJuventus: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg"
 };
-
-const imgEllipse12 = "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg";
-const imgEllipse18 = "https://upload.wikimedia.org/wikipedia/commons/d/d0/AC_Milan_logo.svg";
-const imgEllipse14 = "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg";
-const imgEllipse15 = "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg";
-const imgEllipse16 = "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg";
-const imgEllipse17 = "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg";
-const imgEllipse13 = "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg";
-const imgEllipse19 = "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg";
-
-const imgImg44492 = sampleJerseyImg;
-const imgRectangle3 = sampleJerseyImg;
 
 export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCart, onOpenAuth, onNavigateShop }) {
   const [siteImages, setSiteImages] = useState(defaultImages);
+
+  const imgEllipse12 = siteImages.clubLogoBarca || defaultImages.clubLogoBarca;
+  const imgEllipse18 = siteImages.clubLogoMilan || defaultImages.clubLogoMilan;
+  const imgEllipse14 = siteImages.clubLogoBayern || defaultImages.clubLogoBayern;
+  const imgEllipse15 = siteImages.clubLogoManUtd || defaultImages.clubLogoManUtd;
+  const imgEllipse16 = siteImages.clubLogoReal || defaultImages.clubLogoReal;
+  const imgEllipse17 = siteImages.clubLogoManCity || defaultImages.clubLogoManCity;
+  const imgEllipse13 = siteImages.clubLogoLiverpool || defaultImages.clubLogoLiverpool;
+  const imgEllipse19 = siteImages.clubLogoJuventus || defaultImages.clubLogoJuventus;
+
+  const imgImg44492 = siteImages.jersifyLogoHeader || sampleJerseyImg;
+  const imgRectangle3 = siteImages.wearYourIdentity || sampleJerseyImg;
 
   useEffect(() => {
     async function loadSiteImages() {

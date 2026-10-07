@@ -27,7 +27,16 @@ const DEFAULT_INDEX_IMAGES = {
   retroBanner1: { label: "Good Old Kits Retro Banner 1", aspect: "1:2.1 (168x360px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777324422299_0_IMG_4061.jpeg?alt=media&token=f94be5a7-75e9-486d-bf07-92135cb38132" },
   retroBanner2: { label: "Good Old Kits Retro Banner 2", aspect: "1:2.1 (168x360px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777348522170_0_IMG_4080.jpeg?alt=media&token=86b339ae-0b9b-41e0-b926-fe7a4fccecc8" },
   lifestyleClubs: { label: "Lifestyle Clubs Banner", aspect: "5:4 (207x166px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1778510513151_0_IMG_5263.jpeg?alt=media&token=17bad7fd-0018-4016-9fa2-5aedc6c3d09d" },
-  lifestyleNationals: { label: "Lifestyle Nationals Banner", aspect: "4:5 (136x166px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de" }
+  lifestyleNationals: { label: "Lifestyle Nationals Banner", aspect: "4:5 (136x166px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de" },
+  jersifyLogoHeader: { label: "Index Page Header Brand Logo", aspect: "Square Brand Logo (40x40px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de" },
+  clubLogoBarca: { label: "Club Crest: FC Barcelona", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg" },
+  clubLogoReal: { label: "Club Crest: Real Madrid", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg" },
+  clubLogoMilan: { label: "Club Crest: AC Milan", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/commons/d/d0/AC_Milan_logo.svg" },
+  clubLogoBayern: { label: "Club Crest: Bayern Munich", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg" },
+  clubLogoManUtd: { label: "Club Crest: Manchester United", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg" },
+  clubLogoManCity: { label: "Club Crest: Manchester City", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg" },
+  clubLogoLiverpool: { label: "Club Crest: Liverpool FC", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg" },
+  clubLogoJuventus: { label: "Club Crest: Juventus", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg" }
 };
 
 export default function AdminDashboard({
@@ -36,7 +45,7 @@ export default function AdminDashboard({
   onSignOut,
   onNavigateHome
 }) {
-  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'products' | 'orders'
+  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'products' | 'orders' | 'users'
 
   // Image Control State & Upload State
   const [indexImages, setIndexImages] = useState(DEFAULT_INDEX_IMAGES);
@@ -60,8 +69,11 @@ export default function AdminDashboard({
     description: ''
   });
 
-  // Orders & Users State
+  // Orders State & Details Modal State
   const [ordersList, setOrdersList] = useState([]);
+  const [selectedOrderModal, setSelectedOrderModal] = useState(null);
+
+  // Users & Admins State
   const [usersList, setUsersList] = useState([]);
 
   // Fetch RTDB configuration, products, orders & users
@@ -206,14 +218,27 @@ export default function AdminDashboard({
   const handleUpdateOrderStatus = async (orderId, newStatus) => {
     try {
       await update(ref(rtdb, `orders/${orderId}`), { status: newStatus });
-      setOrdersList(prev => prev.map(o => o.id === orderId || o.orderId === orderId ? { ...o, status: newStatus } : o));
+      setOrdersList(prev => prev.map(o => (o.id === orderId || o.orderId === orderId) ? { ...o, status: newStatus } : o));
+      if (selectedOrderModal && (selectedOrderModal.id === orderId || selectedOrderModal.orderId === orderId)) {
+        setSelectedOrderModal(prev => ({ ...prev, status: newStatus }));
+      }
     } catch (err) {
       alert('Failed to update status in RTDB: ' + err.message);
     }
   };
 
+  const handleToggleAdminStatus = async (userUid, currentStatus) => {
+    const nextStatus = !currentStatus;
+    try {
+      await update(ref(rtdb, `admins/${userUid}`), { status: nextStatus, isAdmin: nextStatus });
+      setUsersList(prev => prev.map(u => u.uid === userUid ? { ...u, status: nextStatus, isAdmin: nextStatus } : u));
+    } catch (err) {
+      alert('Failed to update admin status: ' + err.message);
+    }
+  };
+
   return (
-    <div style={{ width: '100%', maxWidth: '960px', margin: '0 auto', background: '#FFFFFF', minHeight: '900px', boxShadow: '0 0 20px rgba(0,0,0,0.1)', fontFamily: 'Karla, sans-serif' }}>
+    <div style={{ width: '100%', maxWidth: '980px', margin: '0 auto', background: '#FFFFFF', minHeight: '900px', boxShadow: '0 0 20px rgba(0,0,0,0.1)', fontFamily: 'Karla, sans-serif' }}>
       {/* Dashboard Top Header */}
       <div style={{ background: '#111111', color: '#FFFFFF', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
@@ -234,35 +259,41 @@ export default function AdminDashboard({
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div style={{ display: 'flex', background: '#F3F4F6', borderBottom: '1px solid #E5E7EB' }}>
+      {/* Navigation Tabs (4 Separated Tabs) */}
+      <div style={{ display: 'flex', background: '#F3F4F6', borderBottom: '1px solid #E5E7EB', overflowX: 'auto' }}>
         <button
           onClick={() => setActiveTab('images')}
-          style={{ flex: 1, padding: '14px', border: 'none', background: activeTab === 'images' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'images' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}
+          style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'images' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'images' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
         >
-          🖼️ Index Page Images
+          🖼️ Index Page Images ({Object.keys(indexImages).length})
         </button>
         <button
           onClick={() => setActiveTab('products')}
-          style={{ flex: 1, padding: '14px', border: 'none', background: activeTab === 'products' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'products' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}
+          style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'products' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'products' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
         >
-          👕 List Products ({productsList.length})
+          👕 Products ({productsList.length})
         </button>
         <button
           onClick={() => setActiveTab('orders')}
-          style={{ flex: 1, padding: '14px', border: 'none', background: activeTab === 'orders' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'orders' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}
+          style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'orders' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'orders' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
         >
-          📦 Orders & Users ({ordersList.length})
+          📦 Customer Orders ({ordersList.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('users')}
+          style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'users' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'users' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+        >
+          👥 Registered Users ({usersList.length})
         </button>
       </div>
 
       {/* TAB 1: INDEX PAGE IMAGES MANAGER */}
       {activeTab === 'images' && (
         <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
             <div>
               <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111111' }}>Index Page Image Controller</h2>
-              <p style={{ fontSize: '13px', color: '#6B7280' }}>Update home page banners with explicit aspect ratio guidelines listed beside each header.</p>
+              <p style={{ fontSize: '13px', color: '#6B7280' }}>Update each and every image of the home page with aspect ratio guidelines & direct Firebase Storage uploads.</p>
             </div>
             <button
               onClick={handleSaveImages}
@@ -296,7 +327,7 @@ export default function AdminDashboard({
                   {/* Image Preview Box */}
                   <div style={{ width: '100%', height: '140px', background: '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                     {item.url ? (
-                      <img src={item.url} alt={item.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={item.url} alt={item.label} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                     ) : (
                       <span style={{ color: '#9CA3AF', fontSize: '12px' }}>No Image URL Provided</span>
                     )}
@@ -389,6 +420,8 @@ export default function AdminDashboard({
                     <option value="Liverpool">Liverpool</option>
                     <option value="Arsenal">Arsenal</option>
                     <option value="Chelsea">Chelsea</option>
+                    <option value="AC Milan">AC Milan</option>
+                    <option value="Bayern Munich">Bayern Munich</option>
                   </select>
                 </div>
               </div>
@@ -470,7 +503,7 @@ export default function AdminDashboard({
             {productsList.map(p => (
               <div key={p.id} style={{ border: '1px solid #E5E7EB', padding: '14px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ height: '160px', width: '100%', background: '#F5F5F5', overflow: 'hidden' }}>
-                  <img src={p.imgUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={p.imgUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
@@ -503,86 +536,224 @@ export default function AdminDashboard({
         </div>
       )}
 
-      {/* TAB 3: ORDERS & USERS MANAGER */}
+      {/* TAB 3: CUSTOMER ORDERS (SEPARATED TAB) */}
       {activeTab === 'orders' && (
-        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
-            <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111111' }}>Orders & Database Users</h2>
-            <p style={{ fontSize: '13px', color: '#6B7280' }}>Real-time orders placed by customers and registered users from RTDB.</p>
+            <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111111' }}>Customer Orders Management</h2>
+            <p style={{ fontSize: '13px', color: '#6B7280' }}>View live customer orders with full product details, shipping info and status updates.</p>
           </div>
 
-          {/* Orders Section */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Recent Customer Orders</h3>
-            {ordersList.length === 0 ? (
-              <div style={{ padding: '20px', background: '#F9FAFB', border: '1px solid #E5E7EB', color: '#6B7280', fontSize: '14px' }}>
-                No live customer orders found in RTDB. Orders placed at checkout will appear here automatically.
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {ordersList.map(o => (
-                  <div key={o.id} style={{ border: '1px solid #E5E7EB', padding: '16px', background: '#F9FAFB', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontWeight: 700, fontSize: '15px', color: '#111111' }}>#{o.orderId || o.id}</span>
+          {ordersList.length === 0 ? (
+            <div style={{ padding: '24px', background: '#F9FAFB', border: '1px solid #E5E7EB', color: '#6B7280', fontSize: '14px', textAlign: 'center' }}>
+              No live customer orders found in Realtime Database yet.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {ordersList.map(o => (
+                <div key={o.id} style={{ border: '1px solid #E5E7EB', padding: '16px', background: '#F9FAFB', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                    <div>
+                      <span style={{ fontWeight: 700, fontSize: '16px', color: '#111111' }}>Order #{o.orderId || o.id}</span>
+                      <p style={{ fontSize: '12px', color: '#6B7280', marginTop: '2px' }}>Placed on: {o.createdAt ? new Date(o.createdAt).toLocaleString() : 'Recent'}</p>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <select
                         value={o.status || 'confirmed'}
                         onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
-                        style={{ padding: '4px 8px', border: '1px solid #111111', fontFamily: 'Karla', fontWeight: 700, fontSize: '12px', background: '#FFFFFF' }}
+                        style={{ padding: '6px 10px', border: '1px solid #111111', fontFamily: 'Karla', fontWeight: 700, fontSize: '13px', background: '#FFFFFF', cursor: 'pointer' }}
                       >
-                        <option value="confirmed">Confirmed</option>
-                        <option value="dispatched">Dispatched</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
+                        <option value="confirmed">Status: Confirmed</option>
+                        <option value="dispatched">Status: Dispatched</option>
+                        <option value="delivered">Status: Delivered</option>
+                        <option value="cancelled">Status: Cancelled</option>
                       </select>
-                    </div>
 
-                    <p style={{ fontSize: '13px', color: '#374151' }}>Customer: <strong>{o.customerName}</strong> ({o.email || 'No email'}) · Phone: {o.phone}</p>
-                    <p style={{ fontSize: '12px', color: '#6B7280' }}>Shipping Address: {o.address}</p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: 700, borderTop: '1px solid #E5E7EB', paddingTop: '6px' }}>
-                      <span>Payment: {o.paymentMethod || 'ONLINE'}</span>
-                      <span>Total: ₹{o.total}</span>
+                      <button
+                        onClick={() => setSelectedOrderModal(o)}
+                        style={{ background: '#111111', color: '#FFFFFF', border: 'none', padding: '7px 14px', fontWeight: 700, fontSize: '13px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                      >
+                        👁️ View Order Details
+                      </button>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px', borderTop: '1px solid #E5E7EB', paddingTop: '10px', fontSize: '13px' }}>
+                    <div>
+                      <span style={{ color: '#6B7280', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}>CUSTOMER</span>
+                      <p style={{ fontWeight: 700, color: '#111111' }}>{o.customerName || 'Customer'}</p>
+                      <p style={{ color: '#4B5563', fontSize: '12px' }}>{o.email || 'No email'} · {o.phone}</p>
+                    </div>
+                    <div>
+                      <span style={{ color: '#6B7280', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}>ITEMS SUMMARY</span>
+                      <p style={{ fontWeight: 700, color: '#111111' }}>{Array.isArray(o.items) ? o.items.length : 1} Product(s)</p>
+                      <p style={{ color: '#4B5563', fontSize: '12px' }}>Payment: {o.paymentMethod || 'ONLINE'}</p>
+                    </div>
+                    <div>
+                      <span style={{ color: '#6B7280', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}>TOTAL AMOUNT</span>
+                      <p style={{ fontWeight: 700, fontSize: '16px', color: '#059669' }}>₹{o.total}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 4: REGISTERED USERS & ADMINS (SEPARATED TAB) */}
+      {activeTab === 'users' && (
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div>
+            <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111111' }}>Registered Users & Admin Roles</h2>
+            <p style={{ fontSize: '13px', color: '#6B7280' }}>Database user profiles and restricted admin account authorization status.</p>
           </div>
 
-          {/* Registered Users Section */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Registered Users & Admin Roles</h3>
-            <div style={{ overflowX: 'auto', border: '1px solid #E5E7EB' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
-                <thead>
-                  <tr style={{ background: '#F3F4F6', borderBottom: '1px solid #E5E7EB' }}>
-                    <th style={{ padding: '10px 14px' }}>NAME</th>
-                    <th style={{ padding: '10px 14px' }}>EMAIL</th>
-                    <th style={{ padding: '10px 14px' }}>ROLE</th>
-                    <th style={{ padding: '10px 14px' }}>STATUS (isAdmin)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {usersList.map((u, i) => (
+          <div style={{ overflowX: 'auto', border: '1px solid #E5E7EB' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ background: '#F3F4F6', borderBottom: '1px solid #E5E7EB' }}>
+                  <th style={{ padding: '12px 14px' }}>NAME</th>
+                  <th style={{ padding: '12px 14px' }}>EMAIL</th>
+                  <th style={{ padding: '12px 14px' }}>ACCOUNT TYPE</th>
+                  <th style={{ padding: '12px 14px' }}>ADMIN STATUS (isAdmin)</th>
+                  <th style={{ padding: '12px 14px' }}>ACTION</th>
+                </tr>
+              </thead>
+              <tbody>
+                {usersList.map((u, i) => {
+                  const isApprovedAdmin = (u.status === true || u.isAdmin === true || u.isAdmin === "true");
+                  return (
                     <tr key={i} style={{ borderBottom: '1px solid #F3F4F6' }}>
-                      <td style={{ padding: '10px 14px', fontWeight: 700 }}>{u.name || 'Jersify Fan'}</td>
-                      <td style={{ padding: '10px 14px' }}>{u.email}</td>
-                      <td style={{ padding: '10px 14px' }}>
-                        <span style={{ background: u.accountType === 'Admin' ? '#FEF3C7' : '#F3F4F6', color: u.accountType === 'Admin' ? '#92400E' : '#374151', padding: '2px 6px', fontWeight: 700, fontSize: '11px' }}>
+                      <td style={{ padding: '12px 14px', fontWeight: 700 }}>{u.name || 'Jersify User'}</td>
+                      <td style={{ padding: '12px 14px' }}>{u.email}</td>
+                      <td style={{ padding: '12px 14px' }}>
+                        <span style={{ background: u.accountType === 'Admin' ? '#FEF3C7' : '#E5E7EB', color: u.accountType === 'Admin' ? '#92400E' : '#374151', padding: '4px 8px', fontWeight: 700, fontSize: '11px', borderRadius: '3px' }}>
                           {u.role || u.accountType}
                         </span>
                       </td>
-                      <td style={{ padding: '10px 14px' }}>
-                        <span style={{ color: (u.status === true || u.isAdmin === true) ? '#10B981' : '#6B7280', fontWeight: 700 }}>
-                          {(u.status === true || u.isAdmin === true) ? 'isAdmin == true' : 'isAdmin == false'}
+                      <td style={{ padding: '12px 14px' }}>
+                        <span style={{ color: isApprovedAdmin ? '#10B981' : '#6B7280', fontWeight: 700 }}>
+                          {isApprovedAdmin ? '✓ isAdmin == true' : '✕ isAdmin == false'}
                         </span>
                       </td>
+                      <td style={{ padding: '12px 14px' }}>
+                        {u.accountType === 'Admin' && u.uid && (
+                          <button
+                            onClick={() => handleToggleAdminStatus(u.uid, isApprovedAdmin)}
+                            style={{ background: isApprovedAdmin ? '#FEE2E2' : '#D1FAE5', color: isApprovedAdmin ? '#991B1B' : '#065F46', border: '1px solid transparent', padding: '4px 10px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', borderRadius: '3px' }}
+                          >
+                            {isApprovedAdmin ? 'Revoke Admin' : 'Approve Admin (isAdmin=true)'}
+                          </button>
+                        )}
+                      </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ORDER DETAILS MODAL OVERLAY */}
+      {selectedOrderModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '16px' }}>
+          <div style={{ background: '#FFFFFF', width: '100%', maxWidth: '650px', maxHeight: '90vh', overflowY: 'auto', borderRadius: '6px', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column' }}>
+            {/* Modal Header */}
+            <div style={{ background: '#111111', color: '#FFFFFF', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <span style={{ fontSize: '11px', color: '#10B981', fontWeight: 700 }}>ORDER DETAILS</span>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0 }}>Order #{selectedOrderModal.orderId || selectedOrderModal.id}</h3>
+              </div>
+              <button
+                onClick={() => setSelectedOrderModal(null)}
+                style={{ background: 'none', border: 'none', color: '#FFFFFF', fontSize: '24px', cursor: 'pointer', lineHeight: 1 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Status Bar */}
+              <div style={{ background: '#F3F4F6', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '4px' }}>
+                <span style={{ fontSize: '13px', fontWeight: 700 }}>Current Status: <span style={{ textTransform: 'uppercase', color: '#059669' }}>{selectedOrderModal.status || 'confirmed'}</span></span>
+                <select
+                  value={selectedOrderModal.status || 'confirmed'}
+                  onChange={(e) => handleUpdateOrderStatus(selectedOrderModal.id, e.target.value)}
+                  style={{ padding: '6px 10px', border: '1px solid #111111', fontFamily: 'Karla', fontWeight: 700, fontSize: '12px', background: '#FFFFFF' }}
+                >
+                  <option value="confirmed">Confirmed</option>
+                  <option value="dispatched">Dispatched</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+
+              {/* Customer & Shipping Section */}
+              <div style={{ border: '1px solid #E5E7EB', padding: '14px', borderRadius: '4px', background: '#F9FAFB', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <h4 style={{ fontSize: '14px', fontWeight: 700, margin: 0, color: '#111111', borderBottom: '1px solid #E5E7EB', paddingBottom: '6px' }}>Customer & Shipping Address</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', fontSize: '13px' }}>
+                  <p><strong>Name:</strong> {selectedOrderModal.customerName || 'Customer'}</p>
+                  <p><strong>Phone:</strong> {selectedOrderModal.phone || 'N/A'}</p>
+                  <p><strong>Email:</strong> {selectedOrderModal.email || 'N/A'}</p>
+                  <p><strong>Payment Method:</strong> {selectedOrderModal.paymentMethod || 'ONLINE'}</p>
+                </div>
+                <p style={{ fontSize: '13px', margin: 0 }}><strong>Address:</strong> {selectedOrderModal.address}</p>
+              </div>
+
+              {/* Purchased Products Items Section with Images */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <h4 style={{ fontSize: '14px', fontWeight: 700, margin: 0, color: '#111111' }}>Ordered Products & Items</h4>
+                {Array.isArray(selectedOrderModal.items) && selectedOrderModal.items.length > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {selectedOrderModal.items.map((item, idx) => (
+                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '14px', border: '1px solid #E5E7EB', padding: '10px', borderRadius: '4px', background: '#FFFFFF' }}>
+                        <div style={{ width: '60px', height: '60px', background: '#F3F4F6', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
+                          <img src={item.imgUrl || item.image || "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de"} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <h5 style={{ fontSize: '14px', fontWeight: 700, margin: 0, color: '#111111' }}>{item.name || item.title}</h5>
+                          <p style={{ fontSize: '12px', color: '#6B7280', margin: '2px 0 0' }}>
+                            Team: {item.team || 'Standard'} · Size: <span style={{ fontWeight: 700 }}>{item.size || 'M'}</span> · Version: {item.version || 'Fan'}
+                          </p>
+                          <p style={{ fontSize: '12px', color: '#111111', fontWeight: 700, margin: '2px 0 0' }}>
+                            Quantity: {item.quantity || 1} x ₹{item.price}
+                          </p>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontWeight: 700, fontSize: '15px', color: '#111111' }}>
+                            ₹{(item.quantity || 1) * (item.price || 0)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ padding: '12px', background: '#F3F4F6', fontSize: '13px', color: '#4B5563' }}>
+                    Single Jersey Kit Order · Total: ₹{selectedOrderModal.total}
+                  </div>
+                )}
+              </div>
+
+              {/* Order Total Footer */}
+              <div style={{ borderTop: '2px solid #111111', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '16px', fontWeight: 700 }}>
+                <span>Total Amount Paid:</span>
+                <span style={{ fontSize: '20px', color: '#059669' }}>₹{selectedOrderModal.total}</span>
+              </div>
+            </div>
+
+            {/* Modal Action Footer */}
+            <div style={{ borderTop: '1px solid #E5E7EB', padding: '12px 20px', background: '#F9FAFB', textAlign: 'right' }}>
+              <button
+                onClick={() => setSelectedOrderModal(null)}
+                style={{ background: '#111111', color: '#FFFFFF', padding: '8px 20px', border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', borderRadius: '4px' }}
+              >
+                Close Order Details
+              </button>
             </div>
           </div>
-
         </div>
       )}
     </div>
