@@ -65,11 +65,15 @@ export default function FigmaCheckoutPage({
     const orderTotalAmt = isPartialCod ? partialCodTotal : standardTotal;
     const fullAddress = `${formData.line1}, ${formData.line2 ? formData.line2 + ', ' : ''}${formData.city}, ${formData.state} - ${formData.pincode}`;
 
+    const rawPhone = formData.phone.trim();
+    const cleanDigits = rawPhone.replace(/^\+?91\s*/, '').replace(/[^0-9]/g, '');
+    const savedPhone = cleanDigits.length > 0 ? `+91 ${cleanDigits}` : rawPhone;
+
     const newOrder = {
       orderId,
       customerName: formData.fullName,
       email: user?.email || 'fan@jersify.online',
-      phone: formData.phone,
+      phone: savedPhone,
       address: fullAddress,
       paymentMethod: isPartialCod ? 'PARTIAL COD' : formData.paymentMethod.toUpperCase(),
       paymentStatus: 'pending',
@@ -114,7 +118,7 @@ export default function FigmaCheckoutPage({
       uid: user?.uid || 'guest',
       userEmail: user?.email || '',
       name: formData.fullName,
-      phone: formData.phone,
+      phone: savedPhone,
       email: user?.email || '',
       selectedSize: items[0]?.selectedSize || 'M',
       ...(isPartialCod && {
@@ -132,7 +136,7 @@ export default function FigmaCheckoutPage({
       + `&amt=${paidNowAmt}`
       + `&n=${encodeURIComponent(formData.fullName)}`
       + `&e=${encodeURIComponent(user?.email || '')}`
-      + `&ph=${encodeURIComponent(formData.phone)}`
+      + `&ph=${encodeURIComponent(savedPhone)}`
       + `&sz=${encodeURIComponent(items[0]?.selectedSize || 'M')}`
       + `&uid=${encodeURIComponent(user?.uid || 'guest')}`
       + `&ue=${encodeURIComponent(user?.email || '')}`
@@ -238,11 +242,11 @@ export default function FigmaCheckoutPage({
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#111111', fontWeight: 700 }}>MOBILE NUMBER *</label>
               <input
-                type="text"
+                type="tel"
                 required
-                placeholder="e.g. +91 98765 43210"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="e.g. 98765 43210"
+                value={formData.phone.replace(/^\+?91\s*/, '')}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/^\+?91\s*/, '') })}
                 style={{ height: '42px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
               />
             </div>

@@ -48,13 +48,15 @@ export default function CheckoutModal({
 
     const paidNowAmt = isPartial ? partialPaidNow : checkoutData.total;
     const dueOnDeliveryAmt = isPartial ? partialDueOnDelivery : 0;
-    const fullAddress = `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`;
+    const rawPhone = formData.phone.trim();
+    const cleanDigits = rawPhone.replace(/^\+?91\s*/, '').replace(/[^0-9]/g, '');
+    const savedPhone = cleanDigits.length > 0 ? `+91 ${cleanDigits}` : rawPhone;
 
     const newOrder = {
       orderId,
       customerName: formData.name,
       email: formData.email,
-      phone: formData.phone,
+      phone: savedPhone,
       address: fullAddress,
       city: formData.city,
       state: formData.state,
@@ -93,7 +95,7 @@ export default function CheckoutModal({
       uid: user?.uid || 'guest',
       userEmail: user?.email || formData.email,
       name: formData.name,
-      phone: formData.phone,
+      phone: savedPhone,
       email: formData.email,
       selectedSize: checkoutData.cartItems?.[0]?.selectedSize || 'M',
       ...(isPartial && {
@@ -111,7 +113,7 @@ export default function CheckoutModal({
       + `&amt=${paidNowAmt}`
       + `&n=${encodeURIComponent(formData.name)}`
       + `&e=${encodeURIComponent(formData.email)}`
-      + `&ph=${encodeURIComponent(formData.phone)}`
+      + `&ph=${encodeURIComponent(savedPhone)}`
       + `&sz=${encodeURIComponent(checkoutData.cartItems?.[0]?.selectedSize || 'M')}`
       + `&uid=${encodeURIComponent(user?.uid || 'guest')}`
       + `&ue=${encodeURIComponent(formData.email)}`

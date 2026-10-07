@@ -118,10 +118,15 @@ export default function FigmaSavedAddressesPage({
       return;
     }
 
+    const rawPhone = formData.phone.trim();
+    const cleanDigits = rawPhone.replace(/^\+?91\s*/, '').replace(/[^0-9]/g, '');
+    const savedPhone = cleanDigits.length > 0 ? `+91 ${cleanDigits}` : rawPhone;
+    const finalData = { ...formData, phone: savedPhone };
+
     if (editingId) {
       const updated = addresses.map(addr => {
         if (addr.id === editingId) {
-          return { ...addr, ...formData };
+          return { ...addr, ...finalData };
         }
         return addr;
       });
@@ -129,7 +134,7 @@ export default function FigmaSavedAddressesPage({
     } else {
       const newAddr = {
         id: 'addr_' + Date.now(),
-        ...formData,
+        ...finalData,
         isDefault: addresses.length === 0
       };
       saveToLocalStorage([...addresses, newAddr]);
@@ -288,10 +293,10 @@ export default function FigmaSavedAddressesPage({
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#333333', fontWeight: 700 }}>MOBILE NUMBER *</label>
             <input
-              type="text"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              placeholder="+91 98765 43210"
+              type="tel"
+              value={formData.phone.replace(/^\+?91\s*/, '')}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/^\+?91\s*/, '') })}
+              placeholder="e.g. 98765 43210"
               style={{ height: '40px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
               required
             />
