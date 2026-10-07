@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { rtdb, ref, get } from '../firebase';
+import { rtdb, ref, onValue } from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
 
 import { 
@@ -15,20 +15,28 @@ const imgAccountButton = imgUser;
 const imgShoppingBagButton = imgShoppingBag;
 
 export default function FigmaShopPage({ onSelectProduct, onOpenCart, onOpenAuth, onNavigateHome }) {
-  const [shopJerseys, setShopJerseys] = useState(INITIAL_PRODUCTS);
+  const [shopJerseys, setShopJerseys] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_products');
+      return cached ? JSON.parse(cached) : INITIAL_PRODUCTS;
+    } catch (e) {
+      return INITIAL_PRODUCTS;
+    }
+  });
 
   useEffect(() => {
-    async function loadProducts() {
-      try {
-        const snap = await get(ref(rtdb, 'products'));
-        if (snap.exists()) {
-          const val = snap.val();
-          const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
-          if (items.length > 0) setShopJerseys(items);
+    const unsub = onValue(ref(rtdb, 'products'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        if (items.length > 0) {
+          setShopJerseys(items);
+          sessionStorage.setItem('jersify_products', JSON.stringify(items));
         }
-      } catch (e) {}
-    }
-    loadProducts();
+      }
+    }, () => {});
+
+    return () => unsub();
   }, []);
 
   return (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { rtdb, ref, get } from '../firebase';
+import { rtdb, ref, get, onValue } from '../firebase';
 
 import { 
   imgHome, 
@@ -34,7 +34,14 @@ const defaultImages = {
 };
 
 export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCart, onOpenAuth, onNavigateShop }) {
-  const [siteImages, setSiteImages] = useState(defaultImages);
+  const [siteImages, setSiteImages] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_site_images');
+      return cached ? JSON.parse(cached) : defaultImages;
+    } catch (e) {
+      return defaultImages;
+    }
+  });
 
   const imgEllipse12 = siteImages.clubLogoBarca || defaultImages.clubLogoBarca;
   const imgEllipse18 = siteImages.clubLogoMilan || defaultImages.clubLogoMilan;
@@ -48,32 +55,46 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
   const imgImg44492 = siteImages.jersifyLogoHeader || sampleJerseyImg;
   const imgRectangle3 = siteImages.wearYourIdentity || sampleJerseyImg;
 
-  const [figmaJerseys, setFigmaJerseys] = useState(INITIAL_PRODUCTS);
+  const [figmaJerseys, setFigmaJerseys] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_products');
+      return cached ? JSON.parse(cached) : INITIAL_PRODUCTS;
+    } catch (e) {
+      return INITIAL_PRODUCTS;
+    }
+  });
 
   useEffect(() => {
-    async function loadSiteImages() {
-      try {
-        const snap = await get(ref(rtdb, 'siteConfig/images'));
-        if (snap.exists()) {
-          const val = snap.val();
-          const mapped = {};
-          Object.keys(val).forEach(k => {
-            if (val[k]?.url) mapped[k] = val[k].url;
-          });
-          setSiteImages(prev => ({ ...prev, ...mapped }));
-        }
-      } catch (e) {}
+    // Realtime auto-loading for site images
+    const unsubImages = onValue(ref(rtdb, 'siteConfig/images'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const mapped = {};
+        Object.keys(val).forEach(k => {
+          if (val[k]?.url) mapped[k] = val[k].url;
+        });
+        const merged = { ...defaultImages, ...mapped };
+        setSiteImages(merged);
+        sessionStorage.setItem('jersify_site_images', JSON.stringify(merged));
+      }
+    }, () => {});
 
-      try {
-        const prodSnap = await get(ref(rtdb, 'products'));
-        if (prodSnap.exists()) {
-          const val = prodSnap.val();
-          const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
-          if (items.length > 0) setFigmaJerseys(items);
+    // Realtime auto-loading for product catalog
+    const unsubProds = onValue(ref(rtdb, 'products'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        if (items.length > 0) {
+          setFigmaJerseys(items);
+          sessionStorage.setItem('jersify_products', JSON.stringify(items));
         }
-      } catch (e) {}
-    }
-    loadSiteImages();
+      }
+    }, () => {});
+
+    return () => {
+      unsubImages();
+      unsubProds();
+    };
   }, []);
 
   return (

@@ -12,7 +12,8 @@ import {
   storage,
   storageRef,
   uploadBytes,
-  getDownloadURL
+  getDownloadURL,
+  onValue
 } from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
 
@@ -78,40 +79,44 @@ export default function AdminDashboard({
 
   // Fetch RTDB configuration, products, orders & users
   useEffect(() => {
-    async function loadAdminData() {
-      // 1. Fetch site images config
-      try {
-        const imgSnap = await get(ref(rtdb, 'siteConfig/images'));
-        if (imgSnap.exists()) {
-          setIndexImages(prev => ({ ...prev, ...imgSnap.val() }));
-        }
-      } catch (e) {}
+    // 1. Realtime listener for siteConfig/images
+    const unsubImages = onValue(ref(rtdb, 'siteConfig/images'), (snap) => {
+      if (snap.exists()) {
+        const merged = { ...DEFAULT_INDEX_IMAGES, ...snap.val() };
+        setIndexImages(merged);
+        sessionStorage.setItem('jersify_site_images', JSON.stringify(merged));
+      }
+    }, () => {});
 
-      // 2. Fetch products
-      try {
-        const prodSnap = await get(ref(rtdb, 'products'));
-        if (prodSnap.exists()) {
-          const val = prodSnap.val();
-          const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
-          setProductsList(items);
-        } else {
-          setProductsList(INITIAL_PRODUCTS);
-        }
-      } catch (e) {
+    // 2. Realtime listener for products
+    const unsubProds = onValue(ref(rtdb, 'products'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        setProductsList(items);
+        sessionStorage.setItem('jersify_products', JSON.stringify(items));
+      } else {
         setProductsList(INITIAL_PRODUCTS);
       }
+    }, () => {});
 
-      // 3. Fetch orders
-      try {
-        const ordersSnap = await get(ref(rtdb, 'orders'));
-        if (ordersSnap.exists()) {
-          const val = ordersSnap.val();
-          const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
-          setOrdersList(items);
-        }
-      } catch (e) {}
+    // 3. Realtime listener for orders
+    const unsubOrders = onValue(ref(rtdb, 'orders'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        setOrdersList(items);
+        sessionStorage.setItem('jersify_orders', JSON.stringify(items));
+      } else {
+        setOrdersList([]);
+      }
+    }, () => {});
 
-      // 4. Fetch users & admins
+    // 4. Realtime listener for users & admins
+    const unsubAdmins = onValue(ref(rtdb, 'admins'), () => loadUsersAndAdmins(), () => {});
+    const unsubUsers = onValue(ref(rtdb, 'users'), () => loadUsersAndAdmins(), () => {});
+
+    async function loadUsersAndAdmins() {
       try {
         const usersSnap = await get(ref(rtdb, 'users'));
         const adminsSnap = await get(ref(rtdb, 'admins'));
@@ -127,7 +132,15 @@ export default function AdminDashboard({
       } catch (e) {}
     }
 
-    loadAdminData();
+    loadUsersAndAdmins();
+
+    return () => {
+      unsubImages();
+      unsubProds();
+      unsubOrders();
+      unsubAdmins();
+      unsubUsers();
+    };
   }, []);
 
   // Image Save Handler

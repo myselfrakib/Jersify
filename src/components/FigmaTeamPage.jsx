@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { rtdb, ref, get } from '../firebase';
+import { rtdb, ref, get, onValue } from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
 import { 
   imgBack, 
@@ -59,20 +59,28 @@ export default function FigmaTeamPage({
 }) {
   const [activeTab, setActiveTab] = useState('All');
   const [savedWishlist, setSavedWishlist] = useState({});
-  const [allProducts, setAllProducts] = useState(INITIAL_PRODUCTS);
+  const [allProducts, setAllProducts] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_products');
+      return cached ? JSON.parse(cached) : INITIAL_PRODUCTS;
+    } catch (e) {
+      return INITIAL_PRODUCTS;
+    }
+  });
 
   useEffect(() => {
-    async function loadProducts() {
-      try {
-        const snap = await get(ref(rtdb, 'products'));
-        if (snap.exists()) {
-          const val = snap.val();
-          const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
-          if (items.length > 0) setAllProducts(items);
+    const unsub = onValue(ref(rtdb, 'products'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const items = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        if (items.length > 0) {
+          setAllProducts(items);
+          sessionStorage.setItem('jersify_products', JSON.stringify(items));
         }
-      } catch (e) {}
-    }
-    loadProducts();
+      }
+    }, () => {});
+
+    return () => unsub();
   }, []);
 
   const info = TEAM_DETAILS[teamName] || {
