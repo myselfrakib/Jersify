@@ -1,0 +1,408 @@
+import React, { useState } from 'react';
+
+const imgBack = "http://localhost:3845/assets/5477904d734c4ea184f72d77c9401d63dfc00eba.svg";
+const imgShoppingBag = "http://localhost:3845/assets/722dc33ce4e6a8b7e63a5465d96ac31089753cbf.svg";
+const imgHome = "http://localhost:3845/assets/770d6e8de263da4c03f4e35592767143b42b118e.svg";
+const imgUser = "http://localhost:3845/assets/2cca44153aa7147baae8f4ea673f094d77907545.svg";
+const imgMapPin = "http://localhost:3845/assets/c1a84c98c647011d908e4d7ae297601dca171c5c.svg";
+
+const DEFAULT_ADDRESSES = [
+  {
+    id: 'addr_1',
+    name: 'Alex Morgan',
+    isDefault: true,
+    tag: 'Home',
+    line1: '42 Palm Crest Heights, Apt 4B',
+    line2: 'Bandra West, Hill Road',
+    city: 'Mumbai',
+    state: 'Maharashtra',
+    pincode: '400050',
+    phone: '+91 98765 43210'
+  },
+  {
+    id: 'addr_2',
+    name: 'Alex Morgan (Work)',
+    isDefault: false,
+    tag: 'Office',
+    line1: 'Tech Park One, Tower B, 6th Floor',
+    line2: 'Bandra Kurla Complex (BKC)',
+    city: 'Mumbai',
+    state: 'Maharashtra',
+    pincode: '400051',
+    phone: '+91 98765 43210'
+  }
+];
+
+export default function FigmaSavedAddressesPage({
+  onBack,
+  onOpenCart,
+  onNavigateHome,
+  onNavigateShop
+}) {
+  const [addresses, setAddresses] = useState(() => {
+    const saved = localStorage.getItem('jersify_saved_addresses');
+    return saved ? JSON.parse(saved) : DEFAULT_ADDRESSES;
+  });
+
+  const [isAddingNew, setIsAddingNew] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    name: '',
+    tag: 'Home',
+    line1: '',
+    line2: '',
+    city: 'Mumbai',
+    state: 'Maharashtra',
+    pincode: '',
+    phone: ''
+  });
+
+  const saveToLocalStorage = (updated) => {
+    setAddresses(updated);
+    localStorage.setItem('jersify_saved_addresses', JSON.stringify(updated));
+  };
+
+  const handleSetDefault = (id) => {
+    const updated = addresses.map(addr => ({
+      ...addr,
+      isDefault: addr.id === id
+    }));
+    saveToLocalStorage(updated);
+  };
+
+  const handleDelete = (id) => {
+    const updated = addresses.filter(addr => addr.id !== id);
+    if (updated.length > 0 && !updated.some(a => a.isDefault)) {
+      updated[0].isDefault = true;
+    }
+    saveToLocalStorage(updated);
+  };
+
+  const handleOpenAdd = () => {
+    setFormData({
+      name: '',
+      tag: 'Home',
+      line1: '',
+      line2: '',
+      city: 'Mumbai',
+      state: 'Maharashtra',
+      pincode: '',
+      phone: ''
+    });
+    setEditingId(null);
+    setIsAddingNew(true);
+  };
+
+  const handleOpenEdit = (addr) => {
+    setFormData({
+      name: addr.name,
+      tag: addr.tag || 'Home',
+      line1: addr.line1,
+      line2: addr.line2 || '',
+      city: addr.city,
+      state: addr.state,
+      pincode: addr.pincode,
+      phone: addr.phone
+    });
+    setEditingId(addr.id);
+    setIsAddingNew(true);
+  };
+
+  const handleSaveForm = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.line1 || !formData.pincode || !formData.phone) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    if (editingId) {
+      const updated = addresses.map(addr => {
+        if (addr.id === editingId) {
+          return { ...addr, ...formData };
+        }
+        return addr;
+      });
+      saveToLocalStorage(updated);
+    } else {
+      const newAddr = {
+        id: 'addr_' + Date.now(),
+        ...formData,
+        isDefault: addresses.length === 0
+      };
+      saveToLocalStorage([...addresses, newAddr]);
+    }
+    setIsAddingNew(false);
+    setEditingId(null);
+  };
+
+  return (
+    <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '850px', paddingBottom: '70px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
+      {/* Saved Addresses Navigation Header */}
+      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <img src={imgBack} alt="Back" style={{ width: '22px', height: '22px' }} />
+        </button>
+        <p style={{ fontFamily: 'Karla', fontSize: '18px', color: '#111111' }}>
+          Saved addresses
+        </p>
+        <button onClick={onOpenCart} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <img src={imgShoppingBag} alt="Bag" style={{ width: '22px', height: '22px' }} />
+        </button>
+      </div>
+
+      {/* Header Heading */}
+      <div style={{ padding: '24px 24px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '24px', color: '#111111' }}>
+            Your addresses
+          </h1>
+          <div style={{ background: '#EDDBDB', padding: '5px 10px' }}>
+            <span style={{ fontFamily: 'Karla', fontSize: '12px', color: '#333333' }}>
+              {addresses.length} {addresses.length === 1 ? 'address' : 'addresses'}
+            </span>
+          </div>
+        </div>
+        <p style={{ fontFamily: 'Karla', fontSize: '13px', color: '#6B7280', lineHeight: '18px' }}>
+          Manage your saved delivery locations for quick 1-click checkout.
+        </p>
+
+        {!isAddingNew && (
+          <button
+            onClick={handleOpenAdd}
+            style={{
+              width: '100%',
+              height: '48px',
+              background: '#000000',
+              color: '#FFFFFF',
+              fontFamily: 'Karla',
+              fontWeight: 700,
+              fontSize: '15px',
+              border: 'none',
+              marginTop: '8px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+          >
+            + Add new address
+          </button>
+        )}
+      </div>
+
+      {/* Add / Edit Address Form Modal/Inline */}
+      {isAddingNew && (
+        <form onSubmit={handleSaveForm} style={{ margin: '0 24px 24px', padding: '20px', border: '1px solid #111111', background: '#F9FAFB', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <h3 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '18px', color: '#111111' }}>
+            {editingId ? 'Edit Address' : 'Add New Address'}
+          </h3>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#333333', fontWeight: 700 }}>FULL NAME *</label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="e.g. Alex Morgan"
+              style={{ height: '40px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
+              required
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#333333', fontWeight: 700 }}>TAG</label>
+              <select
+                value={formData.tag}
+                onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
+                style={{ height: '40px', padding: '0 8px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px', background: '#FFFFFF' }}
+              >
+                <option value="Home">Home</option>
+                <option value="Office">Office</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#333333', fontWeight: 700 }}>PINCODE *</label>
+              <input
+                type="text"
+                value={formData.pincode}
+                onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
+                placeholder="400050"
+                style={{ height: '40px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
+                required
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#333333', fontWeight: 700 }}>FLAT / HOUSE NO. / BUILDING *</label>
+            <input
+              type="text"
+              value={formData.line1}
+              onChange={(e) => setFormData({ ...formData, line1: e.target.value })}
+              placeholder="e.g. 42 Palm Crest Heights, Apt 4B"
+              style={{ height: '40px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
+              required
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#333333', fontWeight: 700 }}>STREET / AREA / LOCALITY</label>
+            <input
+              type="text"
+              value={formData.line2}
+              onChange={(e) => setFormData({ ...formData, line2: e.target.value })}
+              placeholder="e.g. Bandra West, Hill Road"
+              style={{ height: '40px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#333333', fontWeight: 700 }}>CITY</label>
+              <input
+                type="text"
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                style={{ height: '40px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
+              />
+            </div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#333333', fontWeight: 700 }}>STATE</label>
+              <input
+                type="text"
+                value={formData.state}
+                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                style={{ height: '40px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#333333', fontWeight: 700 }}>MOBILE NUMBER *</label>
+            <input
+              type="text"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder="+91 98765 43210"
+              style={{ height: '40px', padding: '0 12px', border: '1px solid #D1D5DB', fontFamily: 'Karla', fontSize: '14px' }}
+              required
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+            <button
+              type="submit"
+              style={{ flex: 1, height: '44px', background: '#000000', color: '#FFFFFF', border: 'none', fontFamily: 'Karla', fontSize: '14px', cursor: 'pointer' }}
+            >
+              Save address
+            </button>
+            <button
+              type="button"
+              onClick={() => { setIsAddingNew(false); setEditingId(null); }}
+              style={{ flex: 1, height: '44px', background: '#FFFFFF', color: '#111111', border: '0.7px solid #000000', fontFamily: 'Karla', fontSize: '14px', cursor: 'pointer' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Address Cards List */}
+      <div style={{ padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {addresses.length === 0 ? (
+          <div style={{ padding: '40px 0', textAlign: 'center', color: '#6B7280', fontFamily: 'Karla', fontSize: '14px' }}>
+            No saved addresses found. Click above to add one!
+          </div>
+        ) : (
+          addresses.map((addr, index) => (
+            <div key={addr.id} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ border: addr.isDefault ? '1.5px solid #111111' : '1px solid #E5E7EB', padding: '20px', background: '#FFFFFF', position: 'relative' }}>
+                
+                {/* Default & Tag Badges */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <img src={imgMapPin} alt="Pin" style={{ width: '18px', height: '18px' }} />
+                    <span style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '16px', color: '#111111' }}>
+                      {addr.name}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    {addr.tag && (
+                      <span style={{ background: '#F3F4F6', color: '#4B5563', padding: '4px 8px', fontSize: '11px', fontFamily: 'Karla', fontWeight: 600 }}>
+                        {addr.tag.toUpperCase()}
+                      </span>
+                    )}
+                    {addr.isDefault && (
+                      <span style={{ background: '#EDDBDB', color: '#333333', padding: '4px 8px', fontSize: '11px', fontFamily: 'Karla', fontWeight: 700 }}>
+                        DEFAULT
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Address Body */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontFamily: 'Karla', fontSize: '14px', color: '#4B5563', lineHeight: '20px' }}>
+                  <p>{addr.line1}</p>
+                  {addr.line2 && <p>{addr.line2}</p>}
+                  <p>{addr.city}, {addr.state} - {addr.pincode}</p>
+                  <p style={{ marginTop: '4px', color: '#111111', fontWeight: 500 }}>Phone: {addr.phone}</p>
+                </div>
+
+                {/* Actions */}
+                <div style={{ display: 'flex', gap: '10px', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #F3F4F6' }}>
+                  {!addr.isDefault && (
+                    <button
+                      onClick={() => handleSetDefault(addr.id)}
+                      style={{ background: 'none', border: 'none', color: '#111111', fontFamily: 'Karla', fontSize: '13px', fontWeight: 700, textDecoration: 'underline', cursor: 'pointer', padding: 0 }}
+                    >
+                      Set as default
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleOpenEdit(addr)}
+                    style={{ background: 'none', border: 'none', color: '#111111', fontFamily: 'Karla', fontSize: '13px', fontWeight: 600, textDecoration: 'underline', cursor: 'pointer', padding: 0 }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(addr.id)}
+                    style={{ background: 'none', border: 'none', color: '#EF4444', fontFamily: 'Karla', fontSize: '13px', fontWeight: 600, cursor: 'pointer', padding: 0, marginLeft: 'auto' }}
+                  >
+                    Remove
+                  </button>
+                </div>
+
+              </div>
+              {index < addresses.length - 1 && <div style={{ height: '1px', background: '#E5E7EB', width: '100%' }} />}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Bottom Navigation */}
+      <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '393px', height: '56px', background: '#F9FAFB', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 50 }}>
+        <button onClick={onNavigateHome} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', background: 'none', border: 'none' }}>
+          <img src={imgHome} alt="Home" style={{ width: '20px', height: '20px' }} />
+          <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Home</span>
+        </button>
+        <button onClick={onNavigateShop} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', background: 'none', border: 'none' }}>
+          <img src={imgShoppingBag} alt="Shop" style={{ width: '20px', height: '20px' }} />
+          <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Shop</span>
+        </button>
+        <button onClick={onOpenCart} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', background: 'none', border: 'none' }}>
+          <img src={imgShoppingBag} alt="Bag" style={{ width: '20px', height: '20px' }} />
+          <span style={{ fontSize: '10px', color: '#9CA3AF' }}>Bag</span>
+        </button>
+        <button onClick={onBack} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', background: 'none', border: 'none' }}>
+          <img src={imgUser} alt="Profile" style={{ width: '20px', height: '20px' }} />
+          <span style={{ fontSize: '10px', fontWeight: 500, color: '#111827' }}>Profile</span>
+        </button>
+      </div>
+    </div>
+  );
+}

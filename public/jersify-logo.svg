@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <rect width="200" height="60" rx="8" fill="#111111"/>
+  <text x="15" y="40" font-family="'Inter', sans-serif" font-weight="900" font-size="28" fill="#FFFFFF" letter-spacing="3">JERSIFY</text>
+  <path d="M165 18L180 30L165 42" stroke="#D4AF37" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

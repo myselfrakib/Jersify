@@ -1,0 +1,254 @@
+import React, { useState } from 'react';
+import { X, Heart, ShoppingBag, Check, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
+
+export default function ProductModal({ 
+  product, 
+  onClose, 
+  onAddToCart, 
+  isWishlisted, 
+  onToggleWishlist 
+}) {
+  if (!product) return null;
+
+  const images = product.images && product.images.length > 0 ? product.images : [product.imgUrl];
+  const [selectedImage, setSelectedImage] = useState(images[0]);
+  const [selectedSize, setSelectedSize] = useState('M');
+  const [customName, setCustomName] = useState('');
+  const [customNumber, setCustomNumber] = useState('');
+  const [quantity, setQuantity] = useState(1);
+
+  const availableSizes = ['S', 'M', 'L', 'XL', 'XXL'];
+
+  const handleAdd = () => {
+    onAddToCart({
+      ...product,
+      selectedSize,
+      customName: customName.trim().toUpperCase(),
+      customNumber: customNumber.trim(),
+      quantity
+    });
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div 
+        className="modal-card" 
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: '850px', width: '95%' }}
+      >
+        <button 
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '16px',
+            zIndex: 10,
+            background: 'rgba(255,255,255,0.85)',
+            backdropFilter: 'blur(4px)',
+            borderRadius: '50%',
+            width: '36px',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <X size={20} />
+        </button>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '2rem',
+          padding: '1.5rem'
+        }}>
+          {/* Left Column: Gallery */}
+          <div>
+            <div style={{
+              width: '100%',
+              paddingTop: '110%',
+              position: 'relative',
+              borderRadius: 'var(--radius-sm)',
+              overflow: 'hidden',
+              background: '#F3F2EF',
+              marginBottom: '1rem'
+            }}>
+              <img 
+                src={selectedImage || product.imgUrl} 
+                alt={product.name}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }} 
+              />
+            </div>
+
+            {/* Thumbnail Row */}
+            {images.length > 1 && (
+              <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto' }}>
+                {images.map((img, idx) => (
+                  <div 
+                    key={idx}
+                    onClick={() => setSelectedImage(img)}
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: 'var(--radius-sm)',
+                      overflow: 'hidden',
+                      cursor: 'pointer',
+                      border: selectedImage === img ? '2px solid #111827' : '1px solid var(--color-border)',
+                      opacity: selectedImage === img ? 1 : 0.7,
+                      flexShrink: 0
+                    }}
+                  >
+                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Product Details & Controls */}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {product.team}
+            </span>
+            <h2 style={{ fontFamily: 'var(--font-inter)', fontWeight: 800, fontSize: '1.5rem', color: '#111827', margin: '0.25rem 0 0.5rem' }}>
+              {product.name}
+            </h2>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+              <span style={{ fontFamily: 'var(--font-inter)', fontWeight: 900, fontSize: '1.6rem', color: '#111827' }}>
+                ₹{product.price}
+              </span>
+              <span style={{ fontSize: '0.8rem', background: '#F3F4F6', color: '#4B5563', padding: '3px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                {product.type || 'Fan Version'}
+              </span>
+            </div>
+
+            <p style={{ fontSize: '0.88rem', color: '#4B5563', lineHeight: 1.5, marginBottom: '1.25rem' }}>
+              {product.description}
+            </p>
+
+            {/* Size Selector */}
+            <div style={{ marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111827' }}>SELECT SIZE</label>
+                <span style={{ fontSize: '0.8rem', color: '#6B7280', textDecoration: 'underline', cursor: 'pointer' }}>Size Guide</span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {availableSizes.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    style={{
+                      width: '46px',
+                      height: '42px',
+                      borderRadius: 'var(--radius-sm)',
+                      border: selectedSize === size ? '2px solid #111827' : '1px solid var(--color-border)',
+                      background: selectedSize === size ? '#111827' : '#FFFFFF',
+                      color: selectedSize === size ? '#FFFFFF' : '#111827',
+                      fontWeight: 700,
+                      fontSize: '0.9rem',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Name & Number Jersey Printing */}
+            <div style={{ 
+              background: '#F9FAFB', 
+              border: '1px solid var(--color-border)', 
+              borderRadius: 'var(--radius-sm)', 
+              padding: '1rem',
+              marginBottom: '1.25rem' 
+            }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 800, color: '#111827', display: 'block', marginBottom: '0.5rem' }}>
+                ⚡ CUSTOM NAME & NUMBER PRINTING (OPTIONAL)
+              </label>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  type="text"
+                  placeholder="NAME (e.g. MESSI)"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  maxLength={12}
+                  style={{
+                    flex: 2,
+                    padding: '0.5rem 0.75rem',
+                    fontSize: '0.85rem',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-sm)',
+                    outline: 'none',
+                    textTransform: 'uppercase'
+                  }}
+                />
+                <input
+                  type="number"
+                  placeholder="NO. (10)"
+                  value={customNumber}
+                  onChange={(e) => setCustomNumber(e.target.value)}
+                  maxLength={3}
+                  style={{
+                    flex: 1,
+                    padding: '0.5rem 0.75rem',
+                    fontSize: '0.85rem',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-sm)',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Quantity Selector & Action Buttons */}
+            <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto' }}>
+              <div className="qty-control" style={{ height: '48px' }}>
+                <button className="qty-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+                <span className="qty-val" style={{ minWidth: '32px', textAlign: 'center' }}>{quantity}</span>
+                <button className="qty-btn" onClick={() => setQuantity(quantity + 1)}>+</button>
+              </div>
+
+              <button 
+                className="btn btn-primary" 
+                onClick={handleAdd}
+                style={{ flexGrow: 1, height: '48px' }}
+              >
+                <ShoppingBag size={18} /> Add To Bag
+              </button>
+
+              <button 
+                className={`wishlist-btn ${isWishlisted ? 'active' : ''}`}
+                onClick={() => onToggleWishlist(product)}
+                style={{ position: 'relative', top: 0, right: 0, width: '48px', height: '48px', border: '1px solid var(--color-border)' }}
+              >
+                <Heart size={20} fill={isWishlisted ? "#EF4444" : "none"} color={isWishlisted ? "#EF4444" : "#111827"} />
+              </button>
+            </div>
+
+            {/* Product Guarantees */}
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--color-border)', fontSize: '0.78rem', color: '#6B7280' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <ShieldCheck size={16} color="#10B981" /> 100% Authentic
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Truck size={16} color="#3B82F6" /> Fast Delivery
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <RefreshCw size={16} color="#8B5CF6" /> Easy Exchange
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
