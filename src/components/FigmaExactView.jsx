@@ -98,6 +98,22 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
     };
   }, []);
 
+  const heroSlides = [
+    siteImages.heroBanner1 || defaultImages.heroBanner1,
+    siteImages.heroBanner2 || defaultImages.heroBanner2,
+    siteImages.heroBanner3 || defaultImages.heroBanner3
+  ].filter(Boolean);
+
+  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+
+  useEffect(() => {
+    if (heroSlides.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentHeroSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [heroSlides.length]);
+
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '4924px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Top Header Logo */}
@@ -105,9 +121,43 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
         <img src={imgImg44492} alt="Jersify Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
 
-      {/* Hero Banner 1 */}
-      <div style={{ position: 'absolute', top: '68px', left: 0, width: '393px', height: '510px' }}>
-        <img src={siteImages.heroBanner1 || siteImages.heroBanner2 || defaultImages.heroBanner1} alt="Hero Banner" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      {/* Slidable 3 Hero Banners Slider with Dots */}
+      <div style={{ position: 'absolute', top: '68px', left: 0, width: '393px', height: '510px', overflow: 'hidden' }}>
+        <div style={{
+          display: 'flex',
+          width: `${heroSlides.length * 393}px`,
+          height: '100%',
+          transform: `translateX(-${currentHeroSlide * 393}px)`,
+          transition: 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)'
+        }}>
+          {heroSlides.map((slideUrl, idx) => (
+            <div key={idx} style={{ width: '393px', height: '510px', flexShrink: 0 }}>
+              <img src={slideUrl} alt={`Hero Banner ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+          ))}
+        </div>
+
+        {/* Slider Pagination Dots */}
+        <div style={{ position: 'absolute', bottom: '20px', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', zIndex: 30 }}>
+          {heroSlides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentHeroSlide(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
+              style={{
+                width: currentHeroSlide === idx ? '26px' : '8px',
+                height: '8px',
+                borderRadius: '4px',
+                background: currentHeroSlide === idx ? '#FFFFFF' : 'rgba(255, 255, 255, 0.45)',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+                boxShadow: currentHeroSlide === idx ? '0 2px 6px rgba(0,0,0,0.3)' : 'none'
+              }}
+            />
+          ))}
+        </div>
       </div>
 
       {/* SHOP BY CLUB JERSEYS */}
