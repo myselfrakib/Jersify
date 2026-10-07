@@ -46,24 +46,28 @@ export default function CheckoutModal({
     const orderId = 'JRS-' + Date.now();
     const isPartial = formData.paymentMethod === 'partial_cod';
 
+    const paidNowAmt = isPartial ? partialPaidNow : checkoutData.total;
+    const dueOnDeliveryAmt = isPartial ? partialDueOnDelivery : 0;
+    const fullAddress = `${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`;
+
     const newOrder = {
       orderId,
       customerName: formData.name,
       email: formData.email,
       phone: formData.phone,
-      address: formData.address,
+      address: fullAddress,
       city: formData.city,
       state: formData.state,
       pincode: formData.pincode,
-      paymentMethod: formData.paymentMethod,
+      paymentMethod: isPartial ? 'PARTIAL COD' : formData.paymentMethod.toUpperCase(),
       items: checkoutData.cartItems,
       subtotal: checkoutData.subtotal,
       discount: checkoutData.discount,
       shipping: checkoutData.shipping,
       total: checkoutData.total,
-      paidNowAmount: isPartial ? partialPaidNow : (formData.paymentMethod === 'online' ? checkoutData.total : 0),
-      dueOnDeliveryAmount: isPartial ? partialDueOnDelivery : 0,
-      status: 'confirmed',
+      paidNowAmount: paidNowAmt,
+      dueOnDeliveryAmount: dueOnDeliveryAmt,
+      status: 'pending',
       createdAt: new Date().toISOString(),
       userId: user?.uid || 'guest'
     };
@@ -75,16 +79,46 @@ export default function CheckoutModal({
       console.warn('Saved order locally due to fallback:', err);
     }
 
-    setIsSubmitting(false);
-    setOrderComplete(newOrder);
-    onOrderSuccess();
+    const payload = {
+      items: checkoutData.cartItems,
+      address: fullAddress,
+      city: formData.city,
+      state: formData.state,
+      pincode: formData.pincode,
+      country: 'India',
+      subtotal: checkoutData.subtotal,
+      discount: checkoutData.discount,
+      shipping: checkoutData.shipping,
+      paymentMethod: formData.paymentMethod,
+      uid: user?.uid || 'guest',
+      userEmail: user?.email || formData.email,
+      name: formData.name,
+      phone: formData.phone,
+      email: formData.email,
+      selectedSize: checkoutData.cartItems?.[0]?.selectedSize || 'M',
+      ...(isPartial && {
+        pcodCharge: 120,
+        pcodPayNow: partialPaidNow,
+        pcodPayOnDelivery: partialDueOnDelivery
+      })
+    };
 
-    // Trigger celebratory confetti effect
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+    const dataB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const bookingBase = isLocal ? '/jersifybooking.html' : 'https://waveridrentals.vercel.app/jersifybooking.html';
+
+    const bookingUrl = `${bookingBase}?oid=${encodeURIComponent(orderId)}`
+      + `&amt=${paidNowAmt}`
+      + `&n=${encodeURIComponent(formData.name)}`
+      + `&e=${encodeURIComponent(formData.email)}`
+      + `&ph=${encodeURIComponent(formData.phone)}`
+      + `&sz=${encodeURIComponent(checkoutData.cartItems?.[0]?.selectedSize || 'M')}`
+      + `&uid=${encodeURIComponent(user?.uid || 'guest')}`
+      + `&ue=${encodeURIComponent(formData.email)}`
+      + `&pm=${encodeURIComponent(formData.paymentMethod)}`
+      + `&d=${encodeURIComponent(dataB64)}`;
+
+    window.location.href = bookingUrl;
   };
 
   return (

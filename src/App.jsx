@@ -19,7 +19,7 @@ import UserProfileModal from './components/UserProfileModal';
 import WishlistDrawer from './components/WishlistDrawer';
 
 import { INITIAL_PRODUCTS } from './data/initialProducts';
-import { auth, onAuthStateChanged, db, collection, getDocs } from './firebase';
+import { auth, onAuthStateChanged, db, rtdb, ref, update } from './firebase';
 
 export default function App() {
   // Page Navigation State: 'home' | 'shop' | 'product' | 'profile' | 'orders' | 'addresses' | 'team' | 'login' | 'signup' | 'checkout' | 'admin-login' | 'admin-dashboard'
@@ -46,6 +46,36 @@ export default function App() {
   const [checkoutData, setCheckoutData] = useState(null);
 
   const [toasts, setToasts] = useState([]);
+
+  // Check for payment redirect callback return parameters from jersifybooking.html
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const paymentId = searchParams.get('paymentId') || searchParams.get('razorpay_payment_id');
+    const oid = searchParams.get('oid');
+    if (paymentId || (oid && searchParams.get('amt'))) {
+      setCartItems([]);
+      localStorage.removeItem('jersify_cart');
+
+      if (oid) {
+        try {
+          update(ref(rtdb, `orders/${oid}`), {
+            status: 'confirmed',
+            paymentStatus: 'Paid Online',
+            paymentId: paymentId || 'PAID_ONLINE',
+            updatedAt: new Date().toISOString()
+          });
+        } catch (e) {
+          console.warn('Failed to update confirmed order status:', e);
+        }
+      }
+
+      showToast('Payment Successful! Order Confirmed 🎉');
+      navigateTo('orders');
+
+      const cleanUrl = window.location.origin + window.location.pathname + '#orders';
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+  }, []);
 
   // Centralized Navigation with URL Hash Deep Linking
   const navigateTo = (page, param = null, options = {}) => {

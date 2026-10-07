@@ -50,39 +50,36 @@ export default function FigmaCheckoutPage({
   const [selectedUpiApp, setSelectedUpiApp] = useState('gpay');
   const [orderSuccess, setOrderSuccess] = useState(null);
 
-  const handleProceedToPayment = (e) => {
+  const handleProceedToPayment = async (e) => {
     e.preventDefault();
     if (!formData.fullName || !formData.line1 || !formData.pincode || !formData.phone) {
       alert('Please complete all required shipping fields.');
       return;
     }
-    setShowPaymentGateway(true);
-  };
-
-  const handleCompletePayment = async () => {
     setIsProcessingPayment(true);
-    const orderId = 'JRS-' + Math.floor(100000 + Math.random() * 900000);
 
+    const orderId = 'JRS-' + Math.floor(100000 + Math.random() * 900000);
     const isPartialCod = formData.paymentMethod === 'partial_cod';
     const paidNowAmt = isPartialCod ? partialCodPayNow : standardTotal;
     const dueOnDeliveryAmt = isPartialCod ? partialCodDueDelivery : 0;
     const orderTotalAmt = isPartialCod ? partialCodTotal : standardTotal;
+    const fullAddress = `${formData.line1}, ${formData.line2 ? formData.line2 + ', ' : ''}${formData.city}, ${formData.state} - ${formData.pincode}`;
 
     const newOrder = {
       orderId,
       customerName: formData.fullName,
       email: user?.email || 'fan@jersify.online',
       phone: formData.phone,
-      address: `${formData.line1}, ${formData.line2 ? formData.line2 + ', ' : ''}${formData.city}, ${formData.state} - ${formData.pincode}`,
+      address: fullAddress,
       paymentMethod: isPartialCod ? 'PARTIAL COD' : formData.paymentMethod.toUpperCase(),
-      paymentStatus: isPartialCod ? `Partial Paid (₹${paidNowAmt} Online Advance, ₹${dueOnDeliveryAmt} Due on Delivery)` : 'Paid Online',
+      paymentStatus: 'pending',
       paidNow: paidNowAmt,
       dueOnDelivery: dueOnDeliveryAmt,
       items: items.map(i => ({
         id: i.id,
         name: i.name,
         price: i.price,
-        quantity: i.quantity,
+        quantity: i.quantity || 1,
         selectedSize: i.selectedSize || 'M',
         customName: i.customName || '',
         customNumber: i.customNumber || ''
@@ -91,33 +88,58 @@ export default function FigmaCheckoutPage({
       discount,
       shipping: isPartialCod ? 120 : shipping,
       total: orderTotalAmt,
-      status: 'confirmed',
+      status: 'pending',
+      source: 'checkout_redirect',
       createdAt: new Date().toISOString(),
-      userId: user?.uid || 'authenticated-user'
+      userId: user?.uid || 'guest'
     };
 
     try {
       await set(ref(rtdb, `orders/${orderId}`), newOrder);
     } catch (err) {
-      console.warn('Saved order locally:', err);
+      console.warn('Pre-saved order warning:', err);
     }
 
-    setTimeout(() => {
-      setIsProcessingPayment(false);
-      setShowPaymentGateway(false);
-      setOrderSuccess(newOrder);
+    const payload = {
+      items: newOrder.items,
+      address: fullAddress,
+      city: formData.city || '',
+      state: formData.state || '',
+      pincode: formData.pincode || '',
+      country: 'India',
+      subtotal,
+      discount,
+      shipping: isPartialCod ? 120 : shipping,
+      paymentMethod: formData.paymentMethod,
+      uid: user?.uid || 'guest',
+      userEmail: user?.email || '',
+      name: formData.fullName,
+      phone: formData.phone,
+      email: user?.email || '',
+      selectedSize: items[0]?.selectedSize || 'M',
+      ...(isPartialCod && {
+        pcodCharge: 120,
+        pcodPayNow: partialCodPayNow,
+        pcodPayOnDelivery: partialCodDueDelivery
+      })
+    };
 
-      // Trigger Confetti Celebration!
-      try {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      } catch (e) {}
+    const dataB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const bookingBase = isLocal ? '/jersifybooking.html' : 'https://waveridrentals.vercel.app/jersifybooking.html';
 
-      if (onOrderSuccess) onOrderSuccess();
-    }, 1500);
+    const bookingUrl = `${bookingBase}?oid=${encodeURIComponent(orderId)}`
+      + `&amt=${paidNowAmt}`
+      + `&n=${encodeURIComponent(formData.fullName)}`
+      + `&e=${encodeURIComponent(user?.email || '')}`
+      + `&ph=${encodeURIComponent(formData.phone)}`
+      + `&sz=${encodeURIComponent(items[0]?.selectedSize || 'M')}`
+      + `&uid=${encodeURIComponent(user?.uid || 'guest')}`
+      + `&ue=${encodeURIComponent(user?.email || '')}`
+      + `&pm=${encodeURIComponent(formData.paymentMethod)}`
+      + `&d=${encodeURIComponent(dataB64)}`;
+
+    window.location.href = bookingUrl;
   };
 
   if (orderSuccess) {
