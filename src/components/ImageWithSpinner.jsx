@@ -8,7 +8,7 @@ export default function ImageWithSpinner({
   className = '',
   objectFit = 'cover',
   onClick,
-  spinnerSize = '24px',
+  spinnerSize,
   ...props
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -29,31 +29,26 @@ export default function ImageWithSpinner({
         ...style 
       }}
     >
+      <style>{`
+        @keyframes jersifySkeletonShimmer {
+          0% {
+            background-position: -200% 0;
+          }
+          100% {
+            background-position: 200% 0;
+          }
+        }
+      `}</style>
+
       {!isLoaded && !hasError && (
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: '#F3F4F6',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          background: 'linear-gradient(90deg, #EAEAEA 25%, #F5F5F5 50%, #EAEAEA 75%)',
+          backgroundSize: '200% 100%',
+          animation: 'jersifySkeletonShimmer 1.4s infinite linear',
           zIndex: 2
-        }}>
-          <div style={{
-            width: spinnerSize,
-            height: spinnerSize,
-            border: '2px solid #E5E7EB',
-            borderTop: '2px solid #111111',
-            borderRadius: '50%',
-            animation: 'jersifySpin 0.7s linear infinite'
-          }} />
-          <style>{`
-            @keyframes jersifySpin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
-        </div>
+        }} />
       )}
 
       <img
