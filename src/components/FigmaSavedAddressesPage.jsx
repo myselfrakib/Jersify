@@ -141,7 +141,7 @@ export default function FigmaSavedAddressesPage({
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '850px', paddingBottom: '70px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Saved Addresses Navigation Header */}
-      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
+      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 19px' }}>
         <button onClick={onBack} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
           <img src={imgBack} alt="Back" style={{ width: '22px', height: '22px' }} />
         </button>
@@ -154,7 +154,7 @@ export default function FigmaSavedAddressesPage({
       </div>
 
       {/* Header Heading */}
-      <div style={{ padding: '24px 24px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div style={{ padding: '24px 19px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '24px', color: '#111111' }}>
             Your addresses
@@ -196,7 +196,7 @@ export default function FigmaSavedAddressesPage({
 
       {/* Add / Edit Address Form Modal/Inline */}
       {isAddingNew && (
-        <form onSubmit={handleSaveForm} style={{ margin: '0 24px 24px', padding: '20px', border: '1px solid #111111', background: '#F9FAFB', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <form onSubmit={handleSaveForm} style={{ margin: '0 19px 24px', padding: '20px', border: '1px solid #111111', background: '#F9FAFB', display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <h3 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '18px', color: '#111111' }}>
             {editingId ? 'Edit Address' : 'Add New Address'}
           </h3>
@@ -314,7 +314,7 @@ export default function FigmaSavedAddressesPage({
       )}
 
       {/* Address Cards List */}
-      <div style={{ padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ padding: '0 19px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {addresses.length === 0 ? (
           <div style={{ padding: '40px 0', textAlign: 'center', color: '#6B7280', fontFamily: 'Karla', fontSize: '14px' }}>
             No saved addresses found. Click above to add one!

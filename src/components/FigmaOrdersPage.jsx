@@ -44,7 +44,7 @@ export default function FigmaOrdersPage({
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '1450px', paddingBottom: '60px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Orders Navigation Header */}
-      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
+      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 19px' }}>
         <button onClick={onBack} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
           <img src={imgBack} alt="Back" style={{ width: '22px', height: '22px' }} />
         </button>
@@ -57,7 +57,7 @@ export default function FigmaOrdersPage({
       </div>
 
       {/* Orders Heading */}
-      <div style={{ padding: '24px 24px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div style={{ padding: '24px 19px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '24px', color: '#111111' }}>
             Your orders
@@ -77,7 +77,7 @@ export default function FigmaOrdersPage({
       </div>
 
       {/* Active orders Section */}
-      <div style={{ padding: '12px 24px 24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ padding: '12px 19px 24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '20px', color: '#111111' }}>
             Active orders
@@ -219,7 +219,7 @@ export default function FigmaOrdersPage({
       </div>
 
       {/* Past orders Section */}
-      <div style={{ borderTop: '1px solid #E5E7EB', borderBottom: '1px solid #E5E7EB', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ borderTop: '1px solid #E5E7EB', borderBottom: '1px solid #E5E7EB', padding: '24px 19px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '20px', color: '#111111' }}>
             Past orders
@@ -295,7 +295,7 @@ export default function FigmaOrdersPage({
       </div>
 
       {/* Help & Support Footer */}
-      <div style={{ padding: '24px 24px 32px' }}>
+      <div style={{ padding: '24px 19px 32px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', height: '64px', cursor: 'pointer', marginBottom: '8px' }}>
           <img src={imgHelp} alt="Help" style={{ width: '22px', height: '22px' }} />
           <div style={{ flexGrow: 1 }}>

@@ -141,7 +141,7 @@ export default function FigmaLoginPage({
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '850px', paddingBottom: '70px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Navigation Header */}
-      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
+      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 19px' }}>
         <button onClick={onBack} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
           <img src={imgBack} alt="Back" style={{ width: '22px', height: '22px' }} />
         </button>
@@ -154,7 +154,7 @@ export default function FigmaLoginPage({
       </div>
 
       {/* Main Login Body */}
-      <div style={{ padding: '32px 24px 24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ padding: '32px 19px 24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div>
           <h1 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '26px', color: '#111111', marginBottom: '8px' }}>
             {user ? `Hello, ${user.displayName || user.email}` : mode === 'login' ? 'Welcome back to Jersify' : 'Join Jersify today'}

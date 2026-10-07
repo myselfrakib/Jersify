@@ -107,13 +107,13 @@ export default function FigmaCheckoutPage({
   if (orderSuccess) {
     return (
       <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '850px', paddingBottom: '70px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
-        <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 24px' }}>
+        <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 19px' }}>
           <p style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '18px', color: '#111111' }}>
             Order Confirmed! 🎉
           </p>
         </div>
 
-        <div style={{ padding: '32px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ padding: '32px 19px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{ width: '72px', height: '72px', background: '#D1FAE5', color: '#059669', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', fontSize: '36px' }}>
             ✓
           </div>
@@ -157,7 +157,7 @@ export default function FigmaCheckoutPage({
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '950px', paddingBottom: '70px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Header */}
-      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', position: 'sticky', top: 0, background: '#FFFFFF', zIndex: 40 }}>
+      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 19px', position: 'sticky', top: 0, background: '#FFFFFF', zIndex: 40 }}>
         <button onClick={onBack} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
           <img src={imgBack} alt="Back" style={{ width: '22px', height: '22px' }} />
         </button>
@@ -171,7 +171,7 @@ export default function FigmaCheckoutPage({
 
       <form onSubmit={handleProceedToPayment}>
         {/* Shipping Address Section */}
-        <div style={{ padding: '24px 24px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ padding: '24px 19px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <h2 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '20px', color: '#111111' }}>
             1. Delivery Address
           </h2>
@@ -244,7 +244,7 @@ export default function FigmaCheckoutPage({
         </div>
 
         {/* Order Summary Breakdown */}
-        <div style={{ borderTop: '1px solid #E5E7EB', borderBottom: '1px solid #E5E7EB', padding: '20px 24px', background: '#F9FAFB', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ borderTop: '1px solid #E5E7EB', borderBottom: '1px solid #E5E7EB', padding: '20px 19px', background: '#F9FAFB', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <h2 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '18px', color: '#111111' }}>
             2. Order Summary ({items.reduce((a,b) => a + (b.quantity || 1), 0)} items)
           </h2>
@@ -283,7 +283,7 @@ export default function FigmaCheckoutPage({
         </div>
 
         {/* Payment Method Selector */}
-        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ padding: '24px 19px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <h2 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '20px', color: '#111111' }}>
             3. Payment Method
           </h2>

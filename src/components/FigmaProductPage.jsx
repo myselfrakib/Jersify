@@ -230,7 +230,7 @@ export default function FigmaProductPage({
       </div>
 
       {/* Product Information Container */}
-      <div style={{ padding: '24px', paddingTop: '80px' }}>
+      <div style={{ padding: '19px', paddingTop: '80px' }}>
         {/* Gallery Thumbnails Strip */}
         {productImages.length > 1 && (
           <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', marginBottom: '20px', paddingBottom: '4px' }}>
@@ -363,7 +363,7 @@ export default function FigmaProductPage({
                 onClick={() => onSelectProduct && onSelectProduct(rec)}
                 style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '8px' }}
               >
-                <div style={{ width: '166px', height: '210px', background: '#D9D9D9', borderRadius: '2px', overflow: 'hidden' }}>
+                <div style={{ width: '100%', height: '210px', background: '#D9D9D9', borderRadius: '2px', overflow: 'hidden' }}>
                   <ImageWithSpinner src={rec.imgUrl} alt={rec.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <h4 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '13px', color: '#111827' }}>

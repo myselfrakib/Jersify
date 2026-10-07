@@ -207,7 +207,7 @@ export default function FigmaExactView({ onSelectProduct, onSelectTeam, onOpenCa
 
       {/* Club Crest Badges Grid */}
       <div style={{ position: 'absolute', top: '673px', left: '19px', width: '355px', height: '166px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', justifyItems: 'center', alignItems: 'center' }}>
           <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Barcelona')} src={imgEllipse12} alt="Barcelona" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
           <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Real Madrid')} src={imgEllipse16} alt="Real Madrid" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
           <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Man City')} src={imgEllipse17} alt="Man City" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />

@@ -140,7 +140,7 @@ export default function FigmaTeamPage({
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '1200px', paddingBottom: '70px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Navigation Header */}
-      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', position: 'sticky', top: 0, background: '#FFFFFF', zIndex: 40 }}>
+      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 19px', position: 'sticky', top: 0, background: '#FFFFFF', zIndex: 40 }}>
         <button onClick={onBack} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
           <img src={imgBack} alt="Back" style={{ width: '22px', height: '22px' }} />
         </button>
@@ -177,14 +177,14 @@ export default function FigmaTeamPage({
       </div>
 
       {/* Description */}
-      <div style={{ padding: '16px 24px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
+      <div style={{ padding: '16px 19px', background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
         <p style={{ fontFamily: 'Karla', fontSize: '13px', color: '#4B5563', lineHeight: '18px' }}>
           {info.description}
         </p>
       </div>
 
       {/* Category Tabs Filter */}
-      <div style={{ display: 'flex', gap: '8px', padding: '16px 20px', overflowX: 'auto', borderBottom: '1px solid #E5E7EB', scrollbarWidth: 'none' }}>
+      <div style={{ display: 'flex', gap: '8px', padding: '16px 19px', overflowX: 'auto', borderBottom: '1px solid #E5E7EB', scrollbarWidth: 'none' }}>
         {['All', 'Home', 'Away', 'Retro', 'Player Issue'].map(tab => (
           <button
             key={tab}
@@ -209,7 +209,7 @@ export default function FigmaTeamPage({
 
       {/* Featured Kit Spotlight Card */}
       {featuredProduct && activeTab === 'All' && (
-        <div style={{ padding: '20px 24px 10px' }}>
+        <div style={{ padding: '20px 19px 10px' }}>
           <div 
             onClick={() => onSelectProduct(featuredProduct)}
             style={{ background: '#F3F4F6', border: '1px solid #111111', cursor: 'pointer', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
@@ -242,7 +242,7 @@ export default function FigmaTeamPage({
       )}
 
       {/* Team Catalogue Grid */}
-      <div style={{ padding: '20px 24px' }}>
+      <div style={{ padding: '20px 19px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h2 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '20px', color: '#111111' }}>
             {activeTab === 'All' ? 'All Team Kits' : `${activeTab} Kits`}
@@ -304,7 +304,7 @@ export default function FigmaTeamPage({
       </div>
 
       {/* Quality Fan Version Note Banner */}
-      <div style={{ margin: '0 24px 24px', padding: '16px', background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
+      <div style={{ margin: '0 19px 24px', padding: '16px', background: '#F9FAFB', border: '1px solid #E5E7EB' }}>
         <h4 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '14px', color: '#111111', marginBottom: '4px' }}>
           Fan Version Specifications
         </h4>

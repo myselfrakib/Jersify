@@ -29,7 +29,7 @@ export default function FigmaProfilePage({
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '850px', paddingBottom: '60px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Profile Navigation Bar */}
-      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
+      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 19px' }}>
         <button onClick={onNavigateHome} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
           <img src={imgBack} alt="Back" style={{ width: '22px', height: '22px' }} />
         </button>
@@ -42,7 +42,7 @@ export default function FigmaProfilePage({
       </div>
 
       {/* Profile Identity */}
-      <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ padding: '24px 19px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <div>
           <h1 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '24px', color: '#111111' }}>
             Your profile
@@ -87,7 +87,7 @@ export default function FigmaProfilePage({
 
       {/* Account Destinations */}
       <div style={{ borderTop: '1px solid #E5E7EB', borderBottom: '1px solid #E5E7EB' }}>
-        <div style={{ padding: '20px 24px 12px' }}>
+        <div style={{ padding: '20px 19px 12px' }}>
           <h3 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '20px', color: '#111111', marginBottom: '8px' }}>
             Your shopping
           </h3>
@@ -136,7 +136,7 @@ export default function FigmaProfilePage({
       </div>
 
       {/* Help & support */}
-      <div style={{ padding: '12px 24px 4px' }}>
+      <div style={{ padding: '12px 19px 4px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', height: '64px', cursor: 'pointer' }}>
           <img src={imgCircleHelp} alt="Help & support" style={{ width: '22px', height: '22px' }} />
           <div style={{ flexGrow: 1 }}>
@@ -148,7 +148,7 @@ export default function FigmaProfilePage({
       </div>
 
       {/* Session Actions */}
-      <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', textOverflow: 'ellipsis' }}>
+      <div style={{ padding: '24px 19px', display: 'flex', flexDirection: 'column', gap: '16px', textOverflow: 'ellipsis' }}>
         {user ? (
           <button
             onClick={onSignOut}
