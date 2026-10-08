@@ -454,15 +454,37 @@ export default function FigmaCheckoutPage({
             2. Order Summary ({items.reduce((a,b) => a + (b.quantity || 1), 0)} items)
           </h2>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {items.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', fontFamily: 'Karla' }}>
-                <span style={{ color: '#111111', fontWeight: 600 }}>
-                  {item.name} ({item.selectedSize || 'M'}) x{item.quantity || 1}
-                </span>
-                <span style={{ fontWeight: 700, color: '#111111' }}>₹{item.price * (item.quantity || 1)}</span>
-              </div>
-            ))}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {items.map((item, idx) => {
+              let itemImg = item.imgUrl || item.imageUrl || item.img || item.image || item.selectedImage;
+              if (!itemImg && item.images) {
+                if (typeof item.images === 'string') itemImg = item.images;
+                else if (Array.isArray(item.images)) itemImg = item.images[0];
+                else if (typeof item.images === 'object') itemImg = Object.values(item.images)[0];
+              }
+              const finalImg = itemImg || "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de";
+              return (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', fontFamily: 'Karla' }}>
+                  <img 
+                    src={finalImg} 
+                    alt={item.name} 
+                    style={{ width: '48px', height: '60px', objectFit: 'cover', borderRadius: '4px', flexShrink: 0, background: '#F3F4F6' }} 
+                  />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#111111', fontWeight: 700 }}>{item.name}</div>
+                    <div style={{ color: '#6B7280', fontSize: '12px' }}>
+                      Size: {item.selectedSize || 'M'} | Qty: {item.quantity || 1}
+                    </div>
+                    {(item.customName || item.customNumber) && (
+                      <div style={{ fontSize: '11px', color: '#92400E', fontWeight: 600 }}>
+                        PRINT: {item.customName} #{item.customNumber}
+                      </div>
+                    )}
+                  </div>
+                  <span style={{ fontWeight: 700, color: '#111111' }}>₹{item.price * (item.quantity || 1)}</span>
+                </div>
+              );
+            })}
           </div>
 
           <div style={{ height: '1px', background: '#E5E7EB', margin: '4px 0' }} />

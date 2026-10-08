@@ -83,7 +83,12 @@ export default function CartDrawer({
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {cartItems.map((item, idx) => {
-                const itemImg = item.imgUrl || item.imageUrl || item.img || item.image || item.selectedImage || (Array.isArray(item.images) ? item.images[0] : null);
+                let itemImg = item.imgUrl || item.imageUrl || item.img || item.image || item.selectedImage;
+                if (!itemImg && item.images) {
+                  if (typeof item.images === 'string') itemImg = item.images;
+                  else if (Array.isArray(item.images)) itemImg = item.images[0];
+                  else if (typeof item.images === 'object') itemImg = Object.values(item.images)[0];
+                }
                 return (
                   <div key={idx} className="cart-item">
                     <ImageWithSpinner 
