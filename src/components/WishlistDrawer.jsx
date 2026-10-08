@@ -43,12 +43,19 @@ export default function WishlistDrawer({
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {wishlistItems.map((item) => (
-                <div key={item.id} className="cart-item" style={{ cursor: 'pointer' }} onClick={() => { onClose(); onSelectProduct(item); }}>
-                  <ImageWithSpinner src={item.imgUrl || item.images?.[0]} alt={item.name} className="cart-item-img" />
+              {wishlistItems.map((item) => {
+                const itemImg = item.imgUrl || item.imageUrl || item.img || item.image || item.selectedImage || (Array.isArray(item.images) ? item.images[0] : null);
+                return (
+                  <div key={item.id} className="cart-item" style={{ cursor: 'pointer' }} onClick={() => { onClose(); onSelectProduct(item); }}>
+                    <ImageWithSpinner 
+                      src={itemImg} 
+                      alt={item.name} 
+                      className="cart-item-img" 
+                      style={{ width: '76px', height: '95px', flexShrink: 0, borderRadius: 'var(--radius-sm, 6px)' }}
+                    />
 
-                  
-                  <div className="cart-item-info">
+                    
+                    <div className="cart-item-info">
                     <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-accent)' }}>{item.team}</span>
                     <h4 className="cart-item-name">{item.name}</h4>
                     <p className="cart-item-meta">₹{item.price}</p>
@@ -71,8 +78,9 @@ export default function WishlistDrawer({
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
+          </div>
           )}
         </div>
       </div>

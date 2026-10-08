@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Trash2, ArrowRight, Tag, ShoppingBag } from 'lucide-react';
+import ImageWithSpinner from './ImageWithSpinner';
 
 export default function CartDrawer({ 
   isOpen, 
@@ -81,46 +82,54 @@ export default function CartDrawer({
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {cartItems.map((item, idx) => (
-                <div key={idx} className="cart-item">
-                  <img src={item.imgUrl || item.images?.[0]} alt={item.name} className="cart-item-img" />
-                  
-                  <div className="cart-item-info">
-                    <h4 className="cart-item-name">{item.name}</h4>
-                    <p className="cart-item-meta">
-                      Size: <strong>{item.selectedSize || 'M'}</strong> | ₹{item.price}
-                    </p>
+              {cartItems.map((item, idx) => {
+                const itemImg = item.imgUrl || item.imageUrl || item.img || item.image || item.selectedImage || (Array.isArray(item.images) ? item.images[0] : null);
+                return (
+                  <div key={idx} className="cart-item">
+                    <ImageWithSpinner 
+                      src={itemImg} 
+                      alt={item.name} 
+                      className="cart-item-img" 
+                      style={{ width: '76px', height: '95px', flexShrink: 0, borderRadius: 'var(--radius-sm, 6px)' }}
+                    />
+                    
+                    <div className="cart-item-info">
+                      <h4 className="cart-item-name">{item.name}</h4>
+                      <p className="cart-item-meta">
+                        Size: <strong>{item.selectedSize || 'M'}</strong> | ₹{item.price}
+                      </p>
 
-                    {(item.customName || item.customNumber) && (
-                      <span style={{ fontSize: '0.72rem', background: '#FEF3C7', color: '#92400E', padding: '2px 6px', borderRadius: '4px', width: 'fit-content', marginBottom: '0.4rem', fontWeight: 700 }}>
-                        PRINT: {item.customName} #{item.customNumber}
-                      </span>
-                    )}
-
-                    <div className="cart-qty-row">
-                      <div className="qty-control">
-                        <button className="qty-btn" onClick={() => onUpdateQty(idx, item.quantity - 1)}>-</button>
-                        <span className="qty-val">{item.quantity}</span>
-                        <button className="qty-btn" onClick={() => onUpdateQty(idx, item.quantity + 1)}>+</button>
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <span style={{ fontFamily: 'var(--font-inter)', fontWeight: 800, fontSize: '0.95rem' }}>
-                          ₹{item.price * item.quantity}
+                      {(item.customName || item.customNumber) && (
+                        <span style={{ fontSize: '0.72rem', background: '#FEF3C7', color: '#92400E', padding: '2px 6px', borderRadius: '4px', width: 'fit-content', marginBottom: '0.4rem', fontWeight: 700 }}>
+                          PRINT: {item.customName} #{item.customNumber}
                         </span>
-                        <button 
-                          onClick={() => onRemoveItem(idx)}
-                          style={{ color: '#9CA3AF', transition: 'color 0.2s ease' }}
-                          onMouseOver={(e) => e.target.style.color = '#EF4444'}
-                          onMouseOut={(e) => e.target.style.color = '#9CA3AF'}
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                      )}
+
+                      <div className="cart-qty-row">
+                        <div className="qty-control">
+                          <button className="qty-btn" onClick={() => onUpdateQty(idx, item.quantity - 1)}>-</button>
+                          <span className="qty-val">{item.quantity}</span>
+                          <button className="qty-btn" onClick={() => onUpdateQty(idx, item.quantity + 1)}>+</button>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <span style={{ fontFamily: 'var(--font-inter)', fontWeight: 800, fontSize: '0.95rem' }}>
+                            ₹{item.price * item.quantity}
+                          </span>
+                          <button 
+                            onClick={() => onRemoveItem(idx)}
+                            style={{ color: '#9CA3AF', transition: 'color 0.2s ease' }}
+                            onMouseOver={(e) => e.target.style.color = '#EF4444'}
+                            onMouseOut={(e) => e.target.style.color = '#9CA3AF'}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
