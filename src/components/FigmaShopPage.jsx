@@ -39,6 +39,9 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
     }
   });
 
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
   useEffect(() => {
     const unsubProds = onValue(ref(rtdb, 'products'), (snap) => {
       if (snap.exists()) {
@@ -68,6 +71,17 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
     };
   }, []);
 
+  const filteredJerseys = shopJerseys.filter((item) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase().trim();
+    return (
+      (item.name && item.name.toLowerCase().includes(q)) ||
+      (item.type && item.type.toLowerCase().includes(q)) ||
+      (item.category && item.category.toLowerCase().includes(q)) ||
+      (item.team && item.team.toLowerCase().includes(q))
+    );
+  });
+
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '1604px', paddingBottom: '60px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
       {/* Store Navigation Header */}
@@ -77,17 +91,84 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-          <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <button 
+            onClick={() => setIsSearchOpen(prev => !prev)} 
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            title="Search"
+          >
             <img src={imgSearchIcon} alt="Search" style={{ width: '20px', height: '20px' }} />
           </button>
-          <button onClick={onOpenAuth} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-            <img src={imgAccountButton} alt="Account" style={{ width: '20px', height: '20px' }} />
-          </button>
-          <button onClick={onOpenCart} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <button 
+            onClick={onOpenCart} 
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+            title="Shopping Bag"
+          >
             <img src={imgShoppingBagButton} alt="Bag" style={{ width: '20px', height: '20px' }} />
+            {cartCount > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '-5px',
+                right: '-8px',
+                background: '#EF4444',
+                color: '#FFFFFF',
+                fontSize: '9px',
+                fontWeight: 800,
+                borderRadius: '9999px',
+                minWidth: '16px',
+                height: '16px',
+                padding: '0 3px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1.5px solid #FFFFFF'
+              }}>
+                {cartCount}
+              </span>
+            )}
           </button>
         </div>
       </div>
+
+      {/* Expandable Search Input Bar */}
+      {isSearchOpen && (
+        <div style={{ borderBottom: '1px solid #E5E7EB', padding: '10px 19px', background: '#F9FAFB', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+            <img src={imgSearchIcon} alt="Search" style={{ position: 'absolute', left: '12px', width: '16px', height: '16px', opacity: 0.4 }} />
+            <input
+              type="text"
+              placeholder="Search jerseys, teams..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              autoFocus
+              style={{
+                width: '100%',
+                padding: '8px 32px 8px 36px',
+                fontSize: '13px',
+                fontFamily: 'Karla, sans-serif',
+                borderRadius: '9999px',
+                border: '1px solid #D1D5DB',
+                outline: 'none',
+                background: '#FFFFFF',
+                color: '#111111'
+              }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{ position: 'absolute', right: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: '#9CA3AF', padding: '2px 4px' }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
+            style={{ background: 'none', border: 'none', fontSize: '13px', fontFamily: 'Karla, sans-serif', fontWeight: 600, color: '#4B5563', cursor: 'pointer' }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
 
       {/* Shop Title Heading */}
       <div style={{ padding: '20px 19px 18px', borderBottom: '1px solid #E5E7EB' }}>
@@ -98,37 +179,52 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
 
       {/* Product Listing Grid */}
       <div style={{ padding: '19px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-          {shopJerseys.map((item) => (
-            <div 
-              key={item.id}
-              onClick={() => onSelectProduct(item)}
-              style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '8px' }}
+        {filteredJerseys.length > 0 ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+            {filteredJerseys.map((item) => (
+              <div 
+                key={item.id}
+                onClick={() => onSelectProduct(item)}
+                style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '8px' }}
+              >
+                <div style={{ width: '100%', aspectRatio: '3/4', background: '#F3F2EF', borderRadius: '2px', overflow: 'hidden' }}>
+                  <ImageWithSpinner src={item.imgUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <div>
+                  <h4 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '13px', color: '#111111', lineHeight: '17px' }}>
+                    {item.name}
+                  </h4>
+                  <p style={{ fontFamily: 'Karla', fontSize: '11px', color: '#737373', margin: '2px 0' }}>
+                    {item.type}
+                  </p>
+                  <p style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '14px', color: '#111111' }}>
+                    ₹{item.price}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#6B7280' }}>
+            <p style={{ fontFamily: 'Karla', fontSize: '15px', fontWeight: 600, color: '#111111', marginBottom: '8px' }}>
+              No jerseys found
+            </p>
+            <p style={{ fontFamily: 'Karla', fontSize: '13px', marginBottom: '16px' }}>
+              No products matched "{searchQuery}"
+            </p>
+            <button
+              onClick={() => setSearchQuery('')}
+              style={{ padding: '8px 16px', background: '#111111', color: '#FFFFFF', border: 'none', borderRadius: '20px', fontSize: '12px', fontFamily: 'Karla', cursor: 'pointer' }}
             >
-              <div style={{ width: '100%', aspectRatio: '3/4', background: '#F3F2EF', borderRadius: '2px', overflow: 'hidden' }}>
-                <ImageWithSpinner src={item.imgUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <div>
-                <h4 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '13px', color: '#111111', lineHeight: '17px' }}>
-                  {item.name}
-                </h4>
-                <p style={{ fontFamily: 'Karla', fontSize: '11px', color: '#737373', margin: '2px 0' }}>
-                  {item.type}
-                </p>
-                <p style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '14px', color: '#111111' }}>
-                  ₹{item.price}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-
+              Clear Search
+            </button>
+          </div>
+        )}
 
         {/* Catalog Completion Footer Note */}
         <div style={{ textAlign: 'center', marginTop: '40px', paddingBottom: '28px' }}>
           <p style={{ fontFamily: 'Karla', fontSize: '12px', color: '#737373', marginBottom: '20px' }}>
-            You’ve seen all 10 jerseys
+            You’ve seen all {filteredJerseys.length} jerseys
           </p>
           <div style={{ borderTop: '1px solid #E5E7EB', paddingTop: '16px', fontSize: '12px', color: '#111111' }}>
             Size guide   ·   Shipping & returns   ·   Help
