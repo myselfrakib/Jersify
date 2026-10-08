@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { rtdb, ref, get, set } from '../firebase';
 import { 
   imgBack, 
   imgShoppingBag, 
@@ -7,43 +8,38 @@ import {
   imgMapPin 
 } from '../assets/svgIcons';
 
-const DEFAULT_ADDRESSES = [
-  {
-    id: 'addr_1',
-    name: 'Alex Morgan',
-    isDefault: true,
-    tag: 'Home',
-    line1: '42 Palm Crest Heights, Apt 4B',
-    line2: 'Bandra West, Hill Road',
-    city: 'Mumbai',
-    state: 'Maharashtra',
-    pincode: '400050',
-    phone: '+91 98765 43210'
-  },
-  {
-    id: 'addr_2',
-    name: 'Alex Morgan (Work)',
-    isDefault: false,
-    tag: 'Office',
-    line1: 'Tech Park One, Tower B, 6th Floor',
-    line2: 'Bandra Kurla Complex (BKC)',
-    city: 'Mumbai',
-    state: 'Maharashtra',
-    pincode: '400051',
-    phone: '+91 98765 43210'
-  }
-];
+const DEFAULT_ADDRESSES = [];
 
 export default function FigmaSavedAddressesPage({
+  user,
   onBack,
   onOpenCart,
   onNavigateHome,
   onNavigateShop
 }) {
   const [addresses, setAddresses] = useState(() => {
-    const saved = localStorage.getItem('jersify_saved_addresses');
-    return saved ? JSON.parse(saved) : DEFAULT_ADDRESSES;
+    try {
+      const saved = localStorage.getItem('jersify_saved_addresses');
+      return saved ? JSON.parse(saved) : DEFAULT_ADDRESSES;
+    } catch (e) {
+      return DEFAULT_ADDRESSES;
+    }
   });
+
+  useEffect(() => {
+    if (user?.uid) {
+      get(ref(rtdb, `users/${user.uid}/addresses`)).then(snap => {
+        if (snap.exists()) {
+          const val = snap.val();
+          const list = Array.isArray(val) ? val : Object.values(val);
+          if (list.length > 0) {
+            setAddresses(list);
+            localStorage.setItem('jersify_saved_addresses', JSON.stringify(list));
+          }
+        }
+      }).catch(() => {});
+    }
+  }, [user?.uid]);
 
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -60,9 +56,19 @@ export default function FigmaSavedAddressesPage({
     phone: ''
   });
 
-  const saveToLocalStorage = (updated) => {
+  const saveToLocalStorage = async (updated) => {
     setAddresses(updated);
-    localStorage.setItem('jersify_saved_addresses', JSON.stringify(updated));
+    try {
+      localStorage.setItem('jersify_saved_addresses', JSON.stringify(updated));
+    } catch (e) {}
+
+    if (user?.uid) {
+      try {
+        const addrsMap = {};
+        updated.forEach(a => { addrsMap[a.id] = a; });
+        await set(ref(rtdb, `users/${user.uid}/addresses`), addrsMap);
+      } catch (e) {}
+    }
   };
 
   const handleSetDefault = (id) => {

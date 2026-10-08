@@ -351,6 +351,7 @@ export default function App() {
 
       {currentPage === 'addresses' && (
         <FigmaSavedAddressesPage
+          user={user}
           onBack={() => navigateTo('profile')}
           onOpenCart={() => setIsCartOpen(true)}
           onNavigateHome={() => navigateTo('home')}

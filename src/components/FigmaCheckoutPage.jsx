@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { rtdb, ref, set } from '../firebase';
+import { rtdb, ref, set, get } from '../firebase';
 
 import { 
   imgBack, 
@@ -34,6 +34,16 @@ export default function FigmaCheckoutPage({
   const partialCodDueDelivery = remainingProductPrice;
   const partialCodTotal = partialCodPayNow + partialCodDueDelivery;
 
+  const [savedAddresses, setSavedAddresses] = useState(() => {
+    try {
+      const local = localStorage.getItem('jersify_saved_addresses');
+      return local ? JSON.parse(local) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [selectedAddrId, setSelectedAddrId] = useState(null);
+
   const [formData, setFormData] = useState({
     fullName: user?.displayName || '',
     phone: '',
@@ -44,6 +54,74 @@ export default function FigmaCheckoutPage({
     state: '',
     paymentMethod: 'upi' // 'upi' | 'card' | 'partial_cod'
   });
+
+  // Sync saved addresses from RTDB if logged in
+  useEffect(() => {
+    if (user?.uid) {
+      get(ref(rtdb, `users/${user.uid}/addresses`)).then(snap => {
+        if (snap.exists()) {
+          const val = snap.val();
+          const list = Array.isArray(val) ? val : Object.values(val);
+          if (list.length > 0) {
+            setSavedAddresses(list);
+            localStorage.setItem('jersify_saved_addresses', JSON.stringify(list));
+          }
+        }
+      }).catch(() => {});
+    }
+  }, [user?.uid]);
+
+  // Pre-fill default saved address if formData is empty
+  useEffect(() => {
+    if (savedAddresses.length > 0) {
+      const defaultAddr = savedAddresses.find(a => a.isDefault) || savedAddresses[0];
+      if (defaultAddr && !formData.line1) {
+        setSelectedAddrId(defaultAddr.id);
+        setFormData(prev => ({
+          ...prev,
+          fullName: defaultAddr.name || prev.fullName,
+          phone: defaultAddr.phone || prev.phone,
+          line1: defaultAddr.line1 || '',
+          line2: defaultAddr.line2 || '',
+          city: defaultAddr.city || '',
+          state: defaultAddr.state || '',
+          pincode: defaultAddr.pincode || ''
+        }));
+      }
+    }
+  }, [savedAddresses]);
+
+  const autoSaveAddress = async (phoneFormatted) => {
+    const newAddr = {
+      id: selectedAddrId || ('addr_' + Date.now()),
+      name: formData.fullName,
+      tag: 'Home',
+      line1: formData.line1,
+      line2: formData.line2 || '',
+      city: formData.city || '',
+      state: formData.state || '',
+      pincode: formData.pincode || '',
+      phone: phoneFormatted,
+      isDefault: true
+    };
+
+    let updated = savedAddresses.filter(a => a.id !== newAddr.id);
+    updated = updated.map(a => ({ ...a, isDefault: false }));
+    updated.unshift(newAddr);
+
+    setSavedAddresses(updated);
+    try {
+      localStorage.setItem('jersify_saved_addresses', JSON.stringify(updated));
+    } catch (e) {}
+
+    if (user?.uid) {
+      try {
+        const addrsMap = {};
+        updated.forEach(a => { addrsMap[a.id] = a; });
+        await set(ref(rtdb, `users/${user.uid}/addresses`), addrsMap);
+      } catch (e) {}
+    }
+  };
 
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [showPaymentGateway, setShowPaymentGateway] = useState(false);
@@ -68,6 +146,9 @@ export default function FigmaCheckoutPage({
     const rawPhone = formData.phone.trim();
     const cleanDigits = rawPhone.replace(/^\+?91\s*/, '').replace(/[^0-9]/g, '');
     const savedPhone = cleanDigits.length > 0 ? `+91 ${cleanDigits}` : rawPhone;
+
+    // Auto-save delivery address for future orders & saved addresses list
+    await autoSaveAddress(savedPhone);
 
     const newOrder = {
       orderId,
@@ -225,6 +306,63 @@ export default function FigmaCheckoutPage({
           <h2 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '20px', color: '#111111' }}>
             1. Delivery Address
           </h2>
+
+          {savedAddresses.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '8px' }}>
+              <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#6B7280', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                SELECT SAVED ADDRESS FOR QUICK CHECKOUT
+              </label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {savedAddresses.map(addr => (
+                  <label
+                    key={addr.id}
+                    onClick={() => {
+                      setSelectedAddrId(addr.id);
+                      setFormData(prev => ({
+                        ...prev,
+                        fullName: addr.name || prev.fullName,
+                        phone: addr.phone || prev.phone,
+                        line1: addr.line1 || '',
+                        line2: addr.line2 || '',
+                        city: addr.city || '',
+                        state: addr.state || '',
+                        pincode: addr.pincode || ''
+                      }));
+                    }}
+                    style={{
+                      border: selectedAddrId === addr.id ? '1.5px solid #111111' : '1px solid #E5E7EB',
+                      borderRadius: '6px',
+                      padding: '12px',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '10px',
+                      cursor: 'pointer',
+                      background: selectedAddrId === addr.id ? '#F9FAFB' : '#FFFFFF',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="savedAddressChoice"
+                      checked={selectedAddrId === addr.id}
+                      onChange={() => {}}
+                      style={{ marginTop: '3px' }}
+                    />
+                    <div style={{ flex: 1, fontSize: '13px', fontFamily: 'Karla' }}>
+                      <div style={{ fontWeight: 700, color: '#111111', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span>{addr.name}</span>
+                        {addr.tag && <span style={{ fontSize: '10px', padding: '1px 6px', background: '#E5E7EB', borderRadius: '4px', fontWeight: 600 }}>{addr.tag}</span>}
+                      </div>
+                      <p style={{ color: '#4B5563', margin: '2px 0 0', lineHeight: '18px' }}>
+                        {addr.line1}{addr.line2 ? `, ${addr.line2}` : ''}, {addr.city}, {addr.state} - {addr.pincode}
+                      </p>
+                      <p style={{ color: '#6B7280', fontSize: '12px', margin: '2px 0 0' }}>Phone: {addr.phone}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label style={{ fontFamily: 'Karla', fontSize: '12px', color: '#111111', fontWeight: 700 }}>FULL NAME *</label>
