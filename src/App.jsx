@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import WholePageSpinner from './components/WholePageSpinner';
 import FigmaExactView from './components/FigmaExactView';
 import FigmaShopPage from './components/FigmaShopPage';
 import FigmaProductPage from './components/FigmaProductPage';
@@ -46,6 +47,7 @@ export default function App() {
   const [checkoutData, setCheckoutData] = useState(null);
 
   const [toasts, setToasts] = useState([]);
+  const pageContentRef = useRef(null);
 
   // Check for payment redirect callback return parameters from jersifybooking.html
   useEffect(() => {
@@ -282,7 +284,15 @@ export default function App() {
         ))}
       </div>
 
-      {/* FIGMA MOBILE PAGES ROUTER */}
+      {/* Whole Page Image Loading Spinner */}
+      <WholePageSpinner
+        triggerKey={`${currentPage}_${selectedProduct?.id || ''}_${selectedTeam || ''}`}
+        containerRef={pageContentRef}
+      />
+
+      {/* Main Page Container */}
+      <div id="jersify-page-container" ref={pageContentRef} style={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* FIGMA MOBILE PAGES ROUTER */}
       {currentPage === 'home' && (
         <FigmaExactView
           cartCount={cartCount}
@@ -433,6 +443,7 @@ export default function App() {
           onNavigateShop={() => navigateTo('shop')}
         />
       )}
+      </div>
 
       {/* Modals & Drawers */}
       <CartDrawer
