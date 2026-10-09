@@ -147,13 +147,52 @@ const DEFAULT_TEAM_CONFIG = {
   }
 };
 
+const isRetroProduct = (item) => {
+  if (!item) return false;
+  const tag = (item.categoryTag || '').toLowerCase();
+  const cat = (item.category || '').toLowerCase();
+  const name = (item.name || '').toLowerCase();
+  const type = (item.type || '').toLowerCase();
+  const badge = (item.badge || '').toLowerCase();
+  return (
+    tag === 'retro' ||
+    cat === 'retro' ||
+    name.includes('retro') ||
+    type.includes('retro') ||
+    badge.includes('retro')
+  );
+};
+
+const isPlayerProduct = (item) => {
+  if (!item) return false;
+  if (item.playerVersion === true) return true;
+  const ver = (item.version || '').toLowerCase();
+  const type = (item.type || '').toLowerCase();
+  const name = (item.name || '').toLowerCase();
+  return (
+    ver === 'player' ||
+    type.includes('player') ||
+    type.includes('player issue') ||
+    type.includes('player version') ||
+    name.includes('player issue') ||
+    name.includes('player version') ||
+    name.includes('player')
+  );
+};
+
+const isFanProduct = (item) => {
+  if (!item) return false;
+  if (isRetroProduct(item) || isPlayerProduct(item)) return false;
+  return true;
+};
+
 export default function AdminDashboard({
   adminUser,
   adminData,
   onSignOut,
   onNavigateHome
 }) {
-  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'clubs' | 'products' | 'categories' | 'orders' | 'users'
+  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'shopping-page' | 'clubs' | 'products' | 'categories' | 'orders' | 'shopping-list' | 'users'
 
   // Categories State
   const [categoriesList, setCategoriesList] = useState(() => {
@@ -180,6 +219,18 @@ export default function AdminDashboard({
   const [homepageOrder, setHomepageOrder] = useState([]);
   const [imagesSavedToast, setImagesSavedToast] = useState(false);
   const [uploadingState, setUploadingState] = useState({});
+
+  // User Shopping Page Sequence State (Fan, Player, Retro)
+  const [shoppingPageOrder, setShoppingPageOrder] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_shopping_page_order');
+      return cached ? JSON.parse(cached) : { fan: [], player: [], retro: [] };
+    } catch (e) {
+      return { fan: [], player: [], retro: [] };
+    }
+  });
+  const [shoppingCategoryTab, setShoppingCategoryTab] = useState('fan'); // 'fan' | 'player' | 'retro'
+  const [shoppingOrderToast, setShoppingOrderToast] = useState(false);
 
 
   // Clubs & Nations Banners State
@@ -376,6 +427,20 @@ export default function AdminDashboard({
       }
     }, () => { });
 
+    // 9. Realtime listener for shopping page product sequence (Fan, Player, Retro)
+    const unsubShoppingOrder = onValue(ref(rtdb, 'siteConfig/shoppingPageOrder'), (snap) => {
+      if (snap.exists() && snap.val()) {
+        const val = snap.val();
+        const formatted = {
+          fan: Array.isArray(val.fan) ? val.fan : [],
+          player: Array.isArray(val.player) ? val.player : [],
+          retro: Array.isArray(val.retro) ? val.retro : []
+        };
+        setShoppingPageOrder(formatted);
+        sessionStorage.setItem('jersify_shopping_page_order', JSON.stringify(formatted));
+      }
+    }, () => { });
+
     loadUsersAndAdmins();
 
     return () => {
@@ -388,6 +453,7 @@ export default function AdminDashboard({
       unsubUsers();
       unsubOrder();
       unsubCategories();
+      unsubShoppingOrder();
     };
   }, []);
 
@@ -424,6 +490,83 @@ export default function AdminDashboard({
     } catch (err) {
       alert('Failed to save homepage product order: ' + err.message);
     }
+  };
+
+  // Category Filtering for Products
+  const fanProducts = useMemo(() => {
+    return productsList.filter(isFanProduct);
+  }, [productsList]);
+
+  const playerProducts = useMemo(() => {
+    return productsList.filter(isPlayerProduct);
+  }, [productsList]);
+
+  const retroProducts = useMemo(() => {
+    return productsList.filter(isRetroProduct);
+  }, [productsList]);
+
+  const currentCategoryProducts = useMemo(() => {
+    if (shoppingCategoryTab === 'player') return playerProducts;
+    if (shoppingCategoryTab === 'retro') return retroProducts;
+    return fanProducts;
+  }, [shoppingCategoryTab, fanProducts, playerProducts, retroProducts]);
+
+  const activeCategorySequence = useMemo(() => {
+    const customIds = shoppingPageOrder[shoppingCategoryTab] || [];
+    const validCustomIds = customIds.filter(id =>
+      currentCategoryProducts.some(p => String(p.id) === String(id))
+    );
+    const remainingIds = currentCategoryProducts
+      .filter(p => !validCustomIds.includes(String(p.id)))
+      .map(p => String(p.id));
+    return [...validCustomIds, ...remainingIds];
+  }, [shoppingPageOrder, shoppingCategoryTab, currentCategoryProducts]);
+
+  const handleSaveShoppingPageOrder = async (categoryKey, newCategoryOrder) => {
+    try {
+      const updated = {
+        ...shoppingPageOrder,
+        [categoryKey]: newCategoryOrder
+      };
+      setShoppingPageOrder(updated);
+      await set(ref(rtdb, 'siteConfig/shoppingPageOrder'), updated);
+      sessionStorage.setItem('jersify_shopping_page_order', JSON.stringify(updated));
+      setShoppingOrderToast(true);
+      setTimeout(() => setShoppingOrderToast(false), 3000);
+    } catch (err) {
+      alert('Failed to save shopping page sequence: ' + err.message);
+    }
+  };
+
+  const handleMoveCategoryProduct = (fromIndex, toIndex) => {
+    if (fromIndex < 0 || toIndex < 0 || fromIndex >= activeCategorySequence.length || toIndex >= activeCategorySequence.length) return;
+    const updated = [...activeCategorySequence];
+    const item = updated.splice(fromIndex, 1)[0];
+    updated.splice(toIndex, 0, item);
+    handleSaveShoppingPageOrder(shoppingCategoryTab, updated);
+  };
+
+  const handleSwapCategoryProduct = (index, targetProdId) => {
+    const targetIndex = activeCategorySequence.findIndex(id => String(id) === String(targetProdId));
+    if (targetIndex === -1 || targetIndex === index) return;
+    const updated = [...activeCategorySequence];
+    const temp = updated[index];
+    updated[index] = updated[targetIndex];
+    updated[targetIndex] = temp;
+    handleSaveShoppingPageOrder(shoppingCategoryTab, updated);
+  };
+
+  const handleQuickSortCategory = (sortType) => {
+    const list = [...currentCategoryProducts];
+    if (sortType === 'price-low') {
+      list.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+    } else if (sortType === 'price-high') {
+      list.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+    } else if (sortType === 'name-asc') {
+      list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    }
+    const newIds = list.map(p => String(p.id));
+    handleSaveShoppingPageOrder(shoppingCategoryTab, newIds);
   };
 
 
@@ -1205,13 +1348,19 @@ export default function AdminDashboard({
         </div>
       </div>
 
-      {/* Navigation Tabs (6 Separated Tabs) */}
+      {/* Navigation Tabs */}
       <div style={{ display: 'flex', background: '#F3F4F6', borderBottom: '1px solid #E5E7EB', overflowX: 'auto' }}>
         <button
           onClick={() => setActiveTab('images')}
           style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'images' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'images' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
         >
           🖼️ Index Page Images ({Object.keys(indexImages).length})
+        </button>
+        <button
+          onClick={() => setActiveTab('shopping-page')}
+          style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'shopping-page' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'shopping-page' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+        >
+          🛍️ User Shopping page
         </button>
         <button
           onClick={() => setActiveTab('clubs')}
@@ -1437,8 +1586,230 @@ export default function AdminDashboard({
         </div>
       )}
 
+      {/* TAB: USER SHOPPING PAGE SEQUENCE CONTROLLER */}
+      {activeTab === 'shopping-page' && (
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111111' }}>
+                🛍️ User Shopping Page Product Sequence
+              </h2>
+              <p style={{ fontSize: '13px', color: '#6B7280' }}>
+                Customize and set the exact sequence of products for Fan, Player, and Retro categories shown on the customer Shop page.
+              </p>
+            </div>
+            <button
+              onClick={() => handleSaveShoppingPageOrder(shoppingCategoryTab, activeCategorySequence)}
+              style={{ background: '#000000', color: '#FFFFFF', padding: '10px 20px', border: 'none', fontWeight: 700, fontSize: '14px', cursor: 'pointer', borderRadius: '2px' }}
+            >
+              💾 Save {shoppingCategoryTab.toUpperCase()} Sequence
+            </button>
+          </div>
 
-      {/* TAB 2: CLUBS & NATIONS PAGE IMAGE CONTROLLER */}
+          {shoppingOrderToast && (
+            <div style={{ background: '#D1FAE5', color: '#065F46', padding: '12px', fontWeight: 700, fontSize: '14px', borderRadius: '4px' }}>
+              ✓ User Shopping page sequence for {shoppingCategoryTab.toUpperCase()} saved to Realtime Database successfully!
+            </div>
+          )}
+
+          {/* Category Sub-Tabs: Fan | Player | Retro */}
+          <div style={{ display: 'flex', gap: '10px', borderBottom: '2px solid #E5E7EB', paddingBottom: '12px', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setShoppingCategoryTab('fan')}
+              style={{
+                padding: '10px 22px',
+                border: 'none',
+                borderRadius: '4px',
+                fontWeight: 700,
+                fontSize: '14px',
+                cursor: 'pointer',
+                background: shoppingCategoryTab === 'fan' ? '#111111' : '#F3F4F6',
+                color: shoppingCategoryTab === 'fan' ? '#FFFFFF' : '#374151',
+                boxShadow: shoppingCategoryTab === 'fan' ? '0 2px 6px rgba(0,0,0,0.2)' : 'none'
+              }}
+            >
+              👕 Fan Category ({fanProducts.length})
+            </button>
+            <button
+              onClick={() => setShoppingCategoryTab('player')}
+              style={{
+                padding: '10px 22px',
+                border: 'none',
+                borderRadius: '4px',
+                fontWeight: 700,
+                fontSize: '14px',
+                cursor: 'pointer',
+                background: shoppingCategoryTab === 'player' ? '#18181B' : '#F3F4F6',
+                color: shoppingCategoryTab === 'player' ? '#D4AF37' : '#374151',
+                boxShadow: shoppingCategoryTab === 'player' ? '0 2px 6px rgba(0,0,0,0.2)' : 'none'
+              }}
+            >
+              👑 Player Category (Authentic) ({playerProducts.length})
+            </button>
+            <button
+              onClick={() => setShoppingCategoryTab('retro')}
+              style={{
+                padding: '10px 22px',
+                border: 'none',
+                borderRadius: '4px',
+                fontWeight: 700,
+                fontSize: '14px',
+                cursor: 'pointer',
+                background: shoppingCategoryTab === 'retro' ? '#111111' : '#F3F4F6',
+                color: shoppingCategoryTab === 'retro' ? '#FFFFFF' : '#374151',
+                boxShadow: shoppingCategoryTab === 'retro' ? '0 2px 6px rgba(0,0,0,0.2)' : 'none'
+              }}
+            >
+              ⏳ Retro Category (Classic) ({retroProducts.length})
+            </button>
+          </div>
+
+          {/* Quick Actions & Statistics Bar */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#F9FAFB', padding: '12px 16px', border: '1px solid #E5E7EB', borderRadius: '4px', flexWrap: 'wrap', gap: '10px' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#374151' }}>
+              Showing <strong>{activeCategorySequence.length}</strong> items in <strong>{shoppingCategoryTab.toUpperCase()}</strong> sequence
+            </span>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => handleQuickSortCategory('price-low')}
+                style={{ background: '#FFFFFF', border: '1px solid #D1D5DB', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', borderRadius: '4px' }}
+              >
+                Price: Low to High
+              </button>
+              <button
+                onClick={() => handleQuickSortCategory('price-high')}
+                style={{ background: '#FFFFFF', border: '1px solid #D1D5DB', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', borderRadius: '4px' }}
+              >
+                Price: High to Low
+              </button>
+              <button
+                onClick={() => handleQuickSortCategory('name-asc')}
+                style={{ background: '#FFFFFF', border: '1px solid #D1D5DB', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', borderRadius: '4px' }}
+              >
+                Name: A–Z
+              </button>
+              <button
+                onClick={() => handleQuickSortCategory('reset')}
+                style={{ background: '#F3F4F6', border: '1px solid #D1D5DB', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', borderRadius: '4px', color: '#4B5563' }}
+              >
+                Reset to Catalog Order
+              </button>
+            </div>
+          </div>
+
+          {/* Product Sequence List */}
+          {activeCategorySequence.length === 0 ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: '#6B7280', background: '#F9FAFB', borderRadius: '4px', border: '1px dashed #D1D5DB' }}>
+              No products found in the {shoppingCategoryTab.toUpperCase()} category. Add products in the "Products" tab with appropriate tags.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', background: '#F9FAFB', padding: '16px', border: '1px solid #E5E7EB', borderRadius: '4px' }}>
+              {activeCategorySequence.map((prodId, idx) => {
+                const prod = currentCategoryProducts.find(p => String(p.id) === String(prodId));
+                if (!prod) return null;
+
+                return (
+                  <div
+                    key={prod.id || idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '14px',
+                      background: '#FFFFFF',
+                      padding: '10px 14px',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '4px',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
+                    }}
+                  >
+                    <span style={{ fontWeight: 800, fontSize: '14px', color: '#111111', minWidth: '36px', textAlign: 'center', background: '#F3F4F6', padding: '4px 8px', borderRadius: '4px' }}>
+                      #{idx + 1}
+                    </span>
+
+                    <div style={{ width: '46px', height: '46px', background: '#F3F4F6', borderRadius: '4px', overflow: 'hidden', flexShrink: 0, border: '1px solid #E5E7EB' }}>
+                      <ImageWithSpinner
+                        src={prod.imgUrl}
+                        alt={prod.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                    </div>
+
+                    <div style={{ flex: 1, minWidth: '160px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <h4 style={{ fontWeight: 700, fontSize: '14px', color: '#111111', margin: 0 }}>
+                          {prod.name}
+                        </h4>
+                        {prod.badge && (
+                          <span style={{ fontSize: '9px', fontWeight: 700, background: '#FEF3C7', color: '#92400E', padding: '1px 6px', borderRadius: '2px', textTransform: 'uppercase' }}>
+                            {prod.badge}
+                          </span>
+                        )}
+                      </div>
+                      <p style={{ fontSize: '12px', color: '#6B7280', margin: '2px 0 0 0' }}>
+                        ₹{prod.price} · {prod.team || 'General'} {prod.categoryTag ? `· ${prod.categoryTag}` : ''}
+                      </p>
+                    </div>
+
+                    {/* Swap Selector */}
+                    <div style={{ width: '220px' }}>
+                      <select
+                        value={prod.id}
+                        onChange={(e) => handleSwapCategoryProduct(idx, e.target.value)}
+                        style={{ width: '100%', height: '36px', padding: '0 8px', border: '1px solid #D1D5DB', borderRadius: '4px', fontSize: '13px', fontWeight: 600, color: '#111111', background: '#FFFFFF' }}
+                        title="Swap position with another product"
+                      >
+                        {currentCategoryProducts.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            Swap with: {p.name.length > 22 ? p.name.substring(0, 22) + '...' : p.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Ordering Action Buttons */}
+                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                      <button
+                        disabled={idx === 0}
+                        onClick={() => handleMoveCategoryProduct(idx, 0)}
+                        style={{ padding: '6px 8px', fontSize: '11px', fontWeight: 700, background: idx === 0 ? '#F3F4F6' : '#E5E7EB', color: idx === 0 ? '#9CA3AF' : '#111111', border: 'none', borderRadius: '2px', cursor: idx === 0 ? 'default' : 'pointer' }}
+                        title="Move to Top"
+                      >
+                        Top
+                      </button>
+                      <button
+                        disabled={idx === 0}
+                        onClick={() => handleMoveCategoryProduct(idx, idx - 1)}
+                        style={{ padding: '6px 10px', fontSize: '12px', fontWeight: 700, background: idx === 0 ? '#E5E7EB' : '#111111', color: idx === 0 ? '#9CA3AF' : '#FFFFFF', border: 'none', borderRadius: '2px', cursor: idx === 0 ? 'default' : 'pointer' }}
+                        title="Move Up"
+                      >
+                        ▲
+                      </button>
+                      <button
+                        disabled={idx === activeCategorySequence.length - 1}
+                        onClick={() => handleMoveCategoryProduct(idx, idx + 1)}
+                        style={{ padding: '6px 10px', fontSize: '12px', fontWeight: 700, background: idx === activeCategorySequence.length - 1 ? '#E5E7EB' : '#111111', color: idx === activeCategorySequence.length - 1 ? '#9CA3AF' : '#FFFFFF', border: 'none', borderRadius: '2px', cursor: idx === activeCategorySequence.length - 1 ? 'default' : 'pointer' }}
+                        title="Move Down"
+                      >
+                        ▼
+                      </button>
+                      <button
+                        disabled={idx === activeCategorySequence.length - 1}
+                        onClick={() => handleMoveCategoryProduct(idx, activeCategorySequence.length - 1)}
+                        style={{ padding: '6px 8px', fontSize: '11px', fontWeight: 700, background: idx === activeCategorySequence.length - 1 ? '#F3F4F6' : '#E5E7EB', color: idx === activeCategorySequence.length - 1 ? '#9CA3AF' : '#111111', border: 'none', borderRadius: '2px', cursor: idx === activeCategorySequence.length - 1 ? 'default' : 'pointer' }}
+                        title="Move to Bottom"
+                      >
+                        End
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 3: CLUBS & NATIONS PAGE IMAGE CONTROLLER */}
       {activeTab === 'clubs' && (
         <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>

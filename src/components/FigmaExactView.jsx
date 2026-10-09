@@ -39,7 +39,8 @@ export default function FigmaExactView({
   onSelectCategory,
   onOpenCart,
   onOpenAuth,
-  onNavigateShop
+  onNavigateShop,
+  onLoadingChange
 }) {
   const [siteImages, setSiteImages] = useState(() => {
     try {
@@ -354,6 +355,68 @@ export default function FigmaExactView({
     }, 4000);
     return () => clearInterval(timer);
   }, [heroSlides.length]);
+
+  // Ensure critical homepage banner, club crest, and product images are properly loaded
+  useEffect(() => {
+    let isCancelled = false;
+    if (onLoadingChange) onLoadingChange(true);
+
+    const criticalUrls = [
+      siteImages.heroBanner1 || defaultImages.heroBanner1,
+      siteImages.heroBanner2 || defaultImages.heroBanner2,
+      siteImages.heroBanner3 || defaultImages.heroBanner3,
+      siteImages.wearYourIdentity || defaultImages.wearYourIdentity,
+      siteImages.notBasicSpotlight || defaultImages.notBasicSpotlight,
+      siteImages.curatedSeasonPkg || defaultImages.curatedSeasonPkg,
+      siteImages.qualityYouCanWear || defaultImages.qualityYouCanWear,
+      siteImages.retroBanner1 || defaultImages.retroBanner1,
+      siteImages.retroBanner2 || defaultImages.retroBanner2,
+      siteImages.lifestyleClubs || defaultImages.lifestyleClubs,
+      siteImages.lifestyleNationals || defaultImages.lifestyleNationals,
+      siteImages.jersifyLogoHeader || defaultImages.jersifyLogoHeader,
+      ...clubsList.map((c) => c.logo),
+      ...displayedJerseys.map((p) => p.image || p.img || (p.images && p.images[0]))
+    ].filter((u) => u && typeof u === 'string' && !u.startsWith('data:image/svg+xml'));
+
+    const promises = criticalUrls.map((url) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = url;
+        if (img.complete && (img.naturalWidth > 0 || img.__jersifyError)) {
+          resolve();
+        } else {
+          img.onload = () => resolve();
+          img.onerror = () => {
+            img.__jersifyError = true;
+            resolve();
+          };
+        }
+      });
+    });
+
+    const maxSafetyTimer = setTimeout(() => {
+      if (!isCancelled && onLoadingChange) {
+        onLoadingChange(false);
+      }
+    }, 6000);
+
+    Promise.all(promises).then(() => {
+      if (!isCancelled) {
+        clearTimeout(maxSafetyTimer);
+        // Ensure browser has committed render
+        setTimeout(() => {
+          if (!isCancelled && onLoadingChange) {
+            onLoadingChange(false);
+          }
+        }, 120);
+      }
+    });
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(maxSafetyTimer);
+    };
+  }, [siteImages, displayedJerseys, clubsList]);
 
   return (
     <div style={{

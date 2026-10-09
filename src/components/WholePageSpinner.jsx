@@ -10,7 +10,8 @@ export default function WholePageSpinner({
   triggerKey,
   containerRef,
   minDuration = 400,
-  maxTimeout = 9000
+  maxTimeout = 9000,
+  isLoading = false
 }) {
   const [isVisible, setIsVisible] = useState(true);
   const [isFading, setIsFading] = useState(false);
@@ -29,11 +30,7 @@ export default function WholePageSpinner({
     lastKeyRef.current = triggerKey;
 
     const finishLoading = () => {
-      if (isCancelled) return;
-      if (observer) {
-        observer.disconnect();
-        observer = null;
-      }
+      if (isCancelled || isLoading) return;
 
       const elapsed = Date.now() - startTime;
       const remainingMin = Math.max(0, minDuration - elapsed);
@@ -119,7 +116,12 @@ export default function WholePageSpinner({
           }
         }, 220);
       } else {
-        // Still has pending images, clear any pending completion
+        if (fadeTimer) {
+          clearTimeout(fadeTimer);
+          fadeTimer = null;
+        }
+        setIsFading(false);
+        setIsVisible(true);
         if (completionDebounceTimer) {
           clearTimeout(completionDebounceTimer);
           completionDebounceTimer = null;
@@ -160,7 +162,7 @@ export default function WholePageSpinner({
       if (fadeTimer) clearTimeout(fadeTimer);
       if (observer) observer.disconnect();
     };
-  }, [triggerKey, minDuration, maxTimeout, containerRef]);
+  }, [triggerKey, minDuration, maxTimeout, containerRef, isLoading]);
 
   if (!isVisible) return null;
 

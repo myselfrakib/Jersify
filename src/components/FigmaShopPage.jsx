@@ -57,9 +57,18 @@ export default function FigmaShopPage({
     }
   });
 
+  const [shoppingPageOrder, setShoppingPageOrder] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_shopping_page_order');
+      return cached ? JSON.parse(cached) : { fan: [], player: [], retro: [] };
+    } catch (e) {
+      return { fan: [], player: [], retro: [] };
+    }
+  });
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('fan');
 
   useEffect(() => {
     const unsubProds = onValue(ref(rtdb, 'products'), (snap) => {
@@ -95,10 +104,24 @@ export default function FigmaShopPage({
       }
     }, () => {});
 
+    const unsubShoppingOrder = onValue(ref(rtdb, 'siteConfig/shoppingPageOrder'), (snap) => {
+      if (snap.exists() && snap.val()) {
+        const val = snap.val();
+        const formatted = {
+          fan: Array.isArray(val.fan) ? val.fan : [],
+          player: Array.isArray(val.player) ? val.player : [],
+          retro: Array.isArray(val.retro) ? val.retro : []
+        };
+        setShoppingPageOrder(formatted);
+        sessionStorage.setItem('jersify_shopping_page_order', JSON.stringify(formatted));
+      }
+    }, () => {});
+
     return () => {
       unsubProds();
       unsubImages();
       unsubCategories();
+      unsubShoppingOrder();
     };
   }, []);
 
@@ -148,37 +171,56 @@ export default function FigmaShopPage({
       return found || selectedCategoryFilter;
     }
     const target = String(selectedCategoryFilter).toLowerCase();
-    const found = categoriesList.find(c => c.id.toLowerCase() === target || c.name.toLowerCase() === target);
+    const found = categoriesList.find(c => c.id?.toLowerCase() === target || c.name?.toLowerCase() === target);
     if (found) return found;
     return { name: selectedCategoryFilter, productIds: [] };
   }, [selectedCategoryFilter, categoriesList]);
 
-  const filteredJerseys = shopJerseys.filter((item) => {
+  const filteredJerseys = React.useMemo(() => {
     // 0. Custom Category filter (from admin categories)
-    if (activeCustomCategory) {
-      const assignedIds = Array.isArray(activeCustomCategory.productIds) ? activeCustomCategory.productIds : [];
-      const catName = (activeCustomCategory.name || '').toLowerCase();
-      const isAssigned = assignedIds.includes(item.id);
-      const isNameMatch = (item.category && item.category.toLowerCase() === catName) ||
-                          (item.categoryTag && item.categoryTag.toLowerCase() === catName);
-      if (!isAssigned && !isNameMatch) return false;
+    let list = shopJerseys.filter((item) => {
+      if (activeCustomCategory) {
+        const assignedIds = Array.isArray(activeCustomCategory.productIds) ? activeCustomCategory.productIds : [];
+        const catName = (activeCustomCategory.name || '').toLowerCase();
+        const isAssigned = assignedIds.includes(item.id);
+        const isNameMatch = (item.category && item.category.toLowerCase() === catName) ||
+                            (item.categoryTag && item.categoryTag.toLowerCase() === catName);
+        if (!isAssigned && !isNameMatch) return false;
+      }
+
+      // 1. Category version filter
+      if (selectedCategory === 'fan' && !isFanProduct(item)) return false;
+      if (selectedCategory === 'player' && !isPlayerProduct(item)) return false;
+      if (selectedCategory === 'retro' && !isRetroProduct(item)) return false;
+      return true;
+    });
+
+    // 2. Custom category sequence defined by Admin in User Shopping Page
+    const activeCategoryKey = selectedCategory || 'fan';
+    const activeOrder = shoppingPageOrder?.[activeCategoryKey];
+
+    if (Array.isArray(activeOrder) && activeOrder.length > 0) {
+      list = [...list].sort((a, b) => {
+        const idxA = activeOrder.indexOf(String(a.id));
+        const idxB = activeOrder.indexOf(String(b.id));
+
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return 0;
+      });
     }
 
-    // 1. Category version filter
-    if (selectedCategory === 'fan' && !isFanProduct(item)) return false;
-    if (selectedCategory === 'player' && !isPlayerProduct(item)) return false;
-    if (selectedCategory === 'retro' && !isRetroProduct(item)) return false;
-
-    // 2. Search query filter
-    if (!searchQuery.trim()) return true;
+    // 3. Search query filter
+    if (!searchQuery.trim()) return list;
     const q = searchQuery.toLowerCase().trim();
-    return (
+    return list.filter((item) =>
       (item.name && item.name.toLowerCase().includes(q)) ||
       (item.type && item.type.toLowerCase().includes(q)) ||
       (item.category && item.category.toLowerCase().includes(q)) ||
       (item.team && item.team.toLowerCase().includes(q))
     );
-  });
+  }, [shopJerseys, selectedCategory, shoppingPageOrder, searchQuery]);
 
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'clip', minHeight: '1604px', paddingBottom: '60px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
