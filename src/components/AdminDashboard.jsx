@@ -758,6 +758,19 @@ export default function AdminDashboard({
     await handleSaveShoppingList(updated);
   };
 
+  const formatDMY = (val, includeTime = false) => {
+    if (!val) return 'Recent';
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return String(val);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    const dateStr = `${dd}/${mm}/${yyyy}`;
+    if (!includeTime) return dateStr;
+    const timeStr = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    return `${dateStr}, ${timeStr}`;
+  };
+
   const handleClearShoppingList = async () => {
     if (window.confirm('Are you sure you want to clear all items from the shopping list?')) {
       await handleSaveShoppingList([]);
@@ -779,14 +792,17 @@ export default function AdminDashboard({
     const totalQty = shoppingList.reduce((acc, i) => acc + (Number(i.quantity) || 1), 0);
     const uniqueOrders = new Set(shoppingList.map(i => i.orderId).filter(Boolean)).size;
     const now = new Date();
-    const dateStr = now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    const dd = String(now.getDate()).padStart(2, '0');
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const yyyy = now.getFullYear();
+    const dateStr = `${dd}/${mm}/${yyyy}`;
     const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
     const htmlContent = `
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Jersify_Shopping_List_${now.toISOString().slice(0, 10)}</title>
+          <title>Jersify_Shopping_List_${dd}_${mm}_${yyyy}</title>
           <style>
             * { box-sizing: border-box; margin: 0; padding: 0; }
             body {
@@ -1838,11 +1854,14 @@ export default function AdminDashboard({
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {sortedOrders.map(o => (
+              {sortedOrders.map((o, idx) => (
                 <div key={o.id} style={{ border: '1px solid #E5E7EB', padding: '16px', background: '#F9FAFB', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ background: '#111111', color: '#FFFFFF', padding: '2px 8px', borderRadius: '3px', fontSize: '12px', fontWeight: 800 }}>
+                          SL #{idx + 1}
+                        </span>
                         <span style={{ fontWeight: 700, fontSize: '16px', color: '#111111' }}>Order #{o.orderId || o.id}</span>
                         <span style={{
                           background: o.status === 'delivered' ? '#D1FAE5' : o.status === 'dispatched' ? '#DBEAFE' : o.status === 'cancelled' ? '#FEE2E2' : '#FEF3C7',
@@ -1856,7 +1875,7 @@ export default function AdminDashboard({
                           {o.status || 'confirmed'}
                         </span>
                       </div>
-                      <p style={{ fontSize: '12px', color: '#6B7280', marginTop: '2px' }}>Placed on: {o.createdAt ? new Date(o.createdAt).toLocaleString() : 'Recent'}</p>
+                      <p style={{ fontSize: '12px', color: '#6B7280', marginTop: '2px' }}>Placed on: {formatDMY(o.createdAt, true)}</p>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -2105,6 +2124,11 @@ export default function AdminDashboard({
                             <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '12px', color: '#2563EB' }}>
                               #{item.orderId || 'Direct'}
                             </span>
+                            {item.addedAt && (
+                              <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '2px' }}>
+                                Added: {formatDMY(item.addedAt)}
+                              </div>
+                            )}
                           </td>
 
                           {/* Customer */}
@@ -2241,6 +2265,7 @@ export default function AdminDashboard({
                   <p><strong>Phone:</strong> {selectedOrderModal.phone || 'N/A'}</p>
                   <p><strong>Email:</strong> {selectedOrderModal.email || 'N/A'}</p>
                   <p><strong>Payment Method:</strong> {selectedOrderModal.paymentMethod || 'ONLINE'}</p>
+                  <p><strong>Order Date:</strong> {formatDMY(selectedOrderModal.createdAt, true)}</p>
                 </div>
                 <p style={{ fontSize: '13px', margin: 0 }}><strong>Address:</strong> {selectedOrderModal.address}</p>
               </div>

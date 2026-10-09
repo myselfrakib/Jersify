@@ -126,8 +126,16 @@ export default function FigmaOrdersPage({
           {realOrders.map((order, idx) => {
             const orderId = order.orderId || order.id || `JRS-${idx + 1}`;
             const isPartial = order.paymentMethod === 'PARTIAL COD' || order.paymentMethod === 'partial_cod';
-            const statusText = order.status ? order.status.replace(/_/g, ' ').toUpperCase() : 'CONFIRMED';
-            const orderDate = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recent';
+            const formatDMY = (val) => {
+              if (!val) return 'Recent';
+              const d = new Date(val);
+              if (isNaN(d.getTime())) return String(val);
+              const dd = String(d.getDate()).padStart(2, '0');
+              const mm = String(d.getMonth() + 1).padStart(2, '0');
+              const yyyy = d.getFullYear();
+              return `${dd}/${mm}/${yyyy}`;
+            };
+            const orderDate = order.createdAt ? formatDMY(order.createdAt) : 'Recent';
             const orderItemsList = Array.isArray(order.items) ? order.items : [];
 
             return (

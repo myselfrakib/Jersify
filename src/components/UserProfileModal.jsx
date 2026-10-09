@@ -2,6 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { X, Package, Clock, CheckCircle, MapPin, User, LogOut } from 'lucide-react';
 import { db, collection, getDocs, query, where, signOut, auth } from '../firebase';
 
+const formatDMY = (val) => {
+  if (!val) return '';
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return String(val);
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+};
+
 export default function UserProfileModal({ 
   isOpen, 
   onClose, 
@@ -99,7 +109,7 @@ export default function UserProfileModal({
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', borderBottom: '1px solid #E5E7EB', paddingBottom: '0.5rem' }}>
                     <div>
                       <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827' }}>ORDER #{ord.orderId}</span>
-                      <p style={{ fontSize: '0.72rem', color: '#6B7280' }}>{new Date(ord.createdAt).toLocaleDateString()}</p>
+                      <p style={{ fontSize: '0.72rem', color: '#6B7280' }}>{formatDMY(ord.createdAt)}</p>
                     </div>
                     <span style={{ fontSize: '0.75rem', fontWeight: 800, background: '#D1FAE5', color: '#065F46', padding: '3px 8px', borderRadius: '4px' }}>
                       {ord.status.toUpperCase()}
