@@ -41,6 +41,7 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     const unsubProds = onValue(ref(rtdb, 'products'), (snap) => {
@@ -71,7 +72,52 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
     };
   }, []);
 
+  const isRetroProduct = (item) => {
+    if (!item) return false;
+    const tag = (item.categoryTag || '').toLowerCase();
+    const cat = (item.category || '').toLowerCase();
+    const name = (item.name || '').toLowerCase();
+    const type = (item.type || '').toLowerCase();
+    const badge = (item.badge || '').toLowerCase();
+    return (
+      tag === 'retro' ||
+      cat === 'retro' ||
+      name.includes('retro') ||
+      type.includes('retro') ||
+      badge.includes('retro')
+    );
+  };
+
+  const isPlayerProduct = (item) => {
+    if (!item) return false;
+    if (item.playerVersion === true) return true;
+    const ver = (item.version || '').toLowerCase();
+    const type = (item.type || '').toLowerCase();
+    const name = (item.name || '').toLowerCase();
+    return (
+      ver === 'player' ||
+      type.includes('player') ||
+      type.includes('player issue') ||
+      type.includes('player version') ||
+      name.includes('player issue') ||
+      name.includes('player version') ||
+      name.includes('player')
+    );
+  };
+
+  const isFanProduct = (item) => {
+    if (!item) return false;
+    if (isRetroProduct(item) || isPlayerProduct(item)) return false;
+    return true;
+  };
+
   const filteredJerseys = shopJerseys.filter((item) => {
+    // 1. Category filter
+    if (selectedCategory === 'fan' && !isFanProduct(item)) return false;
+    if (selectedCategory === 'player' && !isPlayerProduct(item)) return false;
+    if (selectedCategory === 'retro' && !isRetroProduct(item)) return false;
+
+    // 2. Search query filter
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase().trim();
     return (
@@ -170,12 +216,179 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
         </div>
       )}
 
-      {/* Shop Title Heading */}
-      <div style={{ padding: '20px 19px 18px', borderBottom: '1px solid #E5E7EB' }}>
-        <h1 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '28px', color: '#111111', lineHeight: '32px' }}>
-          Shop
-        </h1>
+      {/* Full-Width Filter Bar replacing Shop heading: Fan | Player (Premium) | Retro */}
+      <div style={{ width: '100%', display: 'flex', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
+        {/* Fan Filter Option */}
+        <button
+          type="button"
+          onClick={() => setSelectedCategory(prev => prev === 'fan' ? null : 'fan')}
+          style={{
+            flex: 1,
+            height: '52px',
+            border: 'none',
+            borderRight: '1px solid #E5E7EB',
+            background: selectedCategory === 'fan' ? '#111111' : '#FFFFFF',
+            color: selectedCategory === 'fan' ? '#FFFFFF' : '#111111',
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 4px',
+            transition: 'all 0.2s ease',
+            boxShadow: selectedCategory === 'fan' ? 'inset 0 -3px 0 #111111' : 'none'
+          }}
+        >
+          <span style={{
+            fontFamily: 'Karla, sans-serif',
+            fontWeight: 700,
+            fontSize: '14px',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase'
+          }}>
+            Fan
+          </span>
+          <span style={{
+            fontSize: '9px',
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            color: selectedCategory === 'fan' ? '#D1D5DB' : '#9CA3AF',
+            textTransform: 'uppercase',
+            marginTop: '1px'
+          }}>
+            Standard
+          </span>
+        </button>
+
+        {/* Player Filter Option (Premium Aesthetic) */}
+        <button
+          type="button"
+          onClick={() => setSelectedCategory(prev => prev === 'player' ? null : 'player')}
+          style={{
+            flex: 1,
+            height: '52px',
+            border: 'none',
+            borderLeft: selectedCategory === 'player' ? '1px solid #D4AF37' : '1px solid #E5D5AA',
+            borderRight: selectedCategory === 'player' ? '1px solid #D4AF37' : '1px solid #E5D5AA',
+            background: selectedCategory === 'player'
+              ? 'linear-gradient(135deg, #18181B 0%, #09090B 100%)'
+              : '#FDFCF7',
+            color: selectedCategory === 'player' ? '#D4AF37' : '#111111',
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 4px',
+            position: 'relative',
+            transition: 'all 0.2s ease',
+            boxShadow: selectedCategory === 'player'
+              ? 'inset 0 -3px 0 #D4AF37, 0 4px 12px rgba(212, 175, 55, 0.2)'
+              : 'inset 0 0 0 1px rgba(212, 175, 55, 0.15)'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+            <span style={{
+              fontFamily: 'Karla, sans-serif',
+              fontWeight: 800,
+              fontSize: '14px',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              color: selectedCategory === 'player' ? '#D4AF37' : '#111111'
+            }}>
+              Player
+            </span>
+            <span style={{
+              color: '#D4AF37',
+              fontSize: '11px',
+              fontWeight: 900,
+              lineHeight: 1,
+              textShadow: selectedCategory === 'player' ? '0 0 8px rgba(212,175,55,0.7)' : 'none'
+            }}>
+              ★
+            </span>
+          </div>
+          <span style={{
+            fontSize: '9px',
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 700,
+            letterSpacing: '0.12em',
+            color: selectedCategory === 'player' ? '#D4AF37' : '#B48C36',
+            textTransform: 'uppercase',
+            marginTop: '1px'
+          }}>
+            Authentic
+          </span>
+        </button>
+
+        {/* Retro Filter Option */}
+        <button
+          type="button"
+          onClick={() => setSelectedCategory(prev => prev === 'retro' ? null : 'retro')}
+          style={{
+            flex: 1,
+            height: '52px',
+            border: 'none',
+            borderLeft: '1px solid #E5E7EB',
+            background: selectedCategory === 'retro' ? '#111111' : '#FFFFFF',
+            color: selectedCategory === 'retro' ? '#FFFFFF' : '#111111',
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 4px',
+            transition: 'all 0.2s ease',
+            boxShadow: selectedCategory === 'retro' ? 'inset 0 -3px 0 #111111' : 'none'
+          }}
+        >
+          <span style={{
+            fontFamily: 'Karla, sans-serif',
+            fontWeight: 700,
+            fontSize: '14px',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase'
+          }}>
+            Retro
+          </span>
+          <span style={{
+            fontSize: '9px',
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            color: selectedCategory === 'retro' ? '#D1D5DB' : '#9CA3AF',
+            textTransform: 'uppercase',
+            marginTop: '1px'
+          }}>
+            Classic
+          </span>
+        </button>
       </div>
+
+      {/* Filter status row when a category is selected */}
+      {selectedCategory && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 19px 0', fontSize: '12px' }}>
+          <span style={{ color: '#6B7280', fontFamily: 'Karla, sans-serif', textTransform: 'capitalize' }}>
+            Showing {selectedCategory} jerseys ({filteredJerseys.length})
+          </span>
+          <button
+            onClick={() => setSelectedCategory(null)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#111111',
+              fontWeight: 600,
+              textDecoration: 'underline',
+              cursor: 'pointer',
+              fontFamily: 'Karla, sans-serif',
+              fontSize: '12px'
+            }}
+          >
+            Show All
+          </button>
+        </div>
+      )}
 
       {/* Product Listing Grid */}
       <div style={{ padding: '19px' }}>
