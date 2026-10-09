@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { rtdb, ref, get, onValue } from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
 import ImageWithSpinner from './ImageWithSpinner';
@@ -76,6 +76,24 @@ export default function FigmaExactView({ cartCount = 0, onSelectProduct, onSelec
     }
   });
 
+  const [teamBanners, setTeamBanners] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_team_banners');
+      return cached ? JSON.parse(cached) : {};
+    } catch (e) {
+      return {};
+    }
+  });
+
+  const [clubsConfig, setClubsConfig] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_clubs_config');
+      return cached ? JSON.parse(cached) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
   useEffect(() => {
     // Realtime auto-loading for site images
     const unsubImages = onValue(ref(rtdb, 'siteConfig/images'), (snap) => {
@@ -111,10 +129,29 @@ export default function FigmaExactView({ cartCount = 0, onSelectProduct, onSelec
       }
     }, () => {});
 
+    // Realtime auto-loading for club entries & team banners
+    const unsubTeams = onValue(ref(rtdb, 'siteConfig/teamBanners'), (snap) => {
+      if (snap.exists() && snap.val()) {
+        const val = snap.val();
+        setTeamBanners(val);
+        sessionStorage.setItem('jersify_team_banners', JSON.stringify(val));
+      }
+    }, () => {});
+
+    const unsubClubs = onValue(ref(rtdb, 'siteConfig/clubs'), (snap) => {
+      if (snap.exists() && snap.val()) {
+        const val = snap.val();
+        setClubsConfig(val);
+        sessionStorage.setItem('jersify_clubs_config', JSON.stringify(val));
+      }
+    }, () => {});
+
     return () => {
       unsubImages();
       unsubProds();
       unsubOrder();
+      unsubTeams();
+      unsubClubs();
     };
   }, []);
 
@@ -134,6 +171,86 @@ export default function FigmaExactView({ cartCount = 0, onSelectProduct, onSelec
     }
     return figmaJerseys.slice(0, 10);
   }, [figmaJerseys, homepageOrder]);
+
+  const clubsList = useMemo(() => {
+    const baseClubs = [
+      { id: 'Barcelona', name: 'Barcelona', logo: imgEllipse12 },
+      { id: 'Real Madrid', name: 'Real Madrid', logo: imgEllipse16 },
+      { id: 'Man City', name: 'Man City', logo: imgEllipse17 },
+      { id: 'Liverpool', name: 'Liverpool', logo: imgEllipse13 },
+      { id: 'AC Milan', name: 'AC Milan', logo: imgEllipse18 },
+      { id: 'Bayern Munich', name: 'Bayern Munich', logo: imgEllipse14 },
+      { id: 'Man United', name: 'Man United', logo: imgEllipse15 },
+      { id: 'Juventus', name: 'Juventus', logo: imgEllipse19 }
+    ];
+
+    const extraClubs = [];
+
+    if (clubsConfig) {
+      const list = Array.isArray(clubsConfig) ? clubsConfig : Object.values(clubsConfig);
+      list.forEach((c) => {
+        if (c && c.name && (c.logo || c.logoUrl || c.crest)) {
+          const already = baseClubs.some(
+            (b) => b.name.toLowerCase() === c.name.toLowerCase()
+          );
+          if (!already) {
+            extraClubs.push({
+              id: c.id || c.name,
+              name: c.name,
+              logo: c.logo || c.logoUrl || c.crest
+            });
+          }
+        }
+      });
+    }
+
+    if (teamBanners && typeof teamBanners === 'object') {
+      Object.keys(teamBanners).forEach((teamName) => {
+        const item = teamBanners[teamName];
+        const already =
+          baseClubs.some((b) => b.name.toLowerCase() === teamName.toLowerCase()) ||
+          extraClubs.some((e) => e.name.toLowerCase() === teamName.toLowerCase());
+        if (!already && (item?.logo || item?.crest)) {
+          extraClubs.push({
+            id: teamName,
+            name: item.name || teamName,
+            logo: item.logo || item.crest
+          });
+        }
+      });
+    }
+
+    return [...baseClubs, ...extraClubs];
+  }, [teamBanners, clubsConfig, imgEllipse12, imgEllipse16, imgEllipse17, imgEllipse13, imgEllipse18, imgEllipse14, imgEllipse15, imgEllipse19]);
+
+  const clubSliderRef = useRef(null);
+  const [isClubDragging, setIsClubDragging] = useState(false);
+  const [clubStartX, setClubStartX] = useState(0);
+  const [clubScrollLeft, setClubScrollLeft] = useState(0);
+  const clubHasDraggedRef = useRef(false);
+
+  const handleClubMouseDown = (e) => {
+    if (clubsList.length <= 8) return;
+    setIsClubDragging(true);
+    clubHasDraggedRef.current = false;
+    setClubStartX(e.pageX - (clubSliderRef.current?.offsetLeft || 0));
+    setClubScrollLeft(clubSliderRef.current?.scrollLeft || 0);
+  };
+
+  const handleClubMouseMove = (e) => {
+    if (!isClubDragging || !clubSliderRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - (clubSliderRef.current?.offsetLeft || 0);
+    const walk = (x - clubStartX) * 1.4;
+    if (Math.abs(walk) > 4) {
+      clubHasDraggedRef.current = true;
+    }
+    clubSliderRef.current.scrollLeft = clubScrollLeft - walk;
+  };
+
+  const handleClubMouseUpOrLeave = () => {
+    setIsClubDragging(false);
+  };
 
   const heroSlides = [
     siteImages.heroBanner1 || defaultImages.heroBanner1,
@@ -206,19 +323,60 @@ export default function FigmaExactView({ cartCount = 0, onSelectProduct, onSelec
         CLUB JERSEYS
       </p>
 
-      {/* Club Crest Badges Grid */}
+      {/* Club Crest Badges Grid / Slider */}
       <div style={{ position: 'absolute', top: '673px', left: '19px', width: '355px', height: '166px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', justifyItems: 'center', alignItems: 'center' }}>
-          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Barcelona')} src={imgEllipse12} alt="Barcelona" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Real Madrid')} src={imgEllipse16} alt="Real Madrid" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Man City')} src={imgEllipse17} alt="Man City" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Liverpool')} src={imgEllipse13} alt="Liverpool" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-
-          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('AC Milan')} src={imgEllipse18} alt="AC Milan" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Bayern Munich')} src={imgEllipse14} alt="Bayern Munich" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Man United')} src={imgEllipse15} alt="Man United" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-          <ImageWithSpinner onClick={() => onSelectTeam && onSelectTeam('Juventus')} src={imgEllipse19} alt="Juventus" style={{ width: '70px', height: '70px', cursor: 'pointer' }} />
-        </div>
+        {clubsList.length <= 8 ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', justifyItems: 'center', alignItems: 'center' }}>
+            {clubsList.map((club) => (
+              <ImageWithSpinner
+                key={club.id}
+                onClick={() => onSelectTeam && onSelectTeam(club.name)}
+                src={club.logo}
+                alt={club.name}
+                style={{ width: '70px', height: '70px', cursor: 'pointer' }}
+              />
+            ))}
+          </div>
+        ) : (
+          <div
+            ref={clubSliderRef}
+            onMouseDown={handleClubMouseDown}
+            onMouseMove={handleClubMouseMove}
+            onMouseUp={handleClubMouseUpOrLeave}
+            onMouseLeave={handleClubMouseUpOrLeave}
+            style={{
+              display: 'grid',
+              gridTemplateRows: 'repeat(2, 70px)',
+              gridAutoFlow: 'column',
+              gridAutoColumns: '70px',
+              gap: '16px',
+              overflowX: 'auto',
+              overflowY: 'hidden',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              WebkitOverflowScrolling: 'touch',
+              scrollSnapType: 'x proximity',
+              width: '100%',
+              height: '100%',
+              cursor: isClubDragging ? 'grabbing' : 'grab',
+              userSelect: 'none'
+            }}
+          >
+            {clubsList.map((club) => (
+              <div key={club.id} style={{ scrollSnapAlign: 'start', flexShrink: 0, width: '70px', height: '70px' }}>
+                <ImageWithSpinner
+                  onClick={() => {
+                    if (clubHasDraggedRef.current) return;
+                    if (onSelectTeam) onSelectTeam(club.name);
+                  }}
+                  src={club.logo}
+                  alt={club.name}
+                  style={{ width: '70px', height: '70px', cursor: 'pointer' }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* WEAR YOUR IDENTITY Banner */}
