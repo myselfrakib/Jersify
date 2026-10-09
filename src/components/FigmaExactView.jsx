@@ -190,6 +190,7 @@ export default function FigmaExactView({ cartCount = 0, onSelectProduct, onSelec
       const list = Array.isArray(clubsConfig) ? clubsConfig : Object.values(clubsConfig);
       list.forEach((c) => {
         if (c && c.name && (c.logo || c.logoUrl || c.crest)) {
+          if (c.type === 'national') return;
           const already = baseClubs.some(
             (b) => b.name.toLowerCase() === c.name.toLowerCase()
           );
@@ -207,6 +208,7 @@ export default function FigmaExactView({ cartCount = 0, onSelectProduct, onSelec
     if (teamBanners && typeof teamBanners === 'object') {
       Object.keys(teamBanners).forEach((teamName) => {
         const item = teamBanners[teamName];
+        if (item?.type === 'national') return;
         const already =
           baseClubs.some((b) => b.name.toLowerCase() === teamName.toLowerCase()) ||
           extraClubs.some((e) => e.name.toLowerCase() === teamName.toLowerCase());

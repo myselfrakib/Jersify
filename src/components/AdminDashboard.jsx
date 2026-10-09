@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   rtdb, 
   ref, 
@@ -162,6 +162,55 @@ export default function AdminDashboard({
   const [teamsSavedToast, setTeamsSavedToast] = useState(false);
   const [uploadingTeamState, setUploadingTeamState] = useState({});
   const [newClubName, setNewClubName] = useState('');
+  const [newClubType, setNewClubType] = useState('club'); // 'club' | 'national'
+
+  // Dynamically include all added clubs & nations from teamBanners
+  const availableClubOptions = useMemo(() => {
+    const customClubs = Object.keys(teamBanners).filter((key) => {
+      const item = teamBanners[key];
+      const isNation = item?.type === 'national' || NATIONAL_OPTIONS.includes(key);
+      return !isNation;
+    });
+    return Array.from(new Set([...CLUB_OPTIONS, ...customClubs]));
+  }, [teamBanners]);
+
+  const availableNationalOptions = useMemo(() => {
+    const customNations = Object.keys(teamBanners).filter((key) => {
+      const item = teamBanners[key];
+      const isNation = item?.type === 'national' || NATIONAL_OPTIONS.includes(key);
+      return isNation;
+    });
+    return Array.from(new Set([...NATIONAL_OPTIONS, ...customNations]));
+  }, [teamBanners]);
+
+  const handleQuickAddTeamFromProduct = async (name, type) => {
+    if (!name || !name.trim()) return;
+    const cleanName = name.trim();
+    if (teamBanners[cleanName]) {
+      alert(`"${cleanName}" is already registered!`);
+      return;
+    }
+    const isNation = type === 'national';
+    const updated = {
+      ...teamBanners,
+      [cleanName]: {
+        name: cleanName.toUpperCase(),
+        type: type,
+        subtitle: isNation ? 'National Team · World Football' : 'Official Collection',
+        founded: '2026',
+        stadium: isNation ? 'National Stadium' : 'Home Stadium',
+        logo: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+        banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+        description: `Official ${isNation ? 'national' : 'club'} kits for ${cleanName}.`
+      }
+    };
+    setTeamBanners(updated);
+    try {
+      await set(ref(rtdb, 'siteConfig/teamBanners'), updated);
+      sessionStorage.setItem('jersify_team_banners', JSON.stringify(updated));
+    } catch (e) {}
+    alert(`Saved "${cleanName}" to registered ${isNation ? 'Nations' : 'Clubs'}!`);
+  };
 
   // Products State & Upload State
   const [productsList, setProductsList] = useState([]);
@@ -369,16 +418,18 @@ export default function AdminDashboard({
       alert('Club/Nation already exists!');
       return;
     }
+    const isNation = newClubType === 'national';
     setTeamBanners(prev => ({
       ...prev,
       [key]: {
         name: key.toUpperCase(),
-        subtitle: 'Official Collection',
+        type: newClubType,
+        subtitle: isNation ? 'National Team · World Football' : 'Official Collection',
         founded: '2026',
-        stadium: 'Home Stadium',
-        logo: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
+        stadium: isNation ? 'National Stadium' : 'Home Stadium',
+        logo: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
         banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
-        description: `Official kits for ${key}.`
+        description: `Official ${isNation ? 'national' : 'club'} kits for ${key}.`
       }
     }));
     setNewClubName('');
@@ -520,6 +571,26 @@ export default function AdminDashboard({
         const newProd = { ...finalProductData, id: newRef.key };
         await set(newRef, newProd);
         setProductsList(prev => [newProd, ...prev]);
+      }
+
+      // Automatically register team to teamBanners if not yet registered
+      const teamKey = (productForm.team || '').trim();
+      if (teamKey && !teamBanners[teamKey]) {
+        const isNation = inferredTeamType === 'national';
+        const newTeamEntry = {
+          name: teamKey.toUpperCase(),
+          type: inferredTeamType,
+          subtitle: isNation ? 'National Team · World Football' : 'Official Collection',
+          founded: '2026',
+          stadium: isNation ? 'National Stadium' : 'Home Stadium',
+          logo: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+          banner: 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+          description: `Official ${isNation ? 'national' : 'club'} kits for ${teamKey}.`
+        };
+        try {
+          await set(ref(rtdb, `siteConfig/teamBanners/${teamKey}`), newTeamEntry);
+          setTeamBanners(prev => ({ ...prev, [teamKey]: newTeamEntry }));
+        } catch (e) {}
       }
       setIsAddingProduct(false);
       setEditingProductId(null);
@@ -826,11 +897,22 @@ export default function AdminDashboard({
           )}
 
           {/* Quick Add New Club / Nation Bar */}
-          <div style={{ background: '#F3F4F6', padding: '14px 18px', border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: '#111111' }}>+ Add New Club or Nation:</span>
+          <div style={{ background: '#F3F4F6', padding: '14px 18px', border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: '#111111' }}>+ Add New Entry:</span>
+            
+            {/* Select Club or Nation */}
+            <select
+              value={newClubType}
+              onChange={(e) => setNewClubType(e.target.value)}
+              style={{ height: '36px', padding: '0 10px', border: '1.5px solid #111111', fontSize: '13px', fontWeight: 700, background: '#FFFFFF', cursor: 'pointer' }}
+            >
+              <option value="club">🛡️ Club</option>
+              <option value="national">🌐 Nation</option>
+            </select>
+
             <input
               type="text"
-              placeholder="e.g. PSG or France"
+              placeholder={newClubType === 'national' ? "e.g. France or Brazil" : "e.g. PSG or Arsenal"}
               value={newClubName}
               onChange={(e) => setNewClubName(e.target.value)}
               style={{ height: '36px', padding: '0 10px', border: '1px solid #D1D5DB', width: '220px', fontSize: '13px' }}
@@ -839,7 +921,7 @@ export default function AdminDashboard({
               onClick={handleAddNewClub}
               style={{ background: '#111111', color: '#FFFFFF', border: 'none', padding: '8px 16px', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}
             >
-              Create Club Entry
+              Create {newClubType === 'national' ? 'Nation' : 'Club'} Entry
             </button>
           </div>
 
@@ -847,11 +929,24 @@ export default function AdminDashboard({
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '24px' }}>
             {Object.keys(teamBanners).map(teamKey => {
               const team = teamBanners[teamKey];
+              const isNation = team.type === 'national' || NATIONAL_OPTIONS.includes(teamKey);
               return (
                 <div key={teamKey} style={{ border: '1.5px solid #111111', padding: '18px', borderRadius: '4px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E5E7EB', paddingBottom: '8px' }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#111111', margin: 0 }}>{teamKey}</h3>
-                    <span style={{ fontSize: '11px', background: '#F3F4F6', padding: '3px 8px', fontWeight: 700 }}>CLUB Showcase Page</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#111111', margin: 0 }}>{teamKey}</h3>
+                      <select
+                        value={team.type || (isNation ? 'national' : 'club')}
+                        onChange={(e) => handleTeamFieldChange(teamKey, 'type', e.target.value)}
+                        style={{ fontSize: '11px', fontWeight: 700, padding: '3px 8px', border: '1px solid #D1D5DB', background: '#F9FAFB', cursor: 'pointer' }}
+                      >
+                        <option value="club">🛡️ Club</option>
+                        <option value="national">🌐 Nation</option>
+                      </select>
+                    </div>
+                    <span style={{ fontSize: '11px', background: isNation ? '#EFF6FF' : '#F3F4F6', color: isNation ? '#1D4ED8' : '#111827', padding: '3px 8px', fontWeight: 700, borderRadius: '2px' }}>
+                      {isNation ? 'NATION Showcase Page' : 'CLUB Showcase Page'}
+                    </span>
                   </div>
 
                   {/* 1. Hero Banner Image (Aspect 16:9 / 393x220px) */}
@@ -1056,9 +1151,14 @@ export default function AdminDashboard({
                       onChange={(e) => setProductForm({ ...productForm, team: e.target.value })}
                       style={{ flex: 1, height: '38px', padding: '0 10px', border: '1px solid #D1D5DB', background: '#FFFFFF', fontWeight: 600, fontSize: '13px' }}
                     >
-                      {(productForm.teamType === 'national' ? NATIONAL_OPTIONS : CLUB_OPTIONS).map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
+                      {(productForm.teamType === 'national' ? availableNationalOptions : availableClubOptions).map(opt => {
+                        const isAdded = !!teamBanners[opt];
+                        return (
+                          <option key={opt} value={opt}>
+                            {opt} {isAdded ? '★ (Added)' : ''}
+                          </option>
+                        );
+                      })}
                     </select>
                     <input
                       type="text"
@@ -1068,6 +1168,15 @@ export default function AdminDashboard({
                       style={{ flex: 1, height: '38px', padding: '0 10px', border: '1px solid #D1D5DB', fontSize: '13px' }}
                     />
                   </div>
+                  {productForm.team && !teamBanners[productForm.team.trim()] && (
+                    <button
+                      type="button"
+                      onClick={() => handleQuickAddTeamFromProduct(productForm.team, productForm.teamType || 'club')}
+                      style={{ alignSelf: 'flex-start', marginTop: '4px', background: '#10B981', color: '#FFFFFF', border: 'none', padding: '5px 10px', fontSize: '11px', fontWeight: 700, borderRadius: '2px', cursor: 'pointer' }}
+                    >
+                      + Save &quot;{productForm.team}&quot; as registered {productForm.teamType === 'national' ? 'Nation' : 'Club'}
+                    </button>
+                  )}
                 </div>
               </div>
 
