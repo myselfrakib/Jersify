@@ -16,6 +16,7 @@ import {
   onValue
 } from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
+import { INITIAL_CATEGORIES } from '../data/categoriesData';
 import ImageWithSpinner from './ImageWithSpinner';
 
 
@@ -23,15 +24,19 @@ const DEFAULT_INDEX_IMAGES = {
   heroBanner1: { label: "Hero Slider Banner 1", aspect: "16:9 (393x220px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de" },
   heroBanner2: { label: "Hero Slider Banner 2", aspect: "16:9 (393x220px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790334116027_pfan_0_IMG_3915.png?alt=media&token=8c2058d5-2b95-4926-8960-1b2ce77d29eb" },
   heroBanner3: { label: "Hero Slider Banner 3", aspect: "16:9 (393x220px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030635314_1_IMG_6074.jpeg?alt=media&token=f8e8d995-63d7-4c57-aef4-948d93e6533d" },
-  wearYourIdentity: { label: "Wear Your Identity Banner", aspect: "2.4:1 (393x162px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030642038_2_IMG_6072.jpeg?alt=media&token=d0ba389d-4214-44ec-b2b3-c0dbdb548678" },
+  wearYourIdentity: { label: "Wear Your Identity Banner", aspect: "2.4:1 (393x162px)", url: "/figma/wearYourIdentity.png" },
   notBasicSpotlight: { label: "Not Basic Spotlight Banner", aspect: "3:4 (393x510px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030648696_3_IMG_6073.jpeg?alt=media&token=90f31fe5-1bb0-4522-aada-9db03fbcfab8" },
-  curatedSeasonPkg: { label: "Curated Season Main Packaging", aspect: "4:3 (393x333px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030675022_4_IMG_6071.jpeg?alt=media&token=ab978713-fa93-4b20-a8f2-a69b2f5c6aaf" },
-  qualityYouCanWear: { label: "Quality You Can Wear Short Banner", aspect: "3:1 (393x131px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777010842917_0_IMG_3702.jpeg?alt=media&token=1797da70-902b-42e8-9682-7feb6c89d4ef" },
-  retroBanner1: { label: "Good Old Kits Retro Banner 1", aspect: "1:2.1 (168x360px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777324422299_0_IMG_4061.jpeg?alt=media&token=f94be5a7-75e9-486d-bf07-92135cb38132" },
+  curatedSeasonPkg: { label: "Curated Season Main Packaging", aspect: "4:3 (393x333px)", url: "/figma/curatedSeasonPkg.png" },
+  premiumProducts: { label: "Curated Season: Premium Products (Argentina)", aspect: "3:1 (393x131px)", url: "/figma/premiumProducts.png" },
+  qualityYouCanWear: { label: "Quality You Can Wear Short Banner", aspect: "3:1 (393x131px)", url: "/figma/premiumProducts.png" },
+  goodOldKits: { label: "Good Old Kits Banner (Mannequin)", aspect: "1:1 (355x360px)", url: "/figma/goodOldKits.png" },
+  retroBanner1: { label: "Good Old Kits Retro Banner 1", aspect: "1:2.1 (168x360px)", url: "/figma/goodOldKits.png" },
   retroBanner2: { label: "Good Old Kits Retro Banner 2", aspect: "1:2.1 (168x360px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777348522170_0_IMG_4080.jpeg?alt=media&token=86b339ae-0b9b-41e0-b926-fe7a4fccecc8" },
+  gurlsChoice: { label: "Gurl's Choice Banner (Rack)", aspect: "3:4 (287x413px)", url: "/figma/gurlsChoice.png" },
+  activities: { label: "Activities Banner", aspect: "3:2 (205x134px)", url: "/figma/activities.png" },
   lifestyleClubs: { label: "Lifestyle Clubs Banner", aspect: "5:4 (207x166px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1778510513151_0_IMG_5263.jpeg?alt=media&token=17bad7fd-0018-4016-9fa2-5aedc6c3d09d" },
   lifestyleNationals: { label: "Lifestyle Nationals Banner", aspect: "4:5 (136x166px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de" },
-  jersifyLogoHeader: { label: "Index Page Header Brand Logo", aspect: "Square Brand Logo (40x40px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de" },
+  jersifyLogoHeader: { label: "Index Page Header Brand Logo", aspect: "Square Brand Logo (40x40px)", url: "/figma/jersifyWordmarkHeader.png" },
   clubLogoBarca: { label: "Club Crest: FC Barcelona", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg" },
   clubLogoReal: { label: "Club Crest: Real Madrid", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg" },
   clubLogoMilan: { label: "Club Crest: AC Milan", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/commons/d/d0/AC_Milan_logo.svg" },
@@ -148,7 +153,27 @@ export default function AdminDashboard({
   onSignOut,
   onNavigateHome
 }) {
-  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'clubs' | 'products' | 'orders' | 'users'
+  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'clubs' | 'products' | 'categories' | 'orders' | 'users'
+
+  // Categories State
+  const [categoriesList, setCategoriesList] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_categories');
+      return cached ? JSON.parse(cached) : INITIAL_CATEGORIES;
+    } catch {
+      return INITIAL_CATEGORIES;
+    }
+  });
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [editingCategoryId, setEditingCategoryId] = useState(null);
+  const [categoryForm, setCategoryForm] = useState({
+    name: '',
+    imageUrl: '',
+    productIds: []
+  });
+  const [uploadingCategoryImg, setUploadingCategoryImg] = useState(false);
+  const [categorySearchQuery, setCategorySearchQuery] = useState('');
+  const [categoriesSavedToast, setCategoriesSavedToast] = useState(false);
 
   // Image Control State & Upload State
   const [indexImages, setIndexImages] = useState(DEFAULT_INDEX_IMAGES);
@@ -337,6 +362,20 @@ export default function AdminDashboard({
       }
     }, () => { });
 
+    // 8. Realtime listener for categories
+    const unsubCategories = onValue(ref(rtdb, 'categories'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const list = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        if (list.length > 0) {
+          setCategoriesList(list);
+          sessionStorage.setItem('jersify_categories', JSON.stringify(list));
+        }
+      } else {
+        setCategoriesList(INITIAL_CATEGORIES);
+      }
+    }, () => { });
+
     loadUsersAndAdmins();
 
     return () => {
@@ -348,6 +387,7 @@ export default function AdminDashboard({
       unsubAdmins();
       unsubUsers();
       unsubOrder();
+      unsubCategories();
     };
   }, []);
 
@@ -663,6 +703,113 @@ export default function AdminDashboard({
     } catch (err) {
       alert('Error deleting product: ' + err.message);
     }
+  };
+
+  // Category Handlers
+  const handleToggleProductInCategory = (prodId) => {
+    setCategoryForm(prev => {
+      const currentIds = Array.isArray(prev.productIds) ? prev.productIds : [];
+      const exists = currentIds.includes(prodId);
+      const updated = exists
+        ? currentIds.filter(id => id !== prodId)
+        : [...currentIds, prodId];
+      return { ...prev, productIds: updated };
+    });
+  };
+
+  const handleSelectAllFilteredProducts = (filteredIds) => {
+    setCategoryForm(prev => {
+      const currentIds = Array.isArray(prev.productIds) ? prev.productIds : [];
+      const combined = Array.from(new Set([...currentIds, ...filteredIds]));
+      return { ...prev, productIds: combined };
+    });
+  };
+
+  const handleDeselectAllProducts = () => {
+    setCategoryForm(prev => ({ ...prev, productIds: [] }));
+  };
+
+  const handleFileUploadForCategory = async (file) => {
+    if (!file) return;
+    setUploadingCategoryImg(true);
+    try {
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const sRef = storageRef(storage, `categories/${Date.now()}_${cleanFileName}`);
+      await uploadBytes(sRef, file);
+      const downloadUrl = await getDownloadURL(sRef);
+      setCategoryForm(prev => ({ ...prev, imageUrl: downloadUrl }));
+    } catch (err) {
+      alert('Failed to upload image to Firebase Storage: ' + err.message);
+    } finally {
+      setUploadingCategoryImg(false);
+    }
+  };
+
+  const handleSaveCategory = async (e) => {
+    if (e) e.preventDefault();
+    if (!categoryForm.name.trim()) {
+      alert('Please enter a category name.');
+      return;
+    }
+    if (!categoryForm.imageUrl.trim()) {
+      alert('Please provide or upload an image for the category.');
+      return;
+    }
+
+    const cleanId = editingCategoryId || categoryForm.name.trim().toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const catData = {
+      id: cleanId,
+      name: categoryForm.name.trim(),
+      imageUrl: categoryForm.imageUrl.trim(),
+      productIds: categoryForm.productIds || []
+    };
+
+    try {
+      await set(ref(rtdb, `categories/${cleanId}`), catData);
+      setCategoriesList(prev => {
+        const idx = prev.findIndex(c => c.id === cleanId);
+        if (idx > -1) {
+          const copy = [...prev];
+          copy[idx] = catData;
+          return copy;
+        }
+        return [...prev, catData];
+      });
+      sessionStorage.setItem('jersify_categories', JSON.stringify(
+        categoriesList.some(c => c.id === cleanId)
+          ? categoriesList.map(c => c.id === cleanId ? catData : c)
+          : [...categoriesList, catData]
+      ));
+      setCategoriesSavedToast(true);
+      setTimeout(() => setCategoriesSavedToast(false), 3000);
+      setIsAddingCategory(false);
+      setEditingCategoryId(null);
+      setCategoryForm({ name: '', imageUrl: '', productIds: [] });
+    } catch (err) {
+      alert('Failed to save category to RTDB: ' + err.message);
+    }
+  };
+
+  const handleDeleteCategory = async (catId) => {
+    if (!window.confirm('Are you sure you want to delete this category?')) return;
+    try {
+      await remove(ref(rtdb, `categories/${catId}`));
+      const updated = categoriesList.filter(c => c.id !== catId);
+      setCategoriesList(updated);
+      sessionStorage.setItem('jersify_categories', JSON.stringify(updated));
+    } catch (err) {
+      alert('Failed to delete category: ' + err.message);
+    }
+  };
+
+  const handleEditCategory = (cat) => {
+    setEditingCategoryId(cat.id);
+    setCategoryForm({
+      name: cat.name,
+      imageUrl: cat.imageUrl || '',
+      productIds: Array.isArray(cat.productIds) ? [...cat.productIds] : []
+    });
+    setIsAddingCategory(true);
   };
 
   const handleUpdateOrderStatus = async (orderId, newStatus) => {
@@ -1077,6 +1224,12 @@ export default function AdminDashboard({
           style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'products' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'products' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
         >
           👕 Products ({productsList.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('categories')}
+          style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'categories' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'categories' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+        >
+          🏷️ Categories ({categoriesList.length})
         </button>
         <button
           onClick={() => setActiveTab('orders')}
@@ -2276,6 +2429,370 @@ export default function AdminDashboard({
                 })}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: CATEGORIES MANAGER */}
+      {activeTab === 'categories' && (
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* Header Bar */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111111', margin: 0 }}>Homepage Categories Manager</h2>
+              <p style={{ fontSize: '13px', color: '#6B7280', margin: '4px 0 0' }}>
+                Create categories, upload/assign images shown on the slidable homepage section, and select which products appear when clicked.
+              </p>
+            </div>
+            {!isAddingCategory && (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingCategoryId(null);
+                  setCategoryForm({ name: '', imageUrl: '', productIds: [] });
+                  setIsAddingCategory(true);
+                }}
+                style={{
+                  background: '#111111',
+                  color: '#FFFFFF',
+                  padding: '10px 20px',
+                  border: 'none',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  borderRadius: '2px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                + Create New Category
+              </button>
+            )}
+          </div>
+
+          {/* Toast Banner */}
+          {categoriesSavedToast && (
+            <div style={{ background: '#D1FAE5', color: '#065F46', padding: '12px 16px', fontWeight: 700, fontSize: '14px', borderRadius: '4px', border: '1px solid #A7F3D0' }}>
+              ✓ Category saved to Realtime Database successfully!
+            </div>
+          )}
+
+          {/* Create / Edit Category Form */}
+          {isAddingCategory && (
+            <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: '4px', padding: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #E5E7EB', paddingBottom: '12px' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#111111' }}>
+                  {editingCategoryId ? '✏️ Edit Category' : '✨ Create New Category'}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAddingCategory(false);
+                    setEditingCategoryId(null);
+                    setCategoryForm({ name: '', imageUrl: '', productIds: [] });
+                  }}
+                  style={{ background: 'none', border: 'none', color: '#6B7280', fontSize: '13px', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  ✕ Close
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveCategory} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                  {/* Left Column: Category Metadata & Image */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#374151', marginBottom: '6px' }}>
+                        Category Title *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. WorldCup, Usual Wear, Retro Classics"
+                        value={categoryForm.name}
+                        onChange={(e) => setCategoryForm(prev => ({ ...prev, name: e.target.value }))}
+                        required
+                        style={{ width: '100%', padding: '10px 12px', border: '1px solid #D1D5DB', borderRadius: '3px', fontSize: '14px', outline: 'none' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#374151', marginBottom: '6px' }}>
+                        Category Image (Displayed on Homepage) *
+                      </label>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <input
+                          type="text"
+                          placeholder="Image URL or upload below..."
+                          value={categoryForm.imageUrl}
+                          onChange={(e) => setCategoryForm(prev => ({ ...prev, imageUrl: e.target.value }))}
+                          style={{ flex: 1, padding: '10px 12px', border: '1px solid #D1D5DB', borderRadius: '3px', fontSize: '13px', outline: 'none' }}
+                        />
+                        <label style={{ background: '#111111', color: '#FFFFFF', padding: '10px 14px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', borderRadius: '3px', whiteSpace: 'nowrap' }}>
+                          {uploadingCategoryImg ? 'Uploading...' : '📁 Upload File'}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            disabled={uploadingCategoryImg}
+                            onChange={(e) => handleFileUploadForCategory(e.target.files[0])}
+                            style={{ display: 'none' }}
+                          />
+                        </label>
+                      </div>
+
+                      {/* Quick Presets */}
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '11px', color: '#6B7280', alignSelf: 'center' }}>Presets:</span>
+                        <button
+                          type="button"
+                          onClick={() => setCategoryForm(prev => ({ ...prev, imageUrl: '/figma/categoryWorldcup.png', name: prev.name || 'WorldCup' }))}
+                          style={{ background: '#E5E7EB', border: 'none', padding: '4px 8px', fontSize: '11px', borderRadius: '3px', cursor: 'pointer' }}
+                        >
+                          WorldCup Image
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCategoryForm(prev => ({ ...prev, imageUrl: '/figma/categoryUsualWear.png', name: prev.name || 'Usual Wear' }))}
+                          style={{ background: '#E5E7EB', border: 'none', padding: '4px 8px', fontSize: '11px', borderRadius: '3px', cursor: 'pointer' }}
+                        >
+                          Usual Wear Image
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Live Preview Card */}
+                    <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '4px', padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <p style={{ fontSize: '11px', fontWeight: 700, color: '#6B7280', margin: '0 0 12px', width: '100%', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        HOMEPAGE CARD PREVIEW (173 × 212px)
+                      </p>
+                      <div style={{ width: '173px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div style={{ width: '173px', height: '212px', border: '2px solid #000000', background: '#F3F4F6', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {categoryForm.imageUrl ? (
+                            <img src={categoryForm.imageUrl} alt="Category preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            <span style={{ fontSize: '11px', color: '#9CA3AF', textAlign: 'center', padding: '10px' }}>Upload or enter category image URL</span>
+                          )}
+                        </div>
+                        <p style={{ fontFamily: 'Josefin Sans, sans-serif', fontSize: '22px', color: '#000000', textAlign: 'center', marginTop: '8px', margin: '8px 0 0' }}>
+                          {categoryForm.name || 'Category Name'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Assign Products */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: 700, color: '#374151' }}>
+                        Assign Products to this Category ({categoryForm.productIds.length} selected)
+                      </label>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const filtered = productsList.filter(p => {
+                              if (!categorySearchQuery.trim()) return true;
+                              const q = categorySearchQuery.toLowerCase();
+                              return (p.name && p.name.toLowerCase().includes(q)) || (p.team && p.team.toLowerCase().includes(q));
+                            }).map(p => p.id);
+                            handleSelectAllFilteredProducts(filtered);
+                          }}
+                          style={{ background: 'none', border: 'none', color: '#2563EB', fontSize: '11px', fontWeight: 700, cursor: 'pointer', padding: 0 }}
+                        >
+                          Select Filtered
+                        </button>
+                        <span style={{ color: '#D1D5DB' }}>|</span>
+                        <button
+                          type="button"
+                          onClick={handleDeselectAllProducts}
+                          style={{ background: 'none', border: 'none', color: '#DC2626', fontSize: '11px', fontWeight: 700, cursor: 'pointer', padding: 0 }}
+                        >
+                          Deselect All
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Search box for products */}
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type="text"
+                        placeholder="Search products by name or team..."
+                        value={categorySearchQuery}
+                        onChange={(e) => setCategorySearchQuery(e.target.value)}
+                        style={{ width: '100%', padding: '8px 10px', fontSize: '12px', border: '1px solid #D1D5DB', borderRadius: '3px', outline: 'none' }}
+                      />
+                      {categorySearchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setCategorySearchQuery('')}
+                          style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer' }}
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Scrollable Products List */}
+                    <div style={{ maxHeight: '360px', overflowY: 'auto', border: '1px solid #E5E7EB', borderRadius: '3px', background: '#FFFFFF', padding: '6px' }}>
+                      {productsList
+                        .filter(p => {
+                          if (!categorySearchQuery.trim()) return true;
+                          const q = categorySearchQuery.toLowerCase();
+                          return (p.name && p.name.toLowerCase().includes(q)) || (p.team && p.team.toLowerCase().includes(q));
+                        })
+                        .map((prod) => {
+                          const isSelected = categoryForm.productIds.includes(prod.id);
+                          return (
+                            <div
+                              key={prod.id}
+                              onClick={() => handleToggleProductInCategory(prod.id)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '8px 10px',
+                                borderBottom: '1px solid #F3F4F6',
+                                background: isSelected ? '#EFF6FF' : '#FFFFFF',
+                                cursor: 'pointer',
+                                transition: 'background 0.15s ease'
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => {}}
+                                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                              />
+                              <div style={{ width: '36px', height: '36px', borderRadius: '2px', overflow: 'hidden', background: '#F3F4F6', flexShrink: 0 }}>
+                                <img src={prod.imgUrl || (prod.images && prod.images[0])} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              </div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <p style={{ fontSize: '13px', fontWeight: 700, margin: 0, color: '#111111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                  {prod.name}
+                                </p>
+                                <p style={{ fontSize: '11px', color: '#6B7280', margin: '2px 0 0' }}>
+                                  {prod.team || '—'} · ₹{prod.price}
+                                </p>
+                              </div>
+                              {isSelected && (
+                                <span style={{ fontSize: '11px', fontWeight: 700, color: '#2563EB', background: '#DBEAFE', padding: '2px 6px', borderRadius: '9999px' }}>
+                                  Added
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Form Action Buttons */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid #E5E7EB', paddingTop: '16px' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAddingCategory(false);
+                      setEditingCategoryId(null);
+                      setCategoryForm({ name: '', imageUrl: '', productIds: [] });
+                    }}
+                    style={{ background: '#FFFFFF', border: '1px solid #D1D5DB', padding: '10px 18px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', borderRadius: '3px', color: '#374151' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{ background: '#111111', color: '#FFFFFF', border: 'none', padding: '10px 24px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', borderRadius: '3px' }}
+                  >
+                    {editingCategoryId ? '💾 Update Category' : '✓ Save Category'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Existing Categories Cards Grid */}
+          <div>
+            <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#111111', marginBottom: '16px' }}>
+              All Active Categories ({categoriesList.length})
+            </h3>
+
+            {categoriesList.length === 0 ? (
+              <div style={{ padding: '36px', textAlign: 'center', background: '#F9FAFB', border: '1px dashed #D1D5DB', borderRadius: '4px' }}>
+                <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 12px' }}>No categories created yet.</p>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingCategory(true)}
+                  style={{ background: '#111111', color: '#FFFFFF', padding: '8px 18px', fontSize: '12px', fontWeight: 700, border: 'none', borderRadius: '3px', cursor: 'pointer' }}
+                >
+                  Create First Category
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '20px' }}>
+                {categoriesList.map((cat) => {
+                  const assignedCount = Array.isArray(cat.productIds) ? cat.productIds.length : 0;
+                  return (
+                    <div
+                      key={cat.id || cat.name}
+                      style={{
+                        background: '#FFFFFF',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '4px',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', padding: '16px', gap: '16px' }}>
+                        {/* Category Image in 173x212 Aspect Frame */}
+                        <div style={{ width: '90px', height: '110px', border: '2px solid #000000', background: '#F3F4F6', flexShrink: 0, overflow: 'hidden' }}>
+                          <img src={cat.imageUrl} alt={cat.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+
+                        {/* Category Details */}
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                          <div>
+                            <span style={{ fontSize: '10px', fontWeight: 800, color: '#059669', background: '#D1FAE5', padding: '2px 6px', borderRadius: '3px', textTransform: 'uppercase' }}>
+                              Homepage Category
+                            </span>
+                            <h4 style={{ fontFamily: 'Josefin Sans, sans-serif', fontSize: '20px', fontWeight: 700, margin: '6px 0 2px', color: '#111111' }}>
+                              {cat.name}
+                            </h4>
+                            <p style={{ fontSize: '12px', color: '#4B5563', margin: 0 }}>
+                              <strong>{assignedCount}</strong> product{assignedCount === 1 ? '' : 's'} assigned
+                            </p>
+                          </div>
+
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                            <button
+                              type="button"
+                              onClick={() => handleEditCategory(cat)}
+                              style={{ flex: 1, background: '#111111', color: '#FFFFFF', border: 'none', padding: '6px 10px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', borderRadius: '2px' }}
+                            >
+                              ✏️ Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteCategory(cat.id)}
+                              style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', padding: '6px 10px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', borderRadius: '2px' }}
+                            >
+                              🗑️ Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Product Preview Strip */}
+                      <div style={{ background: '#F9FAFB', borderTop: '1px solid #E5E7EB', padding: '8px 16px', fontSize: '11px', color: '#6B7280', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span>Clicking this category on homepage filters shop to these products</span>
+                        <span style={{ fontWeight: 700, color: '#111111' }}>{assignedCount} items</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       )}

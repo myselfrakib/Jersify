@@ -20,13 +20,21 @@ import UserProfileModal from './components/UserProfileModal';
 import WishlistDrawer from './components/WishlistDrawer';
 
 import { INITIAL_PRODUCTS } from './data/initialProducts';
-import { auth, onAuthStateChanged, db, rtdb, ref, update, get } from './firebase';
+import { auth, onAuthStateChanged, db, rtdb, ref, update } from './firebase';
 
 export default function App() {
   // Page Navigation State: 'home' | 'shop' | 'product' | 'profile' | 'orders' | 'addresses' | 'team' | 'login' | 'signup' | 'checkout' | 'admin-login' | 'admin-dashboard'
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState('Barcelona');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_active_category');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
   const [adminData, setAdminData] = useState(null);
 
   const [cartItems, setCartItems] = useState(() => {
@@ -39,16 +47,6 @@ export default function App() {
   });
 
   const [user, setUser] = useState(null);
-  const [userProfile, setUserProfile] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem('jersify_user_profile');
-      return saved ? JSON.parse(saved) : null;
-    } catch (e) {
-      return null;
-    }
-  });
-  const [isAuthLoaded, setIsAuthLoaded] = useState(false);
-  const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -107,6 +105,21 @@ export default function App() {
       try {
         sessionStorage.setItem('jersify_active_team', param);
       } catch (e) {}
+    } else if (page === 'shop') {
+      if (param) {
+        const catName = typeof param === 'object' ? (param.name || param.id) : param;
+        targetHash = `#shop/category/${encodeURIComponent(catName)}`;
+        setSelectedCategoryFilter(param);
+        try {
+          sessionStorage.setItem('jersify_active_category', JSON.stringify(param));
+        } catch (e) {}
+      } else {
+        targetHash = '#shop';
+        setSelectedCategoryFilter(null);
+        try {
+          sessionStorage.removeItem('jersify_active_category');
+        } catch (e) {}
+      }
     }
 
     if (window.location.hash !== targetHash) {
@@ -171,12 +184,22 @@ export default function App() {
         return;
       }
 
+      if (rawHash.startsWith('shop/category/')) {
+        const catName = decodeURIComponent(rawHash.replace('shop/category/', ''));
+        setCurrentPage('shop');
+        setSelectedCategoryFilter(catName);
+        return;
+      }
+
       const validPages = [
         'shop', 'profile', 'orders', 'addresses', 'login', 'signup',
         'checkout', 'admin-login', 'admin-dashboard'
       ];
 
       if (validPages.includes(rawHash)) {
+        if (rawHash === 'shop') {
+          // Keep current category filter if exists or let user clear
+        }
         setCurrentPage(rawHash);
       } else {
         setCurrentPage('home');
@@ -211,97 +234,12 @@ export default function App() {
     }
   }, [currentPage, selectedProduct?.id, selectedTeam]);
 
-  const fetchUserDetails = async (firebaseUser) => {
-    if (!firebaseUser) return null;
-    try {
-      const userSnap = await get(ref(rtdb, `users/${firebaseUser.uid}`));
-      if (userSnap.exists()) {
-        const data = userSnap.val();
-        setUserProfile(data);
-        try {
-          sessionStorage.setItem('jersify_user_profile', JSON.stringify(data));
-        } catch (e) {}
-        return data;
-      }
-    } catch (err) {
-      console.warn('Failed to fetch user details from RTDB:', err);
-    }
-    const fallbackProfile = {
-      uid: firebaseUser.uid,
-      name: firebaseUser.displayName || (firebaseUser.email ? firebaseUser.email.split('@')[0] : 'Member'),
-      email: firebaseUser.email
-    };
-    setUserProfile(fallbackProfile);
-    try {
-      sessionStorage.setItem('jersify_user_profile', JSON.stringify(fallbackProfile));
-    } catch (e) {}
-    return fallbackProfile;
-  };
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setIsAuthLoaded(true);
-      if (currentUser) {
-        await fetchUserDetails(currentUser);
-      } else {
-        setUserProfile(null);
-        try {
-          sessionStorage.removeItem('jersify_user_profile');
-        } catch (e) {}
-      }
     });
     return () => unsubscribe();
   }, []);
-
-  const handleOpenProfile = async () => {
-    setIsProfileLoading(true);
-
-    let currentAuthUser = user;
-    if (!isAuthLoaded) {
-      if (auth.authStateReady) {
-        try {
-          await auth.authStateReady();
-        } catch (e) {}
-      }
-      currentAuthUser = auth.currentUser;
-    }
-
-    if (!currentAuthUser) {
-      navigateTo('login');
-      setIsProfileLoading(false);
-      return;
-    }
-
-    try {
-      await fetchUserDetails(currentAuthUser);
-    } catch (e) {
-      console.warn('Profile details fetch error:', e);
-    }
-
-    navigateTo('profile');
-    setTimeout(() => {
-      setIsProfileLoading(false);
-    }, 120);
-  };
-
-  useEffect(() => {
-    if (currentPage === 'profile') {
-      if (!isAuthLoaded) {
-        setIsProfileLoading(true);
-      } else if (!user) {
-        setIsProfileLoading(false);
-        navigateTo('login');
-      } else if (!userProfile) {
-        setIsProfileLoading(true);
-        fetchUserDetails(user).finally(() => {
-          setTimeout(() => {
-            setIsProfileLoading(false);
-          }, 100);
-        });
-      }
-    }
-  }, [currentPage, isAuthLoaded, user, userProfile]);
 
   useEffect(() => {
     localStorage.setItem('jersify_cart', JSON.stringify(cartItems));
@@ -383,7 +321,6 @@ export default function App() {
       <WholePageSpinner
         triggerKey={`${currentPage}_${selectedProduct?.id || ''}_${selectedTeam || ''}`}
         containerRef={pageContentRef}
-        isLoading={isProfileLoading}
       />
 
       {/* Main Page Container */}
@@ -394,8 +331,9 @@ export default function App() {
           cartCount={cartCount}
           onSelectProduct={(p) => navigateTo('product', p)}
           onSelectTeam={(t) => navigateTo('team', t)}
+          onSelectCategory={(c) => navigateTo('shop', c)}
           onOpenCart={() => setIsCartOpen(true)}
-          onOpenAuth={handleOpenProfile}
+          onOpenAuth={() => navigateTo(user ? 'profile' : 'login')}
           onNavigateShop={() => navigateTo('shop')}
         />
       )}
@@ -403,9 +341,17 @@ export default function App() {
       {currentPage === 'shop' && (
         <FigmaShopPage
           cartCount={cartCount}
+          selectedCategoryFilter={selectedCategoryFilter}
+          onClearCategoryFilter={() => {
+            setSelectedCategoryFilter(null);
+            try { sessionStorage.removeItem('jersify_active_category'); } catch (e) {}
+            if (window.location.hash.startsWith('#shop/category/')) {
+              window.location.hash = '#shop';
+            }
+          }}
           onSelectProduct={(p) => navigateTo('product', p)}
           onOpenCart={() => setIsCartOpen(true)}
-          onOpenAuth={handleOpenProfile}
+          onOpenAuth={() => navigateTo(user ? 'profile' : 'login')}
           onNavigateHome={() => navigateTo('home')}
         />
       )}
@@ -420,7 +366,7 @@ export default function App() {
           onUpdateQty={handleUpdateQty}
           onSelectProduct={(p) => navigateTo('product', p)}
           onOpenCart={() => setIsCartOpen(true)}
-          onOpenAuth={handleOpenProfile}
+          onOpenAuth={() => navigateTo(user ? 'profile' : 'login')}
           onNavigateHome={() => navigateTo('home')}
         />
       )}
@@ -428,15 +374,10 @@ export default function App() {
       {currentPage === 'profile' && (
         <FigmaProfilePage
           user={user}
-          userProfile={userProfile}
           onSignOut={async () => {
             if (user) {
               await auth.signOut();
               setUser(null);
-              setUserProfile(null);
-              try {
-                sessionStorage.removeItem('jersify_user_profile');
-              } catch (e) {}
             }
             navigateTo('login');
           }}

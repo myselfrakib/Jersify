@@ -10,8 +10,7 @@ export default function WholePageSpinner({
   triggerKey,
   containerRef,
   minDuration = 400,
-  maxTimeout = 9000,
-  isLoading = false
+  maxTimeout = 9000
 }) {
   const [isVisible, setIsVisible] = useState(true);
   const [isFading, setIsFading] = useState(false);
@@ -24,13 +23,13 @@ export default function WholePageSpinner({
     let observer = null;
     const startTime = Date.now();
 
-    // Show spinner when triggerKey changes or isLoading is active
+    // Show spinner when triggerKey changes (navigation or initial mount)
     setIsVisible(true);
     setIsFading(false);
     lastKeyRef.current = triggerKey;
 
     const finishLoading = () => {
-      if (isCancelled || isLoading) return;
+      if (isCancelled) return;
       if (observer) {
         observer.disconnect();
         observer = null;
@@ -40,10 +39,10 @@ export default function WholePageSpinner({
       const remainingMin = Math.max(0, minDuration - elapsed);
 
       fadeTimer = setTimeout(() => {
-        if (isCancelled || isLoading) return;
+        if (isCancelled) return;
         setIsFading(true);
         fadeTimer = setTimeout(() => {
-          if (isCancelled || isLoading) return;
+          if (isCancelled) return;
           setIsVisible(false);
           setIsFading(false);
         }, 360);
@@ -52,7 +51,7 @@ export default function WholePageSpinner({
 
     // Safety timeout in case an asset hangs indefinitely
     const safetyTimer = setTimeout(() => {
-      if (!isCancelled && !isLoading) {
+      if (!isCancelled) {
         finishLoading();
       }
     }, maxTimeout);
@@ -81,19 +80,11 @@ export default function WholePageSpinner({
     };
 
     const evaluateImages = () => {
-      if (isCancelled || isLoading) return;
+      if (isCancelled) return;
 
       const images = getImages();
-      // If DOM has no external raster images to wait for, finish loading after short settling debounce
+      // If DOM has not rendered any images yet, give it another moment
       if (images.length === 0) {
-        if (completionDebounceTimer) clearTimeout(completionDebounceTimer);
-        completionDebounceTimer = setTimeout(() => {
-          if (isCancelled || isLoading) return;
-          const recheck = getImages();
-          if (recheck.length === 0 || recheck.every(isImageDone)) {
-            finishLoading();
-          }
-        }, 120);
         return;
       }
 
@@ -118,15 +109,17 @@ export default function WholePageSpinner({
       const allLoaded = images.every(isImageDone);
 
       if (allLoaded) {
+        // Wait a 220ms grace window to verify no dynamic state changes re-trigger loading
         if (completionDebounceTimer) clearTimeout(completionDebounceTimer);
         completionDebounceTimer = setTimeout(() => {
-          if (isCancelled || isLoading) return;
+          if (isCancelled) return;
           const recheckImages = getImages();
-          if (recheckImages.length === 0 || recheckImages.every(isImageDone)) {
+          if (recheckImages.length > 0 && recheckImages.every(isImageDone)) {
             finishLoading();
           }
-        }, 180);
+        }, 220);
       } else {
+        // Still has pending images, clear any pending completion
         if (completionDebounceTimer) {
           clearTimeout(completionDebounceTimer);
           completionDebounceTimer = null;
@@ -136,7 +129,7 @@ export default function WholePageSpinner({
 
     // Initial check after short microtask render
     const initialCheckTimer = setTimeout(() => {
-      if (isCancelled || isLoading) return;
+      if (isCancelled) return;
       const container = getContainer();
 
       if (container) {
@@ -167,7 +160,7 @@ export default function WholePageSpinner({
       if (fadeTimer) clearTimeout(fadeTimer);
       if (observer) observer.disconnect();
     };
-  }, [triggerKey, minDuration, maxTimeout, containerRef, isLoading]);
+  }, [triggerKey, minDuration, maxTimeout, containerRef]);
 
   if (!isVisible) return null;
 

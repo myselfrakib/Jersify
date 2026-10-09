@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { rtdb, ref, onValue } from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
+import { INITIAL_CATEGORIES } from '../data/categoriesData';
 import ImageWithSpinner from './ImageWithSpinner';
 
 
@@ -16,7 +17,15 @@ const DEFAULT_LOGO_URL = "https://firebasestorage.googleapis.com/v0/b/jersify-f9
 const imgAccountButton = imgUser;
 const imgShoppingBagButton = imgShoppingBag;
 
-export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCart, onOpenAuth, onNavigateHome }) {
+export default function FigmaShopPage({
+  cartCount = 0,
+  onSelectProduct,
+  onOpenCart,
+  onOpenAuth,
+  onNavigateHome,
+  selectedCategoryFilter = null,
+  onClearCategoryFilter
+}) {
   const [headerLogo, setHeaderLogo] = useState(() => {
     try {
       const cached = sessionStorage.getItem('jersify_site_images');
@@ -36,6 +45,15 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
       return cached ? JSON.parse(cached) : INITIAL_PRODUCTS;
     } catch (e) {
       return INITIAL_PRODUCTS;
+    }
+  });
+
+  const [categoriesList, setCategoriesList] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_categories');
+      return cached ? JSON.parse(cached) : INITIAL_CATEGORIES;
+    } catch (e) {
+      return INITIAL_CATEGORIES;
     }
   });
 
@@ -66,9 +84,21 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
       }
     }, () => {});
 
+    const unsubCategories = onValue(ref(rtdb, 'categories'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const list = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        if (list.length > 0) {
+          setCategoriesList(list);
+          sessionStorage.setItem('jersify_categories', JSON.stringify(list));
+        }
+      }
+    }, () => {});
+
     return () => {
       unsubProds();
       unsubImages();
+      unsubCategories();
     };
   }, []);
 
@@ -111,8 +141,30 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
     return true;
   };
 
+  const activeCustomCategory = useMemo(() => {
+    if (!selectedCategoryFilter) return null;
+    if (typeof selectedCategoryFilter === 'object') {
+      const found = categoriesList.find(c => c.id === selectedCategoryFilter.id || c.name.toLowerCase() === selectedCategoryFilter.name?.toLowerCase());
+      return found || selectedCategoryFilter;
+    }
+    const target = String(selectedCategoryFilter).toLowerCase();
+    const found = categoriesList.find(c => c.id.toLowerCase() === target || c.name.toLowerCase() === target);
+    if (found) return found;
+    return { name: selectedCategoryFilter, productIds: [] };
+  }, [selectedCategoryFilter, categoriesList]);
+
   const filteredJerseys = shopJerseys.filter((item) => {
-    // 1. Category filter
+    // 0. Custom Category filter (from admin categories)
+    if (activeCustomCategory) {
+      const assignedIds = Array.isArray(activeCustomCategory.productIds) ? activeCustomCategory.productIds : [];
+      const catName = (activeCustomCategory.name || '').toLowerCase();
+      const isAssigned = assignedIds.includes(item.id);
+      const isNameMatch = (item.category && item.category.toLowerCase() === catName) ||
+                          (item.categoryTag && item.categoryTag.toLowerCase() === catName);
+      if (!isAssigned && !isNameMatch) return false;
+    }
+
+    // 1. Category version filter
     if (selectedCategory === 'fan' && !isFanProduct(item)) return false;
     if (selectedCategory === 'player' && !isPlayerProduct(item)) return false;
     if (selectedCategory === 'retro' && !isRetroProduct(item)) return false;
@@ -365,7 +417,59 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
         </button>
       </div>
 
-      {/* Filter status row when a category is selected */}
+      {/* Active Custom Category Banner (when redirected from homepage or filter) */}
+      {activeCustomCategory && (
+        <div style={{
+          background: '#F9FAFB',
+          borderBottom: '1px solid #E5E7EB',
+          padding: '10px 19px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '12px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+            <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: '#6B7280', flexShrink: 0 }}>
+              CATEGORY:
+            </span>
+            <span style={{ fontFamily: 'Josefin Sans, sans-serif', fontSize: '17px', fontWeight: 700, color: '#111111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {activeCustomCategory.name}
+            </span>
+            <span style={{
+              background: '#111111',
+              color: '#FFFFFF',
+              fontSize: '10px',
+              padding: '1px 7px',
+              borderRadius: '9999px',
+              fontWeight: 700,
+              flexShrink: 0
+            }}>
+              {filteredJerseys.length}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (onClearCategoryFilter) onClearCategoryFilter();
+            }}
+            style={{
+              background: '#FFFFFF',
+              border: '1px solid #D1D5DB',
+              padding: '4px 10px',
+              fontSize: '11px',
+              fontWeight: 700,
+              borderRadius: '3px',
+              cursor: 'pointer',
+              color: '#374151',
+              flexShrink: 0
+            }}
+          >
+            ✕ View All
+          </button>
+        </div>
+      )}
+
+      {/* Filter status row when version (fan/player/retro) is selected */}
       {selectedCategory && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 19px 0', fontSize: '12px' }}>
           <span style={{ color: '#6B7280', fontFamily: 'Karla, sans-serif', textTransform: 'capitalize' }}>
@@ -422,14 +526,30 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
               No jerseys found
             </p>
             <p style={{ fontFamily: 'Karla', fontSize: '13px', marginBottom: '16px' }}>
-              No products matched "{searchQuery}"
+              {activeCustomCategory
+                ? `No products in category "${activeCustomCategory.name}" matched your current filter.`
+                : searchQuery
+                ? `No products matched "${searchQuery}".`
+                : 'No products found.'}
             </p>
-            <button
-              onClick={() => setSearchQuery('')}
-              style={{ padding: '8px 16px', background: '#111111', color: '#FFFFFF', border: 'none', borderRadius: '20px', fontSize: '12px', fontFamily: 'Karla', cursor: 'pointer' }}
-            >
-              Clear Search
-            </button>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  style={{ padding: '8px 16px', background: '#FFFFFF', border: '1px solid #D1D5DB', color: '#111111', borderRadius: '4px', fontSize: '12px', fontFamily: 'Karla', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  Clear Search
+                </button>
+              )}
+              {activeCustomCategory && (
+                <button
+                  onClick={onClearCategoryFilter}
+                  style={{ padding: '8px 16px', background: '#111111', color: '#FFFFFF', border: 'none', borderRadius: '4px', fontSize: '12px', fontFamily: 'Karla', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  View All Products
+                </button>
+              )}
+            </div>
           </div>
         )}
 
