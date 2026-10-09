@@ -231,7 +231,7 @@ export default function FigmaProductPage({
 
       {/* Slidable Hero Product Carousel */}
       <div 
-        style={{ position: 'relative', top: '70px', width: '393px', height: '568px', background: '#F3F2EF', overflow: 'hidden' }}
+        style={{ marginTop: '70px', width: '393px', height: '568px', background: '#F3F2EF', overflow: 'hidden', position: 'relative' }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -304,18 +304,18 @@ export default function FigmaProductPage({
           </button>
         )}
 
-        {/* Slide Indicator Dots */}
+        {/* Slide Indicator Dots (Figma 27:33) */}
         {productImages.length > 1 && (
-          <div style={{ position: 'absolute', bottom: '14px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '8px', zIndex: 10 }}>
+          <div style={{ position: 'absolute', bottom: '16px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '8px', zIndex: 10 }}>
             {productImages.map((_, idx) => (
               <div 
                 key={idx}
                 onClick={() => setActiveSlide(idx)}
                 style={{
-                  width: activeSlide === idx ? '24px' : '8px',
-                  height: '8px',
-                  borderRadius: '4px',
-                  background: activeSlide === idx ? '#000000' : 'rgba(0, 0, 0, 0.3)',
+                  width: activeSlide === idx ? '20px' : '20px',
+                  height: '4px',
+                  borderRadius: '2px',
+                  background: activeSlide === idx ? '#000000' : '#D1D5DB',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease'
                 }}
@@ -325,63 +325,107 @@ export default function FigmaProductPage({
         )}
       </div>
 
-      {/* Product Information Container */}
-      <div style={{ padding: '19px', paddingTop: '80px' }}>
-        {/* Gallery Thumbnails Strip */}
-        {productImages.length > 1 && (
-          <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', marginBottom: '20px', paddingBottom: '4px' }}>
-            {productImages.map((img, idx) => (
-              <div
-                key={idx}
-                onClick={() => setActiveSlide(idx)}
-                style={{
-                  width: '64px',
-                  height: '64px',
-                  borderRadius: '2px',
-                  overflow: 'hidden',
-                  cursor: 'pointer',
-                  border: activeSlide === idx ? '2px solid #111111' : '1px solid #E5E7EB',
-                  opacity: activeSlide === idx ? 1 : 0.6,
-                  flexShrink: 0
-                }}
-              >
-                <ImageWithSpinner src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Title */}
-        <h1 style={{ fontFamily: 'Karla', fontWeight: 400, fontSize: '18px', color: '#000000', lineHeight: 'normal', marginBottom: '12px' }}>
+      {/* Product Information Container (Exact Figma 8:68 Placement: x=24px, right=24px) */}
+      <div style={{ padding: '20px 24px 0 24px' }}>
+        {/* Title (Figma 8:72 - x:24, y:658, w:345) */}
+        <h1 style={{
+          fontFamily: 'Karla, sans-serif',
+          fontWeight: 400,
+          fontSize: '18px',
+          color: '#000000',
+          lineHeight: '22px',
+          margin: 0,
+          marginBottom: '12px',
+          width: '345px'
+        }}>
           {currentProduct.name}
         </h1>
 
-        {/* Price & Rating */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-          <span style={{ fontFamily: 'Karla', fontWeight: 400, fontSize: '26px', color: '#000000' }}>
+        {/* Price & Rating (Figma 8:74 & 13:2 - x:22, y:714) */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '345px',
+          marginBottom: '5px'
+        }}>
+          <span style={{
+            fontFamily: 'Karla, sans-serif',
+            fontWeight: 400,
+            fontSize: '26px',
+            color: '#000000',
+            lineHeight: '30px'
+          }}>
             ₹{currentProduct.price}
           </span>
-          <span style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '13px', color: '#262626', background: '#F3F4F6', padding: '2px 8px', borderRadius: '4px' }}>
+          <span style={{
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 600,
+            fontSize: '13px',
+            color: '#262626',
+            lineHeight: '21px'
+          }}>
             ★ {currentProduct.rating || 4.4}
           </span>
         </div>
-        <p style={{ fontFamily: 'Karla', fontSize: '12px', color: '#989191', marginBottom: '24px' }}>
+
+        {/* MRP Taxes Notice (Figma 8:75 - x:24, y:749) */}
+        <p style={{
+          fontFamily: 'Karla, sans-serif',
+          fontWeight: 400,
+          fontSize: '12px',
+          color: '#989191',
+          lineHeight: '14px',
+          margin: 0,
+          marginBottom: '17px'
+        }}>
           MRP inclusive of all taxes
         </p>
 
-        {/* Size Selection (Figma 8:68 Exact Specification) */}
-        <div style={{ marginBottom: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontFamily: 'Karla', fontSize: '14px', color: '#1F1F1F' }}>Select your size</span>
+        {/* Size Selection Section (Figma 26:38, 12:85, 8:84, 27:3-27:7, 26:39) */}
+        <div style={{ marginBottom: '16px' }}>
+          {/* Header Row: "Select your size" (26:38) + "SIZE GUIDE" (12:85) */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '345px',
+            marginBottom: '8px'
+          }}>
+            <span style={{
+              fontFamily: 'Karla, sans-serif',
+              fontWeight: 400,
+              fontSize: '14px',
+              color: '#1F1F1F',
+              lineHeight: '24px'
+            }}>
+              Select your size
+            </span>
             <span 
               onClick={() => setIsSizeGuideOpen(true)}
-              style={{ fontFamily: 'Karla', fontSize: '12px', color: '#000000', textDecoration: 'underline', cursor: 'pointer' }}
+              style={{
+                fontFamily: 'Karla, sans-serif',
+                fontWeight: 400,
+                fontSize: '12px',
+                color: '#000000',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+                lineHeight: '14px'
+              }}
             >
               SIZE GUIDE
             </span>
           </div>
 
-          <div style={{ display: 'flex', width: '211.3px', height: '46px', border: '0.72px solid #000000', overflow: 'hidden' }}>
+          {/* Size Selection Box (Figma 8:84 - x:24, y:808, w:211.31px, h:46px) */}
+          <div style={{
+            display: 'flex',
+            width: '211.31px',
+            height: '46px',
+            border: '0.72px solid #000000',
+            overflow: 'hidden',
+            marginBottom: '13px'
+          }}>
             {sizes.map((sz, i) => (
               <button
                 key={sz}
@@ -409,15 +453,25 @@ export default function FigmaProductPage({
               </button>
             ))}
           </div>
-          <p style={{ fontFamily: 'Karla', fontSize: '12px', color: '#1F1F1F', marginTop: '8px' }}>
+
+          {/* Size selection help notice (Figma 26:39 - x:24, y:867) */}
+          <p style={{
+            fontFamily: 'Karla, sans-serif',
+            fontWeight: 400,
+            fontSize: '12px',
+            color: '#1F1F1F',
+            lineHeight: '14px',
+            margin: 0
+          }}>
             Check the size guide before choosing your fit.
           </p>
         </div>
 
-        {/* Add to Bag Button OR Sleek Black Plus/Minus Quantity Controller */}
+        {/* Add to Bag Button OR Quantity Controller (Figma 25:97 - x:24, y:897, w:345, h:56) */}
         {existingInCart && existingInCart.quantity > 0 ? (
           <div style={{
             width: '100%',
+            maxWidth: '345px',
             height: '56px',
             background: '#000000',
             color: '#FFFFFF',
