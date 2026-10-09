@@ -265,52 +265,29 @@ export default function WholePageSpinner({
         />
       </div>
 
-      {/* Status & Shimmer Progress Bar */}
+      {/* Shimmer Progress Line */}
       <div
         style={{
           marginTop: '28px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '12px'
+          width: '120px',
+          height: '2px',
+          background: '#F3F4F6',
+          borderRadius: '2px',
+          overflow: 'hidden',
+          position: 'relative'
         }}
       >
-        <span
-          style={{
-            fontFamily: 'Karla, sans-serif',
-            fontSize: '12px',
-            fontWeight: 600,
-            letterSpacing: '0.12em',
-            color: '#6B7280',
-            textTransform: 'uppercase'
-          }}
-        >
-          Loading images...
-        </span>
-
-        {/* Shimmer line */}
         <div
           style={{
-            width: '120px',
-            height: '2px',
-            background: '#F3F4F6',
-            borderRadius: '2px',
-            overflow: 'hidden',
-            position: 'relative'
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '50%',
+            height: '100%',
+            background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
+            animation: 'jersifyShimmerBar 1.2s infinite ease-in-out'
           }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '50%',
-              height: '100%',
-              background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
-              animation: 'jersifyShimmerBar 1.2s infinite ease-in-out'
-            }}
-          />
-        </div>
+        />
       </div>
     </div>
   );
