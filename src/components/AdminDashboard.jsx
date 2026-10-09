@@ -235,11 +235,25 @@ export default function AdminDashboard({
   // Orders State & Details Modal State
   const [ordersList, setOrdersList] = useState([]);
   const [selectedOrderModal, setSelectedOrderModal] = useState(null);
+  const [orderSortOption, setOrderSortOption] = useState('newest'); // 'newest' | 'oldest' | 'total-high' | 'total-low' | 'customer'
+  const [orderStatusFilter, setOrderStatusFilter] = useState('all');
+  const [orderSearchQuery, setOrderSearchQuery] = useState('');
+  const [selectedModalItemIndices, setSelectedModalItemIndices] = useState([]);
+
+  // Shopping List State (Items marked for procurement)
+  const [shoppingList, setShoppingList] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_shopping_list');
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
 
   // Users & Admins State
   const [usersList, setUsersList] = useState([]);
 
-  // Fetch RTDB configuration, products, orders & users with realtime onValue listeners
+  // Fetch RTDB configuration, products, orders, shopping list & users with realtime onValue listeners
   useEffect(() => {
     // 1. Realtime listener for siteConfig/images
     const unsubImages = onValue(ref(rtdb, 'siteConfig/images'), (snap) => {
@@ -283,7 +297,20 @@ export default function AdminDashboard({
       }
     }, () => { });
 
-    // 5. Realtime listener for users & admins
+    // 5. Realtime listener for shopping list
+    const unsubShoppingList = onValue(ref(rtdb, 'siteConfig/shoppingList'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const list = Array.isArray(val) ? val : Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        setShoppingList(list);
+        sessionStorage.setItem('jersify_shopping_list', JSON.stringify(list));
+      } else {
+        setShoppingList([]);
+        sessionStorage.removeItem('jersify_shopping_list');
+      }
+    }, () => { });
+
+    // 6. Realtime listener for users & admins
     const unsubAdmins = onValue(ref(rtdb, 'admins'), () => loadUsersAndAdmins(), () => { });
     const unsubUsers = onValue(ref(rtdb, 'users'), () => loadUsersAndAdmins(), () => { });
 
@@ -303,7 +330,7 @@ export default function AdminDashboard({
       } catch (e) { }
     }
 
-    // 6. Realtime listener for homepage product sequence
+    // 7. Realtime listener for homepage product sequence
     const unsubOrder = onValue(ref(rtdb, 'siteConfig/homepageOrder'), (snap) => {
       if (snap.exists() && Array.isArray(snap.val())) {
         setHomepageOrder(snap.val());
@@ -317,11 +344,25 @@ export default function AdminDashboard({
       unsubTeams();
       unsubProds();
       unsubOrders();
+      unsubShoppingList();
       unsubAdmins();
       unsubUsers();
       unsubOrder();
     };
   }, []);
+
+  // Sync selected modal item indices whenever order modal opens
+  useEffect(() => {
+    if (selectedOrderModal) {
+      if (Array.isArray(selectedOrderModal.items) && selectedOrderModal.items.length > 0) {
+        setSelectedModalItemIndices(selectedOrderModal.items.map((_, i) => i));
+      } else {
+        setSelectedModalItemIndices([0]);
+      }
+    } else {
+      setSelectedModalItemIndices([]);
+    }
+  }, [selectedOrderModal]);
 
   // Image Save Handler for Index Page
   const handleSaveImages = async () => {
@@ -621,6 +662,339 @@ export default function AdminDashboard({
     }
   };
 
+  // Sorted and Filtered Customer Orders (Latest at Top by default)
+  const sortedOrders = useMemo(() => {
+    let list = [...ordersList];
+
+    // Status filter
+    if (orderStatusFilter !== 'all') {
+      list = list.filter(o => (o.status || 'confirmed').toLowerCase() === orderStatusFilter.toLowerCase());
+    }
+
+    // Search query filter
+    if (orderSearchQuery.trim()) {
+      const q = orderSearchQuery.toLowerCase().trim();
+      list = list.filter(o =>
+        (o.id && String(o.id).toLowerCase().includes(q)) ||
+        (o.orderId && String(o.orderId).toLowerCase().includes(q)) ||
+        (o.customerName && o.customerName.toLowerCase().includes(q)) ||
+        (o.phone && String(o.phone).toLowerCase().includes(q)) ||
+        (o.email && o.email.toLowerCase().includes(q))
+      );
+    }
+
+    // Sorting: Newest/Latest First by default!
+    list.sort((a, b) => {
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : (Number(a.id) || 0);
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : (Number(b.id) || 0);
+
+      if (orderSortOption === 'newest') return timeB - timeA;
+      if (orderSortOption === 'oldest') return timeA - timeB;
+      if (orderSortOption === 'total-high') return (Number(b.total) || 0) - (Number(a.total) || 0);
+      if (orderSortOption === 'total-low') return (Number(a.total) || 0) - (Number(b.total) || 0);
+      if (orderSortOption === 'customer') return (a.customerName || '').localeCompare(b.customerName || '');
+      return timeB - timeA;
+    });
+
+    return list;
+  }, [ordersList, orderSortOption, orderStatusFilter, orderSearchQuery]);
+
+  // Shopping List Actions
+  const handleSaveShoppingList = async (updatedList) => {
+    setShoppingList(updatedList);
+    sessionStorage.setItem('jersify_shopping_list', JSON.stringify(updatedList));
+    try {
+      await set(ref(rtdb, 'siteConfig/shoppingList'), updatedList);
+    } catch (e) {
+      console.error('Failed to sync shopping list to RTDB:', e);
+    }
+  };
+
+  const handleAddItemsFromModal = async (itemsToAdd) => {
+    if (!itemsToAdd || itemsToAdd.length === 0) {
+      alert('Please select at least one item from the order to add to the shopping list.');
+      return;
+    }
+
+    const orderId = selectedOrderModal?.orderId || selectedOrderModal?.id || 'Direct';
+    const customer = selectedOrderModal?.customerName || 'Customer';
+
+    const newEntries = itemsToAdd.map((item, idx) => {
+      const entryId = `shop_${Date.now()}_${idx}_${Math.random().toString(36).substr(2, 4)}`;
+      return {
+        id: entryId,
+        productId: item.id || item.productId || '',
+        name: item.name || item.title || 'Football Kit',
+        size: item.size || item.selectedSize || 'M',
+        team: item.team || '',
+        version: item.version || item.type || 'Fan Version',
+        quantity: Number(item.quantity) || 1,
+        price: Number(item.price) || 0,
+        imgUrl: item.imgUrl || item.image || item.images?.[0] || 'https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de',
+        orderId: orderId,
+        customerName: customer,
+        status: 'pending', // 'pending' | 'shopped'
+        addedAt: Date.now()
+      };
+    });
+
+    const updated = [...newEntries, ...shoppingList];
+    await handleSaveShoppingList(updated);
+    alert(`Successfully added ${newEntries.length} product(s) to the Shopping List!`);
+  };
+
+  const handleRemoveShoppingListItem = async (itemId) => {
+    const updated = shoppingList.filter(item => item.id !== itemId);
+    await handleSaveShoppingList(updated);
+  };
+
+  const handleToggleShoppingItemStatus = async (itemId) => {
+    const updated = shoppingList.map(item => {
+      if (item.id === itemId) {
+        return { ...item, status: item.status === 'shopped' ? 'pending' : 'shopped' };
+      }
+      return item;
+    });
+    await handleSaveShoppingList(updated);
+  };
+
+  const handleClearShoppingList = async () => {
+    if (window.confirm('Are you sure you want to clear all items from the shopping list?')) {
+      await handleSaveShoppingList([]);
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    if (shoppingList.length === 0) {
+      alert('Shopping list is currently empty.');
+      return;
+    }
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow popups to download/print the PDF shopping list.');
+      return;
+    }
+
+    const totalQty = shoppingList.reduce((acc, i) => acc + (Number(i.quantity) || 1), 0);
+    const uniqueOrders = new Set(shoppingList.map(i => i.orderId).filter(Boolean)).size;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Jersify_Shopping_List_${now.toISOString().slice(0, 10)}</title>
+          <style>
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+              color: #111111;
+              padding: 28px;
+              background: #FFFFFF;
+            }
+            .header-bar {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-end;
+              border-bottom: 2.5px solid #111111;
+              padding-bottom: 12px;
+              margin-bottom: 20px;
+            }
+            .brand-title {
+              font-size: 24px;
+              font-weight: 900;
+              letter-spacing: 2px;
+              color: #111111;
+            }
+            .brand-sub {
+              font-size: 11px;
+              color: #6B7280;
+              font-weight: 700;
+              letter-spacing: 1.5px;
+              text-transform: uppercase;
+              margin-top: 3px;
+            }
+            .meta-info {
+              text-align: right;
+              font-size: 12px;
+              color: #4B5563;
+              line-height: 1.5;
+            }
+            .summary-cards {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 12px;
+              margin-bottom: 22px;
+            }
+            .card {
+              background: #F9FAFB;
+              border: 1px solid #E5E7EB;
+              border-radius: 4px;
+              padding: 10px 14px;
+            }
+            .card-label {
+              font-size: 10px;
+              font-weight: 700;
+              color: #6B7280;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            .card-val {
+              font-size: 18px;
+              font-weight: 800;
+              color: #111111;
+              margin-top: 2px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 12px;
+            }
+            thead tr {
+              background: #111111;
+              color: #FFFFFF;
+            }
+            th {
+              padding: 10px 8px;
+              font-size: 11px;
+              font-weight: 700;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              text-align: left;
+            }
+            td {
+              padding: 10px 8px;
+              border-bottom: 1px solid #E5E7EB;
+              vertical-align: middle;
+            }
+            tr:nth-child(even) td {
+              background: #FAFAFA;
+            }
+            .badge {
+              display: inline-block;
+              padding: 3px 8px;
+              border-radius: 3px;
+              font-weight: 700;
+              font-size: 11px;
+            }
+            .size-badge {
+              background: #111111;
+              color: #FFFFFF;
+              font-size: 12px;
+              min-width: 28px;
+              text-align: center;
+            }
+            .qty-badge {
+              background: #DCFCE7;
+              color: #166534;
+              font-weight: 800;
+              font-size: 12px;
+              padding: 3px 10px;
+              border-radius: 9999px;
+            }
+            .check-box {
+              width: 18px;
+              height: 18px;
+              border: 1.5px solid #111111;
+              border-radius: 2px;
+              margin: 0 auto;
+            }
+            .footer-note {
+              margin-top: 30px;
+              padding-top: 12px;
+              border-top: 1px solid #E5E7EB;
+              display: flex;
+              justify-content: space-between;
+              font-size: 11px;
+              color: #9CA3AF;
+            }
+            @media print {
+              body { padding: 10mm; }
+              @page { size: portrait; margin: 10mm; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header-bar">
+            <div>
+              <div class="brand-title">JERSIFY</div>
+              <div class="brand-sub">PROCUREMENT & SHOPPING LIST</div>
+            </div>
+            <div class="meta-info">
+              <div><strong>Generated:</strong> ${dateStr} at ${timeStr}</div>
+              <div><strong>Total Items:</strong> ${shoppingList.length} products</div>
+            </div>
+          </div>
+
+          <div class="summary-cards">
+            <div class="card">
+              <div class="card-label">TOTAL ITEMS NEEDED</div>
+              <div class="card-val">${shoppingList.length}</div>
+            </div>
+            <div class="card">
+              <div class="card-label">TOTAL UNITS / PIECES</div>
+              <div class="card-val">${totalQty} pcs</div>
+            </div>
+            <div class="card">
+              <div class="card-label">CUSTOMER ORDERS</div>
+              <div class="card-val">${uniqueOrders} orders</div>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 30px; text-align: center;">#</th>
+                <th>Product Description</th>
+                <th>Team</th>
+                <th>Version</th>
+                <th style="text-align: center; width: 60px;">Size</th>
+                <th style="text-align: center; width: 60px;">Qty</th>
+                <th>Order Ref</th>
+                <th>Customer</th>
+                <th style="text-align: center; width: 60px;">Bought</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${shoppingList.map((item, idx) => `
+                <tr>
+                  <td style="text-align: center; color: #6B7280;">${idx + 1}</td>
+                  <td><strong>${item.name}</strong></td>
+                  <td>${item.team || '—'}</td>
+                  <td>${item.version || 'Fan Version'}</td>
+                  <td style="text-align: center;"><span class="badge size-badge">${item.size || 'M'}</span></td>
+                  <td style="text-align: center;"><span class="badge qty-badge">${item.quantity || 1}</span></td>
+                  <td><span style="font-family: monospace; font-size: 11px;">#${item.orderId || 'Direct'}</span></td>
+                  <td>${item.customerName || 'Customer'}</td>
+                  <td style="text-align: center;"><div class="check-box"></div></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <div class="footer-note">
+            <span>Jersify Order Fulfillment & Inventory Procurement</span>
+            <span>Check off each item once procured from supplier/market</span>
+          </div>
+
+          <script>
+            window.onload = function() {
+              window.focus();
+              window.print();
+            };
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
   const handleToggleAdminStatus = async (userUid, currentStatus) => {
     const nextStatus = !currentStatus;
     try {
@@ -653,7 +1027,7 @@ export default function AdminDashboard({
         </div>
       </div>
 
-      {/* Navigation Tabs (5 Separated Tabs) */}
+      {/* Navigation Tabs (6 Separated Tabs) */}
       <div style={{ display: 'flex', background: '#F3F4F6', borderBottom: '1px solid #E5E7EB', overflowX: 'auto' }}>
         <button
           onClick={() => setActiveTab('images')}
@@ -678,6 +1052,12 @@ export default function AdminDashboard({
           style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'orders' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'orders' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
         >
           📦 Customer Orders ({ordersList.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('shopping-list')}
+          style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'shopping-list' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'shopping-list' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+        >
+          🛒 Shopping list {shoppingList.length > 0 ? `(${shoppingList.length})` : ''}
         </button>
         <button
           onClick={() => setActiveTab('users')}
@@ -1379,22 +1759,103 @@ export default function AdminDashboard({
       {/* TAB 4: CUSTOMER ORDERS (SEPARATED TAB) */}
       {activeTab === 'orders' && (
         <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div>
-            <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111111' }}>Customer Orders Management</h2>
-            <p style={{ fontSize: '13px', color: '#6B7280' }}>View live customer orders with full product details, shipping info and status updates.</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111111' }}>Customer Orders Management</h2>
+              <p style={{ fontSize: '13px', color: '#6B7280' }}>View live customer orders with sorting, filters, product details, and shopping list management.</p>
+            </div>
+            <span style={{ fontSize: '13px', fontWeight: 700, background: '#F3F4F6', color: '#374151', padding: '6px 12px', borderRadius: '4px' }}>
+              Showing {sortedOrders.length} of {ordersList.length} Order(s)
+            </span>
+          </div>
+
+          {/* Orders Sort & Filter Controls Toolbar */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center', background: '#F9FAFB', border: '1px solid #E5E7EB', padding: '14px', borderRadius: '4px' }}>
+            {/* Sort Orders Dropdown */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 240px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 700, color: '#4B5563', whiteSpace: 'nowrap' }}>Sort By:</label>
+              <select
+                value={orderSortOption}
+                onChange={(e) => setOrderSortOption(e.target.value)}
+                style={{ flex: 1, padding: '8px 12px', border: '1px solid #111111', background: '#FFFFFF', fontWeight: 700, fontSize: '13px', cursor: 'pointer', fontFamily: 'Karla' }}
+              >
+                <option value="newest">⚡ Latest Orders First (Default)</option>
+                <option value="oldest">⌛ Oldest Orders First</option>
+                <option value="total-high">💰 Total: High to Low</option>
+                <option value="total-low">🏷️ Total: Low to High</option>
+                <option value="customer">👤 Customer Name (A-Z)</option>
+              </select>
+            </div>
+
+            {/* Status Filter Dropdown */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 180px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 700, color: '#4B5563', whiteSpace: 'nowrap' }}>Status:</label>
+              <select
+                value={orderStatusFilter}
+                onChange={(e) => setOrderStatusFilter(e.target.value)}
+                style={{ flex: 1, padding: '8px 12px', border: '1px solid #D1D5DB', background: '#FFFFFF', fontWeight: 600, fontSize: '13px', cursor: 'pointer', fontFamily: 'Karla' }}
+              >
+                <option value="all">All Statuses</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="dispatched">Dispatched</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            {/* Search Input */}
+            <div style={{ flex: '1 1 220px' }}>
+              <input
+                type="text"
+                placeholder="Search Order ID, Customer, Phone..."
+                value={orderSearchQuery}
+                onChange={(e) => setOrderSearchQuery(e.target.value)}
+                style={{ width: '100%', boxSizing: 'border-box', padding: '8px 12px', border: '1px solid #D1D5DB', fontSize: '13px', fontFamily: 'Karla' }}
+              />
+            </div>
+
+            {(orderStatusFilter !== 'all' || orderSearchQuery || orderSortOption !== 'newest') && (
+              <button
+                onClick={() => {
+                  setOrderStatusFilter('all');
+                  setOrderSearchQuery('');
+                  setOrderSortOption('newest');
+                }}
+                style={{ padding: '8px 12px', background: '#E5E7EB', color: '#374151', border: 'none', fontWeight: 700, fontSize: '12px', cursor: 'pointer', borderRadius: '3px' }}
+              >
+                Reset Filters
+              </button>
+            )}
           </div>
 
           {ordersList.length === 0 ? (
-            <div style={{ padding: '24px', background: '#F9FAFB', border: '1px solid #E5E7EB', color: '#6B7280', fontSize: '14px', textAlign: 'center' }}>
+            <div style={{ padding: '30px', background: '#F9FAFB', border: '1px solid #E5E7EB', color: '#6B7280', fontSize: '14px', textAlign: 'center' }}>
               No live customer orders found in Realtime Database yet.
+            </div>
+          ) : sortedOrders.length === 0 ? (
+            <div style={{ padding: '30px', background: '#F9FAFB', border: '1px solid #E5E7EB', color: '#6B7280', fontSize: '14px', textAlign: 'center' }}>
+              No orders matched your selected filters or search query.
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {ordersList.map(o => (
+              {sortedOrders.map(o => (
                 <div key={o.id} style={{ border: '1px solid #E5E7EB', padding: '16px', background: '#F9FAFB', borderRadius: '4px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                     <div>
-                      <span style={{ fontWeight: 700, fontSize: '16px', color: '#111111' }}>Order #{o.orderId || o.id}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontWeight: 700, fontSize: '16px', color: '#111111' }}>Order #{o.orderId || o.id}</span>
+                        <span style={{
+                          background: o.status === 'delivered' ? '#D1FAE5' : o.status === 'dispatched' ? '#DBEAFE' : o.status === 'cancelled' ? '#FEE2E2' : '#FEF3C7',
+                          color: o.status === 'delivered' ? '#065F46' : o.status === 'dispatched' ? '#1E40AF' : o.status === 'cancelled' ? '#991B1B' : '#92400E',
+                          padding: '3px 8px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          borderRadius: '3px',
+                          textTransform: 'uppercase'
+                        }}>
+                          {o.status || 'confirmed'}
+                        </span>
+                      </div>
                       <p style={{ fontSize: '12px', color: '#6B7280', marginTop: '2px' }}>Placed on: {o.createdAt ? new Date(o.createdAt).toLocaleString() : 'Recent'}</p>
                     </div>
 
@@ -1437,6 +1898,247 @@ export default function AdminDashboard({
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB: SHOPPING LIST (PROCUREMENT) */}
+      {activeTab === 'shopping-list' && (
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Header & Main Actions */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111111', margin: 0 }}>Shopping List</h2>
+                <span style={{ background: '#10B981', color: '#FFFFFF', padding: '3px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 700 }}>
+                  {shoppingList.length} Items Needed
+                </span>
+              </div>
+              <p style={{ fontSize: '13px', color: '#6B7280', margin: '4px 0 0' }}>
+                Products marked for procurement from customer orders. View required sizes, quantities, and download the print/PDF shopping list.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button
+                onClick={handleDownloadPDF}
+                disabled={shoppingList.length === 0}
+                style={{
+                  background: shoppingList.length === 0 ? '#9CA3AF' : '#111111',
+                  color: '#FFFFFF',
+                  padding: '10px 18px',
+                  border: 'none',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  cursor: shoppingList.length === 0 ? 'not-allowed' : 'pointer',
+                  borderRadius: '4px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+                }}
+              >
+                📥 Download PDF of List
+              </button>
+
+              {shoppingList.length > 0 && (
+                <button
+                  onClick={handleClearShoppingList}
+                  style={{
+                    background: '#FEE2E2',
+                    color: '#991B1B',
+                    padding: '10px 14px',
+                    border: '1px solid #FECACA',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    borderRadius: '4px'
+                  }}
+                >
+                  🗑️ Clear All
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Quick Metrics Bar */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
+            <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', padding: '14px 18px', borderRadius: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px' }}>TOTAL PRODUCTS</span>
+              <div style={{ fontSize: '24px', fontWeight: 800, color: '#111111', marginTop: '2px' }}>{shoppingList.length}</div>
+            </div>
+            <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', padding: '14px 18px', borderRadius: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px' }}>TOTAL UNITS / PCS</span>
+              <div style={{ fontSize: '24px', fontWeight: 800, color: '#059669', marginTop: '2px' }}>
+                {shoppingList.reduce((acc, i) => acc + (Number(i.quantity) || 1), 0)} pcs
+              </div>
+            </div>
+            <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', padding: '14px 18px', borderRadius: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px' }}>ORDERS COVERED</span>
+              <div style={{ fontSize: '24px', fontWeight: 800, color: '#111111', marginTop: '2px' }}>
+                {new Set(shoppingList.map(i => i.orderId).filter(Boolean)).size} orders
+              </div>
+            </div>
+            <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', padding: '14px 18px', borderRadius: '6px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px' }}>SOURCING PROGRESS</span>
+              <div style={{ fontSize: '16px', fontWeight: 800, color: '#111111', marginTop: '8px' }}>
+                {shoppingList.filter(i => i.status === 'shopped').length} / {shoppingList.length} Sourced
+              </div>
+            </div>
+          </div>
+
+          {/* List Content */}
+          {shoppingList.length === 0 ? (
+            <div style={{ padding: '60px 20px', background: '#F9FAFB', border: '1px dashed #D1D5DB', borderRadius: '6px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '40px' }}>🛒</span>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#111111', margin: 0 }}>Your Shopping List is Empty</h3>
+              <p style={{ fontSize: '13px', color: '#6B7280', maxWidth: '460px', margin: 0 }}>
+                Products marked for need to shop from orders will appear here. Go to the <strong>Customer Orders</strong> tab, click <strong>View Order Details</strong> on any order, and click <strong>Add to Shopping List</strong>.
+              </p>
+              <button
+                onClick={() => setActiveTab('orders')}
+                style={{ background: '#111111', color: '#FFFFFF', padding: '9px 18px', border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', borderRadius: '4px', marginTop: '6px' }}
+              >
+                Go to Customer Orders →
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 4px' }}>
+                <span style={{ fontSize: '12px', color: '#6B7280', fontWeight: 700 }}>
+                  Click checkbox or status badge to mark items as procured/shopped.
+                </span>
+                <span style={{ fontSize: '12px', color: '#111111', fontWeight: 700 }}>
+                  {shoppingList.filter(i => i.status !== 'shopped').length} Pending Procurement
+                </span>
+              </div>
+
+              <div style={{ overflowX: 'auto', border: '1px solid #E5E7EB', borderRadius: '4px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left', background: '#FFFFFF' }}>
+                  <thead>
+                    <tr style={{ background: '#F3F4F6', borderBottom: '1px solid #E5E7EB' }}>
+                      <th style={{ padding: '12px 14px', width: '40px', textAlign: 'center' }}>STATUS</th>
+                      <th style={{ padding: '12px 14px', width: '60px' }}>IMAGE</th>
+                      <th style={{ padding: '12px 14px' }}>PRODUCT & DETAILS</th>
+                      <th style={{ padding: '12px 14px', textAlign: 'center', width: '90px' }}>SIZE</th>
+                      <th style={{ padding: '12px 14px', textAlign: 'center', width: '80px' }}>QTY</th>
+                      <th style={{ padding: '12px 14px' }}>ORDER REF</th>
+                      <th style={{ padding: '12px 14px' }}>CUSTOMER</th>
+                      <th style={{ padding: '12px 14px', textAlign: 'right', width: '100px' }}>ACTION</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {shoppingList.map((item, idx) => {
+                      const isShopped = item.status === 'shopped';
+                      return (
+                        <tr
+                          key={item.id || idx}
+                          style={{
+                            borderBottom: '1px solid #F3F4F6',
+                            background: isShopped ? '#F9FAFB' : '#FFFFFF',
+                            opacity: isShopped ? 0.75 : 1
+                          }}
+                        >
+                          {/* Checkbox toggle */}
+                          <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                            <input
+                              type="checkbox"
+                              checked={isShopped}
+                              onChange={() => handleToggleShoppingItemStatus(item.id)}
+                              style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#10B981' }}
+                              title={isShopped ? 'Mark as Pending' : 'Mark as Sourced/Shopped'}
+                            />
+                          </td>
+
+                          {/* Image */}
+                          <td style={{ padding: '10px 14px' }}>
+                            <div style={{ width: '50px', height: '50px', background: '#F3F4F6', borderRadius: '4px', overflow: 'hidden' }}>
+                              <ImageWithSpinner
+                                src={item.imgUrl || "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de"}
+                                alt={item.name}
+                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                              />
+                            </div>
+                          </td>
+
+                          {/* Product & Details */}
+                          <td style={{ padding: '12px 14px' }}>
+                            <div style={{ fontWeight: 700, color: '#111111', textDecoration: isShopped ? 'line-through' : 'none' }}>
+                              {item.name}
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '2px' }}>
+                              {item.team ? `Team: ${item.team} · ` : ''}Version: {item.version || 'Fan Version'}
+                            </div>
+                          </td>
+
+                          {/* Size */}
+                          <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                            <span style={{
+                              background: '#111111',
+                              color: '#FFFFFF',
+                              padding: '4px 10px',
+                              borderRadius: '3px',
+                              fontWeight: 800,
+                              fontSize: '12px'
+                            }}>
+                              {item.size || 'M'}
+                            </span>
+                          </td>
+
+                          {/* Qty */}
+                          <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                            <span style={{
+                              background: '#DCFCE7',
+                              color: '#166534',
+                              padding: '4px 10px',
+                              borderRadius: '12px',
+                              fontWeight: 800,
+                              fontSize: '12px'
+                            }}>
+                              {item.quantity || 1} pcs
+                            </span>
+                          </td>
+
+                          {/* Order Ref */}
+                          <td style={{ padding: '12px 14px' }}>
+                            <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '12px', color: '#2563EB' }}>
+                              #{item.orderId || 'Direct'}
+                            </span>
+                          </td>
+
+                          {/* Customer */}
+                          <td style={{ padding: '12px 14px' }}>
+                            <span style={{ fontWeight: 600, color: '#374151' }}>
+                              {item.customerName || 'Customer'}
+                            </span>
+                          </td>
+
+                          {/* Action */}
+                          <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                            <button
+                              onClick={() => handleRemoveShoppingListItem(item.id)}
+                              style={{
+                                background: '#FFFFFF',
+                                border: '1px solid #EF4444',
+                                color: '#EF4444',
+                                padding: '4px 8px',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                borderRadius: '3px'
+                              }}
+                              title="Remove from shopping list"
+                            >
+                              Remove
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>
@@ -1545,31 +2247,106 @@ export default function AdminDashboard({
 
               {/* Purchased Products Items Section with Images */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <h4 style={{ fontSize: '14px', fontWeight: 700, margin: 0, color: '#111111' }}>Ordered Products & Items</h4>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h4 style={{ fontSize: '14px', fontWeight: 700, margin: 0, color: '#111111' }}>
+                    Ordered Products & Items ({Array.isArray(selectedOrderModal.items) ? selectedOrderModal.items.length : 1})
+                  </h4>
+                  {Array.isArray(selectedOrderModal.items) && selectedOrderModal.items.length > 1 && (
+                    <div style={{ display: 'flex', gap: '8px', fontSize: '12px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedModalItemIndices(selectedOrderModal.items.map((_, i) => i))}
+                        style={{ background: 'none', border: 'none', color: '#2563EB', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
+                      >
+                        Select All
+                      </button>
+                      <span style={{ color: '#D1D5DB' }}>|</span>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedModalItemIndices([])}
+                        style={{ background: 'none', border: 'none', color: '#6B7280', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
+                      >
+                        Deselect All
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 {Array.isArray(selectedOrderModal.items) && selectedOrderModal.items.length > 0 ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {selectedOrderModal.items.map((item, idx) => (
-                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '14px', border: '1px solid #E5E7EB', padding: '10px', borderRadius: '4px', background: '#FFFFFF' }}>
-                        <div style={{ width: '60px', height: '60px', background: '#F3F4F6', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
-                          <ImageWithSpinner src={item.imgUrl || item.image || "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de"} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                        </div>
-                        <div style={{ flex: 1 }}>
+                    {selectedOrderModal.items.map((item, idx) => {
+                      const isSelected = selectedModalItemIndices.includes(idx);
+                      return (
+                        <div
+                          key={idx}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            border: isSelected ? '1px solid #10B981' : '1px solid #E5E7EB',
+                            padding: '10px',
+                            borderRadius: '4px',
+                            background: isSelected ? '#F0FDF4' : '#FFFFFF',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          {/* Item Select Checkbox */}
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => {
+                              setSelectedModalItemIndices(prev =>
+                                prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+                              );
+                            }}
+                            style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#10B981', flexShrink: 0 }}
+                            title="Select to add to Shopping List"
+                          />
 
-                          <h5 style={{ fontSize: '14px', fontWeight: 700, margin: 0, color: '#111111' }}>{item.name || item.title}</h5>
-                          <p style={{ fontSize: '12px', color: '#6B7280', margin: '2px 0 0' }}>
-                            Team: {item.team || 'Standard'} · Size: <span style={{ fontWeight: 700 }}>{item.size || 'M'}</span> · Version: {item.version || 'Fan'}
-                          </p>
-                          <p style={{ fontSize: '12px', color: '#111111', fontWeight: 700, margin: '2px 0 0' }}>
-                            Quantity: {item.quantity || 1} x ₹{item.price}
-                          </p>
+                          <div style={{ width: '55px', height: '55px', background: '#F3F4F6', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
+                            <ImageWithSpinner
+                              src={item.imgUrl || item.image || "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de"}
+                              alt={item.name}
+                              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                            />
+                          </div>
+
+                          <div style={{ flex: 1 }}>
+                            <h5 style={{ fontSize: '13px', fontWeight: 700, margin: 0, color: '#111111' }}>{item.name || item.title}</h5>
+                            <p style={{ fontSize: '12px', color: '#6B7280', margin: '2px 0 0' }}>
+                              Team: {item.team || 'Standard'} · Size: <span style={{ fontWeight: 800, color: '#111111' }}>{item.size || 'M'}</span> · Version: {item.version || 'Fan'}
+                            </p>
+                            <p style={{ fontSize: '12px', color: '#111111', fontWeight: 700, margin: '2px 0 0' }}>
+                              Quantity: {item.quantity || 1} x ₹{item.price}
+                            </p>
+                          </div>
+
+                          <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                            <span style={{ fontWeight: 700, fontSize: '15px', color: '#111111' }}>
+                              ₹{(item.quantity || 1) * (item.price || 0)}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleAddItemsFromModal([item])}
+                              style={{
+                                padding: '3px 8px',
+                                background: '#FFFFFF',
+                                border: '1px solid #10B981',
+                                color: '#059669',
+                                borderRadius: '3px',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap'
+                              }}
+                              title="Directly add this single item to shopping list"
+                            >
+                              + Add to List
+                            </button>
+                          </div>
                         </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontWeight: 700, fontSize: '15px', color: '#111111' }}>
-                            ₹{(item.quantity || 1) * (item.price || 0)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <div style={{ padding: '12px', background: '#F3F4F6', fontSize: '13px', color: '#4B5563' }}>
@@ -1586,13 +2363,66 @@ export default function AdminDashboard({
             </div>
 
             {/* Modal Action Footer */}
-            <div style={{ borderTop: '1px solid #E5E7EB', padding: '12px 20px', background: '#F9FAFB', textAlign: 'right' }}>
-              <button
-                onClick={() => setSelectedOrderModal(null)}
-                style={{ background: '#111111', color: '#FFFFFF', padding: '8px 20px', border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', borderRadius: '4px' }}
-              >
-                Close Order Details
-              </button>
+            <div style={{ borderTop: '1px solid #E5E7EB', padding: '14px 20px', background: '#F9FAFB', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+              <div style={{ fontSize: '12px', color: '#6B7280' }}>
+                {Array.isArray(selectedOrderModal.items) && selectedOrderModal.items.length > 1 ? (
+                  <span>
+                    <strong>{selectedModalItemIndices.length}</strong> of {selectedOrderModal.items.length} item(s) selected
+                  </span>
+                ) : (
+                  <span>Ready to add to procurement list</span>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    let itemsToAdd = [];
+                    if (Array.isArray(selectedOrderModal.items) && selectedOrderModal.items.length > 0) {
+                      itemsToAdd = selectedOrderModal.items.filter((_, idx) => selectedModalItemIndices.includes(idx));
+                    } else {
+                      itemsToAdd = [{
+                        name: selectedOrderModal.productName || selectedOrderModal.title || `Order #${selectedOrderModal.orderId || selectedOrderModal.id}`,
+                        price: selectedOrderModal.total,
+                        quantity: 1,
+                        size: selectedOrderModal.size || 'M',
+                        version: selectedOrderModal.version || 'Fan',
+                        team: selectedOrderModal.team || 'Standard'
+                      }];
+                    }
+
+                    if (itemsToAdd.length === 0) {
+                      alert('Please select at least 1 product using the checkboxes to add to the shopping list.');
+                      return;
+                    }
+                    handleAddItemsFromModal(itemsToAdd);
+                  }}
+                  style={{
+                    background: '#10B981',
+                    color: '#FFFFFF',
+                    padding: '8px 18px',
+                    border: 'none',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    borderRadius: '4px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)'
+                  }}
+                >
+                  🛒 Add to Shopping List {selectedModalItemIndices.length > 0 && Array.isArray(selectedOrderModal.items) && selectedOrderModal.items.length > 1 ? `(${selectedModalItemIndices.length})` : ''}
+                </button>
+
+                <button
+                  onClick={() => setSelectedOrderModal(null)}
+                  style={{ background: '#111111', color: '#FFFFFF', padding: '8px 20px', border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', borderRadius: '4px' }}
+                >
+                  Close Order Details
+                </button>
+              </div>
             </div>
           </div>
         </div>
