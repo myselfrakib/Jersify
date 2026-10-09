@@ -476,6 +476,21 @@ export default function AdminDashboard({
     setNewClubName('');
   };
 
+  const handleDeleteClub = async (teamKey) => {
+    if (!window.confirm(`Are you sure you want to delete "${teamKey}" from registered Clubs & Nations?`)) {
+      return;
+    }
+    const updated = { ...teamBanners };
+    delete updated[teamKey];
+    setTeamBanners(updated);
+    sessionStorage.setItem('jersify_team_banners', JSON.stringify(updated));
+    try {
+      await set(ref(rtdb, 'siteConfig/teamBanners'), updated);
+    } catch (err) {
+      console.error('Failed to sync deleted team to RTDB:', err);
+    }
+  };
+
   // Upload single or multiple image files directly to Firebase Storage for Product (Max 5 images)
   const handleMultipleFileUploadForProduct = async (files) => {
     if (!files || files.length === 0) return;
@@ -1340,9 +1355,30 @@ export default function AdminDashboard({
                         <option value="national">🌐 Nation</option>
                       </select>
                     </div>
-                    <span style={{ fontSize: '11px', background: isNation ? '#EFF6FF' : '#F3F4F6', color: isNation ? '#1D4ED8' : '#111827', padding: '3px 8px', fontWeight: 700, borderRadius: '2px' }}>
-                      {isNation ? 'NATION Showcase Page' : 'CLUB Showcase Page'}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '11px', background: isNation ? '#EFF6FF' : '#F3F4F6', color: isNation ? '#1D4ED8' : '#111827', padding: '3px 8px', fontWeight: 700, borderRadius: '2px' }}>
+                        {isNation ? 'NATION Showcase Page' : 'CLUB Showcase Page'}
+                      </span>
+                      <button
+                        onClick={() => handleDeleteClub(teamKey)}
+                        style={{
+                          background: '#FEE2E2',
+                          color: '#DC2626',
+                          border: '1px solid #FECACA',
+                          padding: '3px 8px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          borderRadius: '2px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px'
+                        }}
+                        title={`Delete ${teamKey}`}
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
                   </div>
 
                   {/* 1. Hero Banner Image (Aspect 16:9 / 393x220px) */}
@@ -1437,6 +1473,27 @@ export default function AdminDashboard({
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label style={{ fontSize: '11px', fontWeight: 700 }}>CLUB DESCRIPTION</label>
                     <textarea value={team.description || ''} onChange={(e) => handleTeamFieldChange(teamKey, 'description', e.target.value)} style={{ height: '50px', padding: '6px 8px', border: '1px solid #D1D5DB', fontSize: '12px', fontFamily: 'Karla' }} />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid #E5E7EB', paddingTop: '10px' }}>
+                    <button
+                      onClick={() => handleDeleteClub(teamKey)}
+                      style={{
+                        background: '#FFFFFF',
+                        border: '1px solid #EF4444',
+                        color: '#EF4444',
+                        padding: '6px 14px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        borderRadius: '3px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      🗑️ Delete {teamKey}
+                    </button>
                   </div>
                 </div>
               );

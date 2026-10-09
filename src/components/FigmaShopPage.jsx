@@ -129,92 +129,102 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
   });
 
   return (
-    <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '1604px', paddingBottom: '60px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
-      {/* Store Navigation Header */}
-      <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 19px' }}>
-        <div style={{ width: '128px', height: '47px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={onNavigateHome}>
-          <ImageWithSpinner src={headerLogo} alt="Jersify" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-          <button 
-            onClick={() => setIsSearchOpen(prev => !prev)} 
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            title="Search"
-          >
-            <img src={imgSearchIcon} alt="Search" style={{ width: '20px', height: '20px' }} />
-          </button>
-          <button 
-            onClick={onOpenCart} 
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-            title="Shopping Bag"
-          >
-            <img src={imgShoppingBagButton} alt="Bag" style={{ width: '20px', height: '20px' }} />
-            {cartCount > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '-5px',
-                right: '-8px',
-                background: '#EF4444',
-                color: '#FFFFFF',
-                fontSize: '9px',
-                fontWeight: 800,
-                borderRadius: '9999px',
-                minWidth: '16px',
-                height: '16px',
-                padding: '0 3px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '1.5px solid #FFFFFF'
-              }}>
-                {cartCount}
-              </span>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Expandable Search Input Bar */}
-      {isSearchOpen && (
-        <div style={{ borderBottom: '1px solid #E5E7EB', padding: '10px 19px', background: '#F9FAFB', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
-            <img src={imgSearchIcon} alt="Search" style={{ position: 'absolute', left: '12px', width: '16px', height: '16px', opacity: 0.4 }} />
-            <input
-              type="text"
-              placeholder="Search jerseys, teams..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              autoFocus
-              style={{
-                width: '100%',
-                padding: '8px 32px 8px 36px',
-                fontSize: '13px',
-                fontFamily: 'Karla, sans-serif',
-                borderRadius: '9999px',
-                border: '1px solid #D1D5DB',
-                outline: 'none',
-                background: '#FFFFFF',
-                color: '#111111'
-              }}
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                style={{ position: 'absolute', right: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: '#9CA3AF', padding: '2px 4px' }}
-              >
-                ✕
-              </button>
-            )}
+    <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'clip', minHeight: '1604px', paddingBottom: '60px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
+      {/* Sticky/Fixed Navigation Header on Scroll: Logo, Search & Cart */}
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        background: '#FFFFFF',
+        width: '100%',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+      }}>
+        {/* Store Navigation Header */}
+        <div style={{ borderBottom: '1px solid #E5E7EB', height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 19px' }}>
+          <div style={{ width: '128px', height: '47px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={onNavigateHome}>
+            <ImageWithSpinner src={headerLogo} alt="Jersify" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
-          <button
-            onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
-            style={{ background: 'none', border: 'none', fontSize: '13px', fontFamily: 'Karla, sans-serif', fontWeight: 600, color: '#4B5563', cursor: 'pointer' }}
-          >
-            Cancel
-          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+            <button 
+              onClick={() => setIsSearchOpen(prev => !prev)} 
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+              title="Search"
+            >
+              <img src={imgSearchIcon} alt="Search" style={{ width: '20px', height: '20px' }} />
+            </button>
+            <button 
+              onClick={onOpenCart} 
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+              title="Shopping Bag"
+            >
+              <img src={imgShoppingBagButton} alt="Bag" style={{ width: '20px', height: '20px' }} />
+              {cartCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-5px',
+                  right: '-8px',
+                  background: '#EF4444',
+                  color: '#FFFFFF',
+                  fontSize: '9px',
+                  fontWeight: 800,
+                  borderRadius: '9999px',
+                  minWidth: '16px',
+                  height: '16px',
+                  padding: '0 3px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1.5px solid #FFFFFF'
+                }}>
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
-      )}
+
+        {/* Expandable Search Input Bar */}
+        {isSearchOpen && (
+          <div style={{ borderBottom: '1px solid #E5E7EB', padding: '10px 19px', background: '#F9FAFB', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+              <img src={imgSearchIcon} alt="Search" style={{ position: 'absolute', left: '12px', width: '16px', height: '16px', opacity: 0.4 }} />
+              <input
+                type="text"
+                placeholder="Search jerseys, teams..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+                style={{
+                  width: '100%',
+                  padding: '8px 32px 8px 36px',
+                  fontSize: '13px',
+                  fontFamily: 'Karla, sans-serif',
+                  borderRadius: '9999px',
+                  border: '1px solid #D1D5DB',
+                  outline: 'none',
+                  background: '#FFFFFF',
+                  color: '#111111'
+                }}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  style={{ position: 'absolute', right: '10px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: '#9CA3AF', padding: '2px 4px' }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            <button
+              onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
+              style={{ background: 'none', border: 'none', fontSize: '13px', fontFamily: 'Karla, sans-serif', fontWeight: 600, color: '#4B5563', cursor: 'pointer' }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Full-Width Filter Bar replacing Shop heading: Fan | Player (Premium) | Retro */}
       <div style={{ width: '100%', display: 'flex', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
@@ -288,27 +298,16 @@ export default function FigmaShopPage({ cartCount = 0, onSelectProduct, onOpenCa
               : 'inset 0 0 0 1px rgba(212, 175, 55, 0.15)'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-            <span style={{
-              fontFamily: 'Karla, sans-serif',
-              fontWeight: 800,
-              fontSize: '14px',
-              letterSpacing: '0.05em',
-              textTransform: 'uppercase',
-              color: selectedCategory === 'player' ? '#D4AF37' : '#111111'
-            }}>
-              Player
-            </span>
-            <span style={{
-              color: '#D4AF37',
-              fontSize: '11px',
-              fontWeight: 900,
-              lineHeight: 1,
-              textShadow: selectedCategory === 'player' ? '0 0 8px rgba(212,175,55,0.7)' : 'none'
-            }}>
-              ★
-            </span>
-          </div>
+          <span style={{
+            fontFamily: 'Karla, sans-serif',
+            fontWeight: 800,
+            fontSize: '14px',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            color: selectedCategory === 'player' ? '#D4AF37' : '#111111'
+          }}>
+            Player
+          </span>
           <span style={{
             fontSize: '9px',
             fontFamily: 'Inter, sans-serif',

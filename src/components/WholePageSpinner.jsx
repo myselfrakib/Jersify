@@ -9,8 +9,9 @@ import React, { useState, useEffect, useRef } from 'react';
 export default function WholePageSpinner({
   triggerKey,
   containerRef,
-  minDuration = 300,
-  maxTimeout = 2200
+  minDuration = 400,
+  maxTimeout = 9000,
+  isLoading = false
 }) {
   const [isVisible, setIsVisible] = useState(true);
   const [isFading, setIsFading] = useState(false);
@@ -18,125 +19,155 @@ export default function WholePageSpinner({
 
   useEffect(() => {
     let isCancelled = false;
+    let fadeTimer = null;
+    let completionDebounceTimer = null;
+    let observer = null;
     const startTime = Date.now();
 
-    // Show spinner when triggerKey changes (navigation or initial mount)
+    // Show spinner when triggerKey changes or isLoading is active
     setIsVisible(true);
     setIsFading(false);
     lastKeyRef.current = triggerKey;
 
     const finishLoading = () => {
-      if (isCancelled) return;
+      if (isCancelled || isLoading) return;
+      if (observer) {
+        observer.disconnect();
+        observer = null;
+      }
+
       const elapsed = Date.now() - startTime;
       const remainingMin = Math.max(0, minDuration - elapsed);
 
-      setTimeout(() => {
-        if (isCancelled) return;
+      fadeTimer = setTimeout(() => {
+        if (isCancelled || isLoading) return;
         setIsFading(true);
-        setTimeout(() => {
-          if (isCancelled) return;
+        fadeTimer = setTimeout(() => {
+          if (isCancelled || isLoading) return;
           setIsVisible(false);
           setIsFading(false);
         }, 360);
       }, remainingMin);
     };
 
-    // Wait 40ms for React to render new page DOM
-    const initTimer = setTimeout(() => {
-      if (isCancelled) return;
+    // Safety timeout in case an asset hangs indefinitely
+    const safetyTimer = setTimeout(() => {
+      if (!isCancelled && !isLoading) {
+        finishLoading();
+      }
+    }, maxTimeout);
 
-      const container =
+    const trackedImgs = new WeakSet();
+
+    const getContainer = () => {
+      return (
         containerRef?.current ||
         document.getElementById('jersify-page-container') ||
-        document.body;
-
-      if (!container) {
-        finishLoading();
-        return;
-      }
-
-      // Collect all <img> tags that have a remote source
-      const getPageImages = () => {
-        return Array.from(container.querySelectorAll('img')).filter((img) => {
-          const src = img.getAttribute('src') || img.src;
-          return src && !src.startsWith('data:image/svg+xml');
-        });
-      };
-
-      const trackedImages = new Set();
-      const imagePromises = [];
-
-      const trackImage = (img) => {
-        if (!img || trackedImages.has(img)) return;
-        trackedImages.add(img);
-
-        // If image is already fully loaded from cache
-        if (img.complete && img.naturalWidth > 0) {
-          return;
-        }
-
-        imagePromises.push(
-          new Promise((resolve) => {
-            const onDone = () => resolve();
-            img.addEventListener('load', onDone, { once: true });
-            img.addEventListener('error', onDone, { once: true });
-          })
-        );
-      };
-
-      // Initial batch of images in DOM
-      getPageImages().forEach(trackImage);
-
-      // Also observe dynamically inserted images (e.g. Firebase RTDB sync)
-      let observer = null;
-      try {
-        observer = new MutationObserver((mutations) => {
-          if (isCancelled) return;
-          for (const mutation of mutations) {
-            for (const node of mutation.addedNodes) {
-              if (node.nodeType === Node.ELEMENT_NODE) {
-                if (node.tagName === 'IMG') {
-                  trackImage(node);
-                } else if (node.querySelectorAll) {
-                  node.querySelectorAll('img').forEach(trackImage);
-                }
-              }
-            }
-          }
-        });
-
-        observer.observe(container, {
-          childList: true,
-          subtree: true
-        });
-      } catch (e) {
-        // MutationObserver fallback
-      }
-
-      // If no remote images were pending, finish smoothly
-      if (imagePromises.length === 0) {
-        if (observer) observer.disconnect();
-        finishLoading();
-        return;
-      }
-
-      // Wait for all tracked images with max safety timeout
-      const allLoaded = Promise.all(imagePromises);
-      const safetyTimeout = new Promise((resolve) =>
-        setTimeout(resolve, maxTimeout)
+        document.body
       );
+    };
 
-      Promise.race([allLoaded, safetyTimeout]).then(() => {
-        if (observer) observer.disconnect();
-        finishLoading();
+    const getImages = () => {
+      const container = getContainer();
+      if (!container) return [];
+      return Array.from(container.querySelectorAll('img')).filter((img) => {
+        const src = img.getAttribute('src') || img.src;
+        return src && !src.startsWith('data:image/svg+xml') && !src.startsWith('data:image/gif');
       });
-    }, 40);
+    };
+
+    const isImageDone = (img) => {
+      return img.complete && (img.naturalWidth > 0 || img.__jersifyError);
+    };
+
+    const evaluateImages = () => {
+      if (isCancelled || isLoading) return;
+
+      const images = getImages();
+      // If DOM has no external raster images to wait for, finish loading after short settling debounce
+      if (images.length === 0) {
+        if (completionDebounceTimer) clearTimeout(completionDebounceTimer);
+        completionDebounceTimer = setTimeout(() => {
+          if (isCancelled || isLoading) return;
+          const recheck = getImages();
+          if (recheck.length === 0 || recheck.every(isImageDone)) {
+            finishLoading();
+          }
+        }, 120);
+        return;
+      }
+
+      // Attach listener to any newly discovered or uncompleted images
+      images.forEach((img) => {
+        if (!trackedImgs.has(img)) {
+          trackedImgs.add(img);
+          if (!isImageDone(img)) {
+            const onSettled = () => {
+              evaluateImages();
+            };
+            img.addEventListener('load', onSettled, { once: true });
+            img.addEventListener('error', () => {
+              img.__jersifyError = true;
+              onSettled();
+            }, { once: true });
+          }
+        }
+      });
+
+      // Check if all images are currently loaded
+      const allLoaded = images.every(isImageDone);
+
+      if (allLoaded) {
+        if (completionDebounceTimer) clearTimeout(completionDebounceTimer);
+        completionDebounceTimer = setTimeout(() => {
+          if (isCancelled || isLoading) return;
+          const recheckImages = getImages();
+          if (recheckImages.length === 0 || recheckImages.every(isImageDone)) {
+            finishLoading();
+          }
+        }, 180);
+      } else {
+        if (completionDebounceTimer) {
+          clearTimeout(completionDebounceTimer);
+          completionDebounceTimer = null;
+        }
+      }
+    };
+
+    // Initial check after short microtask render
+    const initialCheckTimer = setTimeout(() => {
+      if (isCancelled || isLoading) return;
+      const container = getContainer();
+
+      if (container) {
+        try {
+          observer = new MutationObserver(() => {
+            evaluateImages();
+          });
+
+          observer.observe(container, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['src', 'srcset']
+          });
+        } catch (e) {
+          // Fallback if MutationObserver fails
+        }
+      }
+
+      evaluateImages();
+    }, 50);
 
     return () => {
       isCancelled = true;
-      clearTimeout(initTimer);
+      clearTimeout(initialCheckTimer);
+      clearTimeout(safetyTimer);
+      if (completionDebounceTimer) clearTimeout(completionDebounceTimer);
+      if (fadeTimer) clearTimeout(fadeTimer);
+      if (observer) observer.disconnect();
     };
-  }, [triggerKey, minDuration, maxTimeout, containerRef]);
+  }, [triggerKey, minDuration, maxTimeout, containerRef, isLoading]);
 
   if (!isVisible) return null;
 
