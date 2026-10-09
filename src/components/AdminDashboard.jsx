@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  rtdb, 
-  ref, 
-  get, 
-  set, 
-  update, 
-  push, 
-  remove, 
-  signOut, 
+import {
+  rtdb,
+  ref,
+  get,
+  set,
+  update,
+  push,
+  remove,
+  signOut,
   auth,
   storage,
   storageRef,
@@ -208,7 +208,7 @@ export default function AdminDashboard({
     try {
       await set(ref(rtdb, 'siteConfig/teamBanners'), updated);
       sessionStorage.setItem('jersify_team_banners', JSON.stringify(updated));
-    } catch (e) {}
+    } catch (e) { }
     alert(`Saved "${cleanName}" to registered ${isNation ? 'Nations' : 'Clubs'}!`);
   };
 
@@ -248,7 +248,7 @@ export default function AdminDashboard({
         setIndexImages(merged);
         sessionStorage.setItem('jersify_site_images', JSON.stringify(merged));
       }
-    }, () => {});
+    }, () => { });
 
     // 2. Realtime listener for siteConfig/teamBanners
     const unsubTeams = onValue(ref(rtdb, 'siteConfig/teamBanners'), (snap) => {
@@ -257,7 +257,7 @@ export default function AdminDashboard({
         setTeamBanners(merged);
         sessionStorage.setItem('jersify_team_banners', JSON.stringify(merged));
       }
-    }, () => {});
+    }, () => { });
 
     // 3. Realtime listener for products
     const unsubProds = onValue(ref(rtdb, 'products'), (snap) => {
@@ -269,7 +269,7 @@ export default function AdminDashboard({
       } else {
         setProductsList(INITIAL_PRODUCTS);
       }
-    }, () => {});
+    }, () => { });
 
     // 4. Realtime listener for orders
     const unsubOrders = onValue(ref(rtdb, 'orders'), (snap) => {
@@ -281,11 +281,11 @@ export default function AdminDashboard({
       } else {
         setOrdersList([]);
       }
-    }, () => {});
+    }, () => { });
 
     // 5. Realtime listener for users & admins
-    const unsubAdmins = onValue(ref(rtdb, 'admins'), () => loadUsersAndAdmins(), () => {});
-    const unsubUsers = onValue(ref(rtdb, 'users'), () => loadUsersAndAdmins(), () => {});
+    const unsubAdmins = onValue(ref(rtdb, 'admins'), () => loadUsersAndAdmins(), () => { });
+    const unsubUsers = onValue(ref(rtdb, 'users'), () => loadUsersAndAdmins(), () => { });
 
     async function loadUsersAndAdmins() {
       try {
@@ -300,7 +300,7 @@ export default function AdminDashboard({
           combined = [...adminsArr, ...combined];
         }
         setUsersList(combined);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // 6. Realtime listener for homepage product sequence
@@ -308,7 +308,7 @@ export default function AdminDashboard({
       if (snap.exists() && Array.isArray(snap.val())) {
         setHomepageOrder(snap.val());
       }
-    }, () => {});
+    }, () => { });
 
     loadUsersAndAdmins();
 
@@ -590,7 +590,7 @@ export default function AdminDashboard({
         try {
           await set(ref(rtdb, `siteConfig/teamBanners/${teamKey}`), newTeamEntry);
           setTeamBanners(prev => ({ ...prev, [teamKey]: newTeamEntry }));
-        } catch (e) {}
+        } catch (e) { }
       }
       setIsAddingProduct(false);
       setEditingProductId(null);
@@ -899,7 +899,7 @@ export default function AdminDashboard({
           {/* Quick Add New Club / Nation Bar */}
           <div style={{ background: '#F3F4F6', padding: '14px 18px', border: '1px solid #E5E7EB', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '13px', fontWeight: 700, color: '#111111' }}>+ Add New Entry:</span>
-            
+
             {/* Select Club or Nation */}
             <select
               value={newClubType}
@@ -1074,7 +1074,7 @@ export default function AdminDashboard({
           {isAddingProduct && (
             <form onSubmit={handleSaveProduct} style={{ background: '#F9FAFB', border: '1.5px solid #111111', padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <h3 style={{ fontWeight: 700, fontSize: '18px' }}>{editingProductId ? 'Edit Product' : 'Add New Product'}</h3>
-              
+
               {/* Category Type Toggle: Club vs National */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', background: '#FFFFFF', padding: '12px', border: '1px solid #D1D5DB' }}>
                 <label style={{ fontSize: '12px', fontWeight: 700, color: '#111111' }}>1. SELECT CATEGORY TYPE *</label>

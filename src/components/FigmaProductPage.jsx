@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ArrowLeft, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import ImageWithSpinner from './ImageWithSpinner';
 import { rtdb, ref, onValue } from '../firebase';
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
@@ -90,6 +90,7 @@ export default function FigmaProductPage({
 
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedSize, setSelectedSize] = useState('M');
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
 
   // Touch Swipe State
   const [touchStartX, setTouchStartX] = useState(0);
@@ -119,11 +120,41 @@ export default function FigmaProductPage({
 
   const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
+  // Helper to remove category / version suffix from recommendation product names
+  const formatCleanTitle = (title) => {
+    if (!title) return '';
+    let clean = title;
+    if (clean.includes('|')) {
+      clean = clean.split('|')[0];
+    }
+    return clean
+      .replace(/\s*[-–—]\s*(fan version|player version|player issue|fan edition|retro|this season|hot picks|kit).*/gi, '')
+      .replace(/\s*\((fan version|player version|player issue|fan edition|retro|this season|hot picks|kit).*?\)/gi, '')
+      .replace(/\s*\[(fan version|player version|player issue|fan edition|retro|this season|hot picks|kit).*?\]/gi, '')
+      .replace(/\s+(fan version|player version|player issue|fan edition|retro|this season|hot picks)\s*$/gi, '')
+      .trim();
+  };
+
   const productsListToUse = (Array.isArray(allProducts) && allProducts.length > 0) ? allProducts : internalProducts;
 
-  const recProducts = (Array.isArray(productsListToUse) && productsListToUse.length > 1)
-    ? productsListToUse.filter(p => p.id !== currentProduct.id).slice(0, 2)
-    : [
+  // Determine category key for any product
+  const getCategoryKey = (item) => {
+    if (!item) return '';
+    if (item.categoryTag) return item.categoryTag.toLowerCase().trim();
+    if (item.category) return item.category.toLowerCase().trim();
+    const nameLower = (item.name || '').toLowerCase();
+    const typeLower = (item.type || '').toLowerCase();
+    if (nameLower.includes('retro') || typeLower.includes('retro')) return 'retro';
+    if (nameLower.includes('hot pick') || nameLower.includes('hot picks')) return 'hot picks';
+    if (nameLower.includes('this season')) return 'this season';
+    if (item.teamType) return item.teamType.toLowerCase().trim();
+    return 'kit';
+  };
+
+  // Filter recommendations by current product category
+  const recProducts = useMemo(() => {
+    if (!Array.isArray(productsListToUse) || productsListToUse.length <= 1) {
+      return [
         {
           id: "rec-1",
           name: "BARCELONA HOME 26/27",
@@ -139,6 +170,37 @@ export default function FigmaProductPage({
           imgUrl: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1779627815641_0_675C45F9-A02E-4936-8088-13695728CA76.png?alt=media&token=0dcaea32-29d4-4ad7-9df3-9e894ea604fe"
         }
       ];
+    }
+
+    const currentCat = getCategoryKey(currentProduct);
+
+    // 1. Strict category match
+    const exactCategoryMatches = productsListToUse.filter((p) => {
+      if (String(p.id) === String(currentProduct.id)) return false;
+      return getCategoryKey(p) === currentCat;
+    });
+
+    // 2. Secondary match (matching teamType, team, or version/type)
+    const secondaryMatches = productsListToUse.filter((p) => {
+      if (String(p.id) === String(currentProduct.id)) return false;
+      if (exactCategoryMatches.some((m) => String(m.id) === String(p.id))) return false;
+      if (currentProduct.teamType && p.teamType && currentProduct.teamType.toLowerCase() === p.teamType.toLowerCase()) return true;
+      if (currentProduct.team && p.team && currentProduct.team.toLowerCase() === p.team.toLowerCase()) return true;
+      if (currentProduct.version && p.version && currentProduct.version.toLowerCase() === p.version.toLowerCase()) return true;
+      return false;
+    });
+
+    // 3. Fallback remaining products
+    const otherProducts = productsListToUse.filter((p) => {
+      if (String(p.id) === String(currentProduct.id)) return false;
+      if (exactCategoryMatches.some((m) => String(m.id) === String(p.id))) return false;
+      if (secondaryMatches.some((m) => String(m.id) === String(p.id))) return false;
+      return true;
+    });
+
+    const combined = [...exactCategoryMatches, ...secondaryMatches, ...otherProducts];
+    return combined.slice(0, 2);
+  }, [productsListToUse, currentProduct]);
 
   const cartIndex = Array.isArray(cartItems)
     ? cartItems.findIndex(item => String(item.id) === String(currentProduct.id) && item.selectedSize === selectedSize)
@@ -307,30 +369,40 @@ export default function FigmaProductPage({
           MRP inclusive of all taxes
         </p>
 
-        {/* Size Selection */}
+        {/* Size Selection (Figma 8:68 Exact Specification) */}
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <span style={{ fontFamily: 'Karla', fontSize: '14px', color: '#1F1F1F' }}>Select your size</span>
-            <span style={{ fontFamily: 'Karla', fontSize: '12px', color: '#000000', textDecoration: 'underline', cursor: 'pointer' }}>SIZE GUIDE</span>
+            <span 
+              onClick={() => setIsSizeGuideOpen(true)}
+              style={{ fontFamily: 'Karla', fontSize: '12px', color: '#000000', textDecoration: 'underline', cursor: 'pointer' }}
+            >
+              SIZE GUIDE
+            </span>
           </div>
 
-          <div style={{ display: 'flex', border: '1px solid #000000', borderRadius: '2px', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', width: '211.3px', height: '46px', border: '0.72px solid #000000', overflow: 'hidden' }}>
             {sizes.map((sz, i) => (
               <button
                 key={sz}
+                type="button"
                 onClick={() => setSelectedSize(sz)}
                 style={{
-                  flex: 1,
+                  width: '42.26px',
                   height: '46px',
-                  background: selectedSize === sz ? '#111827' : '#FFFFFF',
+                  background: selectedSize === sz ? '#000000' : '#FFFFFF',
                   color: selectedSize === sz ? '#FFFFFF' : '#000000',
-                  fontFamily: 'Inter',
+                  fontFamily: 'Inter, sans-serif',
                   fontSize: '14px',
-                  fontWeight: selectedSize === sz ? 700 : 400,
+                  fontWeight: selectedSize === sz ? 600 : 400,
                   border: 'none',
-                  borderRight: i < sizes.length - 1 ? '1px solid #000000' : 'none',
+                  borderRight: i < sizes.length - 1 ? '0.72px solid #000000' : 'none',
                   cursor: 'pointer',
-                  transition: 'all 0.15s ease'
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 0,
+                  transition: 'background 0.15s ease, color 0.15s ease'
                 }}
               >
                 {sz}
@@ -465,8 +537,8 @@ export default function FigmaProductPage({
                 <div style={{ width: '100%', height: '210px', background: '#D9D9D9', borderRadius: '2px', overflow: 'hidden' }}>
                   <ImageWithSpinner src={rec.imgUrl} alt={rec.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
-                <h4 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '13px', color: '#111827' }}>
-                  {rec.name}
+                <h4 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '13px', color: '#111827', lineHeight: '18px' }}>
+                  {formatCleanTitle(rec.name)}
                 </h4>
 
                 <p style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '13px', color: '#111827' }}>
@@ -480,6 +552,155 @@ export default function FigmaProductPage({
           </div>
         </div>
       </div>
+
+      {/* Size Guide Modal Dialog (Figma 93:146 Exact Match) */}
+      {isSizeGuideOpen && (
+        <div 
+          onClick={() => setIsSizeGuideOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px'
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#FFFFFF',
+              width: '361px',
+              maxWidth: '100%',
+              padding: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+              borderRadius: '2px',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
+              position: 'relative'
+            }}
+          >
+            {/* Dialog Heading */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h3 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '20px', color: '#000000', margin: 0, lineHeight: 1.2 }}>
+                  SIZE GUIDE
+                </h3>
+                <p style={{ fontFamily: 'Karla', fontSize: '13px', color: '#666666', margin: '4px 0 0 0' }}>
+                  Adult T-shirts · Indian sizing
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSizeGuideOpen(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                aria-label="Close Size Guide"
+              >
+                <X size={20} color="#000000" />
+              </button>
+            </div>
+
+            {/* General Reference Notice */}
+            <div style={{ background: '#F4F4F4', padding: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <span style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '12px', color: '#1F1F1F' }}>
+                GENERAL REFERENCE ONLY
+              </span>
+              <p style={{ fontFamily: 'Karla', fontSize: '12px', lineHeight: '17px', color: '#666666', margin: 0 }}>
+                Common garment sizes; may vary by brand and fit. Not verified measurements for this product.
+              </p>
+            </div>
+
+            {/* Size Chart Table */}
+            <div style={{ display: 'flex', flexDirection: 'column', width: '100%', textAlign: 'center' }}>
+              {/* Table Headings */}
+              <div style={{ background: '#000000', color: '#FFFFFF', height: '38px', display: 'flex', alignItems: 'center', fontFamily: 'Karla', fontWeight: 700, fontSize: '12px' }}>
+                <div style={{ width: '49px' }}>Size</div>
+                <div style={{ flex: 1 }}>Chest circumference</div>
+                <div style={{ flex: 1 }}>Length</div>
+              </div>
+
+              {/* Measurement Units */}
+              <div style={{ background: '#F4F4F4', color: '#666666', height: '26px', display: 'flex', alignItems: 'center', fontFamily: 'Karla', fontSize: '11px' }}>
+                <div style={{ width: '49px' }}>—</div>
+                <div style={{ flex: 0.5 }}>inches</div>
+                <div style={{ flex: 0.5 }}>cm</div>
+                <div style={{ flex: 0.5 }}>inches</div>
+                <div style={{ flex: 0.5 }}>cm</div>
+              </div>
+
+              {/* Measurement Rows */}
+              {[
+                { size: 'S', chestIn: '38', chestCm: '96.5', lenIn: '26', lenCm: '66.0' },
+                { size: 'M', chestIn: '40', chestCm: '101.6', lenIn: '27', lenCm: '68.6' },
+                { size: 'L', chestIn: '42', chestCm: '106.7', lenIn: '28', lenCm: '71.1' },
+                { size: 'XL', chestIn: '44', chestCm: '111.8', lenIn: '29', lenCm: '73.7' },
+                { size: 'XXL', chestIn: '46', chestCm: '116.8', lenIn: '30', lenCm: '76.2' }
+              ].map((row) => (
+                <div 
+                  key={row.size}
+                  style={{
+                    height: '38px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderBottom: '1px solid #DEDEDE',
+                    fontFamily: 'Karla',
+                    fontSize: '13px',
+                    color: '#1F1F1F'
+                  }}
+                >
+                  <div style={{ width: '49px', fontWeight: 700 }}>{row.size}</div>
+                  <div style={{ flex: 0.5 }}>{row.chestIn}</div>
+                  <div style={{ flex: 0.5 }}>{row.chestCm}</div>
+                  <div style={{ flex: 0.5 }}>{row.lenIn}</div>
+                  <div style={{ flex: 0.5 }}>{row.lenCm}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* How To Measure Guidance */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <span style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '14px', color: '#1F1F1F' }}>
+                HOW TO MEASURE
+              </span>
+
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                {/* T-shirt Diagram */}
+                <div style={{ position: 'relative', width: '80px', height: '80px', flexShrink: 0 }}>
+                  <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M53.084 34.4023V70.21L51.0176 67.2617L50.5264 67.6055L50.0352 67.9502L53.1924 72.457L53.6846 73.1582L54.1758 72.457L57.333 67.9502L56.8418 67.6055L56.3506 67.2617L54.2842 70.21V34.4023H58.2949L55.4141 36.7148L55.7891 37.1826L56.165 37.6514L59.4004 35.0537V79.4004H20.5996V35.0537L23.835 37.6514L24.2109 37.1826L24.5859 36.7148L21.7051 34.4023H53.084ZM68.0039 6.10449L79.1875 24.6055L66.4717 32.9805L60.4912 24.4443L59.4004 22.8867V32.5518L56.165 29.9551L55.7891 30.4229L55.4141 30.8906L58.2949 33.2031H54.2842V9.78906L56.3506 12.7383L56.8418 12.3945L57.333 12.0498L54.1758 7.54297L53.6846 6.8418L53.1924 7.54297L50.0352 12.0498L50.5264 12.3945L51.0176 12.7383L53.084 9.78906V33.2031H21.7051L24.5859 30.8906L24.2109 30.4229L23.835 29.9551L20.5996 32.5518V22.8867L19.5088 24.4443L13.5273 32.9805L0.811523 24.6055L11.9951 6.10449L24.0674 0.719727C29.2961 6.21373 34.6072 9.05078 40 9.05078C45.3927 9.05078 50.7031 6.21341 55.9316 0.719727L68.0039 6.10449Z" stroke="#1F1F1F" strokeWidth="1.2"/>
+                  </svg>
+                  <span style={{ position: 'absolute', left: '29px', top: '22px', fontFamily: 'Karla', fontWeight: 700, fontSize: '10px', color: '#1F1F1F' }}>A</span>
+                  <span style={{ position: 'absolute', left: '58px', top: '53px', fontFamily: 'Karla', fontWeight: 700, fontSize: '10px', color: '#1F1F1F' }}>B</span>
+                </div>
+
+                {/* Steps */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontFamily: 'Karla', fontSize: '12px' }}>
+                  <p style={{ color: '#666666', margin: 0, lineHeight: '16px' }}>
+                    Lay a well-fitting T-shirt flat.
+                  </p>
+                  <p style={{ color: '#1F1F1F', margin: 0, lineHeight: '16px' }}>
+                    <strong>A · Chest:</strong> Measure armpit to armpit, then double it.
+                  </p>
+                  <p style={{ color: '#1F1F1F', margin: 0, lineHeight: '16px' }}>
+                    <strong>B · Length:</strong> Measure from the highest shoulder point to the hem.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Navigation */}
       <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '393px', height: '56px', background: '#F9FAFB', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 50 }}>
