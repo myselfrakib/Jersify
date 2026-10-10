@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+// Keep track of visited route keys so we don't re-show the loading overlay on back/forward or revisited pages
+const visitedRouteKeys = new Set();
+
 /**
  * WholePageSpinner
  * A whole-page loading overlay that stays visible while page images are loading.
@@ -11,35 +14,52 @@ export default function WholePageSpinner({
   containerRef,
   minDuration = 400,
   maxTimeout = 9000,
-  isLoading = false
+  isLoading = false,
+  onlyOncePerRoute = true
 }) {
-  const [isVisible, setIsVisible] = useState(true);
+  const isAlreadyVisited = Boolean(onlyOncePerRoute && triggerKey && visitedRouteKeys.has(triggerKey));
+  const [isVisible, setIsVisible] = useState(() => !isAlreadyVisited);
   const [isFading, setIsFading] = useState(false);
   const lastKeyRef = useRef(triggerKey);
 
   useEffect(() => {
+    // If this route was already loaded and visited, skip the spinner completely
+    if (onlyOncePerRoute && triggerKey && visitedRouteKeys.has(triggerKey)) {
+      setIsVisible(false);
+      setIsFading(false);
+      return;
+    }
+
     let isCancelled = false;
     let fadeTimer = null;
     let completionDebounceTimer = null;
     let observer = null;
     const startTime = Date.now();
 
-    // Show spinner when triggerKey changes (navigation or initial mount)
+    // Show spinner when visiting this route for the first time
     setIsVisible(true);
     setIsFading(false);
     lastKeyRef.current = triggerKey;
 
     const finishLoading = () => {
       if (isCancelled || isLoading) return;
+      if (observer) {
+        observer.disconnect();
+        observer = null;
+      }
+
+      if (onlyOncePerRoute && triggerKey) {
+        visitedRouteKeys.add(triggerKey);
+      }
 
       const elapsed = Date.now() - startTime;
       const remainingMin = Math.max(0, minDuration - elapsed);
 
       fadeTimer = setTimeout(() => {
-        if (isCancelled) return;
+        if (isCancelled || isLoading) return;
         setIsFading(true);
         fadeTimer = setTimeout(() => {
-          if (isCancelled) return;
+          if (isCancelled || isLoading) return;
           setIsVisible(false);
           setIsFading(false);
         }, 360);
@@ -77,7 +97,7 @@ export default function WholePageSpinner({
     };
 
     const evaluateImages = () => {
-      if (isCancelled) return;
+      if (isCancelled || isLoading) return;
 
       const images = getImages();
       // If DOM has not rendered any images yet, give it another moment
@@ -109,19 +129,14 @@ export default function WholePageSpinner({
         // Wait a 220ms grace window to verify no dynamic state changes re-trigger loading
         if (completionDebounceTimer) clearTimeout(completionDebounceTimer);
         completionDebounceTimer = setTimeout(() => {
-          if (isCancelled) return;
+          if (isCancelled || isLoading) return;
           const recheckImages = getImages();
           if (recheckImages.length > 0 && recheckImages.every(isImageDone)) {
             finishLoading();
           }
         }, 220);
       } else {
-        if (fadeTimer) {
-          clearTimeout(fadeTimer);
-          fadeTimer = null;
-        }
-        setIsFading(false);
-        setIsVisible(true);
+        // Still has pending images, clear any pending completion
         if (completionDebounceTimer) {
           clearTimeout(completionDebounceTimer);
           completionDebounceTimer = null;
@@ -131,7 +146,7 @@ export default function WholePageSpinner({
 
     // Initial check after short microtask render
     const initialCheckTimer = setTimeout(() => {
-      if (isCancelled) return;
+      if (isCancelled || isLoading) return;
       const container = getContainer();
 
       if (container) {
