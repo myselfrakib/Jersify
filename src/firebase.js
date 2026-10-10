@@ -46,18 +46,21 @@ const rtdb = getDatabase(app);
 const storage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
 
+// Analytics is optional and initialized safely on demand to prevent unhandled 403 Installations errors on restricted referrers
 let analytics = null;
-if (typeof window !== 'undefined') {
-  try {
-    isAnalyticsSupported().then((supported) => {
+export const initAnalytics = async () => {
+  if (typeof window !== 'undefined' && !analytics) {
+    try {
+      const supported = await isAnalyticsSupported();
       if (supported) {
-        try {
-          analytics = getAnalytics(app);
-        } catch (e) {}
+        analytics = getAnalytics(app);
       }
-    }).catch(() => {});
-  } catch (e) {}
-}
+    } catch (e) {
+      // Gracefully ignore if referer restrictions block analytics
+    }
+  }
+  return analytics;
+};
 
 // RTDB Compatibility helpers for seamless app operation
 const collection = (db, colName) => colName;
