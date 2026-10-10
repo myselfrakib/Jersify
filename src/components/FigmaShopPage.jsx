@@ -31,7 +31,9 @@ export default function FigmaShopPage({
       const cached = sessionStorage.getItem('jersify_site_images');
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (parsed.jersifyLogoHeader) return parsed.jersifyLogoHeader;
+        if (parsed.jersifyLogoHeader && !String(parsed.jersifyLogoHeader).startsWith('/figma/')) {
+          return parsed.jersifyLogoHeader;
+        }
       }
       return DEFAULT_LOGO_URL;
     } catch (e) {
@@ -85,10 +87,9 @@ export default function FigmaShopPage({
     const unsubImages = onValue(ref(rtdb, 'siteConfig/images'), (snap) => {
       if (snap.exists()) {
         const val = snap.val();
-        if (val.jersifyLogoHeader?.url) {
-          setHeaderLogo(val.jersifyLogoHeader.url);
-        } else if (typeof val.jersifyLogoHeader === 'string') {
-          setHeaderLogo(val.jersifyLogoHeader);
+        const headerUrl = val.jersifyLogoHeader?.url || (typeof val.jersifyLogoHeader === 'string' ? val.jersifyLogoHeader : null);
+        if (headerUrl && !headerUrl.startsWith('/figma/')) {
+          setHeaderLogo(headerUrl);
         }
       }
     }, () => {});
@@ -96,7 +97,13 @@ export default function FigmaShopPage({
     const unsubCategories = onValue(ref(rtdb, 'categories'), (snap) => {
       if (snap.exists()) {
         const val = snap.val();
-        const list = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        const list = Object.keys(val).map(k => {
+          const cat = { id: k, ...val[k] };
+          if (cat.imageUrl && cat.imageUrl.startsWith('/figma/')) {
+            cat.imageUrl = "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de";
+          }
+          return cat;
+        });
         if (list.length > 0) {
           setCategoriesList(list);
           sessionStorage.setItem('jersify_categories', JSON.stringify(list));

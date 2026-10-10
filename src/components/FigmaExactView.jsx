@@ -12,16 +12,22 @@ import {
 } from '../assets/svgIcons';
 
 const defaultImages = {
-  heroBanner1: "/figma/heroBanner1.png",
-  heroBanner2: "/figma/heroBanner2.png",
-  heroBanner3: "/figma/heroBanner3.png",
-  wearYourIdentity: "/figma/wearYourIdentity.png",
-  curatedSeasonPkg: "/figma/curatedSeasonPkg.png",
-  premiumProducts: "/figma/premiumProducts.png",
-  goodOldKits: "/figma/goodOldKits.png",
-  gurlsChoice: "/figma/gurlsChoice.png",
-  activities: "/figma/activities.png",
-  jersifyLogoHeader: "/figma/jersifyWordmarkHeader.png",
+  heroBanner1: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de",
+  heroBanner2: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790334116027_pfan_0_IMG_3915.png?alt=media&token=8c2058d5-2b95-4926-8960-1b2ce77d29eb",
+  heroBanner3: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030635314_1_IMG_6074.jpeg?alt=media&token=f8e8d995-63d7-4c57-aef4-948d93e6533d",
+  wearYourIdentity: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030642038_2_IMG_6072.jpeg?alt=media&token=d0ba389d-4214-44ec-b2b3-c0dbdb548678",
+  notBasicSpotlight: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030648696_3_IMG_6073.jpeg?alt=media&token=90f31fe5-1bb0-4522-aada-9db03fbcfab8",
+  curatedSeasonPkg: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030675022_4_IMG_6071.jpeg?alt=media&token=ab978713-fa93-4b20-a8f2-a69b2f5c6aaf",
+  premiumProducts: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777010842917_0_IMG_3702.jpeg?alt=media&token=1797da70-902b-42e8-9682-7feb6c89d4ef",
+  qualityYouCanWear: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777010842917_0_IMG_3702.jpeg?alt=media&token=1797da70-902b-42e8-9682-7feb6c89d4ef",
+  goodOldKits: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777324422299_0_IMG_4061.jpeg?alt=media&token=f94be5a7-75e9-486d-bf07-92135cb38132",
+  retroBanner1: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777324422299_0_IMG_4061.jpeg?alt=media&token=f94be5a7-75e9-486d-bf07-92135cb38132",
+  retroBanner2: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777348522170_0_IMG_4080.jpeg?alt=media&token=86b339ae-0b9b-41e0-b926-fe7a4fccecc8",
+  gurlsChoice: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030648696_3_IMG_6073.jpeg?alt=media&token=90f31fe5-1bb0-4522-aada-9db03fbcfab8",
+  activities: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1778510513151_0_IMG_5263.jpeg?alt=media&token=17bad7fd-0018-4016-9fa2-5aedc6c3d09d",
+  lifestyleClubs: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1778510513151_0_IMG_5263.jpeg?alt=media&token=17bad7fd-0018-4016-9fa2-5aedc6c3d09d",
+  lifestyleNationals: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de",
+  jersifyLogoHeader: "/jersify-wordmark.png",
   clubLogoBarca: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg",
   clubLogoReal: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg",
   clubLogoMilan: "https://upload.wikimedia.org/wikipedia/commons/d/d0/AC_Milan_logo.svg",
@@ -45,7 +51,17 @@ export default function FigmaExactView({
   const [siteImages, setSiteImages] = useState(() => {
     try {
       const cached = sessionStorage.getItem('jersify_site_images');
-      return cached ? JSON.parse(cached) : defaultImages;
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        const cleaned = {};
+        Object.keys(parsed).forEach(k => {
+          if (parsed[k] && !String(parsed[k]).startsWith('/figma/')) {
+            cleaned[k] = parsed[k];
+          }
+        });
+        return { ...defaultImages, ...cleaned };
+      }
+      return defaultImages;
     } catch (e) {
       return defaultImages;
     }
@@ -108,13 +124,16 @@ export default function FigmaExactView({
   });
 
   useEffect(() => {
-    // Realtime auto-loading for site images
+    // Realtime auto-loading for siteImages
     const unsubImages = onValue(ref(rtdb, 'siteConfig/images'), (snap) => {
       if (snap.exists()) {
         const val = snap.val();
         const mapped = {};
         Object.keys(val).forEach(k => {
-          if (val[k]?.url) mapped[k] = val[k].url;
+          const itemUrl = val[k]?.url || (typeof val[k] === 'string' ? val[k] : null);
+          if (itemUrl && !itemUrl.startsWith('/figma/')) {
+            mapped[k] = itemUrl;
+          }
         });
         const merged = { ...defaultImages, ...mapped };
         setSiteImages(merged);
@@ -138,7 +157,13 @@ export default function FigmaExactView({
     const unsubCategories = onValue(ref(rtdb, 'categories'), (snap) => {
       if (snap.exists()) {
         const val = snap.val();
-        const list = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        const list = Object.keys(val).map(k => {
+          const cat = { id: k, ...val[k] };
+          if (cat.imageUrl && cat.imageUrl.startsWith('/figma/')) {
+            cat.imageUrl = "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de";
+          }
+          return cat;
+        });
         if (list.length > 0) {
           setCategoriesList(list);
           sessionStorage.setItem('jersify_categories', JSON.stringify(list));
