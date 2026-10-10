@@ -620,19 +620,19 @@ export default function FigmaExactView({
         />
       </div>
 
-      {/* CATAGORIES SECTION - Slidable on Homepage */}
+      {/* CATEGORIES SECTION - Slidable on Homepage */}
       <div style={{ marginTop: '28px', marginBottom: '24px' }}>
         <h2 style={{
           fontFamily: 'Josefin Sans, sans-serif',
           fontWeight: 400,
-          fontSize: '31.4px',
+          fontSize: '22px',
           color: '#000000',
           textAlign: 'center',
           letterSpacing: '1px',
           textTransform: 'uppercase',
-          margin: '0 0 18px'
+          margin: '0 0 16px'
         }}>
-          CATAGORIES
+          CATEGORIES
         </h2>
 
         {/* Slidable Categories Container (Horizontal touch swipe & mouse drag) */}
