@@ -356,29 +356,18 @@ export default function FigmaExactView({
     return () => clearInterval(timer);
   }, [heroSlides.length]);
 
-  // Ensure critical homepage banner, club crest, and product images are properly loaded
+  // Ensure homepage hero banners photos are properly loaded (only hero banners, not all photos on the page)
   useEffect(() => {
     let isCancelled = false;
     if (onLoadingChange) onLoadingChange(true);
 
-    const criticalUrls = [
+    const heroBannerUrls = [
       siteImages.heroBanner1 || defaultImages.heroBanner1,
       siteImages.heroBanner2 || defaultImages.heroBanner2,
-      siteImages.heroBanner3 || defaultImages.heroBanner3,
-      siteImages.wearYourIdentity || defaultImages.wearYourIdentity,
-      siteImages.notBasicSpotlight || defaultImages.notBasicSpotlight,
-      siteImages.curatedSeasonPkg || defaultImages.curatedSeasonPkg,
-      siteImages.qualityYouCanWear || defaultImages.qualityYouCanWear,
-      siteImages.retroBanner1 || defaultImages.retroBanner1,
-      siteImages.retroBanner2 || defaultImages.retroBanner2,
-      siteImages.lifestyleClubs || defaultImages.lifestyleClubs,
-      siteImages.lifestyleNationals || defaultImages.lifestyleNationals,
-      siteImages.jersifyLogoHeader || defaultImages.jersifyLogoHeader,
-      ...clubsList.map((c) => c.logo),
-      ...displayedJerseys.map((p) => p.image || p.img || (p.images && p.images[0]))
+      siteImages.heroBanner3 || defaultImages.heroBanner3
     ].filter((u) => u && typeof u === 'string' && !u.startsWith('data:image/svg+xml'));
 
-    const promises = criticalUrls.map((url) => {
+    const promises = heroBannerUrls.map((url) => {
       return new Promise((resolve) => {
         const img = new Image();
         img.src = url;
@@ -398,7 +387,7 @@ export default function FigmaExactView({
       if (!isCancelled && onLoadingChange) {
         onLoadingChange(false);
       }
-    }, 6000);
+    }, 4500);
 
     Promise.all(promises).then(() => {
       if (!isCancelled) {
@@ -408,7 +397,7 @@ export default function FigmaExactView({
           if (!isCancelled && onLoadingChange) {
             onLoadingChange(false);
           }
-        }, 120);
+        }, 100);
       }
     });
 
@@ -416,7 +405,7 @@ export default function FigmaExactView({
       isCancelled = true;
       clearTimeout(maxSafetyTimer);
     };
-  }, [siteImages, displayedJerseys, clubsList]);
+  }, [siteImages]);
 
   return (
     <div style={{
@@ -442,7 +431,7 @@ export default function FigmaExactView({
       </div>
 
       {/* Slidable 3 Hero Banners Slider with Pagination Dots */}
-      <div style={{ width: '393px', height: '510px', position: 'relative', overflow: 'hidden' }}>
+      <div id="hero-banner-carousel" data-hero-banners="true" style={{ width: '393px', height: '510px', position: 'relative', overflow: 'hidden' }}>
         <div style={{
           display: 'flex',
           width: `${heroSlides.length * 393}px`,
@@ -453,6 +442,7 @@ export default function FigmaExactView({
           {heroSlides.map((slideUrl, idx) => (
             <div key={idx} style={{ width: '393px', height: '510px', flexShrink: 0 }}>
               <ImageWithSpinner
+                data-hero-banner="true"
                 src={slideUrl}
                 alt={`Hero Banner ${idx + 1}`}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}

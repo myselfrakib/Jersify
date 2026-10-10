@@ -86,6 +86,27 @@ export default function WholePageSpinner({
     const getImages = () => {
       const container = getContainer();
       if (!container) return [];
+
+      // On homepage, only evaluate hero banner photos, not all photos on the page
+      if (triggerKey && String(triggerKey).startsWith('home')) {
+        const heroImages = Array.from(
+          container.querySelectorAll('#hero-banner-carousel img, [data-hero-banners] img, img[data-hero-banner], .hero-bg-img')
+        ).filter((img) => {
+          const src = img.getAttribute('src') || img.src;
+          return src && !src.startsWith('data:image/svg+xml') && !src.startsWith('data:image/gif');
+        });
+
+        if (heroImages.length > 0) return heroImages;
+
+        const altHeroImages = Array.from(container.querySelectorAll('img')).filter((img) => {
+          const alt = (img.getAttribute('alt') || '').toLowerCase();
+          const src = img.getAttribute('src') || img.src;
+          return alt.includes('hero banner') && src && !src.startsWith('data:image/svg+xml');
+        });
+
+        if (altHeroImages.length > 0) return altHeroImages;
+      }
+
       return Array.from(container.querySelectorAll('img')).filter((img) => {
         const src = img.getAttribute('src') || img.src;
         return src && !src.startsWith('data:image/svg+xml') && !src.startsWith('data:image/gif');
