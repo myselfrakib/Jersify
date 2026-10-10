@@ -807,9 +807,8 @@ export default function FigmaExactView({
         </div>
       </div>
 
-      {/* ACTIVITIES Section (with top and bottom black border lines and slidable cards) */}
+      {/* ACTIVITIES Section */}
       <div style={{ marginTop: '40px', marginBottom: '24px' }}>
-        <div style={{ borderTop: '2px solid #000000', width: '100%' }} />
         <h2 style={{
           fontFamily: 'Josefin Sans, sans-serif',
           fontWeight: 400,
@@ -817,11 +816,10 @@ export default function FigmaExactView({
           color: '#000000',
           textAlign: 'center',
           letterSpacing: '1px',
-          margin: '14px 0'
+          margin: '0 0 18px'
         }}>
           ACTIVITIES
         </h2>
-        <div style={{ borderBottom: '2px solid #000000', width: '100%', marginBottom: '20px' }} />
 
         {/* Slidable Activities Cards */}
         <div
