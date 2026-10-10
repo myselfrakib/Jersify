@@ -28,7 +28,7 @@ export default function FigmaShopPage({
 }) {
   const [headerLogo, setHeaderLogo] = useState(() => {
     try {
-      const cached = sessionStorage.getItem('jersify_site_images');
+      const cached = sessionStorage.getItem('jersify_site_images') || localStorage.getItem('jersify_site_images');
       if (cached) {
         const parsed = JSON.parse(cached);
         if (parsed.jersifyLogoHeader && !String(parsed.jersifyLogoHeader).startsWith('/figma/')) {
@@ -43,7 +43,7 @@ export default function FigmaShopPage({
 
   const [shopJerseys, setShopJerseys] = useState(() => {
     try {
-      const cached = sessionStorage.getItem('jersify_products');
+      const cached = sessionStorage.getItem('jersify_products') || localStorage.getItem('jersify_products');
       return cached ? JSON.parse(cached) : INITIAL_PRODUCTS;
     } catch (e) {
       return INITIAL_PRODUCTS;
@@ -52,7 +52,7 @@ export default function FigmaShopPage({
 
   const [categoriesList, setCategoriesList] = useState(() => {
     try {
-      const cached = sessionStorage.getItem('jersify_categories');
+      const cached = sessionStorage.getItem('jersify_categories') || localStorage.getItem('jersify_categories');
       return cached ? JSON.parse(cached) : INITIAL_CATEGORIES;
     } catch (e) {
       return INITIAL_CATEGORIES;
@@ -61,7 +61,7 @@ export default function FigmaShopPage({
 
   const [shoppingPageOrder, setShoppingPageOrder] = useState(() => {
     try {
-      const cached = sessionStorage.getItem('jersify_shopping_page_order');
+      const cached = sessionStorage.getItem('jersify_shopping_page_order') || localStorage.getItem('jersify_shopping_page_order');
       return cached ? JSON.parse(cached) : { fan: [], player: [], retro: [] };
     } catch (e) {
       return { fan: [], player: [], retro: [] };
@@ -80,6 +80,7 @@ export default function FigmaShopPage({
         if (items.length > 0) {
           setShopJerseys(items);
           sessionStorage.setItem('jersify_products', JSON.stringify(items));
+          localStorage.setItem('jersify_products', JSON.stringify(items));
         }
       }
     }, () => {});
@@ -107,6 +108,7 @@ export default function FigmaShopPage({
         if (list.length > 0) {
           setCategoriesList(list);
           sessionStorage.setItem('jersify_categories', JSON.stringify(list));
+          localStorage.setItem('jersify_categories', JSON.stringify(list));
         }
       }
     }, () => {});
@@ -121,6 +123,7 @@ export default function FigmaShopPage({
         };
         setShoppingPageOrder(formatted);
         sessionStorage.setItem('jersify_shopping_page_order', JSON.stringify(formatted));
+        localStorage.setItem('jersify_shopping_page_order', JSON.stringify(formatted));
       }
     }, () => {});
 

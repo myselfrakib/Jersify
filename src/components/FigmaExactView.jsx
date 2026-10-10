@@ -45,7 +45,7 @@ export default function FigmaExactView({
 }) {
   const [siteImages, setSiteImages] = useState(() => {
     try {
-      const cached = sessionStorage.getItem('jersify_site_images');
+      const cached = sessionStorage.getItem('jersify_site_images') || localStorage.getItem('jersify_site_images');
       if (cached) {
         const parsed = JSON.parse(cached);
         const cleaned = {};
@@ -75,7 +75,7 @@ export default function FigmaExactView({
 
   const [figmaJerseys, setFigmaJerseys] = useState(() => {
     try {
-      const cached = sessionStorage.getItem('jersify_products');
+      const cached = sessionStorage.getItem('jersify_products') || localStorage.getItem('jersify_products');
       return cached ? JSON.parse(cached) : INITIAL_PRODUCTS;
     } catch (e) {
       return INITIAL_PRODUCTS;
@@ -84,7 +84,7 @@ export default function FigmaExactView({
 
   const [categoriesList, setCategoriesList] = useState(() => {
     try {
-      const cached = sessionStorage.getItem('jersify_categories');
+      const cached = sessionStorage.getItem('jersify_categories') || localStorage.getItem('jersify_categories');
       return cached ? JSON.parse(cached) : INITIAL_CATEGORIES;
     } catch (e) {
       return INITIAL_CATEGORIES;
@@ -93,7 +93,7 @@ export default function FigmaExactView({
 
   const [homepageOrder, setHomepageOrder] = useState(() => {
     try {
-      const cached = sessionStorage.getItem('jersify_homepage_order');
+      const cached = sessionStorage.getItem('jersify_homepage_order') || localStorage.getItem('jersify_homepage_order');
       return cached ? JSON.parse(cached) : [];
     } catch (e) {
       return [];
@@ -102,7 +102,7 @@ export default function FigmaExactView({
 
   const [teamBanners, setTeamBanners] = useState(() => {
     try {
-      const cached = sessionStorage.getItem('jersify_team_banners');
+      const cached = sessionStorage.getItem('jersify_team_banners') || localStorage.getItem('jersify_team_banners');
       return cached ? JSON.parse(cached) : {};
     } catch (e) {
       return {};
@@ -111,7 +111,7 @@ export default function FigmaExactView({
 
   const [clubsConfig, setClubsConfig] = useState(() => {
     try {
-      const cached = sessionStorage.getItem('jersify_clubs_config');
+      const cached = sessionStorage.getItem('jersify_clubs_config') || localStorage.getItem('jersify_clubs_config');
       return cached ? JSON.parse(cached) : null;
     } catch (e) {
       return null;
@@ -133,6 +133,8 @@ export default function FigmaExactView({
         const merged = { ...defaultImages, ...mapped };
         setSiteImages(merged);
         sessionStorage.setItem('jersify_site_images', JSON.stringify(merged));
+        localStorage.setItem('jersify_site_images', JSON.stringify(merged));
+        localStorage.setItem('jersify_home_cached', 'true');
       }
     }, () => {});
 
@@ -144,6 +146,7 @@ export default function FigmaExactView({
         if (items.length > 0) {
           setFigmaJerseys(items);
           sessionStorage.setItem('jersify_products', JSON.stringify(items));
+          localStorage.setItem('jersify_products', JSON.stringify(items));
         }
       }
     }, () => {});
@@ -162,6 +165,7 @@ export default function FigmaExactView({
         if (list.length > 0) {
           setCategoriesList(list);
           sessionStorage.setItem('jersify_categories', JSON.stringify(list));
+          localStorage.setItem('jersify_categories', JSON.stringify(list));
         }
       }
     }, () => {});
@@ -171,6 +175,7 @@ export default function FigmaExactView({
       if (snap.exists() && Array.isArray(snap.val())) {
         setHomepageOrder(snap.val());
         sessionStorage.setItem('jersify_homepage_order', JSON.stringify(snap.val()));
+        localStorage.setItem('jersify_homepage_order', JSON.stringify(snap.val()));
       }
     }, () => {});
 
@@ -180,6 +185,7 @@ export default function FigmaExactView({
         const val = snap.val();
         setTeamBanners(val);
         sessionStorage.setItem('jersify_team_banners', JSON.stringify(val));
+        localStorage.setItem('jersify_team_banners', JSON.stringify(val));
       }
     }, () => {});
 
@@ -188,6 +194,7 @@ export default function FigmaExactView({
         const val = snap.val();
         setClubsConfig(val);
         sessionStorage.setItem('jersify_clubs_config', JSON.stringify(val));
+        localStorage.setItem('jersify_clubs_config', JSON.stringify(val));
       }
     }, () => {});
 

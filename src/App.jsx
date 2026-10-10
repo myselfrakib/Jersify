@@ -21,6 +21,7 @@ import WishlistDrawer from './components/WishlistDrawer';
 
 import { INITIAL_PRODUCTS } from './data/initialProducts';
 import { auth, onAuthStateChanged, db, rtdb, ref, update, get } from './firebase';
+import { runSequentialPagePreload } from './utils/pagePreloader';
 
 export default function App() {
   // Page Navigation State: 'home' | 'shop' | 'product' | 'profile' | 'orders' | 'addresses' | 'team' | 'login' | 'signup' | 'checkout' | 'admin-login' | 'admin-dashboard'
@@ -254,6 +255,15 @@ export default function App() {
       }
     }
   }, [currentPage, selectedProduct?.id, selectedTeam]);
+
+  // When homepage is loaded successfully:
+  // Preload and save other pages one by one (shop -> cart -> profile) in local cache
+  // for butter-smooth, instant redirects
+  useEffect(() => {
+    if (currentPage === 'home' && !isHomeImagesLoading) {
+      runSequentialPagePreload({ user });
+    }
+  }, [currentPage, isHomeImagesLoading, user]);
 
   // Proactively fetch & verify auth state on homepage & pre-fetch profile data for instant profile loading
   useEffect(() => {

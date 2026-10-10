@@ -4,6 +4,17 @@ import React, { useState, useEffect, useRef } from 'react';
 const visitedRouteKeys = new Set();
 
 /**
+ * Mark a route key as pre-warmed / pre-cached so navigation into it is instant.
+ */
+export const markRoutePrewarmed = (key) => {
+  if (key) {
+    visitedRouteKeys.add(key);
+    const base = key.split('_')[0];
+    if (base) visitedRouteKeys.add(base);
+  }
+};
+
+/**
  * WholePageSpinner
  * A whole-page loading overlay that stays visible while page images are loading.
  * Ensures a silky-smooth transition once images are loaded, with zero disturbance
@@ -17,14 +28,34 @@ export default function WholePageSpinner({
   isLoading = false,
   onlyOncePerRoute = true
 }) {
-  const isAlreadyVisited = Boolean(onlyOncePerRoute && triggerKey && visitedRouteKeys.has(triggerKey));
+  const routeBase = triggerKey ? triggerKey.split('_')[0] : '';
+  const isCached = Boolean(
+    routeBase && (
+      sessionStorage.getItem(`jersify_${routeBase}_cached`) ||
+      localStorage.getItem(`jersify_${routeBase}_cached`)
+    )
+  );
+  const isAlreadyVisited = Boolean(
+    onlyOncePerRoute && triggerKey && (
+      visitedRouteKeys.has(triggerKey) ||
+      visitedRouteKeys.has(routeBase) ||
+      isCached
+    )
+  );
   const [isVisible, setIsVisible] = useState(() => !isAlreadyVisited);
   const [isFading, setIsFading] = useState(false);
   const lastKeyRef = useRef(triggerKey);
 
   useEffect(() => {
-    // If this route was already loaded and visited, skip the spinner completely
-    if (onlyOncePerRoute && triggerKey && visitedRouteKeys.has(triggerKey)) {
+    // If this route was already loaded and visited or pre-cached, skip the spinner completely
+    const routeBase = triggerKey ? triggerKey.split('_')[0] : '';
+    const isCached = Boolean(
+      routeBase && (
+        sessionStorage.getItem(`jersify_${routeBase}_cached`) ||
+        localStorage.getItem(`jersify_${routeBase}_cached`)
+      )
+    );
+    if (onlyOncePerRoute && triggerKey && (visitedRouteKeys.has(triggerKey) || visitedRouteKeys.has(routeBase) || isCached)) {
       setIsVisible(false);
       setIsFading(false);
       return;
