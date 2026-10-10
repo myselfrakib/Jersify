@@ -12,8 +12,8 @@ const visitedRouteKeys = new Set();
 export default function WholePageSpinner({
   triggerKey,
   containerRef,
-  minDuration = 400,
-  maxTimeout = 9000,
+  minDuration = 80,
+  maxTimeout = 2500,
   isLoading = false,
   onlyOncePerRoute = true
 }) {
@@ -62,11 +62,11 @@ export default function WholePageSpinner({
           if (isCancelled || isLoading) return;
           setIsVisible(false);
           setIsFading(false);
-        }, 360);
+        }, 160);
       }, remainingMin);
     };
 
-    // Safety timeout in case an asset hangs indefinitely
+    // Safety timeout in case an asset hangs indefinitely (fast 2.5s maximum)
     const safetyTimer = setTimeout(() => {
       if (!isCancelled) {
         finishLoading();
@@ -107,6 +107,30 @@ export default function WholePageSpinner({
         if (altHeroImages.length > 0) return altHeroImages;
       }
 
+      // On product detail page, only evaluate the main hero product image (not recommendations)
+      if (triggerKey && String(triggerKey).startsWith('product')) {
+        const mainProductImages = Array.from(
+          container.querySelectorAll('#product-main-carousel img, [data-main-product-image] img, img[data-main-product-image]')
+        ).filter((img) => {
+          const src = img.getAttribute('src') || img.src;
+          return src && !src.startsWith('data:image/svg+xml') && !src.startsWith('data:image/gif');
+        });
+
+        if (mainProductImages.length > 0) return mainProductImages.slice(0, 1);
+      }
+
+      // On shop catalog page, only evaluate top visible above-the-fold cards
+      if (triggerKey && String(triggerKey).startsWith('shop')) {
+        const topShopCards = Array.from(
+          container.querySelectorAll('[data-product-card] img, .shop-product-img')
+        ).filter((img) => {
+          const src = img.getAttribute('src') || img.src;
+          return src && !src.startsWith('data:image/svg+xml') && !src.startsWith('data:image/gif');
+        });
+
+        if (topShopCards.length > 0) return topShopCards.slice(0, 2);
+      }
+
       return Array.from(container.querySelectorAll('img')).filter((img) => {
         const src = img.getAttribute('src') || img.src;
         return src && !src.startsWith('data:image/svg+xml') && !src.startsWith('data:image/gif');
@@ -130,7 +154,7 @@ export default function WholePageSpinner({
           if (recheckImages.length === 0 || recheckImages.every(isImageDone)) {
             finishLoading();
           }
-        }, 120);
+        }, 40);
         return;
       }
 
@@ -155,7 +179,7 @@ export default function WholePageSpinner({
       const allLoaded = images.every(isImageDone);
 
       if (allLoaded) {
-        // Wait a 220ms grace window to verify no dynamic state changes re-trigger loading
+        // Fast 40ms grace window for smooth transition
         if (completionDebounceTimer) clearTimeout(completionDebounceTimer);
         completionDebounceTimer = setTimeout(() => {
           if (isCancelled || isLoading) return;
@@ -163,7 +187,7 @@ export default function WholePageSpinner({
           if (recheckImages.length > 0 && recheckImages.every(isImageDone)) {
             finishLoading();
           }
-        }, 220);
+        }, 40);
       } else {
         // Still has pending images, clear any pending completion
         if (completionDebounceTimer) {

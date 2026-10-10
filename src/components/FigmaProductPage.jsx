@@ -236,7 +236,9 @@ export default function FigmaProductPage({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <div style={{
+        <div 
+          id="product-main-carousel"
+          style={{
           display: 'flex',
           width: `${productImages.length * 393}px`,
           height: '100%',
@@ -245,7 +247,15 @@ export default function FigmaProductPage({
         }}>
           {productImages.map((imgUrl, idx) => (
             <div key={idx} style={{ width: '393px', height: '100%', flexShrink: 0 }}>
-              <ImageWithSpinner src={imgUrl} alt={`${currentProduct.name} ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <ImageWithSpinner
+                data-main-product-image="true"
+                loading={idx === 0 ? "eager" : "lazy"}
+                fetchPriority={idx === 0 ? "high" : "auto"}
+                decoding="async"
+                src={imgUrl}
+                alt={`${currentProduct.name} ${idx + 1}`}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             </div>
           ))}
         </div>
@@ -589,7 +599,13 @@ export default function FigmaProductPage({
                 style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '8px' }}
               >
                 <div style={{ width: '100%', height: '210px', background: '#D9D9D9', borderRadius: '2px', overflow: 'hidden' }}>
-                  <ImageWithSpinner src={rec.imgUrl} alt={rec.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <ImageWithSpinner
+                    src={rec.imgUrl}
+                    alt={rec.name}
+                    loading="lazy"
+                    decoding="async"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
                 </div>
                 <h4 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '13px', color: '#111827', lineHeight: '18px' }}>
                   {formatCleanTitle(rec.name)}

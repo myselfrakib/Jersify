@@ -9,6 +9,9 @@ export default function ImageWithSpinner({
   objectFit = 'cover',
   onClick,
   spinnerSize,
+  loading,
+  fetchPriority,
+  decoding = 'async',
   ...props
 }) {
   const [isLoaded, setIsLoaded] = useState(true);
@@ -57,6 +60,9 @@ export default function ImageWithSpinner({
       <img
         src={imageSrc}
         alt={alt}
+        loading={loading}
+        fetchPriority={fetchPriority}
+        decoding={decoding}
         onClick={onClick}
         onLoad={() => setIsLoaded(true)}
         onError={(e) => {

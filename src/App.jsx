@@ -393,7 +393,8 @@ export default function App() {
         triggerKey={`${currentPage}_${selectedProduct?.id || ''}_${selectedTeam || ''}`}
         containerRef={pageContentRef}
         isLoading={currentPage === 'home' && isHomeImagesLoading}
-        minDuration={currentPage === 'profile' || currentPage === 'addresses' || currentPage === 'orders' ? 80 : 350}
+        minDuration={80}
+        maxTimeout={2500}
       />
 
       {/* Main Page Container */}

@@ -546,14 +546,22 @@ export default function FigmaShopPage({
       <div style={{ padding: '19px' }}>
         {filteredJerseys.length > 0 ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-            {filteredJerseys.map((item) => (
+            {filteredJerseys.map((item, idx) => (
               <div 
                 key={item.id}
+                data-product-card="true"
                 onClick={() => onSelectProduct(item)}
                 style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '8px' }}
               >
                 <div style={{ width: '100%', aspectRatio: '3/4', background: '#F3F2EF', borderRadius: '2px', overflow: 'hidden' }}>
-                  <ImageWithSpinner src={item.imgUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <ImageWithSpinner
+                    src={item.imgUrl}
+                    alt={item.name}
+                    loading={idx < 4 ? "eager" : "lazy"}
+                    fetchPriority={idx < 2 ? "high" : "auto"}
+                    decoding="async"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
                 </div>
                 <div>
                   <h4 style={{ fontFamily: 'Karla', fontWeight: 600, fontSize: '13px', color: '#111111', lineHeight: '17px' }}>
