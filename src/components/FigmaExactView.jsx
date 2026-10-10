@@ -383,9 +383,20 @@ export default function FigmaExactView({
     return () => clearInterval(timer);
   }, [heroSlides.length]);
 
-  // Ensure homepage hero banners photos are properly loaded (only hero banners, not all photos on the page)
+  // Ensure homepage hero banners photos are properly loaded (only on very first home load)
   useEffect(() => {
     let isCancelled = false;
+    const isAlreadyLoaded = Boolean(
+      window.__jersify_home_loaded ||
+      sessionStorage.getItem('jersify_home_cached') ||
+      localStorage.getItem('jersify_home_cached')
+    );
+
+    if (isAlreadyLoaded) {
+      if (onLoadingChange) onLoadingChange(false);
+      return;
+    }
+
     if (onLoadingChange) onLoadingChange(true);
 
     const heroBannerUrls = [
@@ -412,6 +423,7 @@ export default function FigmaExactView({
 
     const maxSafetyTimer = setTimeout(() => {
       if (!isCancelled && onLoadingChange) {
+        window.__jersify_home_loaded = true;
         onLoadingChange(false);
       }
     }, 4500);
@@ -419,6 +431,11 @@ export default function FigmaExactView({
     Promise.all(promises).then(() => {
       if (!isCancelled) {
         clearTimeout(maxSafetyTimer);
+        window.__jersify_home_loaded = true;
+        try {
+          sessionStorage.setItem('jersify_home_cached', 'true');
+          localStorage.setItem('jersify_home_cached', 'true');
+        } catch {}
         // Ensure browser has committed render
         setTimeout(() => {
           if (!isCancelled && onLoadingChange) {

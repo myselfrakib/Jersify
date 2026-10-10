@@ -81,6 +81,14 @@ export default function WholePageSpinner({
 
       if (onlyOncePerRoute && triggerKey) {
         visitedRouteKeys.add(triggerKey);
+        const base = triggerKey.split('_')[0];
+        if (base) {
+          visitedRouteKeys.add(base);
+          try {
+            sessionStorage.setItem(`jersify_${base}_cached`, 'true');
+            localStorage.setItem(`jersify_${base}_cached`, 'true');
+          } catch {}
+        }
       }
 
       const elapsed = Date.now() - startTime;

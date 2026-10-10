@@ -65,7 +65,17 @@ export default function App() {
       return null;
     }
   });
-  const [isHomeImagesLoading, setIsHomeImagesLoading] = useState(true);
+
+  const hasHomeLoadedRef = useRef(Boolean(
+    (() => {
+      try {
+        return sessionStorage.getItem('jersify_home_cached') || localStorage.getItem('jersify_home_cached');
+      } catch {
+        return false;
+      }
+    })()
+  ));
+  const [isHomeImagesLoading, setIsHomeImagesLoading] = useState(() => !hasHomeLoadedRef.current);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -144,7 +154,7 @@ export default function App() {
     if (window.location.hash !== targetHash) {
       window.location.hash = targetHash;
     }
-    if (page === 'home') {
+    if (page === 'home' && !hasHomeLoadedRef.current) {
       setIsHomeImagesLoading(true);
     }
     setCurrentPage(page);
@@ -402,7 +412,7 @@ export default function App() {
       <WholePageSpinner
         triggerKey={`${currentPage}_${selectedProduct?.id || ''}_${selectedTeam || ''}`}
         containerRef={pageContentRef}
-        isLoading={currentPage === 'home' && isHomeImagesLoading}
+        isLoading={currentPage === 'home' && isHomeImagesLoading && !hasHomeLoadedRef.current}
         minDuration={80}
         maxTimeout={2500}
       />
@@ -419,7 +429,18 @@ export default function App() {
           onOpenCart={() => setIsCartOpen(true)}
           onOpenAuth={handleOpenAuth}
           onNavigateShop={() => navigateTo('shop')}
-          onLoadingChange={(loading) => setIsHomeImagesLoading(loading)}
+          onLoadingChange={(loading) => {
+            if (!loading) {
+              hasHomeLoadedRef.current = true;
+              try {
+                sessionStorage.setItem('jersify_home_cached', 'true');
+                localStorage.setItem('jersify_home_cached', 'true');
+              } catch {}
+              setIsHomeImagesLoading(false);
+            } else if (!hasHomeLoadedRef.current) {
+              setIsHomeImagesLoading(true);
+            }
+          }}
         />
       )}
 
