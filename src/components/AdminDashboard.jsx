@@ -21,30 +21,17 @@ import ImageWithSpinner from './ImageWithSpinner';
 
 
 const DEFAULT_INDEX_IMAGES = {
-  heroBanner1: { label: "Hero Slider Banner 1", aspect: "16:9 (393x220px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de" },
-  heroBanner2: { label: "Hero Slider Banner 2", aspect: "16:9 (393x220px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790334116027_pfan_0_IMG_3915.png?alt=media&token=8c2058d5-2b95-4926-8960-1b2ce77d29eb" },
-  heroBanner3: { label: "Hero Slider Banner 3", aspect: "16:9 (393x220px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030635314_1_IMG_6074.jpeg?alt=media&token=f8e8d995-63d7-4c57-aef4-948d93e6533d" },
-  wearYourIdentity: { label: "Wear Your Identity Banner", aspect: "2.4:1 (393x162px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030642038_2_IMG_6072.jpeg?alt=media&token=d0ba389d-4214-44ec-b2b3-c0dbdb548678" },
-  notBasicSpotlight: { label: "Not Basic Spotlight Banner", aspect: "3:4 (393x510px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030648696_3_IMG_6073.jpeg?alt=media&token=90f31fe5-1bb0-4522-aada-9db03fbcfab8" },
-  curatedSeasonPkg: { label: "Curated Season Main Packaging", aspect: "4:3 (393x333px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030675022_4_IMG_6071.jpeg?alt=media&token=ab978713-fa93-4b20-a8f2-a69b2f5c6aaf" },
-  premiumProducts: { label: "Curated Season: Premium Products (Argentina)", aspect: "3:1 (393x131px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777010842917_0_IMG_3702.jpeg?alt=media&token=1797da70-902b-42e8-9682-7feb6c89d4ef" },
-  qualityYouCanWear: { label: "Quality You Can Wear Short Banner", aspect: "3:1 (393x131px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777010842917_0_IMG_3702.jpeg?alt=media&token=1797da70-902b-42e8-9682-7feb6c89d4ef" },
-  goodOldKits: { label: "Good Old Kits Banner (Mannequin)", aspect: "1:1 (355x360px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777324422299_0_IMG_4061.jpeg?alt=media&token=f94be5a7-75e9-486d-bf07-92135cb38132" },
-  retroBanner1: { label: "Good Old Kits Retro Banner 1", aspect: "1:2.1 (168x360px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777324422299_0_IMG_4061.jpeg?alt=media&token=f94be5a7-75e9-486d-bf07-92135cb38132" },
-  retroBanner2: { label: "Good Old Kits Retro Banner 2", aspect: "1:2.1 (168x360px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777348522170_0_IMG_4080.jpeg?alt=media&token=86b339ae-0b9b-41e0-b926-fe7a4fccecc8" },
-  gurlsChoice: { label: "Gurl's Choice Banner (Rack)", aspect: "3:4 (287x413px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030648696_3_IMG_6073.jpeg?alt=media&token=90f31fe5-1bb0-4522-aada-9db03fbcfab8" },
-  activities: { label: "Activities Banner", aspect: "3:2 (205x134px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1778510513151_0_IMG_5263.jpeg?alt=media&token=17bad7fd-0018-4016-9fa2-5aedc6c3d09d" },
-  lifestyleClubs: { label: "Lifestyle Clubs Banner", aspect: "5:4 (207x166px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1778510513151_0_IMG_5263.jpeg?alt=media&token=17bad7fd-0018-4016-9fa2-5aedc6c3d09d" },
-  lifestyleNationals: { label: "Lifestyle Nationals Banner", aspect: "4:5 (136x166px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de" },
-  jersifyLogoHeader: { label: "Index Page Header Brand Logo", aspect: "Square Brand Logo (40x40px)", url: "/jersify-wordmark.png" },
-  clubLogoBarca: { label: "Club Crest: FC Barcelona", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg" },
-  clubLogoReal: { label: "Club Crest: Real Madrid", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg" },
-  clubLogoMilan: { label: "Club Crest: AC Milan", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/commons/d/d0/AC_Milan_logo.svg" },
-  clubLogoBayern: { label: "Club Crest: Bayern Munich", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg" },
-  clubLogoManUtd: { label: "Club Crest: Manchester United", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg" },
-  clubLogoManCity: { label: "Club Crest: Manchester City", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg" },
-  clubLogoLiverpool: { label: "Club Crest: Liverpool FC", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg" },
-  clubLogoJuventus: { label: "Club Crest: Juventus", aspect: "1:1 Crest (64x64px)", url: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg" }
+  jersifyLogoHeader: { section: "Header", label: "Header Brand Wordmark Logo", aspect: "128x47px", url: "/jersify-wordmark.png" },
+  heroBanner1: { section: "Hero Slider", label: "Hero Slider Banner 1", aspect: "3:4 (393x510px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790168539400_pfan_0_53D6DCBB-4039-49B7-97F4-62BA557B52B9.png?alt=media&token=96bede60-268d-47a1-b9e3-2ec020a024de" },
+  heroBanner2: { section: "Hero Slider", label: "Hero Slider Banner 2", aspect: "3:4 (393x510px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1790334116027_pfan_0_IMG_3915.png?alt=media&token=8c2058d5-2b95-4926-8960-1b2ce77d29eb" },
+  heroBanner3: { section: "Hero Slider", label: "Hero Slider Banner 3", aspect: "3:4 (393x510px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030635314_1_IMG_6074.jpeg?alt=media&token=f8e8d995-63d7-4c57-aef4-948d93e6533d" },
+  wearYourIdentity: { section: "Mid-Page Banner", label: "Wear Your Identity Banner", aspect: "2.4:1 (393x162px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030642038_2_IMG_6072.jpeg?alt=media&token=d0ba389d-4214-44ec-b2b3-c0dbdb548678" },
+  curatedSeasonPkg: { section: "Curated for the Season", label: "Packaging Card", aspect: "4:3 (393x333px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030675022_4_IMG_6071.jpeg?alt=media&token=ab978713-fa93-4b20-a8f2-a69b2f5c6aaf" },
+  premiumProducts: { section: "Curated for the Season", label: "Premium Products Banner", aspect: "3:1 (393x131px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777010842917_0_IMG_3702.jpeg?alt=media&token=1797da70-902b-42e8-9682-7feb6c89d4ef" },
+  goodOldKits: { section: "Good Old Kits", label: "Good Old Kits Banner", aspect: "1:1 (355x360px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1777324422299_0_IMG_4061.jpeg?alt=media&token=f94be5a7-75e9-486d-bf07-92135cb38132" },
+  gurlsChoice: { section: "Gurl's Choice", label: "Gurl's Choice Banner", aspect: "3:4 (287x413px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030648696_3_IMG_6073.jpeg?alt=media&token=90f31fe5-1bb0-4522-aada-9db03fbcfab8" },
+  activities: { section: "Activities", label: "Activities Card 1", aspect: "3:2 (205x134px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1778510513151_0_IMG_5263.jpeg?alt=media&token=17bad7fd-0018-4016-9fa2-5aedc6c3d09d" },
+  activities2: { section: "Activities", label: "Activities Card 2", aspect: "3:2 (205x134px)", url: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1778510513151_0_IMG_5263.jpeg?alt=media&token=17bad7fd-0018-4016-9fa2-5aedc6c3d09d" }
 };
 
 const CLUB_OPTIONS = [
@@ -334,21 +321,26 @@ export default function AdminDashboard({
     // 1. Realtime listener for siteConfig/images
     const unsubImages = onValue(ref(rtdb, 'siteConfig/images'), (snap) => {
       if (snap.exists()) {
-        const val = snap.val();
+        const val = snap.val() || {};
         const cleaned = {};
-        Object.keys(val).forEach(k => {
+        Object.keys(DEFAULT_INDEX_IMAGES).forEach(k => {
           const item = val[k];
-          if (item?.url && item.url.startsWith('/figma/')) {
+          if (!item) {
+            cleaned[k] = { ...DEFAULT_INDEX_IMAGES[k] };
+          } else if (item?.url && item.url.startsWith('/figma/')) {
             cleaned[k] = { ...DEFAULT_INDEX_IMAGES[k] };
           } else if (typeof item === 'string' && item.startsWith('/figma/')) {
             cleaned[k] = { ...DEFAULT_INDEX_IMAGES[k] };
+          } else if (typeof item === 'object') {
+            cleaned[k] = { ...DEFAULT_INDEX_IMAGES[k], ...item };
+          } else if (typeof item === 'string') {
+            cleaned[k] = { ...DEFAULT_INDEX_IMAGES[k], url: item };
           } else {
-            cleaned[k] = item;
+            cleaned[k] = { ...DEFAULT_INDEX_IMAGES[k] };
           }
         });
-        const merged = { ...DEFAULT_INDEX_IMAGES, ...cleaned };
-        setIndexImages(merged);
-        sessionStorage.setItem('jersify_site_images', JSON.stringify(merged));
+        setIndexImages(cleaned);
+        sessionStorage.setItem('jersify_site_images', JSON.stringify(cleaned));
       }
     }, () => { });
 
@@ -1445,12 +1437,19 @@ export default function AdminDashboard({
               const item = indexImages[key];
               return (
                 <div key={key} style={{ border: '1px solid #E5E7EB', padding: '16px', borderRadius: '4px', background: '#F9FAFB', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {/* Image Header with Aspect Ratio */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 700, fontSize: '14px', color: '#111111' }}>
-                      {item.label}
-                    </span>
-                    <span style={{ background: '#EDDBDB', color: '#333333', padding: '4px 8px', fontSize: '11px', fontWeight: 700 }}>
+                  {/* Image Header with Section Badge & Aspect Ratio */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {item.section && (
+                        <span style={{ background: '#111111', color: '#FFFFFF', padding: '2px 7px', fontSize: '10px', fontWeight: 700, borderRadius: '2px', textTransform: 'uppercase' }}>
+                          {item.section}
+                        </span>
+                      )}
+                      <span style={{ fontWeight: 700, fontSize: '14px', color: '#111111' }}>
+                        {item.label}
+                      </span>
+                    </div>
+                    <span style={{ background: '#EDDBDB', color: '#333333', padding: '4px 8px', fontSize: '11px', fontWeight: 700, borderRadius: '2px' }}>
                       Aspect: {item.aspect}
                     </span>
                   </div>
