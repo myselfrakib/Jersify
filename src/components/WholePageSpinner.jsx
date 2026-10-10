@@ -126,21 +126,21 @@ export default function WholePageSpinner({
       const container = getContainer();
       if (!container) return [];
 
-      // On homepage, only evaluate hero banner photos, not all photos on the page
+      // On homepage, evaluate both hero banner photos and club icons images
       if (triggerKey && String(triggerKey).startsWith('home')) {
-        const heroImages = Array.from(
-          container.querySelectorAll('#hero-banner-carousel img, [data-hero-banners] img, img[data-hero-banner], .hero-bg-img')
+        const homepageCriticalImages = Array.from(
+          container.querySelectorAll('#hero-banner-carousel img, [data-hero-banners] img, #club-badges-container img, [data-club-badges] img')
         ).filter((img) => {
           const src = img.getAttribute('src') || img.src;
           return src && !src.startsWith('data:image/svg+xml') && !src.startsWith('data:image/gif');
         });
 
-        if (heroImages.length > 0) return heroImages;
+        if (homepageCriticalImages.length > 0) return homepageCriticalImages;
 
         const altHeroImages = Array.from(container.querySelectorAll('img')).filter((img) => {
           const alt = (img.getAttribute('alt') || '').toLowerCase();
           const src = img.getAttribute('src') || img.src;
-          return alt.includes('hero banner') && src && !src.startsWith('data:image/svg+xml');
+          return (alt.includes('hero banner') || alt.includes('club')) && src && !src.startsWith('data:image/svg+xml');
         });
 
         if (altHeroImages.length > 0) return altHeroImages;

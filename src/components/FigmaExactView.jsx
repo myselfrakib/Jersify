@@ -383,7 +383,7 @@ export default function FigmaExactView({
     return () => clearInterval(timer);
   }, [heroSlides.length]);
 
-  // Ensure homepage hero banners photos are properly loaded (only on very first home load)
+  // Ensure homepage hero banners and club icons images are properly loaded (only on very first home load)
   useEffect(() => {
     let isCancelled = false;
     const isAlreadyLoaded = Boolean(
@@ -403,9 +403,16 @@ export default function FigmaExactView({
       siteImages.heroBanner1 || defaultImages.heroBanner1,
       siteImages.heroBanner2 || defaultImages.heroBanner2,
       siteImages.heroBanner3 || defaultImages.heroBanner3
+    ];
+
+    const clubLogoUrls = (clubsList || []).map((c) => c.logo);
+
+    const targetUrls = [
+      ...heroBannerUrls,
+      ...clubLogoUrls
     ].filter((u) => u && typeof u === 'string' && !u.startsWith('data:image/svg+xml'));
 
-    const promises = heroBannerUrls.map((url) => {
+    const promises = targetUrls.map((url) => {
       return new Promise((resolve) => {
         const img = new Image();
         img.src = url;
@@ -441,7 +448,7 @@ export default function FigmaExactView({
           if (!isCancelled && onLoadingChange) {
             onLoadingChange(false);
           }
-        }, 100);
+        }, 80);
       }
     });
 
@@ -449,7 +456,7 @@ export default function FigmaExactView({
       isCancelled = true;
       clearTimeout(maxSafetyTimer);
     };
-  }, [siteImages]);
+  }, [siteImages, clubsList]);
 
   return (
     <div style={{
@@ -553,7 +560,7 @@ export default function FigmaExactView({
         </p>
 
         {/* Club Badges with Figma Pink/Peach Gradient Background */}
-        <div style={{
+        <div id="club-badges-container" data-club-badges="true" style={{
           width: '393px',
           minHeight: '187px',
           background: 'linear-gradient(180deg, #FFFFFF 0%, #E5D0D0 99.99%)',
