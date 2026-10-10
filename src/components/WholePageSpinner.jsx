@@ -243,146 +243,36 @@ export default function WholePageSpinner({
         width: '100vw',
         height: '100vh',
         zIndex: 999999,
-        background: '#FFFFFF',
+        background: 'rgba(255, 255, 255, 0.75)',
+        backdropFilter: 'blur(4px)',
+        WebkitBackdropFilter: 'blur(4px)',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         opacity: isFading ? 0 : 1,
-        transition: 'opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'opacity 0.25s ease',
         pointerEvents: isFading ? 'none' : 'auto',
         userSelect: 'none'
       }}
     >
       <style>{`
-        @keyframes jersifyOuterSpin {
+        @keyframes jersifyCenterSpin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
-        @keyframes jersifyInnerSpin {
-          0% { transform: rotate(360deg); }
-          100% { transform: rotate(0deg); }
-        }
-        @keyframes jersifyPulseDot {
-          0%, 100% { transform: scale(0.85); opacity: 0.6; }
-          50% { transform: scale(1.15); opacity: 1; }
-        }
-        @keyframes jersifyShimmerBar {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(200%); }
-        }
       `}</style>
 
-      {/* Brand Header */}
+      {/* Simple Center Spinner */}
       <div
         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          marginBottom: '32px'
+          width: '40px',
+          height: '40px',
+          borderRadius: '50%',
+          border: '3px solid rgba(0, 0, 0, 0.1)',
+          borderTopColor: '#111111',
+          animation: 'jersifyCenterSpin 0.75s linear infinite'
         }}
-      >
-        <span
-          style={{
-            fontFamily: 'Inter, sans-serif',
-            fontWeight: 900,
-            fontSize: '24px',
-            letterSpacing: '0.25em',
-            color: '#111827',
-            textTransform: 'uppercase'
-          }}
-        >
-          JERSIFY
-        </span>
-        <span
-          style={{
-            fontFamily: 'Karla, sans-serif',
-            fontWeight: 700,
-            fontSize: '10px',
-            letterSpacing: '0.2em',
-            color: '#D4AF37',
-            textTransform: 'uppercase',
-            marginTop: '4px'
-          }}
-        >
-          AUTHENTIC FOOTBALL KITS
-        </span>
-      </div>
-
-      {/* Sleek Dual Spinner */}
-      <div
-        style={{
-          position: 'relative',
-          width: '64px',
-          height: '64px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        {/* Outer Gold/Dark Ring */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            borderRadius: '50%',
-            border: '3px solid #F3F4F6',
-            borderTop: '3px solid #D4AF37',
-            borderRight: '3px solid #111827',
-            animation: 'jersifyOuterSpin 0.9s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite'
-          }}
-        />
-
-        {/* Inner Counter-Rotating Ring */}
-        <div
-          style={{
-            position: 'absolute',
-            width: '42px',
-            height: '42px',
-            borderRadius: '50%',
-            border: '2.5px solid transparent',
-            borderBottom: '2.5px solid #D4AF37',
-            borderLeft: '2.5px solid #111827',
-            animation: 'jersifyInnerSpin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite'
-          }}
-        />
-
-        {/* Center Pulse Dot */}
-        <div
-          style={{
-            width: '10px',
-            height: '10px',
-            borderRadius: '50%',
-            background: '#D4AF37',
-            animation: 'jersifyPulseDot 1.4s ease-in-out infinite'
-          }}
-        />
-      </div>
-
-      {/* Shimmer Progress Line */}
-      <div
-        style={{
-          marginTop: '28px',
-          width: '120px',
-          height: '2px',
-          background: '#F3F4F6',
-          borderRadius: '2px',
-          overflow: 'hidden',
-          position: 'relative'
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '50%',
-            height: '100%',
-            background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
-            animation: 'jersifyShimmerBar 1.2s infinite ease-in-out'
-          }}
-        />
-      </div>
+      />
     </div>
   );
 }
