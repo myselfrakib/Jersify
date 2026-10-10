@@ -14,6 +14,7 @@ import {
 
 export default function FigmaProfilePage({ 
   user, 
+  userProfile,
   onSignOut,
   onOpenLogin, 
   onOpenCart, 
@@ -23,8 +24,9 @@ export default function FigmaProfilePage({
   onNavigateHome,
   onNavigateShop 
 }) {
-  const name = user?.displayName || "Alex Morgan";
-  const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || "AM";
+  const profileName = userProfile?.name || user?.displayName || (user?.email ? user.email.split('@')[0] : "Alex Morgan");
+  const profileEmail = userProfile?.email || user?.email || "";
+  const initials = (profileName.replace(/[^a-zA-Z0-9 ]/g, '').trim().split(' ').filter(Boolean).map(n => n[0]).join('').substring(0, 2).toUpperCase()) || "AM";
 
   return (
     <div style={{ width: '100%', maxWidth: '393px', margin: '0 auto', background: '#FFFFFF', position: 'relative', overflowX: 'hidden', minHeight: '850px', paddingBottom: '60px', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
@@ -57,11 +59,11 @@ export default function FigmaProfilePage({
           </div>
           <div>
             <h2 style={{ fontFamily: 'Karla', fontWeight: 700, fontSize: '20px', color: '#111111' }}>
-              {name}
+              {profileName}
             </h2>
-            {user?.email && (
+            {profileEmail && (
               <p style={{ fontFamily: 'Karla', fontSize: '13px', color: '#6B7280' }}>
-                {user.email}
+                {profileEmail}
               </p>
             )}
           </div>

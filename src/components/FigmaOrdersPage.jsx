@@ -17,7 +17,14 @@ export default function FigmaOrdersPage({
   onNavigateHome, 
   onNavigateShop 
 }) {
-  const [realOrders, setRealOrders] = useState([]);
+  const [realOrders, setRealOrders] = useState(() => {
+    try {
+      const saved = localStorage.getItem('jersify_cached_orders');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -58,6 +65,9 @@ export default function FigmaOrdersPage({
           });
 
           setRealOrders(filtered);
+          try {
+            localStorage.setItem('jersify_cached_orders', JSON.stringify(filtered));
+          } catch (e) {}
         }
       } catch (err) {
         console.warn('Could not fetch real RTDB orders:', err);

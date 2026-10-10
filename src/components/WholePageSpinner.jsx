@@ -100,8 +100,16 @@ export default function WholePageSpinner({
       if (isCancelled || isLoading) return;
 
       const images = getImages();
-      // If DOM has not rendered any images yet, give it another moment
+      // If DOM has no heavy images (e.g. Profile page with SVG icons), allow quick completion
       if (images.length === 0) {
+        if (completionDebounceTimer) clearTimeout(completionDebounceTimer);
+        completionDebounceTimer = setTimeout(() => {
+          if (isCancelled) return;
+          const recheckImages = getImages();
+          if (recheckImages.length === 0 || recheckImages.every(isImageDone)) {
+            finishLoading();
+          }
+        }, 120);
         return;
       }
 

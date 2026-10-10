@@ -46,17 +46,24 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [user, setUser] = useState(null);
-  const [userProfile, setUserProfile] = useState(() => {
+  // Fast pre-verified Auth & Profile states (initialized synchronously from cache)
+  const [user, setUser] = useState(() => {
+    if (auth?.currentUser) return auth.currentUser;
     try {
-      const saved = sessionStorage.getItem('jersify_user_profile');
-      return saved ? JSON.parse(saved) : null;
-    } catch (e) {
+      const cached = localStorage.getItem('jersify_auth_user');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
       return null;
     }
   });
-  const [isAuthLoaded, setIsAuthLoaded] = useState(false);
-  const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const [userProfile, setUserProfile] = useState(() => {
+    try {
+      const cached = localStorage.getItem('jersify_user_profile') || sessionStorage.getItem('jersify_user_profile');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
   const [isHomeImagesLoading, setIsHomeImagesLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
@@ -248,98 +255,63 @@ export default function App() {
     }
   }, [currentPage, selectedProduct?.id, selectedTeam]);
 
-  const fetchUserDetails = async (firebaseUser) => {
-    if (!firebaseUser) return null;
-    try {
-      const userSnap = await get(ref(rtdb, `users/${firebaseUser.uid}`));
-      if (userSnap.exists()) {
-        const data = userSnap.val();
-        setUserProfile(data);
-        try {
-          sessionStorage.setItem('jersify_user_profile', JSON.stringify(data));
-        } catch (e) {}
-        return data;
-      }
-    } catch (err) {
-      console.warn('Failed to fetch user details from RTDB:', err);
-    }
-    const fallbackProfile = {
-      uid: firebaseUser.uid,
-      name: firebaseUser.displayName || (firebaseUser.email ? firebaseUser.email.split('@')[0] : 'Member'),
-      email: firebaseUser.email
-    };
-    setUserProfile(fallbackProfile);
-    try {
-      sessionStorage.setItem('jersify_user_profile', JSON.stringify(fallbackProfile));
-    } catch (e) {}
-    return fallbackProfile;
-  };
-
+  // Proactively fetch & verify auth state on homepage & pre-fetch profile data for instant profile loading
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-      setIsAuthLoaded(true);
       if (currentUser) {
-        await fetchUserDetails(currentUser);
+        try {
+          const minimalAuth = {
+            uid: currentUser.uid,
+            email: currentUser.email,
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL
+          };
+          localStorage.setItem('jersify_auth_user', JSON.stringify(minimalAuth));
+
+          // Fetch full user profile & saved addresses upfront on homepage
+          const userSnap = await get(ref(rtdb, `users/${currentUser.uid}`));
+          if (userSnap.exists()) {
+            const profileData = userSnap.val();
+            setUserProfile(profileData);
+            localStorage.setItem('jersify_user_profile', JSON.stringify(profileData));
+            try {
+              sessionStorage.setItem('jersify_user_profile', JSON.stringify(profileData));
+            } catch (e) {}
+            if (profileData.addresses) {
+              const addrList = Array.isArray(profileData.addresses)
+                ? profileData.addresses
+                : Object.values(profileData.addresses);
+              localStorage.setItem('jersify_saved_addresses', JSON.stringify(addrList));
+            }
+          } else {
+            const fallbackProfile = {
+              uid: currentUser.uid,
+              name: currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'Member'),
+              email: currentUser.email
+            };
+            setUserProfile(fallbackProfile);
+            localStorage.setItem('jersify_user_profile', JSON.stringify(fallbackProfile));
+          }
+        } catch (e) {
+          console.warn('Background profile prefetch fallback:', e);
+        }
       } else {
-        setUserProfile(null);
+        localStorage.removeItem('jersify_auth_user');
+        localStorage.removeItem('jersify_user_profile');
         try {
           sessionStorage.removeItem('jersify_user_profile');
         } catch (e) {}
+        setUserProfile(null);
       }
     });
     return () => unsubscribe();
   }, []);
 
-  const handleOpenProfile = async () => {
-    setIsProfileLoading(true);
-
-    let currentAuthUser = user;
-    if (!isAuthLoaded) {
-      if (auth.authStateReady) {
-        try {
-          await auth.authStateReady();
-        } catch (e) {}
-      }
-      currentAuthUser = auth.currentUser;
-    }
-
-    if (!currentAuthUser) {
-      navigateTo('login');
-      setIsProfileLoading(false);
-      return;
-    }
-
-    try {
-      await fetchUserDetails(currentAuthUser);
-    } catch (e) {
-      console.warn('Profile details fetch error:', e);
-    }
-
-    navigateTo('profile');
-    setTimeout(() => {
-      setIsProfileLoading(false);
-    }, 120);
+  const handleOpenAuth = () => {
+    const isAuthed = Boolean(user || localStorage.getItem('jersify_auth_user'));
+    navigateTo(isAuthed ? 'profile' : 'login');
   };
-
-  useEffect(() => {
-    if (currentPage === 'profile') {
-      if (!isAuthLoaded) {
-        setIsProfileLoading(true);
-      } else if (!user) {
-        setIsProfileLoading(false);
-        navigateTo('login');
-      } else if (!userProfile) {
-        setIsProfileLoading(true);
-        fetchUserDetails(user).finally(() => {
-          setTimeout(() => {
-            setIsProfileLoading(false);
-          }, 100);
-        });
-      }
-    }
-  }, [currentPage, isAuthLoaded, user, userProfile]);
-
   useEffect(() => {
     localStorage.setItem('jersify_cart', JSON.stringify(cartItems));
   }, [cartItems]);
@@ -420,7 +392,8 @@ export default function App() {
       <WholePageSpinner
         triggerKey={`${currentPage}_${selectedProduct?.id || ''}_${selectedTeam || ''}`}
         containerRef={pageContentRef}
-        isLoading={isProfileLoading || (currentPage === 'home' && isHomeImagesLoading)}
+        isLoading={currentPage === 'home' && isHomeImagesLoading}
+        minDuration={currentPage === 'profile' || currentPage === 'addresses' || currentPage === 'orders' ? 80 : 350}
       />
 
       {/* Main Page Container */}
@@ -433,7 +406,7 @@ export default function App() {
           onSelectTeam={(t) => navigateTo('team', t)}
           onSelectCategory={(c) => navigateTo('shop', c)}
           onOpenCart={() => setIsCartOpen(true)}
-          onOpenAuth={handleOpenProfile}
+          onOpenAuth={handleOpenAuth}
           onNavigateShop={() => navigateTo('shop')}
           onLoadingChange={(loading) => setIsHomeImagesLoading(loading)}
         />
@@ -452,7 +425,7 @@ export default function App() {
           }}
           onSelectProduct={(p) => navigateTo('product', p)}
           onOpenCart={() => setIsCartOpen(true)}
-          onOpenAuth={handleOpenProfile}
+          onOpenAuth={handleOpenAuth}
           onNavigateHome={() => navigateTo('home')}
         />
       )}
@@ -467,7 +440,7 @@ export default function App() {
           onUpdateQty={handleUpdateQty}
           onSelectProduct={(p) => navigateTo('product', p)}
           onOpenCart={() => setIsCartOpen(true)}
-          onOpenAuth={handleOpenProfile}
+          onOpenAuth={handleOpenAuth}
           onNavigateHome={() => navigateTo('home')}
         />
       )}
@@ -478,9 +451,11 @@ export default function App() {
           userProfile={userProfile}
           onSignOut={async () => {
             if (user) {
-              await auth.signOut();
+              try { await auth.signOut(); } catch (e) {}
               setUser(null);
               setUserProfile(null);
+              localStorage.removeItem('jersify_auth_user');
+              localStorage.removeItem('jersify_user_profile');
               try {
                 sessionStorage.removeItem('jersify_user_profile');
               } catch (e) {}
@@ -532,7 +507,22 @@ export default function App() {
         <FigmaLoginPage
           user={user}
           onBack={() => navigateTo('profile')}
-          onUserChanged={(u) => setUser(u)}
+          onUserChanged={(u) => {
+            setUser(u);
+            if (u) {
+              const minimal = {
+                uid: u.uid,
+                email: u.email,
+                displayName: u.displayName,
+                photoURL: u.photoURL
+              };
+              localStorage.setItem('jersify_auth_user', JSON.stringify(minimal));
+            } else {
+              localStorage.removeItem('jersify_auth_user');
+              localStorage.removeItem('jersify_user_profile');
+              setUserProfile(null);
+            }
+          }}
           onOpenCart={() => setIsCartOpen(true)}
           onNavigateHome={() => navigateTo('home')}
           onNavigateShop={() => navigateTo('shop')}
@@ -545,7 +535,22 @@ export default function App() {
         <FigmaSignupPage
           user={user}
           onBack={() => navigateTo('profile')}
-          onUserChanged={(u) => setUser(u)}
+          onUserChanged={(u) => {
+            setUser(u);
+            if (u) {
+              const minimal = {
+                uid: u.uid,
+                email: u.email,
+                displayName: u.displayName,
+                photoURL: u.photoURL
+              };
+              localStorage.setItem('jersify_auth_user', JSON.stringify(minimal));
+            } else {
+              localStorage.removeItem('jersify_auth_user');
+              localStorage.removeItem('jersify_user_profile');
+              setUserProfile(null);
+            }
+          }}
           onOpenCart={() => setIsCartOpen(true)}
           onNavigateHome={() => navigateTo('home')}
           onNavigateShop={() => navigateTo('shop')}
