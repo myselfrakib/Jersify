@@ -17,32 +17,59 @@ export const markRoutePrewarmed = (key) => {
 /**
  * WholePageSpinner
  * A whole-page loading overlay that stays visible while page images are loading.
- * Ensures a silky-smooth transition once images are loaded, with zero disturbance
- * to the rest of the application.
+ * Translucent overlay with a small clean spinner in the center.
  */
 export default function WholePageSpinner({
   triggerKey,
   containerRef,
   minDuration = 80,
   maxTimeout = 2500,
-  isLoading = false,
+  isLoading,
   onlyOncePerRoute = true
 }) {
   const routeBase = triggerKey ? triggerKey.split('_')[0] : '';
   const isAlreadyVisited = Boolean(
-    !isLoading && onlyOncePerRoute && triggerKey && (
-      visitedRouteKeys.has(triggerKey) ||
-      visitedRouteKeys.has(routeBase)
-    )
+    isLoading === undefined &&
+    onlyOncePerRoute &&
+    triggerKey &&
+    (visitedRouteKeys.has(triggerKey) || visitedRouteKeys.has(routeBase))
   );
-  const [isVisible, setIsVisible] = useState(() => !isAlreadyVisited);
-  const [isFading, setIsFading] = useState(false);
-  const lastKeyRef = useRef(triggerKey);
 
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof isLoading === 'boolean') return isLoading;
+    return !isAlreadyVisited;
+  });
+  const [isFading, setIsFading] = useState(false);
+  const prevLoadingRef = useRef(isLoading);
+
+  // Direct synchronization when isLoading prop is explicitly controlled (e.g. homepage image loading)
   useEffect(() => {
-    // If this route was already loaded and visited in this session, skip the spinner completely
-    const routeBase = triggerKey ? triggerKey.split('_')[0] : '';
-    if (!isLoading && onlyOncePerRoute && triggerKey && (visitedRouteKeys.has(triggerKey) || visitedRouteKeys.has(routeBase))) {
+    if (typeof isLoading === 'boolean') {
+      if (isLoading) {
+        setIsVisible(true);
+        setIsFading(false);
+      } else if (prevLoadingRef.current === true && !isLoading) {
+        // Smoothly fade out when loading completes
+        setIsFading(true);
+        const timer = setTimeout(() => {
+          setIsVisible(false);
+          setIsFading(false);
+          if (triggerKey && onlyOncePerRoute) {
+            visitedRouteKeys.add(triggerKey);
+            if (routeBase) visitedRouteKeys.add(routeBase);
+          }
+        }, 180);
+        return () => clearTimeout(timer);
+      }
+      prevLoadingRef.current = isLoading;
+    }
+  }, [isLoading, triggerKey, routeBase, onlyOncePerRoute]);
+
+  // Fallback DOM image detector when isLoading is NOT explicitly controlled
+  useEffect(() => {
+    if (typeof isLoading === 'boolean') return;
+
+    if (onlyOncePerRoute && triggerKey && (visitedRouteKeys.has(triggerKey) || visitedRouteKeys.has(routeBase))) {
       setIsVisible(false);
       setIsFading(false);
       return;
@@ -54,13 +81,11 @@ export default function WholePageSpinner({
     let observer = null;
     const startTime = Date.now();
 
-    // Show spinner when visiting this route for the first time
     setIsVisible(true);
     setIsFading(false);
-    lastKeyRef.current = triggerKey;
 
     const finishLoading = () => {
-      if (isCancelled || isLoading) return;
+      if (isCancelled) return;
       if (observer) {
         observer.disconnect();
         observer = null;
@@ -68,27 +93,23 @@ export default function WholePageSpinner({
 
       if (onlyOncePerRoute && triggerKey) {
         visitedRouteKeys.add(triggerKey);
-        const base = triggerKey.split('_')[0];
-        if (base) {
-          visitedRouteKeys.add(base);
-        }
+        if (routeBase) visitedRouteKeys.add(routeBase);
       }
 
       const elapsed = Date.now() - startTime;
       const remainingMin = Math.max(0, minDuration - elapsed);
 
       fadeTimer = setTimeout(() => {
-        if (isCancelled || isLoading) return;
+        if (isCancelled) return;
         setIsFading(true);
         fadeTimer = setTimeout(() => {
-          if (isCancelled || isLoading) return;
+          if (isCancelled) return;
           setIsVisible(false);
           setIsFading(false);
         }, 160);
       }, remainingMin);
     };
 
-    // Safety timeout in case an asset hangs indefinitely (fast 2.5s maximum)
     const safetyTimer = setTimeout(() => {
       if (!isCancelled) {
         finishLoading();
@@ -109,7 +130,6 @@ export default function WholePageSpinner({
       const container = getContainer();
       if (!container) return [];
 
-      // On homepage, evaluate both hero banner photos and club icons images
       if (triggerKey && String(triggerKey).startsWith('home')) {
         const homepageCriticalImages = Array.from(
           container.querySelectorAll('#hero-banner-carousel img, [data-hero-banners] img, #club-badges-container img, [data-club-badges] img')
@@ -119,14 +139,6 @@ export default function WholePageSpinner({
         });
 
         if (homepageCriticalImages.length > 0) return homepageCriticalImages;
-
-        const altHeroImages = Array.from(container.querySelectorAll('img')).filter((img) => {
-          const alt = (img.getAttribute('alt') || '').toLowerCase();
-          const src = img.getAttribute('src') || img.src;
-          return (alt.includes('hero banner') || alt.includes('club')) && src && !src.startsWith('data:image/svg+xml');
-        });
-
-        if (altHeroImages.length > 0) return altHeroImages;
       }
 
       // On product detail page, only evaluate the main hero product image (not recommendations)
@@ -141,7 +153,7 @@ export default function WholePageSpinner({
         if (mainProductImages.length > 0) return mainProductImages.slice(0, 1);
       }
 
-      // On shop catalog page, only evaluate top visible above-the-fold cards
+      // On shop catalog page, evaluate top visible above-the-fold cards
       if (triggerKey && String(triggerKey).startsWith('shop')) {
         const topShopCards = Array.from(
           container.querySelectorAll('[data-product-card] img, .shop-product-img')
@@ -164,30 +176,22 @@ export default function WholePageSpinner({
     };
 
     const evaluateImages = () => {
-      if (isCancelled || isLoading) return;
-
+      if (isCancelled) return;
       const images = getImages();
-      // If DOM has no heavy images (e.g. Profile page with SVG icons), allow quick completion
       if (images.length === 0) {
         if (completionDebounceTimer) clearTimeout(completionDebounceTimer);
         completionDebounceTimer = setTimeout(() => {
           if (isCancelled) return;
-          const recheckImages = getImages();
-          if (recheckImages.length === 0 || recheckImages.every(isImageDone)) {
-            finishLoading();
-          }
+          finishLoading();
         }, 40);
         return;
       }
 
-      // Attach listener to any newly discovered or uncompleted images
       images.forEach((img) => {
         if (!trackedImgs.has(img)) {
           trackedImgs.add(img);
           if (!isImageDone(img)) {
-            const onSettled = () => {
-              evaluateImages();
-            };
+            const onSettled = () => evaluateImages();
             img.addEventListener('load', onSettled, { once: true });
             img.addEventListener('error', () => {
               img.__jersifyError = true;
@@ -197,50 +201,30 @@ export default function WholePageSpinner({
         }
       });
 
-      // Check if all images are currently loaded
       const allLoaded = images.every(isImageDone);
-
       if (allLoaded) {
-        // Fast 40ms grace window for smooth transition
         if (completionDebounceTimer) clearTimeout(completionDebounceTimer);
         completionDebounceTimer = setTimeout(() => {
-          if (isCancelled || isLoading) return;
-          const recheckImages = getImages();
-          if (recheckImages.length > 0 && recheckImages.every(isImageDone)) {
-            finishLoading();
-          }
+          if (isCancelled) return;
+          finishLoading();
         }, 40);
-      } else {
-        // Still has pending images, clear any pending completion
-        if (completionDebounceTimer) {
-          clearTimeout(completionDebounceTimer);
-          completionDebounceTimer = null;
-        }
       }
     };
 
-    // Initial check after short microtask render
     const initialCheckTimer = setTimeout(() => {
-      if (isCancelled || isLoading) return;
+      if (isCancelled) return;
       const container = getContainer();
-
       if (container) {
         try {
-          observer = new MutationObserver(() => {
-            evaluateImages();
-          });
-
+          observer = new MutationObserver(() => evaluateImages());
           observer.observe(container, {
             childList: true,
             subtree: true,
             attributes: true,
             attributeFilter: ['src', 'srcset']
           });
-        } catch (e) {
-          // Fallback if MutationObserver fails
-        }
+        } catch (e) {}
       }
-
       evaluateImages();
     }, 50);
 
@@ -252,7 +236,7 @@ export default function WholePageSpinner({
       if (fadeTimer) clearTimeout(fadeTimer);
       if (observer) observer.disconnect();
     };
-  }, [triggerKey, minDuration, maxTimeout, containerRef, isLoading]);
+  }, [triggerKey, minDuration, maxTimeout, containerRef, isLoading, routeBase, onlyOncePerRoute]);
 
   if (!isVisible) return null;
 
@@ -272,7 +256,7 @@ export default function WholePageSpinner({
         alignItems: 'center',
         justifyContent: 'center',
         opacity: isFading ? 0 : 1,
-        transition: 'opacity 0.25s ease',
+        transition: 'opacity 0.18s ease',
         pointerEvents: isFading ? 'none' : 'auto',
         userSelect: 'none'
       }}
@@ -284,15 +268,15 @@ export default function WholePageSpinner({
         }
       `}</style>
 
-      {/* Simple Center Spinner */}
+      {/* Small Clean Center Spinner */}
       <div
         style={{
-          width: '40px',
-          height: '40px',
+          width: '36px',
+          height: '36px',
           borderRadius: '50%',
-          border: '3px solid rgba(0, 0, 0, 0.1)',
+          border: '3px solid rgba(0, 0, 0, 0.12)',
           borderTopColor: '#111111',
-          animation: 'jersifyCenterSpin 0.75s linear infinite'
+          animation: 'jersifyCenterSpin 0.7s linear infinite'
         }}
       />
     </div>

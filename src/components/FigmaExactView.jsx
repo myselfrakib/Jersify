@@ -10,6 +10,7 @@ import {
   imgUser, 
   imgShoppingCart 
 } from '../assets/svgIcons';
+import { getOptimizedClubLogo, CLUB_LOGOS } from '../assets/clubLogos';
 
 const defaultImages = {
   jersifyLogoHeader: "/jersify-wordmark.png",
@@ -23,14 +24,14 @@ const defaultImages = {
   gurlsChoice: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1781030648696_3_IMG_6073.jpeg?alt=media&token=90f31fe5-1bb0-4522-aada-9db03fbcfab8",
   activities: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1778510513151_0_IMG_5263.jpeg?alt=media&token=17bad7fd-0018-4016-9fa2-5aedc6c3d09d",
   activities2: "https://firebasestorage.googleapis.com/v0/b/jersify-f9b5e.firebasestorage.app/o/products%2F1778510513151_0_IMG_5263.jpeg?alt=media&token=17bad7fd-0018-4016-9fa2-5aedc6c3d09d",
-  clubLogoBarca: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg",
-  clubLogoReal: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg",
-  clubLogoMilan: "https://upload.wikimedia.org/wikipedia/commons/d/d0/AC_Milan_logo.svg",
-  clubLogoBayern: "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg",
-  clubLogoManUtd: "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg",
-  clubLogoManCity: "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg",
-  clubLogoLiverpool: "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg",
-  clubLogoJuventus: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg"
+  clubLogoBarca: CLUB_LOGOS.barcelona,
+  clubLogoReal: CLUB_LOGOS.realmadrid,
+  clubLogoMilan: CLUB_LOGOS.milan,
+  clubLogoBayern: CLUB_LOGOS.bayern,
+  clubLogoManUtd: CLUB_LOGOS.manunited,
+  clubLogoManCity: CLUB_LOGOS.mancity,
+  clubLogoLiverpool: CLUB_LOGOS.liverpool,
+  clubLogoJuventus: CLUB_LOGOS.juventus
 };
 
 export default function FigmaExactView({
@@ -62,14 +63,14 @@ export default function FigmaExactView({
     }
   });
 
-  const imgEllipse12 = siteImages.clubLogoBarca || defaultImages.clubLogoBarca;
-  const imgEllipse18 = siteImages.clubLogoMilan || defaultImages.clubLogoMilan;
-  const imgEllipse14 = siteImages.clubLogoBayern || defaultImages.clubLogoBayern;
-  const imgEllipse15 = siteImages.clubLogoManUtd || defaultImages.clubLogoManUtd;
-  const imgEllipse16 = siteImages.clubLogoReal || defaultImages.clubLogoReal;
-  const imgEllipse17 = siteImages.clubLogoManCity || defaultImages.clubLogoManCity;
-  const imgEllipse13 = siteImages.clubLogoLiverpool || defaultImages.clubLogoLiverpool;
-  const imgEllipse19 = siteImages.clubLogoJuventus || defaultImages.clubLogoJuventus;
+  const imgEllipse12 = getOptimizedClubLogo(siteImages.clubLogoBarca || defaultImages.clubLogoBarca);
+  const imgEllipse18 = getOptimizedClubLogo(siteImages.clubLogoMilan || defaultImages.clubLogoMilan);
+  const imgEllipse14 = getOptimizedClubLogo(siteImages.clubLogoBayern || defaultImages.clubLogoBayern);
+  const imgEllipse15 = getOptimizedClubLogo(siteImages.clubLogoManUtd || defaultImages.clubLogoManUtd);
+  const imgEllipse16 = getOptimizedClubLogo(siteImages.clubLogoReal || defaultImages.clubLogoReal);
+  const imgEllipse17 = getOptimizedClubLogo(siteImages.clubLogoManCity || defaultImages.clubLogoManCity);
+  const imgEllipse13 = getOptimizedClubLogo(siteImages.clubLogoLiverpool || defaultImages.clubLogoLiverpool);
+  const imgEllipse19 = getOptimizedClubLogo(siteImages.clubLogoJuventus || defaultImages.clubLogoJuventus);
 
   const imgImg44492 = siteImages.jersifyLogoHeader || defaultImages.jersifyLogoHeader;
 
@@ -251,7 +252,7 @@ export default function FigmaExactView({
             extraClubs.push({
               id: c.id || c.name,
               name: c.name,
-              logo: c.logo || c.logoUrl || c.crest
+              logo: getOptimizedClubLogo(c.logo || c.logoUrl || c.crest)
             });
           }
         }
@@ -269,7 +270,7 @@ export default function FigmaExactView({
           extraClubs.push({
             id: teamName,
             name: item.name || teamName,
-            logo: item.logo || item.crest
+            logo: getOptimizedClubLogo(item.logo || item.crest)
           });
         }
       });
@@ -401,7 +402,7 @@ export default function FigmaExactView({
       siteImages.heroBanner3 || defaultImages.heroBanner3
     ];
 
-    const clubLogoUrls = (clubsList || []).map((c) => c.logo);
+    const clubLogoUrls = (clubsList || []).map((c) => getOptimizedClubLogo(c.logo));
 
     const targetUrls = [
       ...heroBannerUrls,
@@ -429,7 +430,7 @@ export default function FigmaExactView({
         window.__jersify_home_loaded = true;
         onLoadingChange(false);
       }
-    }, 4500);
+    }, 2500);
 
     Promise.all(promises).then(() => {
       if (!isCancelled) {
@@ -440,7 +441,7 @@ export default function FigmaExactView({
           if (!isCancelled && onLoadingChange) {
             onLoadingChange(false);
           }
-        }, 80);
+        }, 60);
       }
     });
 

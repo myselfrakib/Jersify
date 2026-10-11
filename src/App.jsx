@@ -412,7 +412,7 @@ export default function App() {
       <WholePageSpinner
         triggerKey={`${currentPage}_${selectedProduct?.id || ''}_${selectedTeam || ''}`}
         containerRef={pageContentRef}
-        isLoading={currentPage === 'home' && isHomeImagesLoading && !hasHomeLoadedRef.current}
+        isLoading={currentPage === 'home' ? (isHomeImagesLoading && !hasHomeLoadedRef.current) : undefined}
         minDuration={80}
         maxTimeout={2500}
       />
