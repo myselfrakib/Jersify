@@ -29,17 +29,10 @@ export default function WholePageSpinner({
   onlyOncePerRoute = true
 }) {
   const routeBase = triggerKey ? triggerKey.split('_')[0] : '';
-  const isCached = Boolean(
-    routeBase && (
-      sessionStorage.getItem(`jersify_${routeBase}_cached`) ||
-      localStorage.getItem(`jersify_${routeBase}_cached`)
-    )
-  );
   const isAlreadyVisited = Boolean(
-    onlyOncePerRoute && triggerKey && (
+    !isLoading && onlyOncePerRoute && triggerKey && (
       visitedRouteKeys.has(triggerKey) ||
-      visitedRouteKeys.has(routeBase) ||
-      isCached
+      visitedRouteKeys.has(routeBase)
     )
   );
   const [isVisible, setIsVisible] = useState(() => !isAlreadyVisited);
@@ -47,15 +40,9 @@ export default function WholePageSpinner({
   const lastKeyRef = useRef(triggerKey);
 
   useEffect(() => {
-    // If this route was already loaded and visited or pre-cached, skip the spinner completely
+    // If this route was already loaded and visited in this session, skip the spinner completely
     const routeBase = triggerKey ? triggerKey.split('_')[0] : '';
-    const isCached = Boolean(
-      routeBase && (
-        sessionStorage.getItem(`jersify_${routeBase}_cached`) ||
-        localStorage.getItem(`jersify_${routeBase}_cached`)
-      )
-    );
-    if (onlyOncePerRoute && triggerKey && (visitedRouteKeys.has(triggerKey) || visitedRouteKeys.has(routeBase) || isCached)) {
+    if (!isLoading && onlyOncePerRoute && triggerKey && (visitedRouteKeys.has(triggerKey) || visitedRouteKeys.has(routeBase))) {
       setIsVisible(false);
       setIsFading(false);
       return;
@@ -84,10 +71,6 @@ export default function WholePageSpinner({
         const base = triggerKey.split('_')[0];
         if (base) {
           visitedRouteKeys.add(base);
-          try {
-            sessionStorage.setItem(`jersify_${base}_cached`, 'true');
-            localStorage.setItem(`jersify_${base}_cached`, 'true');
-          } catch {}
         }
       }
 

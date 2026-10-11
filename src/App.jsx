@@ -66,16 +66,16 @@ export default function App() {
     }
   });
 
-  const hasHomeLoadedRef = useRef(Boolean(
-    (() => {
-      try {
-        return sessionStorage.getItem('jersify_home_cached') || localStorage.getItem('jersify_home_cached');
-      } catch {
-        return false;
-      }
-    })()
-  ));
-  const [isHomeImagesLoading, setIsHomeImagesLoading] = useState(() => !hasHomeLoadedRef.current);
+  const hasHomeLoadedRef = useRef(false);
+  const [isHomeImagesLoading, setIsHomeImagesLoading] = useState(true);
+
+  // Clear any legacy persistent home cache flag from localStorage so fresh reloads evaluate images cleanly
+  useEffect(() => {
+    try {
+      localStorage.removeItem('jersify_home_cached');
+      sessionStorage.removeItem('jersify_home_cached');
+    } catch {}
+  }, []);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
