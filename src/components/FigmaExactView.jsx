@@ -649,7 +649,7 @@ export default function FigmaExactView({
       </div>
 
       {/* CATEGORIES SECTION - Slidable on Homepage */}
-      <div style={{ marginTop: '28px', marginBottom: '24px' }}>
+      <div style={{ marginTop: '36px', marginBottom: '24px' }}>
         <h2 style={{
           fontFamily: 'Josefin Sans, sans-serif',
           fontWeight: 400,
@@ -658,7 +658,7 @@ export default function FigmaExactView({
           textAlign: 'center',
           letterSpacing: '1px',
           textTransform: 'uppercase',
-          margin: '0 0 16px'
+          margin: '0 0 10px'
         }}>
           CATEGORIES
         </h2>
