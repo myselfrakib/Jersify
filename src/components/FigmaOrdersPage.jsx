@@ -147,6 +147,9 @@ export default function FigmaOrdersPage({
             };
             const orderDate = order.createdAt ? formatDMY(order.createdAt) : 'Recent';
             const orderItemsList = Array.isArray(order.items) ? order.items : [];
+            const statusText = order.status
+              ? (order.status.charAt(0).toUpperCase() + order.status.slice(1))
+              : 'Processing';
 
             return (
               <div key={orderId} style={{ border: '1px solid #E5E7EB', borderRadius: '8px', padding: '16px', background: '#FFFFFF', display: 'flex', flexDirection: 'column', gap: '14px', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
