@@ -66,16 +66,25 @@ export default function App() {
     }
   });
 
-  const hasHomeLoadedRef = useRef(false);
-  const [isHomeImagesLoading, setIsHomeImagesLoading] = useState(true);
-
-  // Clear any legacy persistent home cache flag from localStorage so fresh reloads evaluate images cleanly
-  useEffect(() => {
+  const isHomeCachedInitially = (() => {
     try {
-      localStorage.removeItem('jersify_home_cached');
-      sessionStorage.removeItem('jersify_home_cached');
-    } catch {}
-  }, []);
+      return (
+        sessionStorage.getItem('jersify_home_cached') === 'true' ||
+        Boolean(window.__jersify_home_loaded)
+      );
+    } catch {
+      return false;
+    }
+  })();
+  const hasHomeLoadedRef = useRef(isHomeCachedInitially);
+  const [isHomeImagesLoading, setIsHomeImagesLoading] = useState(!isHomeCachedInitially);
+  const [hasVisitedHome, setHasVisitedHome] = useState(currentPage === 'home' || isHomeCachedInitially);
+
+  useEffect(() => {
+    if (currentPage === 'home') {
+      setHasVisitedHome(true);
+    }
+  }, [currentPage]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -408,43 +417,54 @@ export default function App() {
         ))}
       </div>
 
-      {/* Whole Page Image Loading Spinner */}
-      <WholePageSpinner
-        triggerKey={`${currentPage}_${selectedProduct?.id || ''}_${selectedTeam || ''}`}
-        containerRef={pageContentRef}
-        isLoading={currentPage === 'home' ? (isHomeImagesLoading && !hasHomeLoadedRef.current) : undefined}
-        minDuration={80}
-        maxTimeout={2500}
-      />
-
-      {/* Main Page Container */}
-      <div id="jersify-page-container" ref={pageContentRef} style={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {/* FIGMA MOBILE PAGES ROUTER */}
-      {currentPage === 'home' && (
-        <FigmaExactView
-          cartCount={cartCount}
-          onSelectProduct={(p) => navigateTo('product', p)}
-          onSelectTeam={(t) => navigateTo('team', t)}
-          onSelectCategory={(c) => navigateTo('shop', c)}
-          onOpenCart={() => setIsCartOpen(true)}
-          onOpenAuth={handleOpenAuth}
-          onNavigateShop={() => navigateTo('shop')}
-          onLoadingChange={(loading) => {
-            if (!loading) {
-              hasHomeLoadedRef.current = true;
-              try {
-                sessionStorage.setItem('jersify_home_cached', 'true');
-                localStorage.setItem('jersify_home_cached', 'true');
-              } catch {}
-              setIsHomeImagesLoading(false);
-            } else if (!hasHomeLoadedRef.current) {
-              setIsHomeImagesLoading(true);
-            }
-          }}
+      {/* Whole Page Image Loading Spinner - Never shown for homepage once loaded */}
+      {!(currentPage === 'home' && hasHomeLoadedRef.current) && (
+        <WholePageSpinner
+          triggerKey={`${currentPage}_${selectedProduct?.id || ''}_${selectedTeam || ''}`}
+          containerRef={pageContentRef}
+          isLoading={currentPage === 'home' ? (isHomeImagesLoading && !hasHomeLoadedRef.current) : undefined}
+          minDuration={80}
+          maxTimeout={2500}
         />
       )}
 
-      {currentPage === 'shop' && (
+      {/* Main Page Container */}
+      <div id="jersify-page-container" ref={pageContentRef} style={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* CACHED HOMEPAGE VIEW - Retained in DOM for 0ms instantaneous redirect */}
+        {hasVisitedHome && (
+          <div
+            id="cached-home-view"
+            style={{
+              display: currentPage === 'home' ? 'block' : 'none',
+              width: '100%'
+            }}
+          >
+            <FigmaExactView
+              cartCount={cartCount}
+              isActive={currentPage === 'home'}
+              onSelectProduct={(p) => navigateTo('product', p)}
+              onSelectTeam={(t) => navigateTo('team', t)}
+              onSelectCategory={(c) => navigateTo('shop', c)}
+              onOpenCart={() => setIsCartOpen(true)}
+              onOpenAuth={handleOpenAuth}
+              onNavigateShop={() => navigateTo('shop')}
+              onLoadingChange={(loading) => {
+                if (!loading) {
+                  hasHomeLoadedRef.current = true;
+                  try {
+                    sessionStorage.setItem('jersify_home_cached', 'true');
+                    localStorage.setItem('jersify_home_cached', 'true');
+                  } catch {}
+                  setIsHomeImagesLoading(false);
+                } else if (!hasHomeLoadedRef.current) {
+                  setIsHomeImagesLoading(true);
+                }
+              }}
+            />
+          </div>
+        )}
+
+        {currentPage === 'shop' && (
         <FigmaShopPage
           cartCount={cartCount}
           selectedCategoryFilter={selectedCategoryFilter}

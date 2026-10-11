@@ -36,6 +36,7 @@ const defaultImages = {
 
 export default function FigmaExactView({
   cartCount = 0,
+  isActive = true,
   onSelectProduct,
   onSelectTeam,
   onSelectCategory,
@@ -377,17 +378,20 @@ export default function FigmaExactView({
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
 
   useEffect(() => {
-    if (heroSlides.length <= 1) return;
+    if (heroSlides.length <= 1 || !isActive) return;
     const timer = setInterval(() => {
       setCurrentHeroSlide((prev) => (prev + 1) % heroSlides.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, [heroSlides.length]);
+  }, [heroSlides.length, isActive]);
 
   // Ensure homepage hero banners and club icons images are properly loaded
   useEffect(() => {
     let isCancelled = false;
-    const isAlreadyLoaded = Boolean(window.__jersify_home_loaded);
+    const isAlreadyLoaded = Boolean(
+      window.__jersify_home_loaded ||
+      sessionStorage.getItem('jersify_home_cached') === 'true'
+    );
 
     if (isAlreadyLoaded) {
       if (onLoadingChange) onLoadingChange(false);

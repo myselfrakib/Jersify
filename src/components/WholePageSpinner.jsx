@@ -60,6 +60,14 @@ export default function WholePageSpinner({
           }
         }, 180);
         return () => clearTimeout(timer);
+      } else if (!isLoading) {
+        // Immediately hide if isLoading is false
+        setIsVisible(false);
+        setIsFading(false);
+        if (triggerKey && onlyOncePerRoute) {
+          visitedRouteKeys.add(triggerKey);
+          if (routeBase) visitedRouteKeys.add(routeBase);
+        }
       }
       prevLoadingRef.current = isLoading;
     }
