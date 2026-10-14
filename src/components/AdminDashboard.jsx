@@ -18,6 +18,17 @@ import {
 import { INITIAL_PRODUCTS } from '../data/initialProducts';
 import { INITIAL_CATEGORIES } from '../data/categoriesData';
 import ImageWithSpinner from './ImageWithSpinner';
+import {
+  checkCourierServiceability,
+  createShipmentAndAssignCourier,
+  scheduleShipmentPickup,
+  cancelShiprocketShipment,
+  checkShiprocketHealth,
+  getPickupLocations,
+  getShiprocketCredentials,
+  saveShiprocketCredentials,
+  sanitizeOrderDetails
+} from '../utils/shiprocket';
 
 
 const DEFAULT_INDEX_IMAGES = {
@@ -179,7 +190,7 @@ export default function AdminDashboard({
   onSignOut,
   onNavigateHome
 }) {
-  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'shopping-page' | 'clubs' | 'products' | 'categories' | 'orders' | 'shopping-list' | 'users'
+  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'shopping-page' | 'clubs' | 'products' | 'categories' | 'orders' | 'shopping-list' | 'users' | 'shiprocket'
 
   // Categories State
   const [categoriesList, setCategoriesList] = useState(() => {
@@ -315,6 +326,32 @@ export default function AdminDashboard({
 
   // Users & Admins State
   const [usersList, setUsersList] = useState([]);
+
+  // Shiprocket Integration & Shipment State
+  const [shiprocketHealth, setShiprocketHealth] = useState(null);
+  const [loadingShiprocketHealth, setLoadingShiprocketHealth] = useState(false);
+  const [srCredentials, setSrCredentials] = useState(getShiprocketCredentials);
+  const [showSrPassword, setShowSrPassword] = useState(false);
+  const [srCredSaveSuccess, setSrCredSaveSuccess] = useState(false);
+
+  // Shipment Creation / Courier Selection Modal State
+  const [isShipmentModalOpen, setIsShipmentModalOpen] = useState(false);
+  const [pickupLocations, setPickupLocations] = useState([]);
+  const [selectedPickupLocation, setSelectedPickupLocation] = useState('warehouse');
+  const [deliveryPincodeInput, setDeliveryPincodeInput] = useState('');
+  const [shipmentWeight, setShipmentWeight] = useState(0.5);
+  const [availableCouriers, setAvailableCouriers] = useState([]);
+  const [isLoadingCouriers, setIsLoadingCouriers] = useState(false);
+  const [selectedCourierId, setSelectedCourierId] = useState(null);
+  const [courierError, setCourierError] = useState('');
+  const [isSubmittingShipment, setIsSubmittingShipment] = useState(false);
+  const [shipmentSuccessBanner, setShipmentSuccessBanner] = useState('');
+
+  // Pickup Scheduling & Cancellation States
+  const [pickupDateInput, setPickupDateInput] = useState('');
+  const [isSchedulingPickup, setIsSchedulingPickup] = useState(false);
+  const [isCancellingShipment, setIsCancellingShipment] = useState(false);
+  const [pickupScheduleSuccess, setPickupScheduleSuccess] = useState('');
 
   // Fetch RTDB configuration, products, orders, shopping list & users with realtime onValue listeners
   useEffect(() => {
@@ -467,7 +504,21 @@ export default function AdminDashboard({
     };
   }, []);
 
-  // Sync selected modal item indices whenever order modal opens
+  // Pre-load Shiprocket Pickup Locations on mount
+  useEffect(() => {
+    getPickupLocations()
+      .then(res => {
+        if (res?.addresses?.length > 0) {
+          setPickupLocations(res.addresses);
+          setSelectedPickupLocation(res.defaultLocation || 'warehouse');
+        }
+      })
+      .catch(err => {
+        console.warn('Failed to pre-fetch pickup locations:', err);
+      });
+  }, []);
+
+  // Sync selected modal item indices and shipment parameters whenever order modal opens
   useEffect(() => {
     if (selectedOrderModal) {
       if (Array.isArray(selectedOrderModal.items) && selectedOrderModal.items.length > 0) {
@@ -475,8 +526,27 @@ export default function AdminDashboard({
       } else {
         setSelectedModalItemIndices([0]);
       }
+
+      // Initialize Shiprocket shipment parameters for this order
+      const pin = selectedOrderModal.pincode || (selectedOrderModal.address ? (selectedOrderModal.address.match(/\b[1-9][0-9]{5}\b/) || [''])[0] : '');
+      setDeliveryPincodeInput(pin || '');
+
+      if (selectedOrderModal.srPickupDate) {
+        setPickupDateInput(selectedOrderModal.srPickupDate);
+      } else {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        setPickupDateInput(tomorrow.toISOString().split('T')[0]);
+      }
+      setShipmentSuccessBanner('');
+      setPickupScheduleSuccess('');
     } else {
       setSelectedModalItemIndices([]);
+      setIsShipmentModalOpen(false);
+      setAvailableCouriers([]);
+      setSelectedCourierId(null);
+      setCourierError('');
+      setShipmentSuccessBanner('');
     }
   }, [selectedOrderModal]);
 
@@ -1073,6 +1143,244 @@ export default function AdminDashboard({
     await handleSaveShoppingList(updated);
   };
 
+  // -------------------------------------------------------------
+  // SHIPROCKET INTEGRATION & SHIPMENT ACTION HANDLERS
+  // -------------------------------------------------------------
+  const fetchShiprocketStatus = async () => {
+    setLoadingShiprocketHealth(true);
+    try {
+      const health = await checkShiprocketHealth();
+      setShiprocketHealth(health);
+      if (health?.pickupLocations?.length > 0) {
+        setPickupLocations(health.pickupLocations);
+      }
+    } catch (e) {
+      setShiprocketHealth({ connected: false, error: e.message || 'Check failed' });
+    } finally {
+      setLoadingShiprocketHealth(false);
+    }
+  };
+
+  const handleSaveShiprocketCredentials = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!srCredentials.email || !srCredentials.password) {
+      alert('Please enter both Shiprocket email and password.');
+      return;
+    }
+    saveShiprocketCredentials(srCredentials);
+    setSrCredSaveSuccess(true);
+    setTimeout(() => setSrCredSaveSuccess(false), 3000);
+    // Refresh health with new credentials
+    await fetchShiprocketStatus();
+  };
+
+  const handleOpenShipmentModal = (orderTarget) => {
+    const o = orderTarget || selectedOrderModal;
+    if (!o) return;
+    const pin = o.pincode || (o.address ? (o.address.match(/\b[1-9][0-9]{5}\b/) || [''])[0] : '');
+    setDeliveryPincodeInput(pin || '');
+    setCourierError('');
+    setSelectedCourierId(null);
+    setShipmentSuccessBanner('');
+    setIsShipmentModalOpen(true);
+    handleFetchCouriers(o, pin);
+  };
+
+  const handleFetchCouriers = async (orderTarget, pinOverride) => {
+    const o = orderTarget || selectedOrderModal;
+    if (!o) return;
+
+    const deliveryPin = (pinOverride !== undefined ? pinOverride : deliveryPincodeInput) || o.pincode || (o.address ? (o.address.match(/\b[1-9][0-9]{5}\b/) || [''])[0] : '');
+    if (!deliveryPin || String(deliveryPin).trim().length !== 6) {
+      setCourierError('Please enter a valid 6-digit delivery pincode to check available couriers.');
+      setAvailableCouriers([]);
+      return;
+    }
+
+    setIsLoadingCouriers(true);
+    setCourierError('');
+
+    try {
+      // Find pickup pincode from current selected pickup location
+      let pickupPin = '700136';
+      if (pickupLocations.length > 0) {
+        const matched = pickupLocations.find(l => l.pickup_location === selectedPickupLocation);
+        if (matched?.pin_code) pickupPin = matched.pin_code;
+        else if (pickupLocations[0]?.pin_code) pickupPin = pickupLocations[0].pin_code;
+      }
+
+      const isCod = String(o.paymentMethod || '').toLowerCase() === 'cod';
+      const couriers = await checkCourierServiceability({
+        pickupPostcode: pickupPin,
+        deliveryPostcode: deliveryPin.trim(),
+        weight: shipmentWeight || 0.5,
+        cod: isCod ? 1 : 0
+      });
+
+      if (!couriers || couriers.length === 0) {
+        setCourierError(`No couriers currently serviceable from PIN ${pickupPin} to ${deliveryPin.trim()}. Please verify the pincode or try another pickup hub.`);
+        setAvailableCouriers([]);
+      } else {
+        // Sort couriers by rate ascending (lowest rate first)
+        const sorted = [...couriers].sort((a, b) => a.rate - b.rate);
+        setAvailableCouriers(sorted);
+        // Default select the lowest cost courier
+        setSelectedCourierId(sorted[0].id || sorted[0].courier_company_id);
+      }
+    } catch (err) {
+      setCourierError(err.message || 'Failed to check courier serviceability. Please try again.');
+      setAvailableCouriers([]);
+    } finally {
+      setIsLoadingCouriers(false);
+    }
+  };
+
+  const handleCreateShipment = async () => {
+    if (!selectedCourierId) {
+      alert('Please select a courier from the list first.');
+      return;
+    }
+    const courierObj = availableCouriers.find(c => (c.id === selectedCourierId || c.courier_company_id === selectedCourierId));
+    if (!courierObj) {
+      alert('Selected courier not found. Please re-select a courier.');
+      return;
+    }
+
+    const orderKey = selectedOrderModal?.id || selectedOrderModal?.orderId;
+    if (!orderKey) {
+      alert('Order identifier missing.');
+      return;
+    }
+
+    setIsSubmittingShipment(true);
+    try {
+      const orderDataWithPin = {
+        ...selectedOrderModal,
+        pincode: deliveryPincodeInput || selectedOrderModal.pincode
+      };
+
+      const result = await createShipmentAndAssignCourier({
+        order: orderDataWithPin,
+        selectedCourier: courierObj,
+        pickupLocation: selectedPickupLocation || 'warehouse',
+        weight: shipmentWeight || 0.5
+      });
+
+      const updates = {
+        srShipmentId: result.srShipmentId,
+        srOrderId: result.srOrderId,
+        srAwb: result.srAwb || '',
+        srCourier: result.srCourier,
+        srShippingRate: result.srShippingRate,
+        srPickupLocation: result.srPickupLocation,
+        srPickupScheduled: false,
+        srPickupDate: '',
+        srCancelled: false,
+        labelUrl: result.labelUrl || null,
+        pincode: deliveryPincodeInput || selectedOrderModal.pincode,
+        status: selectedOrderModal.status === 'confirmed' ? 'dispatched' : selectedOrderModal.status
+      };
+
+      await update(ref(rtdb, `orders/${orderKey}`), updates);
+
+      // Update local state
+      const updatedOrder = { ...selectedOrderModal, ...updates };
+      setSelectedOrderModal(updatedOrder);
+      setOrdersList(prev => prev.map(o => (o.id === orderKey || o.orderId === orderKey) ? { ...o, ...updates } : o));
+
+      setIsShipmentModalOpen(false);
+      setShipmentSuccessBanner(`✓ Shipment created successfully with ${courierObj.name}! AWB: ${result.srAwb || 'Generated'}. You can now schedule a pickup date.`);
+    } catch (err) {
+      alert('Error creating shipment: ' + (err.message || 'Unknown error'));
+    } finally {
+      setIsSubmittingShipment(false);
+    }
+  };
+
+  const handleSchedulePickup = async () => {
+    if (!pickupDateInput) {
+      alert('Please select a pickup date.');
+      return;
+    }
+    const shipmentId = selectedOrderModal?.srShipmentId;
+    if (!shipmentId) {
+      alert('No active shipment ID found to schedule pickup.');
+      return;
+    }
+
+    const orderKey = selectedOrderModal?.id || selectedOrderModal?.orderId;
+    setIsSchedulingPickup(true);
+
+    try {
+      await scheduleShipmentPickup({
+        shipmentId: shipmentId,
+        pickupDate: pickupDateInput
+      });
+
+      const updates = {
+        srPickupScheduled: true,
+        srPickupDate: pickupDateInput
+      };
+
+      await update(ref(rtdb, `orders/${orderKey}`), updates);
+
+      const updatedOrder = { ...selectedOrderModal, ...updates };
+      setSelectedOrderModal(updatedOrder);
+      setOrdersList(prev => prev.map(o => (o.id === orderKey || o.orderId === orderKey) ? { ...o, ...updates } : o));
+
+      setPickupScheduleSuccess(`Pickup scheduled successfully for ${pickupDateInput}!`);
+      setTimeout(() => setPickupScheduleSuccess(''), 5000);
+    } catch (err) {
+      alert('Failed to schedule pickup: ' + (err.message || 'Error occurred'));
+    } finally {
+      setIsSchedulingPickup(false);
+    }
+  };
+
+  const handleCancelShipment = async () => {
+    const confirmCancel = window.confirm(
+      'Are you sure you want to cancel this shipment on Shiprocket?\n\n' +
+      'Note: This will void the shipment/AWB on Shiprocket and allow you to restart shipment creation.\n' +
+      'The customer order itself will NOT be cancelled.'
+    );
+    if (!confirmCancel) return;
+
+    const orderKey = selectedOrderModal?.id || selectedOrderModal?.orderId;
+    if (!orderKey) return;
+
+    setIsCancellingShipment(true);
+    try {
+      await cancelShiprocketShipment({
+        awbCode: selectedOrderModal.srAwb,
+        orderId: selectedOrderModal.srOrderId,
+        shipmentId: selectedOrderModal.srShipmentId
+      });
+
+      const cancelUpdates = {
+        srCancelled: true,
+        srShipmentId: null,
+        srAwb: null,
+        srCourier: null,
+        srShippingRate: null,
+        srPickupScheduled: false,
+        srPickupDate: '',
+        labelUrl: null
+      };
+
+      await update(ref(rtdb, `orders/${orderKey}`), cancelUpdates);
+
+      const updatedOrder = { ...selectedOrderModal, ...cancelUpdates };
+      setSelectedOrderModal(updatedOrder);
+      setOrdersList(prev => prev.map(o => (o.id === orderKey || o.orderId === orderKey) ? { ...o, ...cancelUpdates } : o));
+
+      alert('Shipment cancelled successfully! You can now create a new shipment for this order whenever needed.');
+    } catch (err) {
+      alert('Failed to cancel shipment: ' + (err.message || 'Error occurred'));
+    } finally {
+      setIsCancellingShipment(false);
+    }
+  };
+
   const formatDMY = (val, includeTime = false) => {
     if (!val) return 'Recent';
     const d = new Date(val);
@@ -1407,6 +1715,26 @@ export default function AdminDashboard({
           style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'users' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'users' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
         >
           👥 Registered Users ({usersList.length})
+        </button>
+        <button
+          onClick={() => {
+            setActiveTab('shiprocket');
+            if (!shiprocketHealth) fetchShiprocketStatus();
+          }}
+          style={{
+            flex: 1,
+            padding: '14px 10px',
+            border: 'none',
+            background: activeTab === 'shiprocket' ? '#FFFFFF' : 'transparent',
+            borderBottom: activeTab === 'shiprocket' ? '3px solid #4F46E5' : 'none',
+            fontWeight: 700,
+            fontSize: '13px',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            color: activeTab === 'shiprocket' ? '#4F46E5' : 'inherit'
+          }}
+        >
+          🚀 Shiprocket
         </button>
       </div>
 
@@ -2472,6 +2800,35 @@ export default function AdminDashboard({
                         }}>
                           {o.status || 'confirmed'}
                         </span>
+                        {o.srShipmentId && !o.srCancelled && (
+                          <span style={{
+                            background: '#ECFDF5',
+                            color: '#065F46',
+                            border: '1px solid #A7F3D0',
+                            padding: '3px 8px',
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            borderRadius: '3px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}>
+                            🚀 {o.srCourier || 'Shiprocket'} {o.srAwb ? `· AWB: ${o.srAwb}` : ''}
+                          </span>
+                        )}
+                        {o.srCancelled && (
+                          <span style={{
+                            background: '#FEF3C7',
+                            color: '#92400E',
+                            border: '1px solid #FDE68A',
+                            padding: '3px 8px',
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            borderRadius: '3px'
+                          }}>
+                            Shipment Cancelled
+                          </span>
+                        )}
                       </div>
                       <p style={{ fontSize: '12px', color: '#6B7280', marginTop: '2px' }}>Placed on: {formatDMY(o.createdAt, true)}</p>
                     </div>
@@ -3185,6 +3542,299 @@ export default function AdminDashboard({
         </div>
       )}
 
+      {/* TAB: SHIPROCKET INTEGRATION STATUS */}
+      {activeTab === 'shiprocket' && (
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '24px' }}>🚀</span>
+                <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#111111', margin: 0 }}>Shiprocket Integration Status</h2>
+              </div>
+              <p style={{ fontSize: '13px', color: '#6B7280', margin: '4px 0 0' }}>
+                Live API connection status, warehouse pickup locations, active channels, and shipment credentials.
+              </p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button
+                type="button"
+                disabled={loadingShiprocketHealth}
+                onClick={fetchShiprocketStatus}
+                style={{
+                  background: '#111111',
+                  color: '#FFFFFF',
+                  padding: '10px 18px',
+                  border: 'none',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  cursor: loadingShiprocketHealth ? 'wait' : 'pointer',
+                  borderRadius: '4px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                🔄 {loadingShiprocketHealth ? 'Checking Live API...' : 'Refresh Status'}
+              </button>
+            </div>
+          </div>
+
+          {/* Live Status Banner */}
+          {loadingShiprocketHealth ? (
+            <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', color: '#1E40AF', padding: '14px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: '#3B82F6' }}></span>
+              Connecting to Shiprocket API and verifying credentials ({srCredentials.email})...
+            </div>
+          ) : shiprocketHealth?.connected ? (
+            <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '16px 20px', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 0 3px rgba(16, 185, 129, 0.2)' }}></div>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#065F46' }}>Shiprocket API Connected & Operational</h4>
+                  <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#047857' }}>
+                    Authenticated as <strong>{shiprocketHealth.email}</strong> · Company: <strong>{shiprocketHealth.companyName}</strong> · API Latency: <strong>{shiprocketHealth.latencyMs}ms</strong>
+                  </p>
+                </div>
+              </div>
+              <span style={{ background: '#D1FAE5', color: '#065F46', padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase' }}>
+                Verified Live
+              </span>
+            </div>
+          ) : shiprocketHealth && !shiprocketHealth.connected ? (
+            <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', padding: '16px 20px', borderRadius: '6px', color: '#991B1B' }}>
+              <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 800 }}>⚠️ Connection Warning</h4>
+              <p style={{ margin: '4px 0 0', fontSize: '12px' }}>{shiprocketHealth.error || 'Failed to authenticate with Shiprocket.'}</p>
+            </div>
+          ) : (
+            <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', padding: '14px 20px', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+              <span>Click "Refresh Status" to test live connection to Shiprocket with configured credentials.</span>
+              <button
+                type="button"
+                onClick={fetchShiprocketStatus}
+                style={{ background: '#4F46E5', color: '#FFFFFF', border: 'none', padding: '6px 14px', borderRadius: '4px', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
+              >
+                Test Connection
+              </button>
+            </div>
+          )}
+
+          {/* Quick Metrics Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '16px' }}>
+            <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '6px', padding: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>Integration Status</span>
+              <h3 style={{ fontSize: '18px', fontWeight: 800, color: shiprocketHealth?.connected ? '#059669' : '#111111', margin: '6px 0 2px' }}>
+                {shiprocketHealth?.connected ? '● ACTIVE & READY' : 'STANDBY'}
+              </h3>
+              <p style={{ fontSize: '11px', color: '#6B7280', margin: 0 }}>Courier engine & AWB assignment</p>
+            </div>
+
+            <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '6px', padding: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>Shiprocket Account</span>
+              <h3 style={{ fontSize: '14px', fontWeight: 800, color: '#111111', margin: '6px 0 2px', wordBreak: 'break-all' }}>
+                {srCredentials.email}
+              </h3>
+              <p style={{ fontSize: '11px', color: '#6B7280', margin: 0 }}>Company: {shiprocketHealth?.companyName || 'jersify'}</p>
+            </div>
+
+            <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '6px', padding: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>Registered Pickup Hubs</span>
+              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#111111', margin: '6px 0 2px' }}>
+                {pickupLocations.length || (shiprocketHealth?.pickupLocations?.length || 0)} Hubs
+              </h3>
+              <p style={{ fontSize: '11px', color: '#6B7280', margin: 0 }}>Primary default: <strong>{selectedPickupLocation}</strong></p>
+            </div>
+
+            <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '6px', padding: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>Store Orders with Shipment</span>
+              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#4F46E5', margin: '6px 0 2px' }}>
+                {ordersList.filter(o => o.srShipmentId && !o.srCancelled).length} Dispatched
+              </h3>
+              <p style={{ fontSize: '11px', color: '#6B7280', margin: 0 }}>Out of {ordersList.length} total orders</p>
+            </div>
+          </div>
+
+          {/* Workflow Guide */}
+          <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '16px 20px' }}>
+            <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#1E293B' }}>💡 How Shiprocket Shipment Creation Works:</h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginTop: '12px', fontSize: '12px', color: '#475569' }}>
+              <div style={{ background: '#FFFFFF', padding: '12px', borderRadius: '4px', border: '1px solid #CBD5E1' }}>
+                <strong style={{ color: '#0F172A' }}>1. Open Order Details:</strong> Go to the <strong>Customer Orders</strong> tab and click <em>"View Order Details"</em> on any order.
+              </div>
+              <div style={{ background: '#FFFFFF', padding: '12px', borderRadius: '4px', border: '1px solid #CBD5E1' }}>
+                <strong style={{ color: '#0F172A' }}>2. Click "Create Shipment":</strong> Beside <em>"Add to Shopping List"</em>, click <strong>"Create Shipment"</strong> to view available couriers with live rates.
+              </div>
+              <div style={{ background: '#FFFFFF', padding: '12px', borderRadius: '4px', border: '1px solid #CBD5E1' }}>
+                <strong style={{ color: '#0F172A' }}>3. Select Courier & Confirm:</strong> Pick your preferred courier (Blue Dart, Delhivery, etc.) and generate the AWB immediately.
+              </div>
+              <div style={{ background: '#FFFFFF', padding: '12px', borderRadius: '4px', border: '1px solid #CBD5E1' }}>
+                <strong style={{ color: '#0F172A' }}>4. Schedule Pickup or Cancel:</strong> Schedule a pickup date or cancel the shipment to restart anytime without affecting the order!
+              </div>
+            </div>
+          </div>
+
+          {/* Registered Pickup Warehouses List */}
+          <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '6px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+              <div>
+                <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#111111', margin: 0 }}>📍 Registered Pickup Hubs & Warehouses</h3>
+                <p style={{ fontSize: '12px', color: '#6B7280', margin: '2px 0 0' }}>Warehouses available for courier pickups on this Shiprocket account.</p>
+              </div>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: '#4F46E5' }}>{pickupLocations.length} Locations</span>
+            </div>
+
+            {pickupLocations.length > 0 ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+                {pickupLocations.map((loc, idx) => {
+                  const isSelected = selectedPickupLocation === loc.pickup_location;
+                  return (
+                    <div
+                      key={loc.id || idx}
+                      onClick={() => setSelectedPickupLocation(loc.pickup_location)}
+                      style={{
+                        border: isSelected ? '2px solid #4F46E5' : '1px solid #E5E7EB',
+                        background: isSelected ? '#EEF2FF' : '#F9FAFB',
+                        borderRadius: '6px',
+                        padding: '14px',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#111111' }}>{loc.pickup_location}</h4>
+                        <span style={{
+                          background: isSelected ? '#4F46E5' : '#E5E7EB',
+                          color: isSelected ? '#FFFFFF' : '#374151',
+                          padding: '2px 8px',
+                          borderRadius: '10px',
+                          fontSize: '11px',
+                          fontWeight: 700
+                        }}>
+                          {isSelected ? '✓ Default Hub' : 'PIN ' + loc.pin_code}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '12px', color: '#4B5563', margin: '6px 0 4px', lineHeight: 1.4 }}>
+                        {loc.address} {loc.address_2 ? `, ${loc.address_2}` : ''}
+                      </p>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#6B7280' }}>
+                        <span>{loc.city}, {loc.state}</span>
+                        <span>📞 {loc.phone || 'N/A'}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div style={{ padding: '20px', textAlign: 'center', color: '#6B7280', fontSize: '13px' }}>
+                No pickup hubs loaded yet. Click "Refresh Status" to fetch from Shiprocket.
+              </div>
+            )}
+          </div>
+
+          {/* Integration Credentials Manager */}
+          <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '6px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#111111', margin: 0 }}>⚙️ Shiprocket Credentials & Configuration</h3>
+              <p style={{ fontSize: '12px', color: '#6B7280', margin: '2px 0 0' }}>API credentials used by this panel to authenticate and dispatch shipments.</p>
+            </div>
+
+            {srCredSaveSuccess && (
+              <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', padding: '10px 14px', borderRadius: '4px', fontSize: '12px', fontWeight: 700 }}>
+                ✓ Shiprocket credentials updated and verified successfully!
+              </div>
+            )}
+
+            <form onSubmit={handleSaveShiprocketCredentials} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>
+                  Shiprocket Account Email
+                </label>
+                <input
+                  type="email"
+                  value={srCredentials.email}
+                  onChange={(e) => setSrCredentials(prev => ({ ...prev, email: e.target.value }))}
+                  required
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #D1D5DB', borderRadius: '4px', fontSize: '13px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>
+                  Shiprocket Account Password
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showSrPassword ? 'text' : 'password'}
+                    value={srCredentials.password}
+                    onChange={(e) => setSrCredentials(prev => ({ ...prev, password: e.target.value }))}
+                    required
+                    style={{ width: '100%', padding: '8px 40px 8px 12px', border: '1px solid #D1D5DB', borderRadius: '4px', fontSize: '13px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSrPassword(!showSrPassword)}
+                    style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: '#6B7280' }}
+                  >
+                    {showSrPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#374151', marginBottom: '4px' }}>
+                  Default Pickup Hub
+                </label>
+                <select
+                  value={selectedPickupLocation}
+                  onChange={(e) => setSelectedPickupLocation(e.target.value)}
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #D1D5DB', borderRadius: '4px', fontSize: '13px', background: '#FFFFFF' }}
+                >
+                  {pickupLocations.map((loc, idx) => (
+                    <option key={idx} value={loc.pickup_location}>
+                      {loc.pickup_location} (PIN {loc.pin_code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px' }}>
+                <button
+                  type="submit"
+                  style={{
+                    background: '#111111',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    padding: '9px 18px',
+                    borderRadius: '4px',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Save Credentials
+                </button>
+                <button
+                  type="button"
+                  onClick={fetchShiprocketStatus}
+                  style={{
+                    background: '#4F46E5',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    padding: '9px 18px',
+                    borderRadius: '4px',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Test Connection
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* ORDER DETAILS MODAL OVERLAY */}
       {selectedOrderModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '16px' }}>
@@ -3231,6 +3881,160 @@ export default function AdminDashboard({
                 </div>
                 <p style={{ fontSize: '13px', margin: 0 }}><strong>Address:</strong> {selectedOrderModal.address}</p>
               </div>
+
+              {/* SHIPROCKET SHIPMENT STATUS BANNER / ACTIVE SHIPMENT CARD */}
+              {shipmentSuccessBanner && (
+                <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', padding: '12px 16px', borderRadius: '4px', fontSize: '13px', fontWeight: 700 }}>
+                  {shipmentSuccessBanner}
+                </div>
+              )}
+
+              {(selectedOrderModal.srShipmentId || selectedOrderModal.srAwb) && !selectedOrderModal.srCancelled ? (
+                <div style={{ border: '2px solid #10B981', background: '#F0FDF4', borderRadius: '6px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {/* Shipment Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', borderBottom: '1px solid #BBF7D0', paddingBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '18px' }}>🚀</span>
+                      <div>
+                        <span style={{ fontSize: '10px', fontWeight: 800, color: '#047857', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Shiprocket Shipment Active</span>
+                        <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#064E3B' }}>{selectedOrderModal.srCourier || 'Courier Assigned'}</h4>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ background: '#059669', color: '#FFFFFF', padding: '4px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 800 }}>
+                        AWB: {selectedOrderModal.srAwb || 'Generated'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Shipment Details Grid */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px', fontSize: '12px', color: '#064E3B' }}>
+                    <div>
+                      <span style={{ color: '#059669', fontWeight: 700, fontSize: '10px', textTransform: 'uppercase' }}>Shipment ID</span>
+                      <p style={{ margin: '2px 0 0', fontWeight: 700 }}>#{selectedOrderModal.srShipmentId}</p>
+                    </div>
+                    <div>
+                      <span style={{ color: '#059669', fontWeight: 700, fontSize: '10px', textTransform: 'uppercase' }}>Shipping Amount</span>
+                      <p style={{ margin: '2px 0 0', fontWeight: 800, color: '#047857', fontSize: '14px' }}>₹{selectedOrderModal.srShippingRate || '0.00'}</p>
+                    </div>
+                    <div>
+                      <span style={{ color: '#059669', fontWeight: 700, fontSize: '10px', textTransform: 'uppercase' }}>Pickup Location</span>
+                      <p style={{ margin: '2px 0 0', fontWeight: 700 }}>{selectedOrderModal.srPickupLocation || 'warehouse'}</p>
+                    </div>
+                    <div>
+                      <span style={{ color: '#059669', fontWeight: 700, fontSize: '10px', textTransform: 'uppercase' }}>Pickup Status</span>
+                      <p style={{ margin: '2px 0 0', fontWeight: 700 }}>
+                        {selectedOrderModal.srPickupScheduled ? `✅ Confirmed (${selectedOrderModal.srPickupDate})` : '⏳ Not Scheduled'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Pickup Scheduling Controls */}
+                  <div style={{ background: '#FFFFFF', border: '1px solid #A7F3D0', borderRadius: '4px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                      <div>
+                        <span style={{ fontSize: '12px', fontWeight: 800, color: '#111111' }}>📅 Select Pickup Date</span>
+                        <p style={{ fontSize: '11px', color: '#6B7280', margin: '2px 0 0' }}>
+                          {selectedOrderModal.srPickupScheduled
+                            ? `Pickup is scheduled for ${selectedOrderModal.srPickupDate}. You can choose another date below to reschedule.`
+                            : 'Select date for courier pickup from warehouse hub:'}
+                        </p>
+                      </div>
+                      {pickupScheduleSuccess && (
+                        <span style={{ color: '#059669', fontSize: '12px', fontWeight: 700 }}>{pickupScheduleSuccess}</span>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <input
+                        type="date"
+                        value={pickupDateInput}
+                        min={new Date().toISOString().split('T')[0]}
+                        onChange={(e) => setPickupDateInput(e.target.value)}
+                        style={{ padding: '6px 10px', border: '1px solid #D1D5DB', borderRadius: '4px', fontSize: '13px', fontWeight: 600 }}
+                      />
+                      <button
+                        type="button"
+                        disabled={isSchedulingPickup}
+                        onClick={handleSchedulePickup}
+                        style={{
+                          background: '#059669',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          padding: '7px 14px',
+                          borderRadius: '4px',
+                          fontWeight: 700,
+                          fontSize: '12px',
+                          cursor: isSchedulingPickup ? 'wait' : 'pointer'
+                        }}
+                      >
+                        {isSchedulingPickup ? 'Scheduling...' : (selectedOrderModal.srPickupScheduled ? 'Reschedule Pickup Date' : 'Confirm Pickup Date')}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Label Print & Cancel Shipment Buttons */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', borderTop: '1px solid #BBF7D0', paddingTop: '10px' }}>
+                    <div>
+                      {selectedOrderModal.labelUrl && (
+                        <a
+                          href={selectedOrderModal.labelUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            background: '#FFFFFF',
+                            color: '#111111',
+                            border: '1px solid #111111',
+                            padding: '6px 12px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            textDecoration: 'none',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          🖨️ Download / Print Label
+                        </a>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={isCancellingShipment}
+                      onClick={handleCancelShipment}
+                      style={{
+                        background: '#FEE2E2',
+                        color: '#DC2626',
+                        border: '1px solid #FCA5A5',
+                        padding: '6px 12px',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: isCancellingShipment ? 'wait' : 'pointer'
+                      }}
+                      title="Cancel Shiprocket shipment to restart with another courier. Order will remain intact."
+                    >
+                      {isCancellingShipment ? 'Cancelling...' : '❌ Cancel Shipment (Restart)'}
+                    </button>
+                  </div>
+                  <p style={{ margin: 0, fontSize: '11px', color: '#047857', fontStyle: 'italic' }}>
+                    💡 Note: Cancelling shipment will void the AWB and allow you to restart shipment again. It will NOT cancel the order as a whole.
+                  </p>
+                </div>
+              ) : selectedOrderModal.srCancelled ? (
+                <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', padding: '10px 14px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', color: '#92400E' }}>
+                  <span>⚠️ Previous shipment was cancelled. You can restart the shipment anytime using the "Create Shipment" button.</span>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenShipmentModal(selectedOrderModal)}
+                    style={{ background: '#D97706', color: '#FFFFFF', border: 'none', padding: '4px 10px', borderRadius: '3px', fontWeight: 700, cursor: 'pointer', fontSize: '11px' }}
+                  >
+                    Restart Shipment
+                  </button>
+                </div>
+              ) : null}
 
               {/* Purchased Products Items Section with Images */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -3403,11 +4207,263 @@ export default function AdminDashboard({
                   🛒 Add to Shopping List {selectedModalItemIndices.length > 0 && Array.isArray(selectedOrderModal.items) && selectedOrderModal.items.length > 1 ? `(${selectedModalItemIndices.length})` : ''}
                 </button>
 
+                {/* CREATE SHIPMENT BUTTON BESIDE ADD TO SHOPPING LIST */}
+                <button
+                  type="button"
+                  onClick={() => handleOpenShipmentModal(selectedOrderModal)}
+                  style={{
+                    background: (selectedOrderModal.srShipmentId && !selectedOrderModal.srCancelled) ? '#2563EB' : '#4F46E5',
+                    color: '#FFFFFF',
+                    padding: '8px 18px',
+                    border: 'none',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    borderRadius: '4px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 4px rgba(79, 70, 229, 0.25)'
+                  }}
+                  title="Check courier serviceability and dispatch shipment via Shiprocket"
+                >
+                  🚀 {(selectedOrderModal.srShipmentId && !selectedOrderModal.srCancelled) ? 'Re-select Courier / Edit Shipment' : 'Create Shipment'}
+                </button>
+
                 <button
                   onClick={() => setSelectedOrderModal(null)}
                   style={{ background: '#111111', color: '#FFFFFF', padding: '8px 20px', border: 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', borderRadius: '4px' }}
                 >
                   Close Order Details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SHIPROCKET COURIER SELECTION & CREATE SHIPMENT MODAL */}
+      {isShipmentModalOpen && selectedOrderModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000, padding: '16px' }}>
+          <div style={{ background: '#FFFFFF', width: '100%', maxWidth: '680px', maxHeight: '92vh', borderRadius: '6px', overflow: 'hidden', boxShadow: '0 20px 35px rgba(0,0,0,0.4)', display: 'flex', flexDirection: 'column' }}>
+            {/* Modal Header */}
+            <div style={{ background: '#1E1B4B', color: '#FFFFFF', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <span style={{ fontSize: '11px', color: '#818CF8', fontWeight: 800, letterSpacing: '0.5px' }}>SHIPROCKET DISPATCH ENGINE</span>
+                <h3 style={{ fontSize: '17px', fontWeight: 800, margin: '2px 0 0' }}>
+                  Select Courier & Create Shipment · Order #{selectedOrderModal.orderId || selectedOrderModal.id}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsShipmentModalOpen(false)}
+                style={{ background: 'none', border: 'none', color: '#FFFFFF', fontSize: '24px', cursor: 'pointer', lineHeight: 1 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Dispatch Parameters Bar */}
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: '14px', borderRadius: '6px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A' }}>📍 Dispatch & Destination Parameters</span>
+                  <span style={{ fontSize: '11px', color: '#64748B' }}>Payment: <strong>{String(selectedOrderModal.paymentMethod || 'PREPAID').toUpperCase()}</strong></span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', fontSize: '12px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 700, color: '#475569', marginBottom: '3px' }}>Pickup Warehouse</label>
+                    <select
+                      value={selectedPickupLocation}
+                      onChange={(e) => {
+                        setSelectedPickupLocation(e.target.value);
+                        handleFetchCouriers(selectedOrderModal, deliveryPincodeInput);
+                      }}
+                      style={{ width: '100%', padding: '6px 8px', border: '1px solid #CBD5E1', borderRadius: '4px', fontSize: '12px', background: '#FFFFFF' }}
+                    >
+                      {pickupLocations.map((loc, idx) => (
+                        <option key={idx} value={loc.pickup_location}>
+                          {loc.pickup_location} (PIN {loc.pin_code})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 700, color: '#475569', marginBottom: '3px' }}>Destination PIN Code</label>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <input
+                        type="text"
+                        maxLength={6}
+                        value={deliveryPincodeInput}
+                        onChange={(e) => setDeliveryPincodeInput(e.target.value.replace(/\D/g, ''))}
+                        placeholder="6-digit PIN"
+                        style={{ width: '100%', padding: '6px 8px', border: '1px solid #CBD5E1', borderRadius: '4px', fontSize: '12px', fontWeight: 700 }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleFetchCouriers(selectedOrderModal, deliveryPincodeInput)}
+                        style={{ background: '#4F46E5', color: '#FFFFFF', border: 'none', padding: '0 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      >
+                        Check
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 700, color: '#475569', marginBottom: '3px' }}>Parcel Weight (kg)</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      value={shipmentWeight}
+                      onChange={(e) => {
+                        setShipmentWeight(parseFloat(e.target.value) || 0.5);
+                      }}
+                      style={{ width: '100%', padding: '6px 8px', border: '1px solid #CBD5E1', borderRadius: '4px', fontSize: '12px' }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '11px', color: '#64748B', borderTop: '1px solid #E2E8F0', paddingTop: '6px' }}>
+                  <strong>Destination:</strong> {selectedOrderModal.customerName} · {selectedOrderModal.address}, {selectedOrderModal.city}, {selectedOrderModal.state}
+                </div>
+              </div>
+
+              {/* Courier Serviceability & Rates List */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <h4 style={{ fontSize: '14px', fontWeight: 800, margin: 0, color: '#111111' }}>
+                    Available Couriers to PIN {deliveryPincodeInput || '...'} ({availableCouriers.length})
+                  </h4>
+                  {availableCouriers.length > 0 && (
+                    <span style={{ fontSize: '11px', color: '#059669', fontWeight: 700 }}>Sorted by lowest rate</span>
+                  )}
+                </div>
+
+                {isLoadingCouriers ? (
+                  <div style={{ padding: '36px 20px', textAlign: 'center', background: '#F8FAFC', borderRadius: '6px', border: '1px dashed #CBD5E1' }}>
+                    <div style={{ fontSize: '24px', marginBottom: '8px' }}>⏳</div>
+                    <p style={{ margin: 0, fontWeight: 700, fontSize: '13px', color: '#334155' }}>Querying Shiprocket for available couriers and real-time shipping amounts...</p>
+                    <p style={{ margin: '4px 0 0', fontSize: '11px', color: '#64748B' }}>Checking serviceability to PIN {deliveryPincodeInput}</p>
+                  </div>
+                ) : courierError ? (
+                  <div style={{ padding: '16px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '6px', color: '#991B1B', fontSize: '12px' }}>
+                    <p style={{ margin: 0, fontWeight: 700 }}>⚠️ Serviceability Check Notice:</p>
+                    <p style={{ margin: '4px 0 8px' }}>{courierError}</p>
+                    <button
+                      type="button"
+                      onClick={() => handleFetchCouriers(selectedOrderModal, deliveryPincodeInput)}
+                      style={{ background: '#DC2626', color: '#FFFFFF', border: 'none', padding: '5px 12px', borderRadius: '3px', fontWeight: 700, fontSize: '11px', cursor: 'pointer' }}
+                    >
+                      Retry Rates Check
+                    </button>
+                  </div>
+                ) : availableCouriers.length > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '320px', overflowY: 'auto' }}>
+                    {availableCouriers.map((courier) => {
+                      const cid = courier.id || courier.courier_company_id;
+                      const isSelected = selectedCourierId === cid;
+                      return (
+                        <div
+                          key={cid}
+                          onClick={() => setSelectedCourierId(cid)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '12px 14px',
+                            border: isSelected ? '2px solid #4F46E5' : '1px solid #E2E8F0',
+                            borderRadius: '6px',
+                            background: isSelected ? '#EEF2FF' : '#FFFFFF',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <input
+                              type="radio"
+                              name="courier_selection"
+                              checked={isSelected}
+                              onChange={() => setSelectedCourierId(cid)}
+                              style={{ width: '18px', height: '18px', accentColor: '#4F46E5', cursor: 'pointer' }}
+                            />
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <h5 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#0F172A' }}>{courier.name}</h5>
+                                {courier.rating && (
+                                  <span style={{ fontSize: '11px', background: '#FEF3C7', color: '#92400E', padding: '1px 6px', borderRadius: '3px', fontWeight: 700 }}>
+                                    ⭐ {courier.rating}
+                                  </span>
+                                )}
+                              </div>
+                              <p style={{ margin: '2px 0 0', fontSize: '11px', color: '#64748B' }}>
+                                Estimated Delivery: <strong>{courier.etd}</strong> ({courier.estimated_delivery_days} days) · Mode: Surface/Air
+                              </p>
+                            </div>
+                          </div>
+
+                          <div style={{ textAlign: 'right' }}>
+                            <span style={{ fontSize: '18px', fontWeight: 900, color: '#059669' }}>
+                              ₹{courier.rate}
+                            </span>
+                            <span style={{ display: 'block', fontSize: '10px', color: '#6B7280', textTransform: 'uppercase' }}>Shipping Charge</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div style={{ padding: '24px', textAlign: 'center', background: '#F8FAFC', borderRadius: '6px', border: '1px dashed #CBD5E1', fontSize: '13px', color: '#64748B' }}>
+                    Enter destination pincode and click "Check" to view courier rates.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Action Footer */}
+            <div style={{ borderTop: '1px solid #E2E8F0', padding: '14px 20px', background: '#F8FAFC', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+              <div style={{ fontSize: '12px' }}>
+                {selectedCourierId && availableCouriers.find(c => (c.id === selectedCourierId || c.courier_company_id === selectedCourierId)) ? (
+                  <span>
+                    Selected: <strong>{availableCouriers.find(c => (c.id === selectedCourierId || c.courier_company_id === selectedCourierId))?.name}</strong> · Cost: <strong style={{ color: '#059669', fontSize: '14px' }}>₹{availableCouriers.find(c => (c.id === selectedCourierId || c.courier_company_id === selectedCourierId))?.rate}</strong>
+                  </span>
+                ) : (
+                  <span style={{ color: '#64748B' }}>Select a courier from the list above</span>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsShipmentModalOpen(false)}
+                  style={{ background: '#FFFFFF', color: '#374151', border: '1px solid #D1D5DB', padding: '8px 16px', borderRadius: '4px', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  disabled={!selectedCourierId || isSubmittingShipment || availableCouriers.length === 0}
+                  onClick={handleCreateShipment}
+                  style={{
+                    background: (!selectedCourierId || isSubmittingShipment || availableCouriers.length === 0) ? '#9CA3AF' : '#4F46E5',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    padding: '8px 20px',
+                    borderRadius: '4px',
+                    fontWeight: 800,
+                    fontSize: '13px',
+                    cursor: (!selectedCourierId || isSubmittingShipment || availableCouriers.length === 0) ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 2px 6px rgba(79, 70, 229, 0.3)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  {isSubmittingShipment ? 'Generating AWB on Shiprocket...' : '🚀 Confirm & Create Shipment'}
                 </button>
               </div>
             </div>

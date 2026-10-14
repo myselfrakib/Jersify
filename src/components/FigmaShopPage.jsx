@@ -70,7 +70,7 @@ export default function FigmaShopPage({
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('fan');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
     const unsubProds = onValue(ref(rtdb, 'products'), (snap) => {
@@ -206,7 +206,7 @@ export default function FigmaShopPage({
     });
 
     // 2. Custom category sequence defined by Admin in User Shopping Page
-    const activeCategoryKey = selectedCategory || 'fan';
+    const activeCategoryKey = (selectedCategory && selectedCategory !== 'all') ? selectedCategory : 'fan';
     const activeOrder = shoppingPageOrder?.[activeCategoryKey];
 
     if (Array.isArray(activeOrder) && activeOrder.length > 0) {
@@ -330,12 +330,55 @@ export default function FigmaShopPage({
         )}
       </div>
 
-      {/* Full-Width Filter Bar replacing Shop heading: Fan | Player (Premium) | Retro */}
+      {/* Full-Width Filter Bar replacing Shop heading: All | Fan | Player (Premium) | Retro */}
       <div style={{ width: '100%', display: 'flex', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
+        {/* All Filter Option */}
+        <button
+          type="button"
+          onClick={() => setSelectedCategory('all')}
+          style={{
+            flex: 1,
+            height: '52px',
+            border: 'none',
+            borderRight: '1px solid #E5E7EB',
+            background: (selectedCategory === 'all' || !selectedCategory) ? '#111111' : '#FFFFFF',
+            color: (selectedCategory === 'all' || !selectedCategory) ? '#FFFFFF' : '#111111',
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 4px',
+            transition: 'all 0.2s ease',
+            boxShadow: (selectedCategory === 'all' || !selectedCategory) ? 'inset 0 -3px 0 #111111' : 'none'
+          }}
+        >
+          <span style={{
+            fontFamily: 'Karla, sans-serif',
+            fontWeight: 700,
+            fontSize: '14px',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase'
+          }}>
+            All
+          </span>
+          <span style={{
+            fontSize: '9px',
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 600,
+            letterSpacing: '0.08em',
+            color: (selectedCategory === 'all' || !selectedCategory) ? '#D1D5DB' : '#9CA3AF',
+            textTransform: 'uppercase',
+            marginTop: '1px'
+          }}>
+            Kits
+          </span>
+        </button>
+
         {/* Fan Filter Option */}
         <button
           type="button"
-          onClick={() => setSelectedCategory(prev => prev === 'fan' ? null : 'fan')}
+          onClick={() => setSelectedCategory(prev => prev === 'fan' ? 'all' : 'fan')}
           style={{
             flex: 1,
             height: '52px',
@@ -378,7 +421,7 @@ export default function FigmaShopPage({
         {/* Player Filter Option (Premium Aesthetic) */}
         <button
           type="button"
-          onClick={() => setSelectedCategory(prev => prev === 'player' ? null : 'player')}
+          onClick={() => setSelectedCategory(prev => prev === 'player' ? 'all' : 'player')}
           style={{
             flex: 1,
             height: '52px',
@@ -428,7 +471,7 @@ export default function FigmaShopPage({
         {/* Retro Filter Option */}
         <button
           type="button"
-          onClick={() => setSelectedCategory(prev => prev === 'retro' ? null : 'retro')}
+          onClick={() => setSelectedCategory(prev => prev === 'retro' ? 'all' : 'retro')}
           style={{
             flex: 1,
             height: '52px',
@@ -522,13 +565,13 @@ export default function FigmaShopPage({
       )}
 
       {/* Filter status row when version (fan/player/retro) is selected */}
-      {selectedCategory && (
+      {selectedCategory && selectedCategory !== 'all' && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 19px 0', fontSize: '12px' }}>
           <span style={{ color: '#6B7280', fontFamily: 'Karla, sans-serif', textTransform: 'capitalize' }}>
             Showing {selectedCategory} jerseys ({filteredJerseys.length})
           </span>
           <button
-            onClick={() => setSelectedCategory(null)}
+            onClick={() => setSelectedCategory('all')}
             style={{
               background: 'none',
               border: 'none',
