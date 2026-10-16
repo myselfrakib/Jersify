@@ -331,6 +331,58 @@ export default function FigmaShopPage({
         )}
       </div>
 
+      {/* Active Custom Category Banner (when redirected from homepage or filter) */}
+      {activeCustomCategory && (
+        <div style={{
+          background: '#F9FAFB',
+          borderBottom: '1px solid #E5E7EB',
+          padding: '10px 19px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '12px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+            <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: '#6B7280', flexShrink: 0 }}>
+              CATEGORY:
+            </span>
+            <span style={{ fontFamily: 'Josefin Sans, sans-serif', fontSize: '17px', fontWeight: 700, color: '#111111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {activeCustomCategory.name}
+            </span>
+            <span style={{
+              background: '#111111',
+              color: '#FFFFFF',
+              fontSize: '10px',
+              padding: '1px 7px',
+              borderRadius: '9999px',
+              fontWeight: 700,
+              flexShrink: 0
+            }}>
+              {filteredJerseys.length}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (onClearCategoryFilter) onClearCategoryFilter();
+            }}
+            style={{
+              background: '#FFFFFF',
+              border: '1px solid #D1D5DB',
+              padding: '4px 10px',
+              fontSize: '11px',
+              fontWeight: 700,
+              borderRadius: '3px',
+              cursor: 'pointer',
+              color: '#374151',
+              flexShrink: 0
+            }}
+          >
+            ✕ View All
+          </button>
+        </div>
+      )}
+
       {/* Full-Width Filter Bar replacing Shop heading: All | Fan | Player (Premium) | Retro */}
       <div style={{ width: '100%', display: 'flex', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
         {/* All Filter Option */}
@@ -512,58 +564,6 @@ export default function FigmaShopPage({
           </span>
         </button>
       </div>
-
-      {/* Active Custom Category Banner (when redirected from homepage or filter) */}
-      {activeCustomCategory && (
-        <div style={{
-          background: '#F9FAFB',
-          borderBottom: '1px solid #E5E7EB',
-          padding: '10px 19px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
-            <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: '#6B7280', flexShrink: 0 }}>
-              CATEGORY:
-            </span>
-            <span style={{ fontFamily: 'Josefin Sans, sans-serif', fontSize: '17px', fontWeight: 700, color: '#111111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {activeCustomCategory.name}
-            </span>
-            <span style={{
-              background: '#111111',
-              color: '#FFFFFF',
-              fontSize: '10px',
-              padding: '1px 7px',
-              borderRadius: '9999px',
-              fontWeight: 700,
-              flexShrink: 0
-            }}>
-              {filteredJerseys.length}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              if (onClearCategoryFilter) onClearCategoryFilter();
-            }}
-            style={{
-              background: '#FFFFFF',
-              border: '1px solid #D1D5DB',
-              padding: '4px 10px',
-              fontSize: '11px',
-              fontWeight: 700,
-              borderRadius: '3px',
-              cursor: 'pointer',
-              color: '#374151',
-              flexShrink: 0
-            }}
-          >
-            ✕ View All
-          </button>
-        </div>
-      )}
 
       {/* Filter status row when version (fan/player/retro) is selected */}
       {selectedCategory && selectedCategory !== 'all' && (
