@@ -561,7 +561,7 @@ export default function FigmaExactView({
       </div>
 
       {/* SHOP BY / CLUB JERSEYS */}
-      {isClubsEnabled && (
+      {isClubsEnabled ? (
         <div style={{ marginTop: '20px' }}>
           <p style={{
             fontFamily: 'Karla, sans-serif',
@@ -667,6 +667,9 @@ export default function FigmaExactView({
             )}
           </div>
         </div>
+      ) : (
+        /* White space between hero banner and next image when clubs are turned off */
+        <div style={{ height: '24px', width: '100%', background: '#FFFFFF' }} />
       )}
 
       {/* WEAR YOUR IDENTITY Banner */}
