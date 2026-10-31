@@ -20,7 +20,7 @@ import UserProfileModal from './components/UserProfileModal';
 import WishlistDrawer from './components/WishlistDrawer';
 
 import { INITIAL_PRODUCTS } from './data/initialProducts';
-import { auth, onAuthStateChanged, db, rtdb, ref, update, get } from './firebase';
+import { auth, onAuthStateChanged, db, rtdb, ref, update, get, onValue } from './firebase';
 import { runSequentialPagePreload } from './utils/pagePreloader';
 
 export default function App() {
@@ -28,6 +28,17 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState('Barcelona');
+
+  // Club Visibility State (Controlled via Admin Panel: On / Off Club)
+  const [clubsEnabled, setClubsEnabled] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_clubs_enabled') ?? localStorage.getItem('jersify_clubs_enabled');
+      return cached !== null ? JSON.parse(cached) : true;
+    } catch {
+      return true;
+    }
+  });
+
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState(() => {
     try {
       const cached = sessionStorage.getItem('jersify_active_category');
@@ -125,6 +136,27 @@ export default function App() {
     }
   }, []);
 
+  // Realtime subscription for siteConfig/clubsEnabled (On / Off Club)
+  useEffect(() => {
+    const unsubClubs = onValue(ref(rtdb, 'siteConfig/clubsEnabled'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const isEnabled = typeof val === 'object' && val !== null ? Boolean(val.enabled) : Boolean(val);
+        setClubsEnabled(isEnabled);
+        sessionStorage.setItem('jersify_clubs_enabled', JSON.stringify(isEnabled));
+        localStorage.setItem('jersify_clubs_enabled', JSON.stringify(isEnabled));
+      }
+    }, () => {});
+    return () => unsubClubs();
+  }, []);
+
+  // Redirect away from team page if clubs get disabled
+  useEffect(() => {
+    if (!clubsEnabled && currentPage === 'team') {
+      navigateTo('home');
+    }
+  }, [clubsEnabled, currentPage]);
+
   // Centralized Navigation with URL Hash Deep Linking
   const navigateTo = (page, param = null, options = {}) => {
     let targetHash = `#${page}`;
@@ -138,6 +170,11 @@ export default function App() {
         } catch (e) {}
       }
     } else if (page === 'team' && param) {
+      // If clubs are turned off, prevent navigating to team pages
+      if (!clubsEnabled) {
+        navigateTo('home');
+        return;
+      }
       targetHash = `#team/${encodeURIComponent(param)}`;
       setSelectedTeam(param);
       try {
@@ -219,6 +256,22 @@ export default function App() {
       }
 
       if (rawHash.startsWith('team/')) {
+        // Enforce club visibility check on deep links / direct navigation
+        const isClubsActive = (() => {
+          try {
+            const cached = sessionStorage.getItem('jersify_clubs_enabled') ?? localStorage.getItem('jersify_clubs_enabled');
+            return cached !== null ? JSON.parse(cached) : true;
+          } catch {
+            return true;
+          }
+        })();
+
+        if (!isClubsActive) {
+          setCurrentPage('home');
+          window.location.hash = '#home';
+          return;
+        }
+
         const teamName = decodeURIComponent(rawHash.replace('team/', ''));
         setSelectedTeam(teamName);
         setCurrentPage('team');
@@ -440,10 +493,15 @@ export default function App() {
             }}
           >
             <FigmaExactView
+              clubsEnabled={clubsEnabled}
               cartCount={cartCount}
               isActive={currentPage === 'home'}
               onSelectProduct={(p) => navigateTo('product', p)}
-              onSelectTeam={(t) => navigateTo('team', t)}
+              onSelectTeam={(t) => {
+                if (clubsEnabled) {
+                  navigateTo('team', t);
+                }
+              }}
               onSelectCategory={(c) => navigateTo('shop', c)}
               onOpenCart={() => setIsCartOpen(true)}
               onOpenAuth={handleOpenAuth}
@@ -544,7 +602,7 @@ export default function App() {
         />
       )}
 
-      {currentPage === 'team' && (
+      {currentPage === 'team' && clubsEnabled && (
         <FigmaTeamPage
           teamName={selectedTeam}
           onBack={() => navigateTo('home')}

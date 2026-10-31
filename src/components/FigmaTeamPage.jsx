@@ -100,11 +100,23 @@ export default function FigmaTeamPage({
       }
     }, () => {});
 
+    const unsubClubs = onValue(ref(rtdb, 'siteConfig/clubsEnabled'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const isEnabled = typeof val === 'object' && val !== null ? Boolean(val.enabled) : Boolean(val);
+        if (!isEnabled) {
+          if (onNavigateHome) onNavigateHome();
+          else if (onBack) onBack();
+        }
+      }
+    }, () => {});
+
     return () => {
       unsubProds();
       unsubTeams();
+      unsubClubs();
     };
-  }, []);
+  }, [onNavigateHome, onBack]);
 
   const info = teamConfig[teamName] || TEAM_DETAILS[teamName] || {
     name: teamName.toUpperCase(),

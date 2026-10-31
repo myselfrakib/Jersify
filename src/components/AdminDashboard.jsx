@@ -190,7 +190,7 @@ export default function AdminDashboard({
   onSignOut,
   onNavigateHome
 }) {
-  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'shopping-page' | 'clubs' | 'products' | 'categories' | 'orders' | 'shopping-list' | 'users' | 'shiprocket'
+  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'shopping-page' | 'on-off-club' | 'clubs' | 'products' | 'categories' | 'orders' | 'shopping-list' | 'users' | 'shiprocket'
 
   // Categories State
   const [categoriesList, setCategoriesList] = useState(() => {
@@ -237,6 +237,18 @@ export default function AdminDashboard({
   const [uploadingTeamState, setUploadingTeamState] = useState({});
   const [newClubName, setNewClubName] = useState('');
   const [newClubType, setNewClubType] = useState('club'); // 'club' | 'national'
+
+  // On / Off Club Visibility State
+  const [clubsEnabled, setClubsEnabled] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('jersify_clubs_enabled') ?? localStorage.getItem('jersify_clubs_enabled');
+      return cached !== null ? JSON.parse(cached) : true;
+    } catch {
+      return true;
+    }
+  });
+  const [clubToggleLoading, setClubToggleLoading] = useState(false);
+  const [clubToggleToast, setClubToggleToast] = useState('');
 
   // Dynamically include all added clubs & nations from teamBanners
   const availableClubOptions = useMemo(() => {
@@ -390,6 +402,17 @@ export default function AdminDashboard({
       }
     }, () => { });
 
+    // 2b. Realtime listener for siteConfig/clubsEnabled (On / Off Club)
+    const unsubClubsEnabled = onValue(ref(rtdb, 'siteConfig/clubsEnabled'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const isEnabled = typeof val === 'object' && val !== null ? Boolean(val.enabled) : Boolean(val);
+        setClubsEnabled(isEnabled);
+        sessionStorage.setItem('jersify_clubs_enabled', JSON.stringify(isEnabled));
+        localStorage.setItem('jersify_clubs_enabled', JSON.stringify(isEnabled));
+      }
+    }, () => { });
+
     // 3. Realtime listener for products
     const unsubProds = onValue(ref(rtdb, 'products'), (snap) => {
       if (snap.exists()) {
@@ -493,6 +516,7 @@ export default function AdminDashboard({
     return () => {
       unsubImages();
       unsubTeams();
+      unsubClubsEnabled();
       unsubProds();
       unsubOrders();
       unsubShoppingList();
@@ -751,6 +775,29 @@ export default function AdminDashboard({
       await set(ref(rtdb, 'siteConfig/teamBanners'), updated);
     } catch (err) {
       console.error('Failed to sync deleted team to RTDB:', err);
+    }
+  };
+
+  // Toggle On / Off Club Visibility in RTDB
+  const handleToggleClubs = async (desiredState) => {
+    const nextState = typeof desiredState === 'boolean' ? desiredState : !clubsEnabled;
+    setClubToggleLoading(true);
+    try {
+      await set(ref(rtdb, 'siteConfig/clubsEnabled'), {
+        enabled: nextState,
+        updatedAt: new Date().toISOString(),
+        updatedBy: adminUser?.email || 'admin'
+      });
+      setClubsEnabled(nextState);
+      sessionStorage.setItem('jersify_clubs_enabled', JSON.stringify(nextState));
+      localStorage.setItem('jersify_clubs_enabled', JSON.stringify(nextState));
+      setClubToggleToast(`Clubs & Teams Pages are now turned ${nextState ? 'ON (VISIBLE)' : 'OFF (HIDDEN)'}!`);
+      setTimeout(() => setClubToggleToast(''), 4500);
+    } catch (e) {
+      console.error('Failed to update club visibility:', e);
+      alert('Failed to update club visibility: ' + e.message);
+    } finally {
+      setClubToggleLoading(false);
     }
   };
 
@@ -1681,6 +1728,38 @@ export default function AdminDashboard({
           🛍️ User Shopping page
         </button>
         <button
+          onClick={() => setActiveTab('on-off-club')}
+          style={{
+            flex: 1,
+            padding: '14px 10px',
+            border: 'none',
+            background: activeTab === 'on-off-club' ? '#FFFFFF' : 'transparent',
+            borderBottom: activeTab === 'on-off-club' ? (clubsEnabled ? '3px solid #10B981' : '3px solid #EF4444') : 'none',
+            fontWeight: 700,
+            fontSize: '13px',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px'
+          }}
+        >
+          <span>⚽ On/Off Club</span>
+          <span style={{
+            fontSize: '10px',
+            fontWeight: 800,
+            padding: '2px 7px',
+            borderRadius: '12px',
+            background: clubsEnabled ? '#D1FAE5' : '#FEE2E2',
+            color: clubsEnabled ? '#065F46' : '#991B1B',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}>
+            {clubsEnabled ? 'ON' : 'OFF'}
+          </span>
+        </button>
+        <button
           onClick={() => setActiveTab('clubs')}
           style={{ flex: 1, padding: '14px 10px', border: 'none', background: activeTab === 'clubs' ? '#FFFFFF' : 'transparent', borderBottom: activeTab === 'clubs' ? '3px solid #111111' : 'none', fontWeight: 700, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
         >
@@ -2154,9 +2233,347 @@ export default function AdminDashboard({
         </div>
       )}
 
+      {/* TAB: ON / OFF CLUB VISIBILITY CONTROLLER */}
+      {activeTab === 'on-off-club' && (
+        <div style={{ padding: '28px', maxWidth: '1000px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          
+          {/* Header */}
+          <div style={{ borderBottom: '1px solid #E5E7EB', paddingBottom: '18px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '28px' }}>⚽</span>
+              <div>
+                <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#111827', margin: 0 }}>
+                  Club & Teams Visibility Controller
+                </h2>
+                <p style={{ fontSize: '13px', color: '#6B7280', margin: '4px 0 0' }}>
+                  Master switch to show or hide all club icons on the home page and disable access to club team pages across the entire website.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Toast Notification */}
+          {clubToggleToast && (
+            <div style={{
+              background: clubsEnabled ? '#ECFDF5' : '#FEF2F2',
+              border: `1.5px solid ${clubsEnabled ? '#10B981' : '#EF4444'}`,
+              color: clubsEnabled ? '#065F46' : '#991B1B',
+              padding: '14px 18px',
+              borderRadius: '8px',
+              fontWeight: 700,
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+            }}>
+              <span style={{ fontSize: '18px' }}>{clubsEnabled ? '✓' : '⚠️'}</span>
+              <span>{clubToggleToast}</span>
+            </div>
+          )}
+
+          {/* Main Status & Toggle Card */}
+          <div style={{
+            background: clubsEnabled
+              ? 'linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%)'
+              : 'linear-gradient(135deg, #FEF2F2 0%, #FFFFFF 100%)',
+            border: `2px solid ${clubsEnabled ? '#86EFAC' : '#FCA5A5'}`,
+            borderRadius: '16px',
+            padding: '32px',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '24px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                  <span style={{
+                    width: '14px',
+                    height: '14px',
+                    borderRadius: '50%',
+                    background: clubsEnabled ? '#10B981' : '#EF4444',
+                    boxShadow: clubsEnabled ? '0 0 12px #10B981' : '0 0 12px #EF4444',
+                    display: 'inline-block'
+                  }} />
+                  <span style={{
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    letterSpacing: '1px',
+                    textTransform: 'uppercase',
+                    color: clubsEnabled ? '#047857' : '#B91C1C'
+                  }}>
+                    CURRENT SYSTEM STATUS
+                  </span>
+                </div>
+                <h3 style={{
+                  fontSize: '28px',
+                  fontWeight: 900,
+                  color: clubsEnabled ? '#065F46' : '#991B1B',
+                  margin: '0 0 6px'
+                }}>
+                  {clubsEnabled ? 'CLUBS ARE ON (VISIBLE)' : 'CLUBS ARE OFF (HIDDEN)'}
+                </h3>
+                <p style={{
+                  fontSize: '14px',
+                  color: '#4B5563',
+                  margin: 0,
+                  maxWidth: '520px',
+                  lineHeight: '1.5'
+                }}>
+                  {clubsEnabled
+                    ? 'All club icons (Barcelona, Real Madrid, AC Milan, Bayern, Man City, etc.) are displayed on the home page and all club team detail pages are publicly accessible.'
+                    : 'All club icons are completely hidden from the home page. Deep links to team pages are disabled and safely redirect to home while keeping everything else identical.'}
+                </p>
+              </div>
+
+              {/* Large Interactive Switch & Toggle Button */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                <button
+                  type="button"
+                  disabled={clubToggleLoading}
+                  onClick={() => handleToggleClubs()}
+                  aria-label="Toggle Club Visibility"
+                  style={{
+                    position: 'relative',
+                    width: '100px',
+                    height: '52px',
+                    borderRadius: '30px',
+                    background: clubsEnabled ? '#10B981' : '#9CA3AF',
+                    border: 'none',
+                    cursor: clubToggleLoading ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    boxShadow: clubsEnabled
+                      ? '0 6px 20px rgba(16, 185, 129, 0.4)'
+                      : '0 6px 16px rgba(156, 163, 175, 0.3)',
+                    padding: '4px',
+                    outline: 'none'
+                  }}
+                >
+                  <div style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '50%',
+                    background: '#FFFFFF',
+                    boxShadow: '0 3px 8px rgba(0,0,0,0.2)',
+                    transform: clubsEnabled ? 'translateX(48px)' : 'translateX(0px)',
+                    transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '18px'
+                  }}>
+                    {clubsEnabled ? '⚽' : '✖️'}
+                  </div>
+                </button>
+                <span style={{ fontSize: '11px', fontWeight: 800, color: '#6B7280', letterSpacing: '0.5px' }}>
+                  {clubToggleLoading ? 'SAVING...' : 'CLICK SWITCH TO TOGGLE'}
+                </span>
+              </div>
+            </div>
+
+            {/* Direct Instant Action Buttons */}
+            <div style={{
+              display: 'flex',
+              gap: '14px',
+              paddingTop: '20px',
+              borderTop: '1px solid ' + (clubsEnabled ? '#D1FAE5' : '#FEE2E2'),
+              flexWrap: 'wrap'
+            }}>
+              <button
+                type="button"
+                disabled={clubToggleLoading || clubsEnabled}
+                onClick={() => handleToggleClubs(true)}
+                style={{
+                  flex: '1 1 200px',
+                  background: clubsEnabled ? '#F3F4F6' : '#10B981',
+                  color: clubsEnabled ? '#9CA3AF' : '#FFFFFF',
+                  border: 'none',
+                  padding: '14px 22px',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  fontWeight: 800,
+                  cursor: (clubToggleLoading || clubsEnabled) ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  boxShadow: clubsEnabled ? 'none' : '0 4px 12px rgba(16, 185, 129, 0.3)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <span style={{ fontSize: '18px' }}>🟢</span>
+                <span>{clubsEnabled ? 'Clubs Currently ON' : 'Turn Clubs ON'}</span>
+              </button>
+
+              <button
+                type="button"
+                disabled={clubToggleLoading || !clubsEnabled}
+                onClick={() => handleToggleClubs(false)}
+                style={{
+                  flex: '1 1 200px',
+                  background: !clubsEnabled ? '#F3F4F6' : '#EF4444',
+                  color: !clubsEnabled ? '#9CA3AF' : '#FFFFFF',
+                  border: 'none',
+                  padding: '14px 22px',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  fontWeight: 800,
+                  cursor: (clubToggleLoading || !clubsEnabled) ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  boxShadow: !clubsEnabled ? 'none' : '0 4px 12px rgba(239, 68, 68, 0.3)',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <span style={{ fontSize: '18px' }}>🔴</span>
+                <span>{!clubsEnabled ? 'Clubs Currently OFF' : 'Turn Clubs OFF'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Detailed Features Breakdown Cards */}
+          <div>
+            <h4 style={{ fontSize: '16px', fontWeight: 800, color: '#111827', margin: '0 0 14px' }}>
+              Impact on Storefront Features
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+              {/* Feature 1 */}
+              <div style={{
+                background: '#FFFFFF',
+                border: '1px solid #E5E7EB',
+                borderRadius: '12px',
+                padding: '20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '20px' }}>🏟️</span>
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    background: clubsEnabled ? '#D1FAE5' : '#FEE2E2',
+                    color: clubsEnabled ? '#065F46' : '#991B1B'
+                  }}>
+                    {clubsEnabled ? 'VISIBLE' : 'HIDDEN'}
+                  </span>
+                </div>
+                <h5 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#111827' }}>
+                  Homepage Club Icons
+                </h5>
+                <p style={{ margin: 0, fontSize: '12px', color: '#6B7280', lineHeight: '1.5' }}>
+                  Controls the "SHOP BY CLUB JERSEYS" slider and club crest badges on the homepage. When OFF, this section is completely removed from the view.
+                </p>
+              </div>
+
+              {/* Feature 2 */}
+              <div style={{
+                background: '#FFFFFF',
+                border: '1px solid #E5E7EB',
+                borderRadius: '12px',
+                padding: '20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '20px' }}>📄</span>
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    background: clubsEnabled ? '#D1FAE5' : '#FEE2E2',
+                    color: clubsEnabled ? '#065F46' : '#991B1B'
+                  }}>
+                    {clubsEnabled ? 'ACCESSIBLE' : 'DISABLED'}
+                  </span>
+                </div>
+                <h5 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#111827' }}>
+                  Club Teams Pages
+                </h5>
+                <p style={{ margin: 0, fontSize: '12px', color: '#6B7280', lineHeight: '1.5' }}>
+                  Controls access to individual team pages (#team/Barcelona, #team/Real Madrid, etc.). When OFF, deep links automatically redirect safely to the homepage.
+                </p>
+              </div>
+
+              {/* Feature 3 */}
+              <div style={{
+                background: '#FFFFFF',
+                border: '1px solid #E5E7EB',
+                borderRadius: '12px',
+                padding: '20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '20px' }}>✨</span>
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    background: '#EFF6FF',
+                    color: '#1D4ED8'
+                  }}>
+                    ALWAYS UNTOUCHED
+                  </span>
+                </div>
+                <h5 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#111827' }}>
+                  All Other Store Features
+                </h5>
+                <p style={{ margin: 0, fontSize: '12px', color: '#6B7280', lineHeight: '1.5' }}>
+                  Everything else remains 100% active: products catalog, categories, hero carousel banners, cart, checkout, profile, and search.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* TAB 3: CLUBS & NATIONS PAGE IMAGE CONTROLLER */}
       {activeTab === 'clubs' && (
         <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {!clubsEnabled && (
+            <div style={{
+              background: '#FEF2F2',
+              border: '1px solid #FCA5A5',
+              padding: '12px 16px',
+              borderRadius: '6px',
+              color: '#991B1B',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '10px'
+            }}>
+              <span>
+                ⚠️ <strong>Note:</strong> Clubs & Teams Pages are currently turned <strong>OFF</strong>. Visitors cannot see club icons or open team pages.
+              </span>
+              <button
+                type="button"
+                onClick={() => setActiveTab('on-off-club')}
+                style={{
+                  background: '#DC2626',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  padding: '6px 12px',
+                  borderRadius: '4px',
+                  fontWeight: 700,
+                  fontSize: '12px',
+                  cursor: 'pointer'
+                }}
+              >
+                Go to On/Off Club Tab
+              </button>
+            </div>
+          )}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
             <div>
               <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#111111' }}>Clubs & Nations Page Image Controller</h2>

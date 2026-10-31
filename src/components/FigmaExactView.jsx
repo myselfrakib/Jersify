@@ -35,6 +35,7 @@ const defaultImages = {
 };
 
 export default function FigmaExactView({
+  clubsEnabled = true,
   cartCount = 0,
   isActive = true,
   onSelectProduct,
@@ -45,6 +46,21 @@ export default function FigmaExactView({
   onNavigateShop,
   onLoadingChange
 }) {
+  const [isClubsEnabled, setIsClubsEnabled] = useState(() => {
+    if (typeof clubsEnabled === 'boolean') return clubsEnabled;
+    try {
+      const cached = sessionStorage.getItem('jersify_clubs_enabled') ?? localStorage.getItem('jersify_clubs_enabled');
+      return cached !== null ? JSON.parse(cached) : true;
+    } catch {
+      return true;
+    }
+  });
+
+  useEffect(() => {
+    if (typeof clubsEnabled === 'boolean') {
+      setIsClubsEnabled(clubsEnabled);
+    }
+  }, [clubsEnabled]);
   const [siteImages, setSiteImages] = useState(() => {
     try {
       const cached = sessionStorage.getItem('jersify_site_images') || localStorage.getItem('jersify_site_images');
@@ -200,6 +216,17 @@ export default function FigmaExactView({
       }
     }, () => {});
 
+    // Realtime auto-loading for clubs enabled status
+    const unsubClubsEnabled = onValue(ref(rtdb, 'siteConfig/clubsEnabled'), (snap) => {
+      if (snap.exists()) {
+        const val = snap.val();
+        const isEnabled = typeof val === 'object' && val !== null ? Boolean(val.enabled) : Boolean(val);
+        setIsClubsEnabled(isEnabled);
+        sessionStorage.setItem('jersify_clubs_enabled', JSON.stringify(isEnabled));
+        localStorage.setItem('jersify_clubs_enabled', JSON.stringify(isEnabled));
+      }
+    }, () => {});
+
     return () => {
       unsubImages();
       unsubProds();
@@ -207,6 +234,7 @@ export default function FigmaExactView({
       unsubOrder();
       unsubTeams();
       unsubClubs();
+      unsubClubsEnabled();
     };
   }, []);
 
@@ -406,7 +434,7 @@ export default function FigmaExactView({
       siteImages.heroBanner3 || defaultImages.heroBanner3
     ];
 
-    const clubLogoUrls = (clubsList || []).map((c) => getOptimizedClubLogo(c.logo));
+    const clubLogoUrls = isClubsEnabled ? (clubsList || []).map((c) => getOptimizedClubLogo(c.logo)) : [];
 
     const targetUrls = [
       ...heroBannerUrls,
@@ -533,111 +561,113 @@ export default function FigmaExactView({
       </div>
 
       {/* SHOP BY / CLUB JERSEYS */}
-      <div style={{ marginTop: '20px' }}>
-        <p style={{
-          fontFamily: 'Karla, sans-serif',
-          fontSize: '22.68px',
-          color: '#000000',
-          paddingLeft: '19px',
-          margin: 0,
-          lineHeight: '1.2'
-        }}>
-          SHOP BY
-        </p>
-        <p style={{
-          fontFamily: 'Inter, sans-serif',
-          fontWeight: 600,
-          fontSize: '22.68px',
-          color: '#000000',
-          paddingLeft: '19px',
-          margin: '2px 0 10px',
-          lineHeight: '1.2'
-        }}>
-          CLUB JERSEYS
-        </p>
+      {isClubsEnabled && (
+        <div style={{ marginTop: '20px' }}>
+          <p style={{
+            fontFamily: 'Karla, sans-serif',
+            fontSize: '22.68px',
+            color: '#000000',
+            paddingLeft: '19px',
+            margin: 0,
+            lineHeight: '1.2'
+          }}>
+            SHOP BY
+          </p>
+          <p style={{
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 600,
+            fontSize: '22.68px',
+            color: '#000000',
+            paddingLeft: '19px',
+            margin: '2px 0 10px',
+            lineHeight: '1.2'
+          }}>
+            CLUB JERSEYS
+          </p>
 
-        {/* Club Badges with Figma Pink/Peach Gradient Background */}
-        <div id="club-badges-container" data-club-badges="true" style={{
-          width: '393px',
-          minHeight: '187px',
-          background: 'linear-gradient(180deg, #FFFFFF 0%, #E5D0D0 99.99%)',
-          padding: '14px 19px 20px',
-          boxSizing: 'border-box'
-        }}>
-          {clubsList.length <= 8 ? (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '16px 12px',
-              justifyItems: 'center',
-              alignItems: 'center'
-            }}>
-              {clubsList.map((club) => (
-                <div
-                  key={club.id}
-                  onClick={() => onSelectTeam && onSelectTeam(club.name)}
-                  style={{
-                    width: '64px',
-                    height: '64px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'transform 0.15s ease'
-                  }}
-                >
-                  <ImageWithSpinner
-                    src={club.logo}
-                    alt={club.name}
-                    style={{ width: '64px', height: '64px', objectFit: 'contain' }}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div
-              ref={clubSliderRef}
-              onMouseDown={handleClubMouseDown}
-              onMouseMove={handleClubMouseMove}
-              onMouseUp={handleClubMouseUpOrLeave}
-              onMouseLeave={handleClubMouseUpOrLeave}
-              style={{
+          {/* Club Badges with Figma Pink/Peach Gradient Background */}
+          <div id="club-badges-container" data-club-badges="true" style={{
+            width: '393px',
+            minHeight: '187px',
+            background: 'linear-gradient(180deg, #FFFFFF 0%, #E5D0D0 99.99%)',
+            padding: '14px 19px 20px',
+            boxSizing: 'border-box'
+          }}>
+            {clubsList.length <= 8 ? (
+              <div style={{
                 display: 'grid',
-                gridTemplateRows: 'repeat(2, 64px)',
-                gridAutoFlow: 'column',
-                gridAutoColumns: '64px',
-                gap: '14px',
-                overflowX: 'auto',
-                overflowY: 'hidden',
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                WebkitOverflowScrolling: 'touch',
-                scrollSnapType: 'x proximity',
-                width: '100%',
-                cursor: isClubDragging ? 'grabbing' : 'grab',
-                userSelect: 'none'
-              }}
-            >
-              {clubsList.map((club) => (
-                <div
-                  key={club.id}
-                  style={{ scrollSnapAlign: 'start', flexShrink: 0, width: '64px', height: '64px' }}
-                >
-                  <ImageWithSpinner
-                    onClick={() => {
-                      if (clubHasDraggedRef.current) return;
-                      if (onSelectTeam) onSelectTeam(club.name);
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: '16px 12px',
+                justifyItems: 'center',
+                alignItems: 'center'
+              }}>
+                {clubsList.map((club) => (
+                  <div
+                    key={club.id}
+                    onClick={() => onSelectTeam && onSelectTeam(club.name)}
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'transform 0.15s ease'
                     }}
-                    src={club.logo}
-                    alt={club.name}
-                    style={{ width: '64px', height: '64px', cursor: 'pointer', objectFit: 'contain' }}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+                  >
+                    <ImageWithSpinner
+                      src={club.logo}
+                      alt={club.name}
+                      style={{ width: '64px', height: '64px', objectFit: 'contain' }}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div
+                ref={clubSliderRef}
+                onMouseDown={handleClubMouseDown}
+                onMouseMove={handleClubMouseMove}
+                onMouseUp={handleClubMouseUpOrLeave}
+                onMouseLeave={handleClubMouseUpOrLeave}
+                style={{
+                  display: 'grid',
+                  gridTemplateRows: 'repeat(2, 64px)',
+                  gridAutoFlow: 'column',
+                  gridAutoColumns: '64px',
+                  gap: '14px',
+                  overflowX: 'auto',
+                  overflowY: 'hidden',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch',
+                  scrollSnapType: 'x proximity',
+                  width: '100%',
+                  cursor: isClubDragging ? 'grabbing' : 'grab',
+                  userSelect: 'none'
+                }}
+              >
+                {clubsList.map((club) => (
+                  <div
+                    key={club.id}
+                    style={{ scrollSnapAlign: 'start', flexShrink: 0, width: '64px', height: '64px' }}
+                  >
+                    <ImageWithSpinner
+                      onClick={() => {
+                        if (clubHasDraggedRef.current) return;
+                        if (onSelectTeam) onSelectTeam(club.name);
+                      }}
+                      src={club.logo}
+                      alt={club.name}
+                      style={{ width: '64px', height: '64px', cursor: 'pointer', objectFit: 'contain' }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* WEAR YOUR IDENTITY Banner */}
       <div style={{ width: '393px', height: '162px', position: 'relative' }}>
