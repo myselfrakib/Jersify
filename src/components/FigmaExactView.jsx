@@ -668,8 +668,8 @@ export default function FigmaExactView({
           </div>
         </div>
       ) : (
-        /* White space between hero banner and next image when clubs are turned off */
-        <div style={{ height: '24px', width: '100%', background: '#FFFFFF' }} />
+        /* 24px space after hero section when clubs are turned off */
+        <div id="hero-clubs-off-spacer" style={{ height: '24px', minHeight: '24px', width: '100%', background: '#FFFFFF' }} />
       )}
 
       {/* WEAR YOUR IDENTITY Banner */}
